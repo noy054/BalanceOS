@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { authApi } from '../api/authApi';
@@ -68,4 +69,26 @@ export function useCurrentUser() {
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
+}
+
+export function useHydrateAuth() {
+  const { setAuthenticated, setUnauthenticated } = useAuthStore();
+
+  useEffect(() => {
+    async function hydrate() {
+      try {
+        const refreshToken = await tokenStorage.getRefreshToken();
+        if (!refreshToken) {
+          setUnauthenticated();
+          return;
+        }
+        const user = await authApi.me();
+        setAuthenticated(user);
+      } catch {
+        await tokenStorage.clearTokens();
+        setUnauthenticated();
+      }
+    }
+    hydrate();
+  }, []);
 }

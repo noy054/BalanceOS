@@ -111,6 +111,14 @@ export class AuthService {
   }
 
   async refresh(dto: RefreshDto): Promise<TokenPair> {
+    try {
+      this.jwtService.verify(dto.refreshToken, {
+        secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
+      });
+    } catch {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+
     const stored = await this.authRepository.findRefreshToken(dto.refreshToken);
     if (!stored || stored.expiresAt < new Date()) {
       throw new UnauthorizedException('Invalid or expired refresh token');
@@ -125,6 +133,8 @@ export class AuthService {
   }
 
   private async issueTokenPair(userId: string): Promise<TokenPair> {
+    void this.authRepository.deleteExpiredTokens();
+
     const user = await this.usersService.findById(userId);
     if (!user) throw new UnauthorizedException();
 
