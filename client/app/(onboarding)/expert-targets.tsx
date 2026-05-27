@@ -2,11 +2,17 @@ import { useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useUpsertNutritionSettings } from '../../src/features/nutrition-settings/hooks/useNutritionSettings';
 import { extractErrorMessage } from '../../src/shared/helpers/extractErrorMessage';
 import { ScreenShell } from '../../src/shared/components/ScreenShell';
+import { getTextAlign, i18n } from '../../src/shared/i18n';
+import type { SupportedLanguage } from '../../src/shared/i18n';
 
 export default function ExpertTargetsScreen() {
+  const { t } = useTranslation('onboarding');
+  const textAlign = getTextAlign();
+
   const [calories, setCalories] = useState('');
   const [protein, setProtein] = useState('');
   const [carbs, setCarbs] = useState('');
@@ -30,6 +36,7 @@ export default function ExpertTargetsScreen() {
         experienceMode: 'EXPERT',
         targetMode: 'MANUAL',
         onboardingCompleted: true,
+        preferredLanguage: i18n.language as SupportedLanguage,
         dailyCaloriesTarget: caloriesNum,
         proteinTarget: proteinNum,
         ...(carbs ? { carbsTarget: parseInt(carbs, 10) } : {}),
@@ -42,52 +49,57 @@ export default function ExpertTargetsScreen() {
 
   return (
     <ScreenShell>
-      <Text style={styles.title}>Set your daily targets</Text>
-      <Text style={styles.subtitle}>Calories and protein are required.</Text>
+      <Text style={[styles.title, { textAlign }]}>{t('targets.title')}</Text>
+      <Text style={[styles.subtitle, { textAlign }]}>{t('targets.subtitle')}</Text>
 
       <TextInput
-        label="Daily calories (kcal) *"
+        label={t('targets.caloriesLabel')}
         value={calories}
         onChangeText={setCalories}
         keyboardType="numeric"
         mode="outlined"
         style={styles.input}
+        contentStyle={{ textAlign: textAlign }}
         disabled={upsert.isPending}
       />
       <TextInput
-        label="Protein (g) *"
+        label={t('targets.proteinLabel')}
         value={protein}
         onChangeText={setProtein}
         keyboardType="numeric"
         mode="outlined"
         style={styles.input}
+        contentStyle={{ textAlign: textAlign }}
         disabled={upsert.isPending}
       />
       <TextInput
-        label="Carbs (g)"
+        label={t('targets.carbsLabel')}
         value={carbs}
         onChangeText={setCarbs}
         keyboardType="numeric"
         mode="outlined"
         style={styles.input}
+        contentStyle={{ textAlign: textAlign }}
         disabled={upsert.isPending}
       />
       <TextInput
-        label="Fat (g)"
+        label={t('targets.fatLabel')}
         value={fat}
         onChangeText={setFat}
         keyboardType="numeric"
         mode="outlined"
         style={styles.input}
+        contentStyle={{ textAlign: textAlign }}
         disabled={upsert.isPending}
       />
       <TextInput
-        label="Fiber (g)"
+        label={t('targets.fiberLabel')}
         value={fiber}
         onChangeText={setFiber}
         keyboardType="numeric"
         mode="outlined"
         style={styles.input}
+        contentStyle={{ textAlign: textAlign }}
         disabled={upsert.isPending}
       />
 
@@ -104,7 +116,7 @@ export default function ExpertTargetsScreen() {
         disabled={!canSubmit}
         style={styles.button}
       >
-        Save and continue
+        {t('targets.saveButton')}
       </Button>
     </ScreenShell>
   );

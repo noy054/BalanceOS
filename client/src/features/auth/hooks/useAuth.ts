@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { authApi } from '../api/authApi';
 import { tokenStorage } from '../../../shared/api/tokenStorage';
@@ -12,10 +12,12 @@ import {
 
 export function useRegister() {
   const setAuthenticated = useAuthStore((s) => s.setAuthenticated);
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: RegisterPayload) => authApi.register(payload),
     onSuccess: async (data) => {
+      queryClient.removeQueries({ queryKey: ['nutrition-settings'] });
       await tokenStorage.saveTokens(data.accessToken, data.refreshToken);
       setAuthenticated(data.user);
       router.replace('/');
@@ -25,10 +27,12 @@ export function useRegister() {
 
 export function useLogin() {
   const setAuthenticated = useAuthStore((s) => s.setAuthenticated);
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: LoginPayload) => authApi.login(payload),
     onSuccess: async (data) => {
+      queryClient.removeQueries({ queryKey: ['nutrition-settings'] });
       await tokenStorage.saveTokens(data.accessToken, data.refreshToken);
       setAuthenticated(data.user);
       router.replace('/');

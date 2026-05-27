@@ -31,6 +31,7 @@ model UserNutritionSettings {
   experienceMode      String  @default("GUIDED")
   targetMode          String  @default("AUTO")
   onboardingCompleted Boolean @default(false)
+  preferredLanguage   String  @default("he")
   dailyCaloriesTarget Int?
   proteinTarget       Int?
   carbsTarget         Int?

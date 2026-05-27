@@ -130,3 +130,23 @@ Important:
 - Do not put DB logic in controllers.
 - Do not skip validation or ownership checks.
 - Do not expose secrets or edit `.env` files.
+
+## Database Shortcuts
+
+When I say "DB", I mean the BalanceOS PostgreSQL database.
+
+Use this priority:
+
+1. For schema changes: use Prisma schema and migrations.
+2. For reading existing data: use Postgres MCP or Prisma.
+3. For deleting/updating data: ask for confirmation first.
+
+When I ask:
+
+- "show users" = list users with id, email, fullName, provider, createdAt
+- "delete user" = first list matching users, then ask before deleting
+- "check DB" = inspect tables and current relevant records
+- "what users exist?" = query the User table only
+
+Never delete DB data without explicit approval.
+Never expose secrets.

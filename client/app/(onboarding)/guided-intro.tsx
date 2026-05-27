@@ -1,30 +1,30 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { Button, HelperText } from 'react-native-paper';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useUpsertNutritionSettings } from '../../src/features/nutrition-settings/hooks/useNutritionSettings';
 import { extractErrorMessage } from '../../src/shared/helpers/extractErrorMessage';
+import { getTextAlign, i18n } from '../../src/shared/i18n';
+import type { SupportedLanguage } from '../../src/shared/i18n';
 
 export default function GuidedIntroScreen() {
+  const { t } = useTranslation('onboarding');
+  const textAlign = getTextAlign();
+
   const upsert = useUpsertNutritionSettings();
 
   function handleContinue() {
     upsert.mutate(
-      { experienceMode: 'GUIDED', targetMode: 'AUTO', onboardingCompleted: true },
+      { experienceMode: 'GUIDED', targetMode: 'AUTO', onboardingCompleted: true, preferredLanguage: i18n.language as SupportedLanguage },
       { onSuccess: () => router.replace('/(app)/dashboard') },
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>We'll help you get set up</Text>
-      <Text style={styles.body}>
-        BalanceOS will guide you through choosing calorie and macro targets based
-        on your goals. You can adjust everything manually at any time.
-      </Text>
-      <Text style={styles.body}>
-        Guided target setup is coming soon. For now, we'll apply sensible
-        defaults and you can update them from settings.
-      </Text>
+      <Text style={[styles.title, { textAlign }]}>{t('guided.title')}</Text>
+      <Text style={[styles.body, { textAlign }]}>{t('guided.body1')}</Text>
+      <Text style={[styles.body, { textAlign }]}>{t('guided.body2')}</Text>
 
       {upsert.error ? (
         <HelperText type="error" visible>
@@ -39,7 +39,7 @@ export default function GuidedIntroScreen() {
         disabled={upsert.isPending}
         style={styles.button}
       >
-        Get started
+        {t('guided.startButton')}
       </Button>
     </View>
   );

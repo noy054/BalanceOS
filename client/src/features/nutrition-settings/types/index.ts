@@ -1,12 +1,15 @@
 export type ExperienceMode = 'EXPERT' | 'GUIDED';
 export type TargetMode = 'MANUAL' | 'AUTO';
 
+export type SupportedLanguage = 'he' | 'en';
+
 export type NutritionSettings = {
   id: string;
   userId: string;
   experienceMode: ExperienceMode;
   targetMode: TargetMode;
   onboardingCompleted: boolean;
+  preferredLanguage: SupportedLanguage;
   dailyCaloriesTarget: number | null;
   proteinTarget: number | null;
   carbsTarget: number | null;
@@ -20,6 +23,7 @@ export type UpsertNutritionSettingsPayload = {
   experienceMode?: ExperienceMode;
   targetMode?: TargetMode;
   onboardingCompleted?: boolean;
+  preferredLanguage?: SupportedLanguage;
   dailyCaloriesTarget?: number;
   proteinTarget?: number;
   carbsTarget?: number;

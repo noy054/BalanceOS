@@ -9,15 +9,19 @@ export default function Index() {
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const isHydrating = useAuthStore((s) => s.isHydrating);
+  const isLanguageReady = useAuthStore((s) => s.isLanguageReady);
+  const hasSelectedLanguage = useAuthStore((s) => s.hasSelectedLanguage);
   const { data: settings, isLoading } = useNutritionSettings();
 
-  if (isHydrating) {
+  if (isHydrating || !isLanguageReady) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
+
+  if (!hasSelectedLanguage) return <Redirect href="/language" />;
 
   if (!isAuthenticated) return <Redirect href="/(auth)/login" />;
 

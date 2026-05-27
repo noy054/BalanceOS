@@ -1,9 +1,11 @@
 import {
   IsBoolean,
   IsEnum,
+  IsIn,
   IsInt,
   IsOptional,
   IsPositive,
+  IsString,
 } from 'class-validator';
 
 export enum ExperienceMode {
@@ -53,4 +55,9 @@ export class UpsertNutritionSettingsDto {
   @IsInt()
   @IsPositive()
   fiberTarget?: number;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['he', 'en'])
+  preferredLanguage?: string;
 }

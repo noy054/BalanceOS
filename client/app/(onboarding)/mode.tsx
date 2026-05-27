@@ -1,8 +1,13 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { ExperienceMode } from '../../src/features/nutrition-settings/types';
+import { getTextAlign } from '../../src/shared/i18n';
 
 export default function OnboardingModeScreen() {
+  const { t } = useTranslation('onboarding');
+  const textAlign = getTextAlign();
+
   function handleSelect(mode: ExperienceMode) {
     if (mode === 'EXPERT') {
       router.push('/(onboarding)/expert-targets');
@@ -13,18 +18,16 @@ export default function OnboardingModeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>How do you want to use BalanceOS?</Text>
-      <Text style={styles.subtitle}>You can change this later in settings.</Text>
+      <Text style={[styles.title, { textAlign }]}>{t('mode.title')}</Text>
+      <Text style={[styles.subtitle, { textAlign }]}>{t('mode.subtitle')}</Text>
 
       <TouchableOpacity
         style={styles.card}
         onPress={() => handleSelect('EXPERT')}
         activeOpacity={0.8}
       >
-        <Text style={styles.cardTitle}>I know what I'm doing</Text>
-        <Text style={styles.cardDesc}>
-          Set your own calorie and macro targets. Full control, no hand-holding.
-        </Text>
+        <Text style={[styles.cardTitle, { textAlign }]}>{t('mode.expertTitle')}</Text>
+        <Text style={[styles.cardDesc, { textAlign }]}>{t('mode.expertDesc')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -32,10 +35,8 @@ export default function OnboardingModeScreen() {
         onPress={() => handleSelect('GUIDED')}
         activeOpacity={0.8}
       >
-        <Text style={styles.cardTitle}>Guide me</Text>
-        <Text style={styles.cardDesc}>
-          We'll help you choose targets that fit your goals.
-        </Text>
+        <Text style={[styles.cardTitle, { textAlign }]}>{t('mode.guidedTitle')}</Text>
+        <Text style={[styles.cardDesc, { textAlign }]}>{t('mode.guidedDesc')}</Text>
       </TouchableOpacity>
     </View>
   );

@@ -2,11 +2,16 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import { Link } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useLogin, useGoogleLogin } from '../../src/features/auth/hooks/useAuth';
 import { extractErrorMessage } from '../../src/shared/helpers/extractErrorMessage';
 import { ScreenShell } from '../../src/shared/components/ScreenShell';
+import { getTextAlign } from '../../src/shared/i18n';
 
 export default function LoginScreen() {
+  const { t } = useTranslation('auth');
+  const textAlign = getTextAlign();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -34,12 +39,12 @@ export default function LoginScreen() {
     <ScreenShell>
       <View style={styles.header}>
         <Text style={styles.brand}>BalanceOS</Text>
-        <Text style={styles.title}>Welcome back</Text>
-        <Text style={styles.subtitle}>Sign in to continue tracking.</Text>
+        <Text style={[styles.title, { textAlign }]}>{t('login.title')}</Text>
+        <Text style={[styles.subtitle, { textAlign }]}>{t('login.subtitle')}</Text>
       </View>
 
       <TextInput
-        label="Email"
+        label={t('login.emailLabel')}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -47,17 +52,19 @@ export default function LoginScreen() {
         autoComplete="email"
         mode="outlined"
         style={styles.input}
+        contentStyle={{ textAlign: textAlign }}
         disabled={isLoading}
       />
 
       <TextInput
-        label="Password"
+        label={t('login.passwordLabel')}
         value={password}
         onChangeText={setPassword}
         secureTextEntry={!passwordVisible}
         autoComplete="password"
         mode="outlined"
         style={styles.input}
+        contentStyle={{ textAlign: textAlign }}
         disabled={isLoading}
         right={
           <TextInput.Icon
@@ -83,12 +90,12 @@ export default function LoginScreen() {
         labelStyle={styles.btnLabel}
         style={styles.primaryBtn}
       >
-        Sign in
+        {t('login.signInButton')}
       </Button>
 
       <View style={styles.divider}>
         <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>or</Text>
+        <Text style={styles.dividerText}>{t('login.or')}</Text>
         <View style={styles.dividerLine} />
       </View>
 
@@ -103,13 +110,13 @@ export default function LoginScreen() {
         labelStyle={styles.googleLabel}
         style={styles.googleBtn}
       >
-        Continue with Google
+        {t('login.continueWithGoogle')}
       </Button>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>No account? </Text>
+        <Text style={styles.footerText}>{t('login.noAccount')} </Text>
         <Link href="/(auth)/register" style={styles.link}>
-          Register
+          {t('login.register')}
         </Link>
       </View>
     </ScreenShell>
