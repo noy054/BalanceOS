@@ -1,0 +1,167 @@
+{
+  "title": "My Pantry",
+  "subtitle": "Manage your products, recipes and saved meals",
+  "search": {
+    "placeholder": "Search products..."
+  },
+  "actions": {
+    "addProduct": "Add Product",
+    "scanBarcode": "Scan Barcode",
+    "addRecipe": "Add Recipe",
+    "addSavedMeal": "Add Saved Meal"
+  },
+  "tabs": {
+    "products": "Products",
+    "recipes": "Recipes",
+    "savedMeals": "Saved Meals"
+  },
+  "product": {
+    "nameLabel": "Product name *",
+    "brandLabel": "Brand",
+    "barcodeLabel": "Barcode",
+    "caloriesLabel": "Calories per 100g *",
+    "proteinLabel": "Protein (g) *",
+    "carbsLabel": "Carbs (g) *",
+    "fatLabel": "Fat (g) *",
+    "fiberLabel": "Fiber (g)",
+    "per100g": "per 100g",
+    "calUnit": "kcal",
+    "gramsUnit": "g"
+  },
+  "macros": {
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "fiber": "Fiber",
+    "calories": "Calories"
+  },
+  "mealTypes": {
+    "BREAKFAST": "Breakfast",
+    "LUNCH": "Lunch",
+    "DINNER": "Dinner",
+    "SNACK_1": "Snack 1",
+    "SNACK_2": "Snack 2"
+  },
+  "addProduct": {
+    "title": "Add New Product",
+    "subtitle": "Nutrition values are per 100g",
+    "requiredHint": "* Required fields",
+    "nutritionSection": "Nutrition per 100g",
+    "saveButton": "Save Product",
+    "saving": "Saving...",
+    "back": "Back"
+  },
+  "productDetail": {
+    "title": "Product Details",
+    "nutritionSection": "Nutrition per 100g",
+    "calculator": "Meal Calculator",
+    "calculatorHint": "Enter grams to calculate nutrition values",
+    "calculatorPlaceholder": "Amount in grams",
+    "calculatorResult": "Result",
+    "editButton": "Edit",
+    "deleteButton": "Delete",
+    "deleteConfirmTitle": "Delete Product",
+    "deleteConfirmMessage": "Delete this product permanently?",
+    "deleteConfirmYes": "Delete",
+    "deleteConfirmNo": "Cancel",
+    "back": "Back"
+  },
+  "recipe": {
+    "nameLabel": "Recipe name *",
+    "descriptionLabel": "Description",
+    "ingredientsSection": "Ingredients",
+    "addIngredient": "+ Add Ingredient",
+    "gramsLabel": "g",
+    "gramsPlaceholder": "Amount",
+    "selectProduct": "Select product from pantry",
+    "removeItem": "Remove",
+    "totalsSection": "Total for this recipe",
+    "saveButton": "Save Recipe",
+    "saving": "Saving...",
+    "deleteConfirmTitle": "Delete Recipe",
+    "deleteConfirmMessage": "Delete this recipe permanently?",
+    "deleteConfirmYes": "Delete",
+    "deleteConfirmNo": "Cancel"
+  },
+  "addRecipe": {
+    "title": "New Recipe",
+    "subtitle": "Build a recipe from your pantry products",
+    "requiredHint": "* Required fields"
+  },
+  "recipeDetail": {
+    "title": "Recipe Details",
+    "ingredientsSection": "Ingredients",
+    "totalsSection": "Nutrition Totals",
+    "itemsCount": "{{count}} ingredients"
+  },
+  "savedMeal": {
+    "nameLabel": "Meal name *",
+    "mealTypeLabel": "Meal type",
+    "mealTypePlaceholder": "Select meal type (optional)",
+    "itemsSection": "Items",
+    "addProductItem": "+ Add Product",
+    "addRecipeItem": "+ Add Recipe",
+    "gramsLabel": "g",
+    "servingsLabel": "servings",
+    "gramsPlaceholder": "Amount",
+    "servingsPlaceholder": "Servings",
+    "selectProduct": "Select product",
+    "selectRecipe": "Select recipe",
+    "removeItem": "Remove",
+    "totalsSection": "Totals",
+    "saveButton": "Save Meal",
+    "saving": "Saving...",
+    "deleteConfirmTitle": "Delete Saved Meal",
+    "deleteConfirmMessage": "Delete this saved meal permanently?",
+    "deleteConfirmYes": "Delete",
+    "deleteConfirmNo": "Cancel"
+  },
+  "addSavedMeal": {
+    "title": "New Saved Meal",
+    "subtitle": "Save a meal for quick reuse",
+    "requiredHint": "* Required fields"
+  },
+  "savedMealDetail": {
+    "title": "Saved Meal Details",
+    "itemsSection": "Items",
+    "totalsSection": "Nutrition Totals",
+    "itemsCount": "{{count}} items"
+  },
+  "picker": {
+    "productsTitle": "Select Product",
+    "recipesTitle": "Select Recipe",
+    "searchPlaceholder": "Search...",
+    "noResults": "No results",
+    "cancel": "Cancel"
+  },
+  "barcode": {
+    "title": "Scan Barcode",
+    "subtitle": "Find products quickly by barcode",
+    "placeholder": "Barcode scanning coming soon",
+    "manualButton": "Enter Manually"
+  },
+  "empty": {
+    "products": "No products in pantry yet",
+    "productsHint": "Add products to track your consumption",
+    "recipes": "No recipes yet",
+    "recipesHint": "Build recipes from your pantry products",
+    "savedMeals": "No saved meals yet",
+    "savedMealsHint": "Save recurring meals for quick access"
+  },
+  "errors": {
+    "loadFailed": "Failed to load products",
+    "loadRecipesFailed": "Failed to load recipes",
+    "loadSavedMealsFailed": "Failed to load saved meals",
+    "saveFailed": "Failed to save product",
+    "saveRecipeFailed": "Failed to save recipe",
+    "saveSavedMealFailed": "Failed to save saved meal",
+    "deleteFailed": "Failed to delete product",
+    "deleteRecipeFailed": "Failed to delete recipe",
+    "deleteSavedMealFailed": "Failed to delete saved meal",
+    "requiredField": "Required field",
+    "invalidNumber": "Enter a valid number",
+    "negativeNumber": "Value must be zero or greater",
+    "noIngredients": "Add at least one ingredient",
+    "noItems": "Add at least one item"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "calories": {
+    "remaining": "נשאר להיום",
+    "unit": "קלוריות",
+    "eaten": "אכלת",
+    "target": "יעד",
+    "summary": "{{eaten}} / {{target}} קלוריות"
+  },
+  "macros": {
+    "protein": "חלבון",
+    "carbs": "פחמימות",
+    "fat": "שומן",
+    "fiber": "סיבים",
+    "gramsUnit": "גרם"
+  },
+  "actions": {
+    "addMeal": "הוסף ארוחה"
+  },
+  "mealTypes": {
+    "breakfast": "בוקר",
+    "lunch": "צהריים",
+    "dinner": "ערב",
+    "snack": "נשנוש"
+  },
+  "nav": {
+    "home": "בית",
+    "pantry": "מזווה",
+    "add": "הוסף",
+    "statistics": "סטטיסטיקות",
+    "profile": "פרופיל"
+  }
+}

@@ -19,8 +19,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  refreshTokens      RefreshToken[]
-  nutritionSettings  UserNutritionSettings?
+  refreshTokens     RefreshToken[]
+  nutritionSettings UserNutritionSettings?
+  pantryProducts    PantryProduct[]
+  pantryRecipes     PantryRecipe[]
+  savedMeals        SavedMeal[]
 
   @@index([email])
 }
@@ -55,4 +58,92 @@ model RefreshToken {
 
   @@index([userId])
   @@index([tokenHash])
+}
+
+model PantryProduct {
+  id              String  @id @default(cuid())
+  userId          String
+  name            String
+  brand           String?
+  barcode         String?
+  caloriesPer100g Float
+  proteinPer100g  Float
+  carbsPer100g    Float
+  fatPer100g      Float
+  fiberPer100g    Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeItems   PantryRecipeItem[]
+  savedMealItems SavedMealItem[]
+
+  @@unique([userId, barcode])
+  @@index([userId])
+  @@index([barcode])
+}
+
+model PantryRecipe {
+  id          String  @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items          PantryRecipeItem[]
+  savedMealItems SavedMealItem[]
+
+  @@index([userId])
+}
+
+model PantryRecipeItem {
+  id        String @id @default(cuid())
+  recipeId  String
+  productId String
+  grams     Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recipe  PantryRecipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  product PantryProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+}
+
+model SavedMeal {
+  id       String  @id @default(cuid())
+  userId   String
+  name     String
+  mealType String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items SavedMealItem[]
+
+  @@index([userId])
+}
+
+model SavedMealItem {
+  id          String  @id @default(cuid())
+  savedMealId String
+  productId   String?
+  recipeId    String?
+  grams       Float?
+  servings    Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  savedMeal SavedMeal      @relation(fields: [savedMealId], references: [id], onDelete: Cascade)
+  product   PantryProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  recipe    PantryRecipe?  @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+
+  @@index([savedMealId])
 }

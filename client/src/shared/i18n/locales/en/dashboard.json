@@ -1,0 +1,32 @@
+{
+  "calories": {
+    "remaining": "Remaining Today",
+    "unit": "Calories",
+    "eaten": "Eaten",
+    "target": "Target",
+    "summary": "{{eaten}} / {{target}} Calories"
+  },
+  "macros": {
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "fiber": "Fiber",
+    "gramsUnit": "g"
+  },
+  "actions": {
+    "addMeal": "Add Meal"
+  },
+  "mealTypes": {
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "snack": "Snack"
+  },
+  "nav": {
+    "home": "Home",
+    "pantry": "Pantry",
+    "add": "Add",
+    "statistics": "Stats",
+    "profile": "Profile"
+  }
+}

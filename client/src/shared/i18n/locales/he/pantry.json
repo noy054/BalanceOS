@@ -1,0 +1,167 @@
+{
+  "title": "המזווה שלי",
+  "subtitle": "נהל את המוצרים, המתכונים והארוחות שלך",
+  "search": {
+    "placeholder": "חפש מוצר..."
+  },
+  "actions": {
+    "addProduct": "הוסף מוצר",
+    "scanBarcode": "סרוק ברקוד",
+    "addRecipe": "הוסף מתכון",
+    "addSavedMeal": "הוסף ארוחה שמורה"
+  },
+  "tabs": {
+    "products": "מוצרים",
+    "recipes": "מתכונים",
+    "savedMeals": "ארוחות שמורות"
+  },
+  "product": {
+    "nameLabel": "שם מוצר *",
+    "brandLabel": "מותג",
+    "barcodeLabel": "ברקוד",
+    "caloriesLabel": "קלוריות ל-100 גרם *",
+    "proteinLabel": "חלבון (גרם) *",
+    "carbsLabel": "פחמימות (גרם) *",
+    "fatLabel": "שומן (גרם) *",
+    "fiberLabel": "סיבים (גרם)",
+    "per100g": "ל-100 גרם",
+    "calUnit": "קק\"ל",
+    "gramsUnit": "גרם"
+  },
+  "macros": {
+    "protein": "חלבון",
+    "carbs": "פחמימות",
+    "fat": "שומן",
+    "fiber": "סיבים",
+    "calories": "קלוריות"
+  },
+  "mealTypes": {
+    "BREAKFAST": "ארוחת בוקר",
+    "LUNCH": "ארוחת צהריים",
+    "DINNER": "ארוחת ערב",
+    "SNACK_1": "נשנוש 1",
+    "SNACK_2": "נשנוש 2"
+  },
+  "addProduct": {
+    "title": "הוסף מוצר חדש",
+    "subtitle": "ערכי תזונה הם לכל 100 גרם",
+    "requiredHint": "* שדות חובה",
+    "nutritionSection": "ערכי תזונה ל-100 גרם",
+    "saveButton": "שמור מוצר",
+    "saving": "שומר...",
+    "back": "חזור"
+  },
+  "productDetail": {
+    "title": "פרטי מוצר",
+    "nutritionSection": "ערכי תזונה ל-100 גרם",
+    "calculator": "מחשבון ארוחה",
+    "calculatorHint": "הזן כמות בגרמים לחישוב ערכי תזונה",
+    "calculatorPlaceholder": "כמות בגרמים",
+    "calculatorResult": "תוצאה",
+    "editButton": "ערוך",
+    "deleteButton": "מחק",
+    "deleteConfirmTitle": "מחיקת מוצר",
+    "deleteConfirmMessage": "האם למחוק מוצר זה לצמיתות?",
+    "deleteConfirmYes": "מחק",
+    "deleteConfirmNo": "ביטול",
+    "back": "חזור"
+  },
+  "recipe": {
+    "nameLabel": "שם המתכון *",
+    "descriptionLabel": "תיאור",
+    "ingredientsSection": "מצרכים",
+    "addIngredient": "+ הוסף מצרך",
+    "gramsLabel": "גרם",
+    "gramsPlaceholder": "כמות",
+    "selectProduct": "בחר מוצר מהמזווה",
+    "removeItem": "הסר",
+    "totalsSection": "סה״כ לכל המתכון",
+    "saveButton": "שמור מתכון",
+    "saving": "שומר...",
+    "deleteConfirmTitle": "מחיקת מתכון",
+    "deleteConfirmMessage": "האם למחוק מתכון זה לצמיתות?",
+    "deleteConfirmYes": "מחק",
+    "deleteConfirmNo": "ביטול"
+  },
+  "addRecipe": {
+    "title": "מתכון חדש",
+    "subtitle": "בנה מתכון ממוצרי המזווה שלך",
+    "requiredHint": "* שדות חובה"
+  },
+  "recipeDetail": {
+    "title": "פרטי מתכון",
+    "ingredientsSection": "מצרכים",
+    "totalsSection": "ערכי תזונה כוללים",
+    "itemsCount": "{{count}} מצרכים"
+  },
+  "savedMeal": {
+    "nameLabel": "שם הארוחה *",
+    "mealTypeLabel": "סוג ארוחה",
+    "mealTypePlaceholder": "בחר סוג ארוחה (לא חובה)",
+    "itemsSection": "פריטים",
+    "addProductItem": "+ הוסף מוצר",
+    "addRecipeItem": "+ הוסף מתכון",
+    "gramsLabel": "גרם",
+    "servingsLabel": "מנות",
+    "gramsPlaceholder": "כמות",
+    "servingsPlaceholder": "מנות",
+    "selectProduct": "בחר מוצר",
+    "selectRecipe": "בחר מתכון",
+    "removeItem": "הסר",
+    "totalsSection": "סה״כ",
+    "saveButton": "שמור ארוחה",
+    "saving": "שומר...",
+    "deleteConfirmTitle": "מחיקת ארוחה שמורה",
+    "deleteConfirmMessage": "האם למחוק ארוחה זו לצמיתות?",
+    "deleteConfirmYes": "מחק",
+    "deleteConfirmNo": "ביטול"
+  },
+  "addSavedMeal": {
+    "title": "ארוחה שמורה חדשה",
+    "subtitle": "שמור ארוחה לשימוש חוזר מהיר",
+    "requiredHint": "* שדות חובה"
+  },
+  "savedMealDetail": {
+    "title": "פרטי ארוחה שמורה",
+    "itemsSection": "פריטים",
+    "totalsSection": "ערכי תזונה כוללים",
+    "itemsCount": "{{count}} פריטים"
+  },
+  "picker": {
+    "productsTitle": "בחר מוצר",
+    "recipesTitle": "בחר מתכון",
+    "searchPlaceholder": "חפש...",
+    "noResults": "אין תוצאות",
+    "cancel": "ביטול"
+  },
+  "barcode": {
+    "title": "סרוק ברקוד",
+    "subtitle": "מצא מוצרים מהירות לפי ברקוד",
+    "placeholder": "סריקת ברקוד תהיה זמינה בקרוב",
+    "manualButton": "הזנה ידנית"
+  },
+  "empty": {
+    "products": "אין מוצרים במזווה עדיין",
+    "productsHint": "הוסף מוצרים כדי לעקוב אחר הצריכה שלך",
+    "recipes": "אין מתכונים עדיין",
+    "recipesHint": "בנה מתכונים ממוצרי המזווה שלך",
+    "savedMeals": "אין ארוחות שמורות עדיין",
+    "savedMealsHint": "שמור ארוחות חוזרות לשימוש מהיר"
+  },
+  "errors": {
+    "loadFailed": "שגיאה בטעינת המוצרים",
+    "loadRecipesFailed": "שגיאה בטעינת המתכונים",
+    "loadSavedMealsFailed": "שגיאה בטעינת הארוחות",
+    "saveFailed": "שגיאה בשמירת המוצר",
+    "saveRecipeFailed": "שגיאה בשמירת המתכון",
+    "saveSavedMealFailed": "שגיאה בשמירת הארוחה",
+    "deleteFailed": "שגיאה במחיקת המוצר",
+    "deleteRecipeFailed": "שגיאה במחיקת המתכון",
+    "deleteSavedMealFailed": "שגיאה במחיקת הארוחה",
+    "requiredField": "שדה חובה",
+    "invalidNumber": "יש להזין מספר חוקי",
+    "negativeNumber": "הערך חייב להיות אפס או גדול יותר",
+    "noIngredients": "יש להוסיף לפחות מצרך אחד",
+    "noItems": "יש להוסיף לפחות פריט אחד"
+  }
+}
