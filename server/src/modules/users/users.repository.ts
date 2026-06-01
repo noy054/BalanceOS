@@ -30,4 +30,16 @@ export class UsersRepository {
   async findByGoogleId(googleId: string): Promise<UserModel | null> {
     return this.prisma.user.findUnique({ where: { googleId } });
   }
+
+  async updateProfile(id: string, data: { fullName?: string }): Promise<UserModel> {
+    return this.prisma.user.update({ where: { id }, data });
+  }
+
+  async updatePasswordHash(id: string, passwordHash: string): Promise<void> {
+    await this.prisma.user.update({ where: { id }, data: { passwordHash } });
+  }
+
+  async deleteById(id: string): Promise<void> {
+    await this.prisma.user.delete({ where: { id } });
+  }
 }

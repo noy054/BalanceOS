@@ -6,12 +6,12 @@ import {
   FlatList,
   Pressable,
   TextInput,
-  StyleSheet,
 } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
 import { PantryProduct, PantryRecipe } from '../types';
-import { colors, spacing, radius } from '../../../shared/theme';
+import { colors, spacing } from '../../../shared/theme';
+import { styles, getDirectionStyles } from './styles/ProductPickerModal.styles';
 
 type ProductPickerModalProps = {
   visible: boolean;
@@ -26,7 +26,10 @@ export function ProductPickerModal({
   onSelect,
   onClose,
 }: ProductPickerModalProps) {
-  const { t } = useTranslation('pantry');
+  const { t, i18n } = useTranslation('pantry');
+  const isRTL = i18n.dir(i18n.language) === 'rtl';
+  const dir = getDirectionStyles(isRTL);
+
   const [search, setSearch] = useState('');
 
   const filtered = search.trim()
@@ -50,16 +53,16 @@ export function ProductPickerModal({
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
       <View style={styles.container}>
-        <View style={styles.header}>
+        <View style={[styles.header, dir.row]}>
           <Text style={styles.title}>{t('picker.productsTitle')}</Text>
           <Pressable onPress={handleClose} hitSlop={12}>
             <MaterialCommunityIcons name="close" size={24} color={colors.textPrimary} />
           </Pressable>
         </View>
-        <View style={styles.searchRow}>
+        <View style={[styles.searchRow, dir.row]}>
           <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} style={styles.searchIcon} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, dir.input]}
             value={search}
             onChangeText={setSearch}
             placeholder={t('picker.searchPlaceholder')}
@@ -77,7 +80,7 @@ export function ProductPickerModal({
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <Pressable
-                style={({ pressed }) => [styles.item, pressed && styles.itemPressed]}
+                style={({ pressed }) => [styles.item, dir.row, pressed && styles.itemPressed]}
                 onPress={() => handleSelect(item)}
               >
                 <View style={styles.itemInfo}>
@@ -109,7 +112,10 @@ export function RecipePickerModal({
   onSelect,
   onClose,
 }: RecipePickerModalProps) {
-  const { t } = useTranslation('pantry');
+  const { t, i18n } = useTranslation('pantry');
+  const isRTL = i18n.dir(i18n.language) === 'rtl';
+  const dir = getDirectionStyles(isRTL);
+
   const [search, setSearch] = useState('');
 
   const filtered = search.trim()
@@ -129,16 +135,16 @@ export function RecipePickerModal({
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
       <View style={styles.container}>
-        <View style={styles.header}>
+        <View style={[styles.header, dir.row]}>
           <Text style={styles.title}>{t('picker.recipesTitle')}</Text>
           <Pressable onPress={handleClose} hitSlop={12}>
             <MaterialCommunityIcons name="close" size={24} color={colors.textPrimary} />
           </Pressable>
         </View>
-        <View style={styles.searchRow}>
+        <View style={[styles.searchRow, dir.row]}>
           <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} style={styles.searchIcon} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, dir.input]}
             value={search}
             onChangeText={setSearch}
             placeholder={t('picker.searchPlaceholder')}
@@ -156,7 +162,7 @@ export function RecipePickerModal({
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <Pressable
-                style={({ pressed }) => [styles.item, pressed && styles.itemPressed]}
+                style={({ pressed }) => [styles.item, dir.row, pressed && styles.itemPressed]}
                 onPress={() => handleSelect(item)}
               >
                 <View style={styles.itemInfo}>
@@ -174,85 +180,3 @@ export function RecipePickerModal({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    backgroundColor: colors.cardBackground,
-  },
-  title: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-  searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.cardBackground,
-    marginHorizontal: spacing.md,
-    marginVertical: spacing.sm,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.sm,
-    height: 44,
-  },
-  searchIcon: { marginEnd: spacing.xs },
-  searchInput: {
-    flex: 1,
-    fontSize: 15,
-    color: colors.textPrimary,
-    textAlign: 'right',
-  },
-  list: { paddingHorizontal: spacing.md },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-    backgroundColor: colors.cardBackground,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.md,
-  },
-  itemPressed: { opacity: 0.7 },
-  itemInfo: { flex: 1 },
-  itemName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textPrimary,
-  },
-  itemBrand: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 1,
-  },
-  itemCals: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginStart: spacing.sm,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginHorizontal: spacing.sm,
-  },
-  empty: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-});

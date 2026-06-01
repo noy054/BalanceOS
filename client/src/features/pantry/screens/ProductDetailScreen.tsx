@@ -5,7 +5,6 @@ import {
   TextInput,
   ScrollView,
   Pressable,
-  StyleSheet,
   Alert,
   ActivityIndicator,
 } from 'react-native';
@@ -16,14 +15,19 @@ import { router } from 'expo-router';
 import { usePantryProduct, useDeletePantryProduct } from '../hooks/usePantry';
 import { calculateNutritionForGrams } from '../helpers/nutrition';
 import { CalculatedNutrition } from '../types';
-import { colors, spacing, radius, cardShadow } from '../../../shared/theme';
+import { ScreenHeader } from '../../../shared/components/ScreenHeader';
+import { colors, spacing } from '../../../shared/theme';
+import { styles, rowStyles, getDirectionStyles } from './styles/ProductDetailScreen.styles';
 
 type Props = {
   id: string;
 };
 
 export function ProductDetailScreen({ id }: Props) {
-  const { t } = useTranslation('pantry');
+  const { t, i18n } = useTranslation('pantry');
+  const isRTL = i18n.dir(i18n.language) === 'rtl';
+  const dir = getDirectionStyles(isRTL);
+
   const { data: product, isLoading } = usePantryProduct(id);
   const deleteProduct = useDeletePantryProduct();
   const [grams, setGrams] = useState('');
@@ -77,28 +81,20 @@ export function ProductDetailScreen({ id }: Props) {
     );
   }
 
+  const headerRight = (
+    <View style={[styles.headerActions, dir.row]}>
+      <Pressable onPress={() => { /* TODO: edit */ }} hitSlop={12} style={styles.headerActionBtn}>
+        <MaterialCommunityIcons name="pencil-outline" size={20} color={colors.primaryGreen} />
+      </Pressable>
+      <Pressable onPress={handleDelete} hitSlop={12} style={styles.headerActionBtn}>
+        <MaterialCommunityIcons name="trash-can-outline" size={20} color={colors.danger} />
+      </Pressable>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
-          <MaterialCommunityIcons name="chevron-right" size={28} color={colors.textPrimary} />
-        </Pressable>
-        <Text style={styles.headerTitle} numberOfLines={1}>
-          {product.name}
-        </Text>
-        <View style={styles.headerActions}>
-          <Pressable
-            onPress={() => { /* TODO: navigate to edit screen */ }}
-            hitSlop={12}
-            style={styles.headerActionBtn}
-          >
-            <MaterialCommunityIcons name="pencil-outline" size={22} color={colors.primaryGreen} />
-          </Pressable>
-          <Pressable onPress={handleDelete} hitSlop={12} style={styles.headerActionBtn}>
-            <MaterialCommunityIcons name="trash-can-outline" size={22} color="#EF4444" />
-          </Pressable>
-        </View>
-      </View>
+      <ScreenHeader title={product.name} rightElement={headerRight} />
 
       <ScrollView
         style={styles.scroll}
@@ -106,34 +102,41 @@ export function ProductDetailScreen({ id }: Props) {
         showsVerticalScrollIndicator={false}
       >
         {product.brand ? (
-          <Text style={styles.brand}>{product.brand}</Text>
+          <Text style={[{ fontSize: 14, color: colors.textSecondary, marginBottom: spacing.xs }, dir.text]}>
+            {product.brand}
+          </Text>
         ) : null}
         {product.barcode ? (
-          <View style={styles.barcodeRow}>
+          <View style={[styles.barcodeRow, dir.row]}>
             <MaterialCommunityIcons name="barcode" size={16} color={colors.textMuted} />
             <Text style={styles.barcodeText}>{product.barcode}</Text>
           </View>
         ) : null}
 
-        <Text style={styles.sectionTitle}>{t('productDetail.nutritionSection')}</Text>
+        <Text style={[{ fontSize: 14, fontWeight: '700', color: colors.textPrimary, marginBottom: spacing.sm, marginTop: spacing.md, paddingBottom: spacing.xs, borderBottomWidth: 1, borderBottomColor: colors.border }, dir.text]}>
+          {t('productDetail.nutritionSection')}
+        </Text>
         <View style={styles.nutritionCard}>
           <NutritionRow
             label={t('macros.calories')}
             value={product.caloriesPer100g}
             unit={t('product.calUnit')}
             highlight
+            isRTL={isRTL}
           />
-          <NutritionRow label={t('macros.protein')} value={product.proteinPer100g} unit={t('product.gramsUnit')} />
-          <NutritionRow label={t('macros.carbs')} value={product.carbsPer100g} unit={t('product.gramsUnit')} />
-          <NutritionRow label={t('macros.fat')} value={product.fatPer100g} unit={t('product.gramsUnit')} />
+          <NutritionRow label={t('macros.protein')} value={product.proteinPer100g} unit={t('product.gramsUnit')} isRTL={isRTL} />
+          <NutritionRow label={t('macros.carbs')} value={product.carbsPer100g} unit={t('product.gramsUnit')} isRTL={isRTL} />
+          <NutritionRow label={t('macros.fat')} value={product.fatPer100g} unit={t('product.gramsUnit')} isRTL={isRTL} />
           {product.fiberPer100g != null ? (
-            <NutritionRow label={t('macros.fiber')} value={product.fiberPer100g} unit={t('product.gramsUnit')} last />
+            <NutritionRow label={t('macros.fiber')} value={product.fiberPer100g} unit={t('product.gramsUnit')} last isRTL={isRTL} />
           ) : null}
         </View>
 
-        <Text style={styles.sectionTitle}>{t('productDetail.calculator')}</Text>
-        <Text style={styles.calcHint}>{t('productDetail.calculatorHint')}</Text>
-        <View style={styles.calcRow}>
+        <Text style={[{ fontSize: 14, fontWeight: '700', color: colors.textPrimary, marginBottom: spacing.sm, marginTop: spacing.md, paddingBottom: spacing.xs, borderBottomWidth: 1, borderBottomColor: colors.border }, dir.text]}>
+          {t('productDetail.calculator')}
+        </Text>
+        <Text style={[styles.calcHint, dir.text]}>{t('productDetail.calculatorHint')}</Text>
+        <View style={[styles.calcRow, dir.row]}>
           <TextInput
             style={styles.calcInput}
             value={grams}
@@ -141,7 +144,7 @@ export function ProductDetailScreen({ id }: Props) {
             placeholder={t('productDetail.calculatorPlaceholder')}
             placeholderTextColor={colors.textMuted}
             keyboardType="decimal-pad"
-            textAlign="right"
+            textAlign={isRTL ? 'right' : 'left'}
           />
           <Pressable style={styles.calcBtn} onPress={handleCalculate}>
             <MaterialCommunityIcons name="calculator" size={20} color={colors.cardBackground} />
@@ -150,13 +153,13 @@ export function ProductDetailScreen({ id }: Props) {
 
         {calcResult ? (
           <View style={styles.calcResultCard}>
-            <Text style={styles.calcResultTitle}>{t('productDetail.calculatorResult')}</Text>
-            <NutritionRow label={t('macros.calories')} value={calcResult.calories} unit={t('product.calUnit')} highlight />
-            <NutritionRow label={t('macros.protein')} value={calcResult.protein} unit={t('product.gramsUnit')} />
-            <NutritionRow label={t('macros.carbs')} value={calcResult.carbs} unit={t('product.gramsUnit')} />
-            <NutritionRow label={t('macros.fat')} value={calcResult.fat} unit={t('product.gramsUnit')} />
+            <Text style={[styles.calcResultTitle, dir.text]}>{t('productDetail.calculatorResult')}</Text>
+            <NutritionRow label={t('macros.calories')} value={calcResult.calories} unit={t('product.calUnit')} highlight isRTL={isRTL} />
+            <NutritionRow label={t('macros.protein')} value={calcResult.protein} unit={t('product.gramsUnit')} isRTL={isRTL} />
+            <NutritionRow label={t('macros.carbs')} value={calcResult.carbs} unit={t('product.gramsUnit')} isRTL={isRTL} />
+            <NutritionRow label={t('macros.fat')} value={calcResult.fat} unit={t('product.gramsUnit')} isRTL={isRTL} />
             {calcResult.fiber != null ? (
-              <NutritionRow label={t('macros.fiber')} value={calcResult.fiber} unit={t('product.gramsUnit')} last />
+              <NutritionRow label={t('macros.fiber')} value={calcResult.fiber} unit={t('product.gramsUnit')} last isRTL={isRTL} />
             ) : null}
           </View>
         ) : null}
@@ -171,15 +174,17 @@ function NutritionRow({
   unit,
   highlight,
   last,
+  isRTL,
 }: {
   label: string;
   value: number;
   unit: string;
   highlight?: boolean;
   last?: boolean;
+  isRTL: boolean;
 }) {
   return (
-    <View style={[rowStyles.row, !last && rowStyles.rowBorder]}>
+    <View style={[rowStyles.row, !last && rowStyles.rowBorder, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       <Text style={[rowStyles.label, highlight && rowStyles.labelHighlight]}>{label}</Text>
       <Text style={[rowStyles.value, highlight && rowStyles.valueHighlight]}>
         {value} <Text style={rowStyles.unit}>{unit}</Text>
@@ -187,163 +192,3 @@ function NutritionRow({
     </View>
   );
 }
-
-const rowStyles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-  },
-  rowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  label: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  labelHighlight: {
-    color: colors.textPrimary,
-    fontWeight: '600',
-  },
-  value: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textPrimary,
-  },
-  valueHighlight: {
-    fontSize: 16,
-    color: colors.primaryGreen,
-    fontWeight: '700',
-  },
-  unit: {
-    fontSize: 12,
-    fontWeight: '400',
-    color: colors.textMuted,
-  },
-});
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  errorText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-  },
-  backBtn: {
-    padding: spacing.xs,
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    textAlign: 'center',
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-  },
-  headerActionBtn: {
-    padding: spacing.xs,
-  },
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  brand: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'right',
-    marginBottom: spacing.xs,
-  },
-  barcodeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: spacing.xs,
-    marginBottom: spacing.sm,
-  },
-  barcodeText: {
-    fontSize: 13,
-    color: colors.textMuted,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    textAlign: 'right',
-    marginBottom: spacing.sm,
-    marginTop: spacing.md,
-    paddingBottom: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  nutritionCard: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    ...cardShadow,
-  },
-  calcHint: {
-    fontSize: 12,
-    color: colors.textMuted,
-    textAlign: 'right',
-    marginBottom: spacing.sm,
-  },
-  calcRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  calcInput: {
-    flex: 1,
-    backgroundColor: colors.cardBackground,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    fontSize: 15,
-    color: colors.textPrimary,
-  },
-  calcBtn: {
-    backgroundColor: colors.primaryGreen,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  calcResultCard: {
-    backgroundColor: colors.primaryGreenLight,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-  },
-  calcResultTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: colors.primaryGreen,
-    textAlign: 'right',
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.primaryGreenMid,
-  },
-});

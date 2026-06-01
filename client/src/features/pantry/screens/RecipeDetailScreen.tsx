@@ -1,16 +1,21 @@
-import { View, Text, ScrollView, Pressable, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 import { useRecipe, useDeleteRecipe } from '../hooks/useRecipes';
 import { NutritionTotals } from '../components/NutritionTotals';
-import { colors, spacing, radius, cardShadow } from '../../../shared/theme';
+import { ScreenHeader } from '../../../shared/components/ScreenHeader';
+import { colors, spacing } from '../../../shared/theme';
+import { styles, getDirectionStyles } from './styles/RecipeDetailScreen.styles';
 
 type Props = { id: string };
 
 export function RecipeDetailScreen({ id }: Props) {
-  const { t } = useTranslation('pantry');
+  const { t, i18n } = useTranslation('pantry');
+  const isRTL = i18n.dir(i18n.language) === 'rtl';
+  const dir = getDirectionStyles(isRTL);
+
   const { data: recipe, isLoading } = useRecipe(id);
   const deleteRecipe = useDeleteRecipe();
 
@@ -56,17 +61,15 @@ export function RecipeDetailScreen({ id }: Props) {
     );
   }
 
+  const deleteBtn = (
+    <Pressable onPress={handleDelete} hitSlop={12} style={styles.deleteBtn}>
+      <MaterialCommunityIcons name="trash-can-outline" size={22} color={colors.danger} />
+    </Pressable>
+  );
+
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={12}>
-          <MaterialCommunityIcons name="chevron-right" size={28} color={colors.textPrimary} />
-        </Pressable>
-        <Text style={styles.headerTitle} numberOfLines={1}>{recipe.name}</Text>
-        <Pressable onPress={handleDelete} hitSlop={12} style={styles.deleteBtn}>
-          <MaterialCommunityIcons name="trash-can-outline" size={22} color="#EF4444" />
-        </Pressable>
-      </View>
+      <ScreenHeader title={recipe.name} rightElement={deleteBtn} />
 
       <ScrollView
         style={styles.scroll}
@@ -74,20 +77,26 @@ export function RecipeDetailScreen({ id }: Props) {
         showsVerticalScrollIndicator={false}
       >
         {recipe.description ? (
-          <Text style={styles.description}>{recipe.description}</Text>
+          <Text style={[{ fontSize: 14, color: colors.textSecondary, marginBottom: spacing.md }, dir.text]}>
+            {recipe.description}
+          </Text>
         ) : null}
 
-        <Text style={styles.sectionTitle}>{t('recipeDetail.totalsSection')}</Text>
+        <Text style={[{ fontSize: 14, fontWeight: '700', color: colors.textPrimary, marginBottom: spacing.sm, marginTop: spacing.md, paddingBottom: spacing.xs, borderBottomWidth: 1, borderBottomColor: colors.border }, dir.text]}>
+          {t('recipeDetail.totalsSection')}
+        </Text>
         <View style={styles.card}>
           <NutritionTotals totals={recipe.totals} variant="highlight" />
         </View>
 
-        <Text style={styles.sectionTitle}>{t('recipeDetail.ingredientsSection')}</Text>
+        <Text style={[{ fontSize: 14, fontWeight: '700', color: colors.textPrimary, marginBottom: spacing.sm, marginTop: spacing.md, paddingBottom: spacing.xs, borderBottomWidth: 1, borderBottomColor: colors.border }, dir.text]}>
+          {t('recipeDetail.ingredientsSection')}
+        </Text>
         <View style={styles.card}>
           {recipe.items.map((item, index) => (
             <View
               key={item.id}
-              style={[styles.ingredientRow, index < recipe.items.length - 1 && styles.rowBorder]}
+              style={[styles.ingredientRow, dir.row, index < recipe.items.length - 1 && styles.rowBorder]}
             >
               <View style={styles.ingredientInfo}>
                 <Text style={styles.ingredientName}>{item.product.name}</Text>
@@ -113,74 +122,3 @@ export function RecipeDetailScreen({ id }: Props) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.background },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  errorText: { fontSize: 14, color: colors.textMuted },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    textAlign: 'center',
-  },
-  deleteBtn: { padding: spacing.xs },
-  scroll: { flex: 1 },
-  content: { paddingHorizontal: spacing.md, paddingBottom: spacing.xl },
-  description: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'right',
-    marginBottom: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    textAlign: 'right',
-    marginBottom: spacing.sm,
-    marginTop: spacing.md,
-    paddingBottom: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  card: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: radius.md,
-    ...cardShadow,
-    overflow: 'hidden',
-  },
-  ingredientRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: spacing.md,
-  },
-  rowBorder: { borderBottomWidth: 1, borderBottomColor: colors.border },
-  ingredientInfo: { flex: 1 },
-  ingredientName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: 1,
-  },
-  ingredientBrand: { fontSize: 11, color: colors.textSecondary },
-  ingredientGrams: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
-  ingredientNutrition: { alignItems: 'flex-end' },
-  ingredientCals: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.primaryGreen,
-  },
-  ingredientMacros: {
-    fontSize: 10,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-});

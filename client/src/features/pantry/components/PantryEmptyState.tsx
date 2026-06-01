@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
 import { PantryTab } from '../types';
-import { colors, spacing } from '../../../shared/theme';
+import { colors } from '../../../shared/theme';
+import { styles } from './styles/PantryEmptyState.styles';
 
 const CONFIG: Record<
   PantryTab,
@@ -46,30 +47,3 @@ export function PantryEmptyState({ tab }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.xl,
-  },
-  icon: {
-    marginBottom: spacing.md,
-    opacity: 0.6,
-  },
-  message: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-  hint: {
-    fontSize: 13,
-    color: colors.textMuted,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-});

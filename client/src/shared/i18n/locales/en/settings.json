@@ -1,0 +1,173 @@
+{
+  "title": "Settings",
+  "sections": {
+    "profile": "Profile",
+    "preferences": "Preferences",
+    "notifications": "Notifications",
+    "account": "Account & Security",
+    "app": "App"
+  },
+  "profile": {
+    "screenTitle": "Edit Profile",
+    "fullNameLabel": "Full Name",
+    "emailLabel": "Email",
+    "emailNote": "Email cannot be changed",
+    "genderLabel": "Gender",
+    "genderMale": "Male",
+    "genderFemale": "Female",
+    "genderOther": "Other",
+    "birthDateLabel": "Birth Date",
+    "birthDatePlaceholder": "YYYY-MM-DD",
+    "heightLabel": "Height (cm)",
+    "weightLabel": "Weight (kg)",
+    "trainingDaysLabel": "Training days / week",
+    "goalLabel": "Goal",
+    "goalCutting": "Cutting",
+    "goalMaintenance": "Maintenance",
+    "goalBulking": "Bulking",
+    "saveButton": "Save Profile",
+    "saving": "Saving...",
+    "row": "Name & Profile",
+    "rowSubtitle": "Name, physique, goal"
+  },
+  "languageDisplay": {
+    "screenTitle": "Language & Display",
+    "row": "Language & Display",
+    "rowSubtitle": "Language, theme",
+    "languageSection": "Language",
+    "themeSection": "Theme",
+    "rtlNote": "RTL layout changes take effect after app restart"
+  },
+  "language": {
+    "he": "Hebrew",
+    "en": "English"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "darkComingSoon": "Dark mode coming soon"
+  },
+  "experience": {
+    "screenTitle": "Experience Mode",
+    "row": "Experience Mode",
+    "expert": "Expert",
+    "expertDescription": "Full control. Precise tracking, manual targets, no coaching.",
+    "guided": "Guided",
+    "guidedDescription": "Smart suggestions, meal ideas, and guidance as you track.",
+    "saving": "Saving..."
+  },
+  "nutritionTargets": {
+    "screenTitle": "Nutrition Targets",
+    "row": "Nutrition Targets",
+    "rowHint": "{{calories}} kcal / day",
+    "rowSubtitleNotSet": "Not configured",
+    "targetModeSection": "Target Mode",
+    "targetModeAuto": "Auto",
+    "targetModeManual": "Manual",
+    "targetModeAutoHint": "Targets are calculated from your profile",
+    "targetsSection": "Daily Targets",
+    "caloriesLabel": "Calories (kcal)",
+    "proteinLabel": "Protein (g)",
+    "carbsLabel": "Carbs (g)",
+    "fatLabel": "Fat (g)",
+    "fiberLabel": "Fiber (g)",
+    "saveButton": "Save Targets",
+    "saving": "Saving..."
+  },
+  "tracking": {
+    "screenTitle": "Tracking Preferences",
+    "row": "Tracking Preferences",
+    "rowSubtitle": "Home screen display options",
+    "section": "Home Screen",
+    "showFiber": "Show Fiber",
+    "showFiberHint": "Display fiber macro on home dashboard",
+    "showCarbsAndFat": "Show Carbs & Fat",
+    "showCarbsAndFatHint": "Display carbs and fat macros on home dashboard",
+    "showProgress": "Show Progress %",
+    "showProgressHint": "Show percentage bars for daily targets",
+    "showWeeklyBalance": "Show Weekly Balance",
+    "showWeeklyBalanceHint": "Display weekly calorie balance summary",
+    "showGuidedSuggestions": "Guided Suggestions",
+    "showGuidedSuggestionsHint": "Show smart meal suggestions"
+  },
+  "notifications": {
+    "screenTitle": "Notifications",
+    "row": "Notifications",
+    "rowSubtitle": "Meal reminders, daily summary",
+    "comingSoon": "Notification scheduling requires expo-notifications to be installed",
+    "mealRemindersSection": "Meal Reminders",
+    "breakfastReminder": "Breakfast",
+    "lunchReminder": "Lunch",
+    "dinnerReminder": "Dinner",
+    "summariesSection": "Summaries",
+    "waterSection": "Water",
+    "waterReminder": "Water Reminder",
+    "waterIntervalLabel": "Interval (minutes)",
+    "dailySummary": "Daily Summary",
+    "weeklySummary": "Weekly Summary",
+    "weeklySummaryDayLabel": "Day of week",
+    "timePlaceholder": "HH:MM",
+    "saveButton": "Save",
+    "saving": "Saving...",
+    "days": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    }
+  },
+  "account": {
+    "screenTitle": "Account & Security",
+    "row": "Account & Security",
+    "rowSubtitle": "Password, logout, delete account",
+    "securitySection": "Security",
+    "changePassword": "Change Password",
+    "changePasswordHint": "Update your login password",
+    "googleAccount": "Signed in with Google",
+    "googleAccountHint": "Password change not available for Google accounts",
+    "actionsSection": "Actions",
+    "logoutButton": "Logout",
+    "loggingOut": "Logging out...",
+    "dangerSection": "Danger Zone",
+    "deleteAccount": "Delete Account",
+    "deleteAccountHint": "Permanently delete account and all data"
+  },
+  "changePassword": {
+    "screenTitle": "Change Password",
+    "currentLabel": "Current Password",
+    "newLabel": "New Password",
+    "confirmLabel": "Confirm New Password",
+    "saveButton": "Change Password",
+    "saving": "Saving...",
+    "successMessage": "Password changed successfully",
+    "errorMismatch": "Passwords do not match",
+    "errorTooShort": "Password must be at least 8 characters"
+  },
+  "deleteAccount": {
+    "confirmTitle": "Delete Account",
+    "confirmMessage": "This will permanently delete your account, all nutrition data, pantry, and history. This cannot be undone.",
+    "confirmYes": "Delete My Account",
+    "confirmNo": "Cancel"
+  },
+  "about": {
+    "screenTitle": "About",
+    "row": "About BalanceOS",
+    "rowSubtitlePrefix": "Version",
+    "versionValue": "1.0.0",
+    "versionLabel": "App Version",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us"
+  },
+  "errors": {
+    "loadFailed": "Failed to load settings",
+    "saveFailed": "Failed to save",
+    "changePasswordFailed": "Failed to change password",
+    "deleteAccountFailed": "Failed to delete account",
+    "profileSaveFailed": "Failed to save profile"
+  }
+}

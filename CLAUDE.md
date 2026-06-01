@@ -150,3 +150,16 @@ When I ask:
 
 Never delete DB data without explicit approval.
 Never expose secrets.
+
+## i18n and RTL Rules
+
+BalanceOS is Hebrew-first and RTL-first.
+
+- Default user-facing language is Hebrew (`he`).
+- English (`en`) is supported as a secondary language.
+- The app must be ready for more languages later.
+- Code, file names, variables, types, DTOs, and translation keys stay in English.
+- User-facing text must come from translation files.
+- Do not hardcode Hebrew or English UI text inside components.
+- Hebrew uses RTL layout.
+- English uses LTR layout.

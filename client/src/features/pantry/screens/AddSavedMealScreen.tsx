@@ -5,7 +5,6 @@ import {
   TextInput,
   ScrollView,
   Pressable,
-  StyleSheet,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,7 +18,9 @@ import { ProductPickerModal, RecipePickerModal } from '../components/ProductPick
 import { NutritionTotals } from '../components/NutritionTotals';
 import { calcProductNutrition, sumNutrition } from '../helpers/nutrition';
 import { MealType, NutritionTotals as NutritionTotalsType, PantryProduct, PantryRecipe } from '../types';
-import { colors, spacing, radius } from '../../../shared/theme';
+import { ScreenHeader } from '../../../shared/components/ScreenHeader';
+import { colors } from '../../../shared/theme';
+import { styles, getDirectionStyles } from './styles/AddSavedMealScreen.styles';
 
 const MEAL_TYPES: MealType[] = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK_1', 'SNACK_2'];
 
@@ -43,7 +44,10 @@ function calcRecipeTotals(recipe: PantryRecipe, servings: number): NutritionTota
 }
 
 export function AddSavedMealScreen() {
-  const { t } = useTranslation('pantry');
+  const { t, i18n } = useTranslation('pantry');
+  const isRTL = i18n.dir(i18n.language) === 'rtl';
+  const dir = getDirectionStyles(isRTL);
+
   const createSavedMeal = useCreateSavedMeal();
   const { data: products = [] } = usePantryProducts();
   const { data: recipes = [] } = useRecipes();
@@ -141,13 +145,7 @@ export function AddSavedMealScreen() {
 
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={12}>
-          <MaterialCommunityIcons name="chevron-right" size={28} color={colors.textPrimary} />
-        </Pressable>
-        <Text style={styles.headerTitle}>{t('addSavedMeal.title')}</Text>
-        <View style={{ width: 36 }} />
-      </View>
+      <ScreenHeader title={t('addSavedMeal.title')} />
 
       <ScrollView
         style={styles.scroll}
@@ -155,23 +153,31 @@ export function AddSavedMealScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.subtitle}>{t('addSavedMeal.subtitle')}</Text>
+        <Text style={[{ fontSize: 13, color: colors.textSecondary, marginBottom: 12 }, dir.text]}>
+          {t('addSavedMeal.subtitle')}
+        </Text>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>{t('savedMeal.nameLabel')}</Text>
+          <Text style={[{ fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 4 }, dir.text]}>
+            {t('savedMeal.nameLabel')}
+          </Text>
           <TextInput
             style={[styles.input, nameError ? styles.inputError : null]}
             value={name}
             onChangeText={(v) => { setName(v); setNameError(''); }}
-            textAlign="right"
+            textAlign={isRTL ? 'right' : 'left'}
             autoFocus
           />
-          {nameError ? <Text style={styles.fieldError}>{nameError}</Text> : null}
+          {nameError ? (
+            <Text style={[{ fontSize: 12, color: colors.danger, marginTop: 4 }, dir.text]}>{nameError}</Text>
+          ) : null}
         </View>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>{t('savedMeal.mealTypeLabel')}</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.mealTypeRow}>
+          <Text style={[{ fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 4 }, dir.text]}>
+            {t('savedMeal.mealTypeLabel')}
+          </Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={[styles.mealTypeRow, dir.row]}>
             {MEAL_TYPES.map((type) => (
               <Pressable
                 key={type}
@@ -186,10 +192,21 @@ export function AddSavedMealScreen() {
           </ScrollView>
         </View>
 
-        <Text style={styles.sectionTitle}>{t('savedMeal.itemsSection')}</Text>
+        <Text style={[{
+          fontSize: 14,
+          fontWeight: '700',
+          color: colors.textPrimary,
+          marginBottom: 8,
+          marginTop: 4,
+          paddingBottom: 4,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+        }, dir.text]}>
+          {t('savedMeal.itemsSection')}
+        </Text>
 
         {items.map((item) => (
-          <View key={item.key} style={styles.itemRow}>
+          <View key={item.key} style={[styles.itemRow, dir.row]}>
             <View style={styles.itemInfo}>
               <Text style={styles.itemName} numberOfLines={1}>
                 {item.kind === 'product' ? item.product.name : item.recipe.name}
@@ -218,7 +235,7 @@ export function AddSavedMealScreen() {
           </View>
         ))}
 
-        <View style={styles.addButtonsRow}>
+        <View style={[styles.addButtonsRow, dir.row]}>
           <Pressable style={styles.addItemBtn} onPress={() => setProductPickerVisible(true)}>
             <Text style={styles.addItemText}>{t('savedMeal.addProductItem')}</Text>
           </Pressable>
@@ -259,110 +276,3 @@ export function AddSavedMealScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.background },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    textAlign: 'center',
-  },
-  scroll: { flex: 1 },
-  content: { paddingHorizontal: spacing.md, paddingBottom: spacing.xl },
-  subtitle: { fontSize: 13, color: colors.textSecondary, textAlign: 'right', marginBottom: spacing.md },
-  fieldGroup: { marginBottom: spacing.md },
-  label: { fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: spacing.xs, textAlign: 'right' },
-  input: {
-    backgroundColor: colors.cardBackground,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    fontSize: 15,
-    color: colors.textPrimary,
-  },
-  inputError: { borderColor: '#EF4444' },
-  fieldError: { fontSize: 12, color: '#EF4444', marginTop: spacing.xs, textAlign: 'right' },
-  mealTypeRow: { flexDirection: 'row', gap: spacing.sm, paddingVertical: spacing.xs },
-  mealTypeChip: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    backgroundColor: colors.cardBackground,
-  },
-  mealTypeChipActive: {
-    borderColor: colors.primaryGreen,
-    backgroundColor: colors.primaryGreenLight,
-  },
-  mealTypeText: { fontSize: 12, color: colors.textMuted },
-  mealTypeTextActive: { color: colors.primaryGreen, fontWeight: '600' },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    textAlign: 'right',
-    marginBottom: spacing.sm,
-    marginTop: spacing.xs,
-    paddingBottom: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  itemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.cardBackground,
-    borderRadius: radius.sm,
-    padding: spacing.sm,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: spacing.xs,
-  },
-  itemInfo: { flex: 1 },
-  itemName: { fontSize: 13, fontWeight: '600', color: colors.textPrimary },
-  itemKind: { fontSize: 11, color: colors.textSecondary },
-  amountInput: {
-    width: 64,
-    height: 36,
-    backgroundColor: colors.background,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    fontSize: 14,
-    color: colors.textPrimary,
-  },
-  unitLabel: { fontSize: 12, color: colors.textMuted },
-  removeBtn: { padding: spacing.xs },
-  addButtonsRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
-  addItemBtn: {
-    flex: 1,
-    borderWidth: 1.5,
-    borderColor: colors.primaryGreen,
-    borderRadius: radius.sm,
-    paddingVertical: spacing.sm,
-    alignItems: 'center',
-    borderStyle: 'dashed',
-  },
-  addItemText: { fontSize: 13, fontWeight: '600', color: colors.primaryGreen },
-  totalsContainer: { marginBottom: spacing.md },
-  saveBtn: {
-    backgroundColor: colors.primaryGreen,
-    borderRadius: radius.lg,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.sm,
-  },
-  saveBtnPressed: { opacity: 0.85 },
-  saveBtnText: { fontSize: 16, fontWeight: '700', color: colors.cardBackground },
-});

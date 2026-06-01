@@ -1,4 +1,5 @@
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, ViewStyle } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, ViewStyle } from 'react-native';
+import { styles } from './styles/ScreenShell.styles';
 
 type Props = {
   children: React.ReactNode;
@@ -14,19 +15,10 @@ export function ScreenShell({ children, contentStyle }: Props) {
       <ScrollView
         contentContainerStyle={[styles.content, contentStyle]}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         {children}
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  content: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#fff',
-  },
-});

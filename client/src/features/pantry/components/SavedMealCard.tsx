@@ -1,9 +1,10 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
 import { SavedMeal } from '../types';
 import { NutritionTotals } from './NutritionTotals';
-import { colors, spacing, radius, cardShadow } from '../../../shared/theme';
+import { colors, spacing } from '../../../shared/theme';
+import { styles, getDirectionStyles } from './styles/SavedMealCard.styles';
 
 type Props = {
   meal: SavedMeal;
@@ -11,7 +12,10 @@ type Props = {
 };
 
 export function SavedMealCard({ meal, onPress }: Props) {
-  const { t } = useTranslation('pantry');
+  const { t, i18n } = useTranslation('pantry');
+  const isRTL = i18n.dir(i18n.language) === 'rtl';
+  const dir = getDirectionStyles(isRTL);
+
   const mealTypeLabel = meal.mealType
     ? t(`mealTypes.${meal.mealType}` as Parameters<typeof t>[0])
     : null;
@@ -21,9 +25,9 @@ export function SavedMealCard({ meal, onPress }: Props) {
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
       onPress={() => onPress(meal)}
     >
-      <View style={styles.topRow}>
+      <View style={[styles.topRow, dir.row]}>
         <View style={styles.info}>
-          <View style={styles.nameRow}>
+          <View style={[styles.nameRow, dir.row]}>
             <Text style={styles.name} numberOfLines={1}>{meal.name}</Text>
             {mealTypeLabel ? (
               <View style={styles.badge}>
@@ -35,7 +39,7 @@ export function SavedMealCard({ meal, onPress }: Props) {
             {t('savedMealDetail.itemsCount', { count: meal.items.length })}
           </Text>
         </View>
-        <View style={styles.icon}>
+        <View style={[styles.icon, dir.row]}>
           <MaterialCommunityIcons name="bookmark" size={26} color={colors.primaryGreenMid} />
           <MaterialCommunityIcons name="chevron-left" size={20} color={colors.textMuted} style={styles.chevron} />
         </View>
@@ -44,54 +48,3 @@ export function SavedMealCard({ meal, onPress }: Props) {
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: radius.md,
-    marginHorizontal: spacing.md,
-    marginBottom: spacing.sm,
-    padding: spacing.md,
-    ...cardShadow,
-  },
-  cardPressed: { opacity: 0.85 },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: spacing.xs,
-  },
-  info: { flex: 1 },
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-    marginBottom: 2,
-  },
-  name: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-  badge: {
-    backgroundColor: colors.primaryGreenLight,
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  badgeText: {
-    fontSize: 10,
-    color: colors.primaryGreen,
-    fontWeight: '600',
-  },
-  count: {
-    fontSize: 11,
-    color: colors.textMuted,
-  },
-  icon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginStart: spacing.sm,
-  },
-  chevron: { marginStart: 2 },
-});

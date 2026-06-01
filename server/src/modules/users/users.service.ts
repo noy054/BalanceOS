@@ -30,6 +30,19 @@ export class UsersService {
     return this.toPublic(user);
   }
 
+  async updateProfile(id: string, data: { fullName?: string }): Promise<UserPublic> {
+    const user = await this.usersRepository.updateProfile(id, data);
+    return this.toPublic(user);
+  }
+
+  async updatePasswordHash(id: string, passwordHash: string): Promise<void> {
+    await this.usersRepository.updatePasswordHash(id, passwordHash);
+  }
+
+  async deleteById(id: string): Promise<void> {
+    await this.usersRepository.deleteById(id);
+  }
+
   toPublic(user: UserModel): UserPublic {
     return {
       id: user.id,

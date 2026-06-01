@@ -1,8 +1,9 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
 import { PantryProduct } from '../types';
-import { colors, spacing, radius, cardShadow } from '../../../shared/theme';
+import { colors, spacing } from '../../../shared/theme';
+import { styles, pillStyles, getDirectionStyles } from './styles/ProductCard.styles';
 
 type Props = {
   product: PantryProduct;
@@ -10,14 +11,16 @@ type Props = {
 };
 
 export function ProductCard({ product, onPress }: Props) {
-  const { t } = useTranslation('pantry');
+  const { t, i18n } = useTranslation('pantry');
+  const isRTL = i18n.dir(i18n.language) === 'rtl';
+  const dir = getDirectionStyles(isRTL);
 
   return (
     <Pressable
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
       onPress={() => onPress(product)}
     >
-      <View style={styles.mainRow}>
+      <View style={[styles.mainRow, dir.row]}>
         <View style={styles.info}>
           <Text style={styles.name} numberOfLines={1}>
             {product.name}
@@ -27,11 +30,11 @@ export function ProductCard({ product, onPress }: Props) {
               {product.brand}
             </Text>
           ) : null}
-          <View style={styles.macroRow}>
-            <MacroPill label={`${product.caloriesPer100g}`} unit={t('product.calUnit')} bold />
-            <MacroPill label={`${t('macros.protein')} ${product.proteinPer100g}`} unit={t('product.gramsUnit')} />
-            <MacroPill label={`${t('macros.carbs')} ${product.carbsPer100g}`} unit={t('product.gramsUnit')} />
-            <MacroPill label={`${t('macros.fat')} ${product.fatPer100g}`} unit={t('product.gramsUnit')} />
+          <View style={[styles.macroRow, dir.macroRow]}>
+            <MacroPill label={`${product.caloriesPer100g}`} unit={t('product.calUnit')} bold isRTL={isRTL} />
+            <MacroPill label={`${t('macros.protein')} ${product.proteinPer100g}`} unit={t('product.gramsUnit')} isRTL={isRTL} />
+            <MacroPill label={`${t('macros.carbs')} ${product.carbsPer100g}`} unit={t('product.gramsUnit')} isRTL={isRTL} />
+            <MacroPill label={`${t('macros.fat')} ${product.fatPer100g}`} unit={t('product.gramsUnit')} isRTL={isRTL} />
           </View>
         </View>
         <View style={styles.trailing}>
@@ -58,13 +61,15 @@ function MacroPill({
   label,
   unit,
   bold,
+  isRTL,
 }: {
   label: string;
   unit: string;
   bold?: boolean;
+  isRTL: boolean;
 }) {
   return (
-    <View style={pillStyles.pill}>
+    <View style={[pillStyles.pill, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       <Text style={[pillStyles.label, bold && pillStyles.labelBold]}>
         {label}
       </Text>
@@ -72,70 +77,3 @@ function MacroPill({
     </View>
   );
 }
-
-const pillStyles = StyleSheet.create({
-  pill: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    backgroundColor: colors.primaryGreenLight,
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    marginEnd: spacing.xs,
-    marginTop: spacing.xs,
-  },
-  label: {
-    fontSize: 11,
-    color: colors.primaryGreen,
-  },
-  labelBold: {
-    fontWeight: '700',
-  },
-  unit: {
-    fontSize: 10,
-    color: colors.primaryGreen,
-  },
-});
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: radius.md,
-    marginHorizontal: spacing.md,
-    marginBottom: spacing.sm,
-    padding: spacing.md,
-    ...cardShadow,
-  },
-  cardPressed: {
-    opacity: 0.85,
-  },
-  mainRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  info: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    marginBottom: 2,
-  },
-  brand: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginBottom: 2,
-  },
-  macroRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  trailing: {
-    alignItems: 'center',
-    marginStart: spacing.sm,
-  },
-  barcodeIcon: {
-    marginBottom: 4,
-  },
-});

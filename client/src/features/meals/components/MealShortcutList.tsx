@@ -1,8 +1,8 @@
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { MealShortcutCard } from './MealShortcutCard';
 import { MEAL_SHORTCUTS } from '../constants/mealShortcuts';
 import { MealShortcut } from '../types';
-import { spacing } from '../../../shared/theme';
+import { styles } from './styles/MealShortcutList.styles';
 
 type Props = {
   onSelect?: (type: MealShortcut['type']) => void;
@@ -21,11 +21,3 @@ export function MealShortcutList({ onSelect }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    marginHorizontal: spacing.md,
-    gap: spacing.sm,
-  },
-});

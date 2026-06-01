@@ -41,6 +41,41 @@ model UserNutritionSettings {
   fatTarget           Int?
   fiberTarget         Int?
 
+  // Profile
+  gender              String?
+  birthDate           DateTime?
+  heightCm            Float?
+  weightKg            Float?
+  trainingDaysPerWeek Int?
+  goalType            String?
+
+  // Display
+  themeMode           String  @default("LIGHT")
+
+  // Tracking preferences
+  showFiberOnHome            Boolean @default(true)
+  showCarbsAndFatOnHome      Boolean @default(true)
+  showProgressPercentages    Boolean @default(true)
+  showWeeklyBalance          Boolean @default(true)
+  showGuidedSuggestions      Boolean @default(true)
+  hideMotivationInExpertMode Boolean @default(true)
+  defaultFoodUnit            String  @default("GRAMS")
+
+  // Notification preferences
+  breakfastReminderEnabled Boolean @default(false)
+  breakfastReminderTime    String?
+  lunchReminderEnabled     Boolean @default(false)
+  lunchReminderTime        String?
+  dinnerReminderEnabled    Boolean @default(false)
+  dinnerReminderTime       String?
+  waterReminderEnabled     Boolean @default(false)
+  waterReminderInterval    Int?
+  dailySummaryEnabled      Boolean @default(false)
+  dailySummaryTime         String?
+  weeklySummaryEnabled     Boolean @default(false)
+  weeklySummaryDay         Int?
+  weeklySummaryTime        String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

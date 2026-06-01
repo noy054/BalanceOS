@@ -13,7 +13,10 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { RefreshDto } from './dto/refresh.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateProfileDto } from '../users/dto/update-profile.dto';
 import { AuthResponse, TokenPair } from './types/auth.types';
+import { UserPublic } from '../users/types/user.types';
 
 const BCRYPT_ROUNDS = 10;
 const ACCESS_TOKEN_EXPIRES_SECONDS = 15 * 60; // 15 minutes
@@ -130,6 +133,27 @@ export class AuthService {
 
   async logout(userId: string): Promise<void> {
     await this.authRepository.deleteAllUserRefreshTokens(userId);
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto): Promise<UserPublic> {
+    return this.usersService.updateProfile(userId, { fullName: dto.fullName });
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
+    const user = await this.usersService.findById(userId);
+    if (!user) throw new UnauthorizedException();
+    if (!user.passwordHash) {
+      throw new BadRequestException('Password change is not available for this account type.');
+    }
+    const valid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    if (!valid) throw new BadRequestException('Current password is incorrect.');
+    const newHash = await bcrypt.hash(dto.newPassword, BCRYPT_ROUNDS);
+    await this.usersService.updatePasswordHash(userId, newHash);
+  }
+
+  async deleteAccount(userId: string): Promise<void> {
+    await this.authRepository.deleteAllUserRefreshTokens(userId);
+    await this.usersService.deleteById(userId);
   }
 
   private async issueTokenPair(userId: string): Promise<TokenPair> {

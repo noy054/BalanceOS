@@ -1,7 +1,7 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { PantryTab } from '../types';
-import { colors, spacing } from '../../../shared/theme';
+import { styles, getDirectionStyles } from './styles/PantryTabBar.styles';
 
 const TABS: PantryTab[] = ['products', 'recipes', 'savedMeals'];
 
@@ -11,10 +11,12 @@ type Props = {
 };
 
 export function PantryTabBar({ activeTab, onTabPress }: Props) {
-  const { t } = useTranslation('pantry');
+  const { t, i18n } = useTranslation('pantry');
+  const isRTL = i18n.dir(i18n.language) === 'rtl';
+  const dir = getDirectionStyles(isRTL);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, dir.row]}>
       {TABS.map((tab) => {
         const isActive = tab === activeTab;
         return (
@@ -33,37 +35,3 @@ export function PantryTabBar({ activeTab, onTabPress }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    marginHorizontal: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    position: 'relative',
-  },
-  tabActive: {},
-  label: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.textMuted,
-  },
-  labelActive: {
-    color: colors.primaryGreen,
-    fontWeight: '700',
-  },
-  indicator: {
-    position: 'absolute',
-    bottom: -1,
-    left: spacing.md,
-    right: spacing.md,
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: colors.primaryGreen,
-  },
-});

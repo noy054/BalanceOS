@@ -8,12 +8,14 @@ import enOnboarding from "./locales/en/onboarding.json";
 import enCommon from "./locales/en/common.json";
 import enDashboard from "./locales/en/dashboard.json";
 import enPantry from "./locales/en/pantry.json";
+import enSettings from "./locales/en/settings.json";
 
 import heAuth from "./locales/he/auth.json";
 import heOnboarding from "./locales/he/onboarding.json";
 import heCommon from "./locales/he/common.json";
 import heDashboard from "./locales/he/dashboard.json";
 import hePantry from "./locales/he/pantry.json";
+import heSettings from "./locales/he/settings.json";
 
 export type SupportedLanguage = "he" | "en";
 
@@ -91,6 +93,7 @@ i18n.use(initReactI18next).init({
       common: enCommon,
       dashboard: enDashboard,
       pantry: enPantry,
+      settings: enSettings,
     },
     he: {
       auth: heAuth,
@@ -98,11 +101,12 @@ i18n.use(initReactI18next).init({
       common: heCommon,
       dashboard: heDashboard,
       pantry: hePantry,
+      settings: heSettings,
     },
   },
   lng: DEFAULT_LANGUAGE,
   fallbackLng: "en",
-  ns: ["auth", "onboarding", "common", "dashboard", "pantry"],
+  ns: ["auth", "onboarding", "common", "dashboard", "pantry", "settings"],
   defaultNS: "common",
   interpolation: {
     escapeValue: false,

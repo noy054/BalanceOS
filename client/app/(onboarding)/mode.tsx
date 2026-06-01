@@ -1,12 +1,13 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Text, Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ExperienceMode } from '../../src/features/nutrition-settings/types';
-import { getTextAlign } from '../../src/shared/i18n';
+import { styles, getDirectionStyles } from './styles/mode.styles';
 
 export default function OnboardingModeScreen() {
-  const { t } = useTranslation('onboarding');
-  const textAlign = getTextAlign();
+  const { t, i18n } = useTranslation('onboarding');
+  const isRTL = i18n.dir(i18n.language) === 'rtl';
+  const dir = getDirectionStyles(isRTL);
 
   function handleSelect(mode: ExperienceMode) {
     if (mode === 'EXPERT') {
@@ -18,64 +19,24 @@ export default function OnboardingModeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { textAlign }]}>{t('mode.title')}</Text>
-      <Text style={[styles.subtitle, { textAlign }]}>{t('mode.subtitle')}</Text>
+      <Text style={[styles.title, dir.text]}>{t('mode.title')}</Text>
+      <Text style={[styles.subtitle, dir.text]}>{t('mode.subtitle')}</Text>
 
-      <TouchableOpacity
-        style={styles.card}
+      <Pressable
+        style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
         onPress={() => handleSelect('EXPERT')}
-        activeOpacity={0.8}
       >
-        <Text style={[styles.cardTitle, { textAlign }]}>{t('mode.expertTitle')}</Text>
-        <Text style={[styles.cardDesc, { textAlign }]}>{t('mode.expertDesc')}</Text>
-      </TouchableOpacity>
+        <Text style={[styles.cardTitle, dir.text]}>{t('mode.expertTitle')}</Text>
+        <Text style={[styles.cardDesc, dir.text]}>{t('mode.expertDesc')}</Text>
+      </Pressable>
 
-      <TouchableOpacity
-        style={styles.card}
+      <Pressable
+        style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
         onPress={() => handleSelect('GUIDED')}
-        activeOpacity={0.8}
       >
-        <Text style={[styles.cardTitle, { textAlign }]}>{t('mode.guidedTitle')}</Text>
-        <Text style={[styles.cardDesc, { textAlign }]}>{t('mode.guidedDesc')}</Text>
-      </TouchableOpacity>
+        <Text style={[styles.cardTitle, dir.text]}>{t('mode.guidedTitle')}</Text>
+        <Text style={[styles.cardDesc, dir.text]}>{t('mode.guidedDesc')}</Text>
+      </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#111',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#777',
-    marginBottom: 32,
-  },
-  card: {
-    borderWidth: 1.5,
-    borderColor: '#e0e0e0',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 16,
-  },
-  cardTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#111',
-    marginBottom: 6,
-  },
-  cardDesc: {
-    fontSize: 14,
-    color: '#555',
-    lineHeight: 20,
-  },
-});

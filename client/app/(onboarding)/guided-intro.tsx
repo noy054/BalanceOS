@@ -1,16 +1,18 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { Button, HelperText } from 'react-native-paper';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useUpsertNutritionSettings } from '../../src/features/nutrition-settings/hooks/useNutritionSettings';
 import { extractErrorMessage } from '../../src/shared/helpers/extractErrorMessage';
-import { getTextAlign, i18n } from '../../src/shared/i18n';
+import { i18n } from '../../src/shared/i18n';
 import type { SupportedLanguage } from '../../src/shared/i18n';
+import { colors } from '../../src/shared/theme';
+import { styles, getDirectionStyles } from './styles/guided-intro.styles';
 
 export default function GuidedIntroScreen() {
-  const { t } = useTranslation('onboarding');
-  const textAlign = getTextAlign();
-
+  const { t, i18n: i18nHook } = useTranslation('onboarding');
+  const isRTL = i18nHook.dir(i18nHook.language) === 'rtl';
+  const dir = getDirectionStyles(isRTL);
   const upsert = useUpsertNutritionSettings();
 
   function handleContinue() {
@@ -22,9 +24,9 @@ export default function GuidedIntroScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { textAlign }]}>{t('guided.title')}</Text>
-      <Text style={[styles.body, { textAlign }]}>{t('guided.body1')}</Text>
-      <Text style={[styles.body, { textAlign }]}>{t('guided.body2')}</Text>
+      <Text style={[styles.title, dir.text]}>{t('guided.title')}</Text>
+      <Text style={[styles.body, dir.text]}>{t('guided.body1')}</Text>
+      <Text style={[styles.body, dir.text]}>{t('guided.body2')}</Text>
 
       {upsert.error ? (
         <HelperText type="error" visible>
@@ -37,6 +39,9 @@ export default function GuidedIntroScreen() {
         onPress={handleContinue}
         loading={upsert.isPending}
         disabled={upsert.isPending}
+        buttonColor={colors.primaryGreen}
+        contentStyle={styles.btnContent}
+        labelStyle={styles.btnLabel}
         style={styles.button}
       >
         {t('guided.startButton')}
@@ -44,15 +49,3 @@ export default function GuidedIntroScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#fff',
-  },
-  title: { fontSize: 26, fontWeight: '700', color: '#111', marginBottom: 16 },
-  body: { fontSize: 15, color: '#555', lineHeight: 22, marginBottom: 16 },
-  button: { marginTop: 8, borderRadius: 6 },
-});

@@ -1,9 +1,10 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 import { colors, spacing } from '../theme';
+import { styles } from './styles/BottomTabBar.styles';
 
 type TabId = 'home' | 'pantry' | 'add' | 'statistics' | 'profile';
 
@@ -80,42 +81,3 @@ export function BottomTabBar({ activeTab = 'home', onTabPress }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    backgroundColor: colors.cardBackground,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    paddingTop: spacing.sm,
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    gap: 3,
-  },
-  tabLabel: {
-    fontSize: 10,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-  tabLabelActive: {
-    color: colors.primaryGreen,
-    fontWeight: '600',
-  },
-  addCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: colors.primaryGreen,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: -spacing.lg,
-    shadowColor: colors.primaryGreen,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-});

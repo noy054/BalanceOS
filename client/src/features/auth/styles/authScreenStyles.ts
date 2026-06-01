@@ -1,36 +1,37 @@
 import { StyleSheet } from 'react-native';
+import { colors, spacing, radius } from '../../../shared/theme';
 
 export const authScreenStyles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#111',
+    color: colors.textPrimary,
     marginBottom: 6,
   },
   subtitle: {
     fontSize: 15,
-    color: '#6b7280',
-    marginBottom: 32,
+    color: colors.textSecondary,
+    marginBottom: spacing.xl,
   },
   input: {
-    marginBottom: 12,
-    backgroundColor: '#fff',
+    marginBottom: spacing.sm,
+    backgroundColor: colors.cardBackground,
   },
   button: {
-    marginTop: 4,
-    borderRadius: 12,
+    marginTop: spacing.xs,
+    borderRadius: radius.md,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 32,
+    marginTop: spacing.xl,
   },
   footerText: {
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontSize: 14,
   },
   link: {
-    color: '#111',
+    color: colors.textPrimary,
     fontWeight: '700',
     fontSize: 14,
   },

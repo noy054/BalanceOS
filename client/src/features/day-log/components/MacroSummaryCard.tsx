@@ -1,8 +1,8 @@
 import { Fragment } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { MacroItem } from '../types';
 import { MacroProgressItem } from './MacroProgressItem';
-import { colors, spacing, radius, cardShadow } from '../../../shared/theme';
+import { styles } from './styles/MacroSummaryCard.styles';
 
 type Props = {
   macros: MacroItem[];
@@ -20,21 +20,3 @@ export function MacroSummaryCard({ macros }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    backgroundColor: colors.cardBackground,
-    borderRadius: radius.lg,
-    marginHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xs,
-    ...cardShadow,
-  },
-  divider: {
-    width: 1,
-    backgroundColor: colors.border,
-    marginVertical: spacing.sm,
-  },
-});
