@@ -8,20 +8,22 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.cardBackground,
     borderRadius: radius.md,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.md,
     paddingHorizontal: spacing.xs,
+    minHeight: 76,
     ...cardShadow,
   },
   cardPressed: {
-    opacity: 0.8,
+    opacity: 0.78,
   },
   icon: {
     marginBottom: spacing.xs,
   },
   label: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 11,
+    fontWeight: '600',
     color: colors.textSecondary,
     textAlign: 'center',
+    letterSpacing: 0.1,
   },
 });

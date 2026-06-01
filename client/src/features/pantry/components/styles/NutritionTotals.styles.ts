@@ -3,42 +3,45 @@ import { colors, spacing, radius } from '../../../../shared/theme';
 
 export const chipStyles = StyleSheet.create({
   chip: {
+    flexDirection: 'row',
     alignItems: 'baseline',
     backgroundColor: colors.primaryGreenLight,
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
+    borderRadius: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
     marginEnd: spacing.xs,
-    marginBottom: spacing.xs,
+    marginBottom: 4,
   },
   label: {
-    fontSize: 10,
+    fontSize: 9,
     color: colors.primaryGreen,
     marginEnd: 2,
+    fontWeight: '500',
   },
   value: {
-    fontSize: 12,
+    fontSize: 11,
     color: colors.primaryGreen,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   valueBold: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '800',
   },
   unit: {
-    fontSize: 10,
+    fontSize: 9,
     color: colors.primaryGreen,
+    opacity: 0.8,
   },
 });
 
 export const styles = StyleSheet.create({
   container: {
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.sm,
-    paddingTop: spacing.xs,
+    borderRadius: radius.sm,
+    paddingTop: 4,
   },
   containerHighlight: {
     backgroundColor: colors.primaryGreenLight,
+    borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
@@ -60,6 +63,7 @@ export function getDirectionStyles(isRTL: boolean) {
   return {
     label: {
       textAlign: isRTL ? 'right' as const : 'left' as const,
+      writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,
     },
     row: {
       flexDirection: isRTL ? 'row-reverse' as const : 'row' as const,

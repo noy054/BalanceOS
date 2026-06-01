@@ -1,4 +1,5 @@
 import {
+  ArrayMinSize,
   IsArray,
   IsIn,
   IsNotEmpty,
@@ -16,10 +17,12 @@ const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK_1', 'SNACK_2'] as con
 export class SavedMealItemDto {
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   productId?: string;
 
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   recipeId?: string;
 
   @IsOptional()
@@ -47,6 +50,7 @@ export class CreateSavedMealDto {
   mealType?: string;
 
   @IsArray()
+  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => SavedMealItemDto)
   items: SavedMealItemDto[];

@@ -20,7 +20,7 @@ export function MealShortcutCard({ shortcut, onPress }: Props) {
     >
       <MaterialCommunityIcons
         name={shortcut.icon as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
-        size={22}
+        size={26}
         color={colors.primaryGreen}
         style={styles.icon}
       />

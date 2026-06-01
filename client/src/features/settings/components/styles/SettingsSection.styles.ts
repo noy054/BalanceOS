@@ -2,15 +2,15 @@ import { StyleSheet } from 'react-native';
 import { colors, spacing, radius, cardShadow } from '../../../../shared/theme';
 
 export const styles = StyleSheet.create({
-  wrapper: { marginBottom: spacing.lg },
+  wrapper: { marginBottom: spacing.md + spacing.xs },
   title: {
     fontSize: 11,
     fontWeight: '700',
     color: colors.textMuted,
     textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: spacing.xs,
-    paddingHorizontal: spacing.xs,
+    letterSpacing: 1,
+    marginBottom: spacing.sm,
+    paddingHorizontal: spacing.sm,
   },
   titleDanger: { color: colors.danger },
   card: {
@@ -25,6 +25,7 @@ export function getDirectionStyles(isRTL: boolean) {
   return {
     title: {
       textAlign: isRTL ? 'right' as const : 'left' as const,
+      writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,
     },
   };
 }

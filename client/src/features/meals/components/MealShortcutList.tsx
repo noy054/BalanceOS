@@ -1,4 +1,5 @@
 import { View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { MealShortcutCard } from './MealShortcutCard';
 import { MEAL_SHORTCUTS } from '../constants/mealShortcuts';
 import { MealShortcut } from '../types';
@@ -9,8 +10,11 @@ type Props = {
 };
 
 export function MealShortcutList({ onSelect }: Props) {
+  const { i18n } = useTranslation();
+  const isRTL = i18n.dir(i18n.language) === 'rtl';
+
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       {MEAL_SHORTCUTS.map((shortcut) => (
         <MealShortcutCard
           key={shortcut.type}

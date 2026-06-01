@@ -10,10 +10,11 @@ export const styles = StyleSheet.create({
     borderColor: colors.border,
     marginHorizontal: spacing.md,
     paddingHorizontal: spacing.sm,
-    height: 44,
+    height: 46,
   },
   icon: {
     marginEnd: spacing.xs,
+    opacity: 0.55,
   },
   input: {
     flex: 1,
@@ -29,6 +30,7 @@ export function getDirectionStyles(isRTL: boolean) {
     },
     input: {
       textAlign: isRTL ? 'right' as const : 'left' as const,
+      writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,
     },
   };
 }

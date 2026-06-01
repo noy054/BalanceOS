@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import { colors, spacing, radius } from '../../../src/shared/theme';
 
 export const styles = StyleSheet.create({
-  header: { marginBottom: spacing.xl },
+  header: { marginBottom: spacing.xl + spacing.sm },
   brand: {
     fontSize: 11,
     fontWeight: '700',
@@ -13,27 +13,27 @@ export const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textPrimary,
     marginBottom: 6,
-    letterSpacing: -0.5,
+    letterSpacing: -0.7,
   },
   subtitle: {
     fontSize: 15,
     color: colors.textSecondary,
     lineHeight: 22,
   },
-  field: { marginBottom: spacing.sm },
+  field: { marginBottom: spacing.md },
   fieldLabel: {
     fontSize: 13,
     fontWeight: '600',
     color: colors.textSecondary,
-    marginBottom: 6,
+    marginBottom: 7,
   },
   input: { backgroundColor: colors.cardBackground },
-  btnContent: { height: 52 },
-  btnLabel: { fontSize: 15, fontWeight: '600', letterSpacing: 0.2 },
-  primaryBtn: { borderRadius: radius.md, marginTop: spacing.xs },
+  btnContent: { height: 54 },
+  btnLabel: { fontSize: 15, fontWeight: '700', letterSpacing: 0.2 },
+  primaryBtn: { borderRadius: radius.md, marginTop: spacing.sm },
   divider: {
     flexDirection: 'row',
     alignItems: 'center',

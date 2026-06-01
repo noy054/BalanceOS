@@ -17,7 +17,13 @@ export default function LanguageScreen() {
       router.replace("/(auth)/login");
       return;
     }
-    await Updates.reloadAsync();
+    try {
+      await Updates.reloadAsync();
+    } catch {
+      // reloadAsync throws in Expo Go / dev builds (no OTA runtime).
+      // Fall back to in-process navigation so the app still responds.
+      router.replace("/(auth)/login");
+    }
   }
 
   return (

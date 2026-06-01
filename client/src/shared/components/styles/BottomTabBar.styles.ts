@@ -3,7 +3,7 @@ import { colors, spacing } from '../../theme';
 
 export const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    // flexDirection applied dynamically via isRTL
     backgroundColor: colors.cardBackground,
     borderTopWidth: 1,
     borderTopColor: colors.border,
@@ -13,29 +13,30 @@ export const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    gap: 3,
+    gap: 4,
   },
   tabLabel: {
     fontSize: 10,
     color: colors.textMuted,
     textAlign: 'center',
+    letterSpacing: 0.1,
   },
   tabLabelActive: {
     color: colors.primaryGreen,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   addCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: colors.primaryGreen,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -spacing.lg,
-    shadowColor: colors.primaryGreen,
+    marginTop: -(spacing.lg + 2),
+    shadowColor: colors.primaryGreenDark,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 7,
   },
 });

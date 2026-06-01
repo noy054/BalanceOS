@@ -1,4 +1,5 @@
 import {
+  ArrayMinSize,
   IsArray,
   IsNotEmpty,
   IsNumber,
@@ -33,6 +34,7 @@ export class CreateRecipeDto {
   description?: string;
 
   @IsArray()
+  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => RecipeItemDto)
   items: RecipeItemDto[];

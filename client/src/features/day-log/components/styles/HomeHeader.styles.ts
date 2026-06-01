@@ -1,35 +1,66 @@
-import { StyleSheet } from 'react-native';
-import { colors, spacing } from '../../../../shared/theme';
+import { StyleSheet } from "react-native";
+
+import {
+  homeDashboardColors,
+  homeDashboardRadius,
+} from "../../constants/homeDashboardTheme";
 
 export const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
+    justifyContent: "space-between",
+    alignItems: "center",
   },
+
+  logoBlock: {
+    gap: 3,
+  },
+
   logoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
+
   logoBalance: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    letterSpacing: -0.3,
+    fontSize: 26,
+    fontWeight: "900",
+    color: "#FFFFFF",
+    letterSpacing: -0.9,
   },
+
   logoOS: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: colors.primaryGreen,
-    letterSpacing: -0.3,
+    fontSize: 26,
+    fontWeight: "900",
+    color: homeDashboardColors.lime,
+    letterSpacing: -0.9,
   },
+
   logoLeaf: {
-    marginStart: 4,
+    marginStart: 6,
     marginTop: 1,
+    opacity: 0.95,
   },
+
+  subtitle: {
+    fontSize: 10,
+    fontWeight: "800",
+    color: "rgba(255, 255, 255, 0.42)",
+    letterSpacing: 1.3,
+    textTransform: "uppercase",
+  },
+
   settingsButton: {
-    padding: spacing.xs,
+    width: 48,
+    height: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: homeDashboardRadius.lg,
+    backgroundColor: "rgb(255, 255, 255)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.14)",
+  },
+
+  settingsButtonPressed: {
+    opacity: 0.78,
+    transform: [{ scale: 0.96 }],
   },
 });

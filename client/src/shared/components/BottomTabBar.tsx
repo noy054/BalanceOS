@@ -30,7 +30,8 @@ type Props = {
 };
 
 export function BottomTabBar({ activeTab = 'home', onTabPress }: Props) {
-  const { t } = useTranslation('dashboard');
+  const { t, i18n } = useTranslation('dashboard');
+  const isRTL = i18n.dir(i18n.language) === 'rtl';
   const insets = useSafeAreaInsets();
 
   function handlePress(tab: TabItem) {
@@ -41,7 +42,7 @@ export function BottomTabBar({ activeTab = 'home', onTabPress }: Props) {
   }
 
   return (
-    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
+    <View style={[styles.container, { flexDirection: isRTL ? 'row-reverse' : 'row', paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
       {TABS.map((tab) => {
         const isActive = tab.id === activeTab;
         const isAdd = tab.id === 'add';

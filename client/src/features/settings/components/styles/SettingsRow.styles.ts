@@ -5,8 +5,8 @@ export const styles = StyleSheet.create({
   row: {
     alignItems: 'center',
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm2,
-    minHeight: 52,
+    paddingVertical: spacing.md - 2,
+    minHeight: 58,
   },
   rowBorder: {
     borderBottomWidth: 1,
@@ -16,19 +16,21 @@ export const styles = StyleSheet.create({
   label: {
     fontSize: 15,
     color: colors.textPrimary,
+    letterSpacing: -0.1,
   },
   labelDestructive: { color: colors.danger },
   hint: {
     fontSize: 12,
     color: colors.textMuted,
-    marginTop: 1,
+    marginTop: 2,
+    lineHeight: 17,
   },
   right: {
     alignItems: 'center',
     gap: spacing.xs,
     marginStart: spacing.sm,
   },
-  pressed: { opacity: 0.7 },
+  pressed: { opacity: 0.65 },
 });
 
 export function getDirectionStyles(isRTL: boolean) {
@@ -41,6 +43,7 @@ export function getDirectionStyles(isRTL: boolean) {
     },
     text: {
       textAlign: isRTL ? 'right' as const : 'left' as const,
+      writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,
     },
   };
 }

@@ -73,15 +73,34 @@ export class RecipesRepository {
     });
   }
 
-  replaceItems(recipeId: string, items: RecipeItemDto[]) {
-    return this.prisma.$transaction([
-      this.prisma.pantryRecipeItem.deleteMany({ where: { recipeId } }),
-      ...items.map((item) =>
-        this.prisma.pantryRecipeItem.create({
-          data: { recipeId, productId: item.productId, grams: item.grams },
-        }),
-      ),
-    ]);
+  async updateWithItems(
+    id: string,
+    name: string | undefined,
+    description: string | undefined,
+    items: RecipeItemDto[] | undefined,
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      if (items !== undefined) {
+        await tx.pantryRecipeItem.deleteMany({ where: { recipeId: id } });
+        if (items.length > 0) {
+          await tx.pantryRecipeItem.createMany({
+            data: items.map((item) => ({
+              recipeId: id,
+              productId: item.productId,
+              grams: item.grams,
+            })),
+          });
+        }
+      }
+      return tx.pantryRecipe.update({
+        where: { id },
+        data: {
+          ...(name !== undefined ? { name } : {}),
+          ...(description !== undefined ? { description } : {}),
+        },
+        include: RECIPE_INCLUDE,
+      });
+    });
   }
 
   delete(id: string) {

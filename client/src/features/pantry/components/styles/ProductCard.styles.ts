@@ -3,24 +3,28 @@ import { colors, spacing, radius, cardShadow } from '../../../../shared/theme';
 
 export const pillStyles = StyleSheet.create({
   pill: {
+    flexDirection: 'row',
     alignItems: 'baseline',
     backgroundColor: colors.primaryGreenLight,
-    borderRadius: 6,
-    paddingHorizontal: 6,
+    borderRadius: 5,
+    paddingHorizontal: 5,
     paddingVertical: 2,
     marginEnd: spacing.xs,
-    marginTop: spacing.xs,
+    marginTop: 5,
   },
   label: {
-    fontSize: 11,
+    fontSize: 10,
     color: colors.primaryGreen,
+    fontWeight: '500',
   },
   labelBold: {
     fontWeight: '700',
+    fontSize: 11,
   },
   unit: {
-    fontSize: 10,
+    fontSize: 9,
     color: colors.primaryGreen,
+    opacity: 0.8,
   },
 });
 
@@ -30,11 +34,12 @@ export const styles = StyleSheet.create({
     borderRadius: radius.md,
     marginHorizontal: spacing.md,
     marginBottom: spacing.sm,
-    padding: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm2 + 2,
     ...cardShadow,
   },
   cardPressed: {
-    opacity: 0.85,
+    opacity: 0.82,
   },
   mainRow: {
     alignItems: 'center',
@@ -46,7 +51,7 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: colors.textPrimary,
-    marginBottom: 2,
+    marginBottom: 1,
   },
   brand: {
     fontSize: 12,
@@ -59,10 +64,9 @@ export const styles = StyleSheet.create({
   trailing: {
     alignItems: 'center',
     marginStart: spacing.sm,
+    gap: 4,
   },
-  barcodeIcon: {
-    marginBottom: 4,
-  },
+  barcodeIcon: {},
 });
 
 export function getDirectionStyles(isRTL: boolean) {

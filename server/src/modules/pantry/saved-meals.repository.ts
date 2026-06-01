@@ -92,21 +92,36 @@ export class SavedMealsRepository {
     });
   }
 
-  replaceItems(savedMealId: string, items: SavedMealItemDto[]) {
-    return this.prisma.$transaction([
-      this.prisma.savedMealItem.deleteMany({ where: { savedMealId } }),
-      ...items.map((item) =>
-        this.prisma.savedMealItem.create({
-          data: {
-            savedMealId,
-            productId: item.productId,
-            recipeId: item.recipeId,
-            grams: item.grams,
-            servings: item.servings,
-          },
-        }),
-      ),
-    ]);
+  async updateWithItems(
+    id: string,
+    name: string | undefined,
+    mealType: string | undefined,
+    items: SavedMealItemDto[] | undefined,
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      if (items !== undefined) {
+        await tx.savedMealItem.deleteMany({ where: { savedMealId: id } });
+        if (items.length > 0) {
+          await tx.savedMealItem.createMany({
+            data: items.map((item) => ({
+              savedMealId: id,
+              productId: item.productId,
+              recipeId: item.recipeId,
+              grams: item.grams,
+              servings: item.servings,
+            })),
+          });
+        }
+      }
+      return tx.savedMeal.update({
+        where: { id },
+        data: {
+          ...(name !== undefined ? { name } : {}),
+          ...(mealType !== undefined ? { mealType } : {}),
+        },
+        include: SAVED_MEAL_INCLUDE,
+      });
+    });
   }
 
   delete(id: string) {

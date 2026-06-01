@@ -11,19 +11,21 @@ export const styles = StyleSheet.create({
   },
   icon: {
     marginBottom: spacing.md,
-    opacity: 0.6,
+    opacity: 0.45,
   },
   message: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: spacing.xs,
+    letterSpacing: -0.1,
   },
   hint: {
     fontSize: 13,
     color: colors.textMuted,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 21,
+    maxWidth: 260,
   },
 });

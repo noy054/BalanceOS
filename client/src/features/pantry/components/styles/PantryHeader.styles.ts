@@ -3,30 +3,32 @@ import { colors, spacing } from '../../../../shared/theme';
 
 export const styles = StyleSheet.create({
   container: {
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.xs,
   },
   textGroup: {
     flex: 1,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '800',
     color: colors.textPrimary,
-    letterSpacing: -0.3,
-    marginBottom: 2,
+    letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    lineHeight: 18,
+    fontSize: 12,
+    color: colors.textMuted,
+    lineHeight: 16,
+    marginTop: 1,
   },
   backButton: {
-    padding: spacing.xs,
-    marginTop: 2,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

@@ -7,10 +7,12 @@ export const styles = StyleSheet.create({
     borderRadius: radius.md,
     marginHorizontal: spacing.md,
     marginBottom: spacing.sm,
-    padding: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm2 + 2,
+    paddingBottom: spacing.sm2,
     ...cardShadow,
   },
-  cardPressed: { opacity: 0.85 },
+  cardPressed: { opacity: 0.82 },
   topRow: {
     alignItems: 'flex-start',
     marginBottom: spacing.xs,
@@ -20,7 +22,7 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: colors.textPrimary,
-    marginBottom: 2,
+    marginBottom: 1,
   },
   description: {
     fontSize: 12,
@@ -30,12 +32,14 @@ export const styles = StyleSheet.create({
   count: {
     fontSize: 11,
     color: colors.textMuted,
+    fontWeight: '500',
   },
   icon: {
     alignItems: 'center',
     marginStart: spacing.sm,
+    gap: 2,
   },
-  chevron: { marginStart: 2 },
+  chevron: {},
 });
 
 export function getDirectionStyles(isRTL: boolean) {

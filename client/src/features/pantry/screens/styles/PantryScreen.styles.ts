@@ -20,8 +20,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.primaryGreen,
     borderRadius: radius.md,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.sm2,
     gap: spacing.xs,
+    minHeight: 44,
   },
   actionBtnOutline: {
     backgroundColor: colors.cardBackground,
@@ -32,6 +33,7 @@ export const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     color: colors.cardBackground,
+    letterSpacing: 0.1,
   },
   actionBtnTextOutline: {
     color: colors.primaryGreen,

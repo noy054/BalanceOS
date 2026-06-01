@@ -8,7 +8,7 @@ import "../src/shared/i18n/i18n";
 import { loadSavedLanguage } from "../src/shared/i18n";
 import i18n from "../src/shared/i18n/i18n";
 import { useAuthStore } from "../src/features/auth/hooks/useAuthStore";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: 1, staleTime: 30_000 },
@@ -34,18 +34,6 @@ function icon({
   );
 }
 
-useEffect(() => {
-  async function resetLanguageForDebug() {
-    await AsyncStorage.removeItem("balanceos_language");
-
-    I18nManager.allowRTL(true);
-    I18nManager.forceRTL(false);
-
-    console.log("Language reset for debug");
-  }
-
-  resetLanguageForDebug();
-}, []);
 
 export default function RootLayout() {
   const setLanguageReady = useAuthStore((s) => s.setLanguageReady);

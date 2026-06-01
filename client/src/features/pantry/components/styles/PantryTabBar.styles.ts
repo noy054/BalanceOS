@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
   tab: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.sm + 2,
     position: 'relative',
   },
   tabActive: {},
@@ -18,6 +18,7 @@ export const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     color: colors.textMuted,
+    letterSpacing: 0.1,
   },
   labelActive: {
     color: colors.primaryGreen,
@@ -26,10 +27,10 @@ export const styles = StyleSheet.create({
   indicator: {
     position: 'absolute',
     bottom: -1,
-    left: spacing.md,
-    right: spacing.md,
-    height: 2,
-    borderRadius: 1,
+    left: spacing.lg,
+    right: spacing.lg,
+    height: 2.5,
+    borderRadius: 2,
     backgroundColor: colors.primaryGreen,
   },
 });

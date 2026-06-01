@@ -1,4 +1,4 @@
-import { View, ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
@@ -19,45 +19,53 @@ export function HomeDashboardScreen() {
   const { i18n } = useTranslation();
 
   return (
-    <SafeAreaView
-      key={i18n.language}
-      style={styles.root}
-      edges={["top"]}
-    >
-      <HomeHeader onSettingsPress={() => router.push('/(app)/settings')} />
+    <SafeAreaView key={i18n.language} style={styles.root} edges={["top"]}>
+      <View pointerEvents="none" style={styles.backgroundLayer}>
+        <View style={styles.glowTop} />
+        <View style={styles.glowLeft} />
+        <View style={styles.glowBottom} />
+      </View>
+
+      <View style={styles.headerWrapper}>
+        <HomeHeader onSettingsPress={() => router.push("/(app)/settings")} />
+      </View>
 
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <CalorieSummaryCard
-          eaten={data.caloriesEaten}
-          target={data.caloriesTarget}
-        />
+        <View style={styles.heroSection}>
+          <CalorieSummaryCard
+            eaten={data.caloriesEaten}
+            target={data.caloriesTarget}
+          />
+        </View>
 
-        <View style={styles.sectionGap} />
+        <View style={styles.section}>
+          <MacroSummaryCard macros={data.macros} />
+        </View>
 
-        <MacroSummaryCard macros={data.macros} />
+        <View style={styles.actionSection}>
+          <AddMealButton
+            onPress={() => {
+              // TODO: navigate to add-meal screen
+            }}
+          />
+        </View>
 
-        <View style={styles.sectionGap} />
-
-        <AddMealButton
-          onPress={() => {
-            // TODO: navigate to add-meal screen
-          }}
-        />
-
-        <View style={styles.shortcutGap} />
-
-        <MealShortcutList
-          onSelect={(_type) => {
-            // TODO: navigate to add-meal screen with pre-selected meal type
-          }}
-        />
+        <View style={styles.shortcutsSection}>
+          <MealShortcutList
+            onSelect={(_type) => {
+              // TODO: navigate to add-meal screen with pre-selected meal type
+            }}
+          />
+        </View>
       </ScrollView>
 
-      <BottomTabBar activeTab="home" />
+      <View style={styles.bottomNavWrapper}>
+        <BottomTabBar activeTab="home" />
+      </View>
     </SafeAreaView>
   );
 }

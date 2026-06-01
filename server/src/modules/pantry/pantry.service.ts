@@ -49,6 +49,14 @@ export class PantryService {
     dto: UpdatePantryProductDto,
   ): Promise<PantryProductModel> {
     await this.getById(userId, id);
+    if (dto.barcode) {
+      const existing = await this.repo.findByBarcodeAndUserId(dto.barcode, userId);
+      if (existing && existing.id !== id) {
+        throw new ConflictException(
+          'A product with this barcode already exists in your pantry',
+        );
+      }
+    }
     return this.repo.update(id, dto);
   }
 

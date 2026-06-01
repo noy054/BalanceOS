@@ -32,6 +32,7 @@ export function getDirectionStyles(isRTL: boolean) {
     },
     text: {
       textAlign: isRTL ? 'right' as const : 'left' as const,
+      writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,
     },
   };
 }
