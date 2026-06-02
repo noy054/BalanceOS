@@ -50,6 +50,7 @@ const TABS: TabItem[] = [
     icon: "account-outline",
     activeIcon: "account",
     route: "/(app)/profile",
+    route: "/(app)/settings",
   },
 ];
 

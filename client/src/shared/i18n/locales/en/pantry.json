@@ -136,9 +136,34 @@
   },
   "barcode": {
     "title": "Scan Barcode",
-    "subtitle": "Find products quickly by barcode",
-    "placeholder": "Barcode scanning coming soon",
-    "manualButton": "Enter Manually"
+    "subtitle": "Point the camera at a barcode",
+    "searching": "Looking up product...",
+    "manualButton": "Enter Manually",
+    "scanAnother": "Scan Another",
+    "permissionTitle": "Camera Access Required",
+    "permissionMessage": "Allow camera access to scan barcodes",
+    "permissionButton": "Grant Access",
+    "permissionDenied": "Camera access denied. Open Settings to allow it.",
+    "notFound": "Product not found",
+    "notFoundHint": "Enter product details manually below",
+    "fromOpenFoodFacts": "Imported from Open Food Facts — verify the data",
+    "addToPantry": "Add to My Pantry",
+    "alreadyInPantry": "Already in your pantry",
+    "manualForm": {
+      "title": "Add Product Manually",
+      "barcodeLabel": "Barcode",
+      "nameLabel": "Product name *",
+      "brandLabel": "Brand",
+      "nutritionSection": "Nutrition per 100g",
+      "caloriesLabel": "Calories (kcal) *",
+      "proteinLabel": "Protein (g) *",
+      "carbsLabel": "Carbs (g) *",
+      "fatLabel": "Fat (g) *",
+      "fiberLabel": "Fiber (g)",
+      "saveButton": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    }
   },
   "empty": {
     "products": "No products in pantry yet",

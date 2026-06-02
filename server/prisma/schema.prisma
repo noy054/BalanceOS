@@ -26,6 +26,9 @@ model User {
   savedMeals        SavedMeal[]
   dayLogs           DayLog[]
 
+  createdCatalogItems ProductCatalogItem[] @relation("ProductCatalogCreatedBy")
+  updatedCatalogItems ProductCatalogItem[] @relation("ProductCatalogUpdatedBy")
+
   @@index([email])
 }
 
@@ -51,7 +54,7 @@ model UserNutritionSettings {
   goalType            String?
 
   // Display
-  themeMode           String  @default("LIGHT")
+  themeMode String @default("LIGHT")
 
   // Tracking preferences
   showFiberOnHome            Boolean @default(true)
@@ -83,6 +86,81 @@ model UserNutritionSettings {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model ProductCatalogItem {
+  id String @id @default(cuid())
+
+  barcode           String? @unique
+  gtin              String?
+  normalizedBarcode String?
+
+  name         String
+  brand        String?
+  manufacturer String?
+  category     String?
+  subCategory  String?
+
+  countryCode  String? @default("IL")
+  languageCode String? @default("he")
+
+  imageUrl        String?
+  ingredientsText String?
+  allergensText   String?
+
+  servingSizeText  String?
+  servingSizeGrams Float?
+
+  caloriesPer100g     Float?
+  proteinPer100g      Float?
+  carbsPer100g        Float?
+  sugarPer100g        Float?
+  fatPer100g          Float?
+  saturatedFatPer100g Float?
+  fiberPer100g        Float?
+  sodiumPer100g       Float?
+  saltPer100g         Float?
+
+  source             ProductSource             @default(MANUAL)
+  verificationStatus ProductVerificationStatus @default(UNVERIFIED)
+
+  externalProvider String?
+  externalId       String?
+  externalRawData  Json?
+
+  createdByUserId String?
+  updatedByUserId String?
+
+  createdByUser User? @relation("ProductCatalogCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedByUser User? @relation("ProductCatalogUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([barcode])
+  @@index([normalizedBarcode])
+  @@index([name])
+  @@index([brand])
+  @@index([category])
+  @@index([countryCode])
+  @@index([source])
+  @@index([verificationStatus])
+  @@index([createdByUserId])
+}
+
+enum ProductSource {
+  INTERNAL
+  OPEN_FOOD_FACTS
+  MANUAL
+  ADMIN
+}
+
+enum ProductVerificationStatus {
+  UNVERIFIED
+  USER_SUBMITTED
+  AUTO_IMPORTED
+  ADMIN_VERIFIED
+  REJECTED
+}
+
 model RefreshToken {
   id        String   @id @default(cuid())
   tokenHash String   @unique
@@ -111,8 +189,8 @@ model PantryProduct {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipeItems    PantryRecipeItem[]
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeItems     PantryRecipeItem[]
   savedMealItems SavedMealItem[]
   mealItems      MealItem[]
 
@@ -162,7 +240,7 @@ model SavedMeal {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     SavedMealItem[]
   mealItems MealItem[]
 
@@ -186,7 +264,6 @@ model SavedMealItem {
 
   @@index([savedMealId])
 }
-
 model DayLog {
   id              String  @id @default(cuid())
   userId          String

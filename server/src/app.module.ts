@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { NutritionSettingsModule } from './modules/nutrition-settings/nutrition-settings.module';
 import { PantryModule } from './modules/pantry/pantry.module';
 import { DayLogsModule } from './modules/day-logs/day-logs.module';
+import { ProductCatalogModule } from './modules/product-catalog/product-catalog.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DayLogsModule } from './modules/day-logs/day-logs.module';
     NutritionSettingsModule,
     PantryModule,
     DayLogsModule,
+    ProductCatalogModule,
   ],
 })
 export class AppModule {}

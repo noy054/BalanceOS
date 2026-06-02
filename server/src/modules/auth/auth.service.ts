@@ -136,6 +136,9 @@ export class AuthService {
   }
 
   async updateProfile(userId: string, dto: UpdateProfileDto): Promise<UserPublic> {
+    if (!dto.fullName) {
+      return this.usersService.getPublicUser(userId);
+    }
     return this.usersService.updateProfile(userId, { fullName: dto.fullName });
   }
 
@@ -152,7 +155,6 @@ export class AuthService {
   }
 
   async deleteAccount(userId: string): Promise<void> {
-    await this.authRepository.deleteAllUserRefreshTokens(userId);
     await this.usersService.deleteById(userId);
   }
 

@@ -8,6 +8,7 @@ export class RegisterDto {
 
   @IsString()
   @MinLength(1)
+  @MaxLength(100)
   fullName: string;
 
   @IsString()
