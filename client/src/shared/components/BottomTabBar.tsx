@@ -49,6 +49,7 @@ const TABS: TabItem[] = [
     labelKey: "profile",
     icon: "account-outline",
     activeIcon: "account",
+    route: "/(app)/settings",
   },
 ];
 

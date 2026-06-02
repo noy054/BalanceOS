@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ScrollView, View, Text, Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +32,19 @@ export function NutritionTargetsScreen() {
   const [fat, setFat] = useState(settings?.fatTarget?.toString() ?? '');
   const [fiber, setFiber] = useState(settings?.fiberTarget?.toString() ?? '');
   const [isSaving, setIsSaving] = useState(false);
+
+  const settingsInitialized = useRef(false);
+  useEffect(() => {
+    if (settings && !settingsInitialized.current) {
+      settingsInitialized.current = true;
+      setTargetMode(settings.targetMode ?? 'AUTO');
+      setCalories(settings.dailyCaloriesTarget?.toString() ?? '');
+      setProtein(settings.proteinTarget?.toString() ?? '');
+      setCarbs(settings.carbsTarget?.toString() ?? '');
+      setFat(settings.fatTarget?.toString() ?? '');
+      setFiber(settings.fiberTarget?.toString() ?? '');
+    }
+  }, [settings]);
 
   async function handleSave() {
     setIsSaving(true);

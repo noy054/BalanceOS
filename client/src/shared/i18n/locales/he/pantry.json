@@ -136,9 +136,34 @@
   },
   "barcode": {
     "title": "סרוק ברקוד",
-    "subtitle": "מצא מוצרים מהירות לפי ברקוד",
-    "placeholder": "סריקת ברקוד תהיה זמינה בקרוב",
-    "manualButton": "הזנה ידנית"
+    "subtitle": "כוון את המצלמה לברקוד",
+    "searching": "מחפש מוצר...",
+    "manualButton": "הזנה ידנית",
+    "scanAnother": "סרוק שוב",
+    "permissionTitle": "נדרשת גישה למצלמה",
+    "permissionMessage": "אפשר גישה למצלמה לסריקת ברקודים",
+    "permissionButton": "אפשר גישה",
+    "permissionDenied": "הגישה למצלמה נדחתה. פתח הגדרות כדי לאפשר אותה.",
+    "notFound": "מוצר לא נמצא",
+    "notFoundHint": "הוסף את פרטי המוצר ידנית למטה",
+    "fromOpenFoodFacts": "נתונים ממקור חיצוני — יש לאמת",
+    "addToPantry": "הוסף למזווה שלי",
+    "alreadyInPantry": "כבר קיים במזווה שלך",
+    "manualForm": {
+      "title": "הוסף מוצר ידנית",
+      "barcodeLabel": "ברקוד",
+      "nameLabel": "שם מוצר *",
+      "brandLabel": "מותג",
+      "nutritionSection": "ערכי תזונה ל-100 גרם",
+      "caloriesLabel": "קלוריות (קק\"ל) *",
+      "proteinLabel": "חלבון (גרם) *",
+      "carbsLabel": "פחמימות (גרם) *",
+      "fatLabel": "שומן (גרם) *",
+      "fiberLabel": "סיבים (גרם)",
+      "saveButton": "שמור",
+      "saving": "שומר...",
+      "cancel": "ביטול"
+    }
   },
   "empty": {
     "products": "אין מוצרים במזווה עדיין",

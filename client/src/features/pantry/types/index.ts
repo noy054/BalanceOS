@@ -18,6 +18,7 @@ export type PantryProduct = {
 export type CreatePantryProductPayload = {
   name: string;
   brand?: string;
+  barcode?: string;
   imageUrl?: string;
   caloriesPer100g: number;
   proteinPer100g: number;
@@ -25,6 +26,55 @@ export type CreatePantryProductPayload = {
   fatPer100g: number;
   fiberPer100g?: number;
 };
+
+// ── Product Catalog ───────────────────────────────────────────────────────────
+
+export type ProductCatalogSource =
+  | 'INTERNAL'
+  | 'OPEN_FOOD_FACTS'
+  | 'MANUAL'
+  | 'ADMIN';
+
+export type ProductCatalogVerificationStatus =
+  | 'UNVERIFIED'
+  | 'USER_SUBMITTED'
+  | 'AUTO_IMPORTED'
+  | 'ADMIN_VERIFIED'
+  | 'REJECTED';
+
+export type ProductCatalogProduct = {
+  id: string;
+  barcode: string | null;
+  normalizedBarcode: string | null;
+  name: string;
+  brand: string | null;
+  imageUrl: string | null;
+  caloriesPer100g: number | null;
+  proteinPer100g: number | null;
+  carbsPer100g: number | null;
+  fatPer100g: number | null;
+  fiberPer100g: number | null;
+  source: ProductCatalogSource;
+  verificationStatus: ProductCatalogVerificationStatus;
+  externalProvider: string | null;
+  createdByUserId: string | null;
+  updatedByUserId: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateProductCatalogPayload = {
+  barcode?: string;
+  name: string;
+  brand?: string;
+  caloriesPer100g?: number;
+  proteinPer100g?: number;
+  carbsPer100g?: number;
+  fatPer100g?: number;
+  fiberPer100g?: number;
+};
+
+export type UpdateProductCatalogPayload = Partial<CreateProductCatalogPayload>;
 
 export type UpdatePantryProductPayload = Partial<CreatePantryProductPayload>;
 

@@ -4,6 +4,19 @@ export const PANTRY_ENDPOINTS = {
   BARCODE: (barcode: string) => `/pantry/products/barcode/${barcode}`,
 } as const;
 
+export const PRODUCT_CATALOG_ENDPOINTS = {
+  BARCODE: (barcode: string) =>
+    `/product-catalog/barcode/${encodeURIComponent(barcode)}`,
+  SEARCH: "/product-catalog/search",
+  CREATE: "/product-catalog",
+  UPDATE: (id: string) => `/product-catalog/${id}`,
+} as const;
+
+export const PRODUCT_CATALOG_QUERY_KEYS = {
+  barcode: (barcode: string) => ["product-catalog", "barcode", barcode] as const,
+  search: (q: string) => ["product-catalog", "search", q] as const,
+};
+
 export const RECIPE_ENDPOINTS = {
   BASE: "/pantry/recipes",
   BY_ID: (id: string) => `/pantry/recipes/${id}`,

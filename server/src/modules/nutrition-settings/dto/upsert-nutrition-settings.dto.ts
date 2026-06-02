@@ -157,7 +157,7 @@ export class UpsertNutritionSettingsDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{2}:\d{2}$/, { message: 'Time must be in HH:MM format' })
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, { message: 'Time must be a valid HH:MM value' })
   breakfastReminderTime?: string;
 
   @IsOptional()
@@ -166,7 +166,7 @@ export class UpsertNutritionSettingsDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{2}:\d{2}$/, { message: 'Time must be in HH:MM format' })
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, { message: 'Time must be a valid HH:MM value' })
   lunchReminderTime?: string;
 
   @IsOptional()
@@ -175,7 +175,7 @@ export class UpsertNutritionSettingsDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{2}:\d{2}$/, { message: 'Time must be in HH:MM format' })
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, { message: 'Time must be a valid HH:MM value' })
   dinnerReminderTime?: string;
 
   @IsOptional()
@@ -193,7 +193,7 @@ export class UpsertNutritionSettingsDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{2}:\d{2}$/, { message: 'Time must be in HH:MM format' })
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, { message: 'Time must be a valid HH:MM value' })
   dailySummaryTime?: string;
 
   @IsOptional()
@@ -208,6 +208,6 @@ export class UpsertNutritionSettingsDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{2}:\d{2}$/, { message: 'Time must be in HH:MM format' })
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, { message: 'Time must be a valid HH:MM value' })
   weeklySummaryTime?: string;
 }
