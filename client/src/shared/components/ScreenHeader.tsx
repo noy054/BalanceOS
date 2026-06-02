@@ -10,9 +10,15 @@ type Props = {
   title: string;
   onBack?: () => void;
   rightElement?: React.ReactNode;
+  fallbackRoute?: Parameters<typeof router.replace>[0];
 };
 
-export function ScreenHeader({ title, onBack, rightElement }: Props) {
+export function ScreenHeader({
+  title,
+  onBack,
+  rightElement,
+  fallbackRoute = "/(app)/dashboard",
+}: Props) {
   const { i18n } = useTranslation();
   const isRTL = i18n.dir(i18n.language) === "rtl";
 
@@ -22,7 +28,12 @@ export function ScreenHeader({ title, onBack, rightElement }: Props) {
       return;
     }
 
-    router.back();
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace(fallbackRoute);
   }
 
   return (

@@ -19,6 +19,20 @@ export const styles = StyleSheet.create({
     gap: spacing.lg,
   },
 
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+  },
+
+  loadingText: {
+    fontSize: 14,
+    fontWeight: "800",
+    color: colors.textSecondary,
+  },
+
   introCard: {
     borderRadius: radius.xl,
     backgroundColor: colors.cardBackground,
@@ -32,21 +46,23 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
     color: colors.textSecondary,
     marginBottom: spacing.xs,
+    lineHeight: 20,
   },
 
   optionalHint: {
     fontSize: 12,
     fontWeight: "600",
     color: colors.textMuted,
+    lineHeight: 18,
   },
 
   imageSection: {
-    minHeight: 150,
+    minHeight: 156,
   },
 
   imagePreview: {
     width: "100%",
-    height: 150,
+    height: 156,
     borderRadius: radius.xl,
     backgroundColor: colors.cardBackground,
     borderWidth: 1,
@@ -54,7 +70,7 @@ export const styles = StyleSheet.create({
   },
 
   imagePlaceholder: {
-    height: 150,
+    height: 156,
     borderRadius: radius.xl,
     alignItems: "center",
     justifyContent: "center",
@@ -100,7 +116,7 @@ export const styles = StyleSheet.create({
   },
 
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 17,
     fontWeight: "900",
     color: colors.textPrimary,
     textTransform: "uppercase",
@@ -124,6 +140,23 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     color: colors.textMuted,
     marginBottom: spacing.sm,
+    lineHeight: 18,
+  },
+
+  bottomSpacer: {
+    height: 96,
+  },
+
+  stickyFooter: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    backgroundColor: colors.background,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
   },
 
   saveBtn: {
@@ -132,7 +165,6 @@ export const styles = StyleSheet.create({
     minHeight: 58,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: spacing.xs,
     ...Platform.select({
       ios: {
         shadowColor: colors.primaryGreen,

@@ -5,6 +5,7 @@ export type PantryProduct = {
   userId: string;
   name: string;
   brand: string | null;
+  imageUrl?: string | null;
   barcode: string | null;
   caloriesPer100g: number;
   proteinPer100g: number;
@@ -30,17 +31,17 @@ export type CreatePantryProductPayload = {
 // ── Product Catalog ───────────────────────────────────────────────────────────
 
 export type ProductCatalogSource =
-  | 'INTERNAL'
-  | 'OPEN_FOOD_FACTS'
-  | 'MANUAL'
-  | 'ADMIN';
+  | "INTERNAL"
+  | "OPEN_FOOD_FACTS"
+  | "MANUAL"
+  | "ADMIN";
 
 export type ProductCatalogVerificationStatus =
-  | 'UNVERIFIED'
-  | 'USER_SUBMITTED'
-  | 'AUTO_IMPORTED'
-  | 'ADMIN_VERIFIED'
-  | 'REJECTED';
+  | "UNVERIFIED"
+  | "USER_SUBMITTED"
+  | "AUTO_IMPORTED"
+  | "ADMIN_VERIFIED"
+  | "REJECTED";
 
 export type ProductCatalogProduct = {
   id: string;
@@ -128,6 +129,7 @@ export type PantryRecipe = {
   userId: string;
   name: string;
   description: string | null;
+  mealType: string | null;
   items: RecipeItem[];
   totals: NutritionTotals;
   createdAt: string;
@@ -137,12 +139,14 @@ export type PantryRecipe = {
 export type CreateRecipePayload = {
   name: string;
   description?: string;
+  mealType?: string;
   items: Array<{ productId: string; grams: number }>;
 };
 
 export type UpdateRecipePayload = {
   name?: string;
   description?: string;
+  mealType?: string;
   items?: Array<{ productId: string; grams: number }>;
 };
 

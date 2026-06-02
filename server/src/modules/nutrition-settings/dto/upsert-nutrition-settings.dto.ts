@@ -13,6 +13,8 @@ import {
   Matches,
 } from 'class-validator';
 
+import { FoodUnit } from '../../../../generated/prisma/client';
+
 export enum ExperienceMode {
   EXPERT = 'EXPERT',
   GUIDED = 'GUIDED',
@@ -107,7 +109,7 @@ export class UpsertNutritionSettingsDto {
 
   @IsOptional()
   @IsInt()
-  @Min(1)
+  @Min(0)
   @Max(7)
   trainingDaysPerWeek?: number;
 
@@ -120,35 +122,36 @@ export class UpsertNutritionSettingsDto {
   @IsEnum(ThemeMode)
   themeMode?: ThemeMode;
 
-  // --- Tracking preferences ---
+  // --- Home display preferences ---
   @IsOptional()
   @IsBoolean()
   showFiberOnHome?: boolean;
 
   @IsOptional()
   @IsBoolean()
-  showCarbsAndFatOnHome?: boolean;
+  showCarbsOnHome?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  showFatOnHome?: boolean;
 
   @IsOptional()
   @IsBoolean()
   showProgressPercentages?: boolean;
 
-  @IsOptional()
-  @IsBoolean()
-  showWeeklyBalance?: boolean;
-
+  // --- Guided mode features ---
   @IsOptional()
   @IsBoolean()
   showGuidedSuggestions?: boolean;
 
   @IsOptional()
   @IsBoolean()
-  hideMotivationInExpertMode?: boolean;
+  showMotivation?: boolean;
 
+  // --- Tracking preferences ---
   @IsOptional()
-  @IsString()
-  @IsIn(['GRAMS'])
-  defaultFoodUnit?: string;
+  @IsEnum(FoodUnit)
+  defaultFoodUnit?: FoodUnit;
 
   // --- Notification preferences ---
   @IsOptional()
@@ -157,7 +160,9 @@ export class UpsertNutritionSettingsDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, { message: 'Time must be a valid HH:MM value' })
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, {
+    message: 'Time must be a valid HH:MM value',
+  })
   breakfastReminderTime?: string;
 
   @IsOptional()
@@ -166,7 +171,9 @@ export class UpsertNutritionSettingsDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, { message: 'Time must be a valid HH:MM value' })
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, {
+    message: 'Time must be a valid HH:MM value',
+  })
   lunchReminderTime?: string;
 
   @IsOptional()
@@ -175,7 +182,9 @@ export class UpsertNutritionSettingsDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, { message: 'Time must be a valid HH:MM value' })
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, {
+    message: 'Time must be a valid HH:MM value',
+  })
   dinnerReminderTime?: string;
 
   @IsOptional()
@@ -193,7 +202,9 @@ export class UpsertNutritionSettingsDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, { message: 'Time must be a valid HH:MM value' })
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, {
+    message: 'Time must be a valid HH:MM value',
+  })
   dailySummaryTime?: string;
 
   @IsOptional()
@@ -208,6 +219,8 @@ export class UpsertNutritionSettingsDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, { message: 'Time must be a valid HH:MM value' })
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, {
+    message: 'Time must be a valid HH:MM value',
+  })
   weeklySummaryTime?: string;
 }

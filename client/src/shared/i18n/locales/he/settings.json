@@ -28,7 +28,8 @@
     "saveButton": "שמור פרופיל",
     "saving": "שומר...",
     "row": "שם ופרופיל",
-    "rowSubtitle": "שם מלא, מאפיינים פיזיים, מטרה"
+    "rowSubtitle": "שם מלא, מאפיינים פיזיים, מטרה",
+    "bodyDetailsTitle": "פרטים גופניים ופעילות"
   },
   "languageDisplay": {
     "screenTitle": "שפה ותצוגה",
@@ -77,19 +78,35 @@
   },
   "tracking": {
     "screenTitle": "העדפות מעקב",
-    "row": "העדפות מעקב",
-    "rowSubtitle": "אפשרויות תצוגת מסך הבית",
-    "section": "מסך הבית",
+    "homeDisplaySection": "תצוגת מסך הבית",
+    "guidedSection": "מצב מודרך",
+    "unitsSection": "יחידות מידה",
+
     "showFiber": "הצג סיבים",
-    "showFiberHint": "הצג מאקרו סיבים בדף הבית",
-    "showCarbsAndFat": "הצג פחמימות ושומן",
-    "showCarbsAndFatHint": "הצג מאקרו פחמימות ושומן בדף הבית",
+    "showFiberHint": "הצגת סיבים בכרטיס המאקרו במסך הבית",
+
+    "showCarbs": "הצג פחמימות",
+    "showCarbsHint": "הצגת פחמימות במסך הבית",
+
+    "showFat": "הצג שומן",
+    "showFatHint": "הצגת שומן במסך הבית",
+
     "showProgress": "הצג אחוזי התקדמות",
-    "showProgressHint": "הצג סרגלי אחוזים ליעדים יומיים",
-    "showWeeklyBalance": "הצג מאזן שבועי",
-    "showWeeklyBalanceHint": "הצג סיכום מאזן קלורי שבועי",
-    "showGuidedSuggestions": "הצעות מונחות",
-    "showGuidedSuggestionsHint": "הצג הצעות ארוחה חכמות"
+    "showProgressHint": "הצגת אחוזים וטבעות התקדמות",
+
+    "showGuidedSuggestions": "הצג המלצות",
+    "showGuidedSuggestionsHint": "הצעות שיעזרו למשתמש להתקדם",
+
+    "showMotivation": "הצג מוטיבציה",
+    "showMotivationHint": "הודעות עידוד ותזכורות מוטיבציה",
+
+    "defaultFoodUnit": "יחידת מידה ברירת מחדל",
+
+    "units": {
+      "GRAMS": "גרמים",
+      "SERVING": "מנה",
+      "PIECE": "יחידה"
+    }
   },
   "notifications": {
     "screenTitle": "התראות",
@@ -168,6 +185,7 @@
     "saveFailed": "שמירה נכשלה",
     "changePasswordFailed": "שינוי הסיסמה נכשל",
     "deleteAccountFailed": "מחיקת החשבון נכשלה",
-    "profileSaveFailed": "שמירת הפרופיל נכשלה"
+    "profileSaveFailed": "שמירת הפרופיל נכשלה",
+    "fullNameRequired": "צריך להזין שם מלא"
   }
 }

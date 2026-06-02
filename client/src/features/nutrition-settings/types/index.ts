@@ -1,22 +1,43 @@
-export type ExperienceMode = 'EXPERT' | 'GUIDED';
-export type TargetMode = 'MANUAL' | 'AUTO';
+export type ExperienceMode = "EXPERT" | "GUIDED";
+export type TargetMode = "MANUAL" | "AUTO";
 
-export type SupportedLanguage = 'he' | 'en';
+export type SupportedLanguage = "he" | "en";
+
+export type FoodUnit = "GRAMS" | "SERVING" | "PIECE";
 
 export type NutritionSettings = {
   id: string;
   userId: string;
-  experienceMode: ExperienceMode;
-  targetMode: TargetMode;
+
+  experienceMode: string;
+  targetMode: string;
   onboardingCompleted: boolean;
-  preferredLanguage: SupportedLanguage;
-  dailyCaloriesTarget: number | null;
-  proteinTarget: number | null;
-  carbsTarget: number | null;
-  fatTarget: number | null;
-  fiberTarget: number | null;
-  createdAt: string;
-  updatedAt: string;
+  preferredLanguage: string;
+
+  dailyCaloriesTarget?: number | null;
+  proteinTarget?: number | null;
+  carbsTarget?: number | null;
+  fatTarget?: number | null;
+  fiberTarget?: number | null;
+
+  gender?: string | null;
+  birthDate?: string | null;
+  heightCm?: number | null;
+  weightKg?: number | null;
+  trainingDaysPerWeek?: number | null;
+  goalType?: string | null;
+
+  themeMode: string;
+
+  showFiberOnHome: boolean;
+  showCarbsOnHome: boolean;
+  showFatOnHome: boolean;
+  showProgressPercentages: boolean;
+
+  showGuidedSuggestions: boolean;
+  showMotivation: boolean;
+
+  defaultFoodUnit: FoodUnit;
 };
 
 export type UpsertNutritionSettingsPayload = {

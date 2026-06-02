@@ -18,6 +18,7 @@ export const rowStyles = StyleSheet.create({
   },
 
   label: {
+    flex: 1,
     fontSize: 13,
     fontWeight: "800",
     color: colors.textSecondary,
@@ -27,10 +28,18 @@ export const rowStyles = StyleSheet.create({
     color: colors.textPrimary,
   },
 
+  valueRow: {
+    alignItems: "baseline",
+    justifyContent: "center",
+    gap: 4,
+    minWidth: 88,
+  },
+
   value: {
     fontSize: 14,
     fontWeight: "900",
     color: colors.textPrimary,
+    writingDirection: "ltr",
   },
 
   valueHighlight: {

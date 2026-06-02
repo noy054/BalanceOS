@@ -48,6 +48,7 @@ export class RecipesService {
       id,
       dto.name,
       dto.description,
+      dto.mealType,
       dto.items,
     );
     return enrichRecipe(updated);

@@ -1,75 +1,79 @@
-import { StyleSheet } from 'react-native';
-import { colors, spacing, radius } from '../../../../shared/theme';
+import { StyleSheet } from "react-native";
+
+import { colors, spacing, radius } from "../../../../shared/theme";
 
 export const chipStyles = StyleSheet.create({
   chip: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    backgroundColor: 'rgba(168, 241, 42, 0.10)',
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    marginEnd: spacing.xs,
-    marginBottom: 4,
+    backgroundColor: "rgba(49, 216, 107, 0.10)",
+    borderWidth: 1,
+    borderColor: "rgba(49, 216, 107, 0.18)",
+    borderRadius: radius.full,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+    marginBottom: spacing.sm,
+    maxWidth: "100%",
   },
-  label: {
-    fontSize: 9,
-    color: colors.primaryGreen,
-    marginEnd: 2,
-    fontWeight: '500',
-  },
-  value: {
+
+  text: {
     fontSize: 11,
+    fontWeight: "800",
     color: colors.primaryGreen,
-    fontWeight: '700',
+    textAlign: "center",
+    writingDirection: "ltr",
   },
-  valueBold: {
-    fontSize: 12,
-    fontWeight: '800',
+
+  textRtl: {
+    writingDirection: "rtl",
   },
-  unit: {
-    fontSize: 9,
-    color: colors.primaryGreen,
-    opacity: 0.8,
+
+  textBold: {
+    fontSize: 13,
+    fontWeight: "900",
   },
 });
 
 export const styles = StyleSheet.create({
   container: {
-    borderRadius: radius.sm,
-    paddingTop: 4,
-  },
-  containerHighlight: {
-    backgroundColor: 'rgba(168, 241, 42, 0.08)',
     borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingTop: 0,
   },
+
+  containerHighlight: {
+    backgroundColor: "transparent",
+    borderRadius: radius.md,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+  },
+
   label: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: "800",
     color: colors.textSecondary,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
+
   labelHighlight: {
-    color: colors.primaryGreen,
+    color: colors.textPrimary,
   },
+
   row: {
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.xs,
+    alignItems: "center",
   },
 });
 
 export function getDirectionStyles(isRTL: boolean) {
   return {
     label: {
-      textAlign: isRTL ? 'right' as const : 'left' as const,
-      writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,
+      textAlign: isRTL ? ("right" as const) : ("left" as const),
+      writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),
     },
+
     row: {
-      flexDirection: isRTL ? 'row-reverse' as const : 'row' as const,
-    },
-    chipRow: {
-      flexDirection: isRTL ? 'row-reverse' as const : 'row' as const,
+      flexDirection: isRTL ? ("row-reverse" as const) : ("row" as const),
+      justifyContent: isRTL ? ("flex-start" as const) : ("flex-start" as const),
     },
   };
 }

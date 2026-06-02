@@ -1,5 +1,15 @@
-import { useState, useEffect, useRef } from "react";
-import { ScrollView, View, Text, Alert, Pressable } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
@@ -10,15 +20,47 @@ import { SettingsSection } from "../components/SettingsSection";
 import { SettingsSelectRow } from "../components/SettingsSelectRow";
 import {
   useNutritionSettings,
-  useUpdateSettings,
   useUpdateProfile,
+  useUpdateSettings,
 } from "../hooks/useSettings";
 import { useAuthStore } from "../../auth/hooks/useAuthStore";
 import { Gender, GoalType } from "../types";
 import {
-  styles,
   getDirectionStyles,
+  styles,
 } from "./styles/ProfileSettingsScreen.styles";
+
+type FormValues = {
+  fullName: string;
+  heightCm: string;
+  weightKg: string;
+  trainingDays: string;
+  birthDate: string;
+  gender: Gender | "";
+  goalType: GoalType | "";
+};
+
+function formatDate(date: Date) {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getDatePickerValue(value: string) {
+  if (!value) {
+    return new Date();
+  }
+
+  const [year, month, day] = value.split("-").map(Number);
+
+  if (!year || !month || !day) {
+    return new Date();
+  }
+
+  return new Date(year, month - 1, day);
+}
 
 export function ProfileSettingsScreen() {
   const { t, i18n } = useTranslation("settings");
@@ -30,42 +72,95 @@ export function ProfileSettingsScreen() {
   const updateSettings = useUpdateSettings();
   const updateProfile = useUpdateProfile();
 
-  const [fullName, setFullName] = useState(user?.fullName ?? "");
-  const [heightCm, setHeightCm] = useState(
-    settings?.heightCm?.toString() ?? "",
-  );
-  const [weightKg, setWeightKg] = useState(
-    settings?.weightKg?.toString() ?? "",
-  );
-  const [trainingDays, setTrainingDays] = useState(
-    settings?.trainingDaysPerWeek?.toString() ?? "",
-  );
-  const [birthDate, setBirthDate] = useState(
-    settings?.birthDate?.slice(0, 10) ?? "",
-  );
-  const [gender, setGender] = useState<Gender | "">(settings?.gender ?? "");
-  const [goalType, setGoalType] = useState<GoalType | "">(
-    settings?.goalType ?? "",
-  );
+  const [fullName, setFullName] = useState("");
+  const [heightCm, setHeightCm] = useState("");
+  const [weightKg, setWeightKg] = useState("");
+  const [trainingDays, setTrainingDays] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [gender, setGender] = useState<Gender | "">("");
+  const [goalType, setGoalType] = useState<GoalType | "">("");
   const [nameError, setNameError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isBirthDatePickerOpen, setIsBirthDatePickerOpen] = useState(false);
 
-  const settingsInitialized = useRef(false);
+  const initialValuesRef = useRef<FormValues | null>(null);
+  const initializedRef = useRef(false);
+
   useEffect(() => {
-    if (settings && !settingsInitialized.current) {
-      settingsInitialized.current = true;
-      setHeightCm(settings.heightCm?.toString() ?? "");
-      setWeightKg(settings.weightKg?.toString() ?? "");
-      setTrainingDays(settings.trainingDaysPerWeek?.toString() ?? "");
-      setBirthDate(settings.birthDate?.slice(0, 10) ?? "");
-      setGender(settings.gender ?? "");
-      setGoalType(settings.goalType ?? "");
+    if (!settings || initializedRef.current) {
+      return;
     }
-  }, [settings]);
+
+    const initialValues: FormValues = {
+      fullName: user?.fullName ?? "",
+      heightCm: settings.heightCm?.toString() ?? "",
+      weightKg: settings.weightKg?.toString() ?? "",
+      trainingDays: settings.trainingDaysPerWeek?.toString() ?? "",
+      birthDate: settings.birthDate?.slice(0, 10) ?? "",
+      gender: settings.gender ?? "",
+      goalType: settings.goalType ?? "",
+    };
+
+    initializedRef.current = true;
+    initialValuesRef.current = initialValues;
+
+    setFullName(initialValues.fullName);
+    setHeightCm(initialValues.heightCm);
+    setWeightKg(initialValues.weightKg);
+    setTrainingDays(initialValues.trainingDays);
+    setBirthDate(initialValues.birthDate);
+    setGender(initialValues.gender);
+    setGoalType(initialValues.goalType);
+  }, [settings, user?.fullName]);
+
+  const currentValues = useMemo<FormValues>(
+    () => ({
+      fullName,
+      heightCm,
+      weightKg,
+      trainingDays,
+      birthDate,
+      gender,
+      goalType,
+    }),
+    [fullName, heightCm, weightKg, trainingDays, birthDate, gender, goalType],
+  );
+
+  const hasChanges = useMemo(() => {
+    const initialValues = initialValuesRef.current;
+
+    if (!initialValues) {
+      return false;
+    }
+
+    return Object.keys(currentValues).some((key) => {
+      const field = key as keyof FormValues;
+      return currentValues[field] !== initialValues[field];
+    });
+  }, [currentValues]);
+
+  function handleBirthDateChange(
+    event: DateTimePickerEvent,
+    selectedDate?: Date,
+  ) {
+    if (Platform.OS === "android") {
+      setIsBirthDatePickerOpen(false);
+    }
+
+    if (event.type === "dismissed" || !selectedDate) {
+      return;
+    }
+
+    setBirthDate(formatDate(selectedDate));
+  }
 
   async function handleSave() {
+    if (!hasChanges || isSaving) {
+      return;
+    }
+
     if (!fullName.trim()) {
-      setNameError(t("errors.saveFailed"));
+      setNameError(t("errors.fullNameRequired"));
       return;
     }
 
@@ -88,6 +183,11 @@ export function ProfileSettingsScreen() {
         }),
       ]);
 
+      initialValuesRef.current = {
+        ...currentValues,
+        fullName: fullName.trim(),
+      };
+
       router.back();
     } catch {
       Alert.alert("", t("errors.profileSaveFailed"));
@@ -95,6 +195,8 @@ export function ProfileSettingsScreen() {
       setIsSaving(false);
     }
   }
+
+  const isSaveDisabled = isSaving || !hasChanges;
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
@@ -121,7 +223,6 @@ export function ProfileSettingsScreen() {
                 setNameError("");
               }}
               error={nameError}
-              autoFocus
             />
 
             <View style={styles.readonlyGroup}>
@@ -185,14 +286,32 @@ export function ProfileSettingsScreen() {
           </View>
         </SettingsSection>
 
-        <SettingsSection title={t("profile.trainingDaysLabel")}>
+        <SettingsSection title={t("profile.bodyDetailsTitle")}>
           <View style={styles.formCard}>
-            <FormInput
-              label={t("profile.birthDateLabel")}
-              value={birthDate}
-              onChangeText={setBirthDate}
-              placeholder={t("profile.birthDatePlaceholder")}
-            />
+            <Pressable
+              onPress={() => setIsBirthDatePickerOpen(true)}
+              style={({ pressed }) => pressed && styles.dateInputPressed}
+            >
+              <View pointerEvents="none">
+                <FormInput
+                  label={t("profile.birthDateLabel")}
+                  value={birthDate}
+                  onChangeText={setBirthDate}
+                  placeholder={t("profile.birthDatePlaceholder")}
+                  editable={false}
+                />
+              </View>
+            </Pressable>
+
+            {isBirthDatePickerOpen && (
+              <DateTimePicker
+                value={getDatePickerValue(birthDate)}
+                mode="date"
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                maximumDate={new Date()}
+                onChange={handleBirthDateChange}
+              />
+            )}
 
             <FormInput
               label={t("profile.heightLabel")}
@@ -220,11 +339,11 @@ export function ProfileSettingsScreen() {
         <Pressable
           style={({ pressed }) => [
             styles.saveBtn,
-            pressed && styles.saveBtnPressed,
-            isSaving && styles.saveBtnDisabled,
+            pressed && !isSaveDisabled && styles.saveBtnPressed,
+            isSaveDisabled && styles.saveBtnDisabled,
           ]}
           onPress={handleSave}
-          disabled={isSaving}
+          disabled={isSaveDisabled}
         >
           <Text style={styles.saveBtnText}>
             {isSaving ? t("profile.saving") : t("profile.saveButton")}

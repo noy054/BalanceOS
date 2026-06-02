@@ -40,9 +40,7 @@ export function SavedMealDraftItemRow({
         )}`;
 
   return (
-    <View
-      style={[styles.itemRow, { flexDirection: isRTL ? "row-reverse" : "row" }]}
-    >
+    <View style={[styles.itemRow, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
       <View style={styles.itemInfo}>
         <Text style={[styles.itemName, textDirection]} numberOfLines={1}>
           {itemName}
@@ -53,12 +51,7 @@ export function SavedMealDraftItemRow({
         </Text>
       </View>
 
-      <View
-        style={[
-          styles.amountBox,
-          { flexDirection: isRTL ? "row-reverse" : "row" },
-        ]}
-      >
+      <View style={[styles.amountBox, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
         <TextInput
           style={styles.amountInput}
           value={item.kind === "product" ? item.grams : item.servings}

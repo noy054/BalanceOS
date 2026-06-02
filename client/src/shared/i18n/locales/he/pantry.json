@@ -15,19 +15,6 @@
     "recipes": "מתכונים",
     "savedMeals": "ארוחות שמורות"
   },
-  "product": {
-    "nameLabel": "שם מוצר *",
-    "brandLabel": "מותג",
-    "barcodeLabel": "ברקוד",
-    "caloriesLabel": "קלוריות ל-100 גרם *",
-    "proteinLabel": "חלבון (גרם) *",
-    "carbsLabel": "פחמימות (גרם) *",
-    "fatLabel": "שומן (גרם) *",
-    "fiberLabel": "סיבים (גרם)",
-    "per100g": "ל-100 גרם",
-    "calUnit": "קק\"ל",
-    "gramsUnit": "גרם"
-  },
   "macros": {
     "protein": "חלבון",
     "carbs": "פחמימות",
@@ -42,13 +29,36 @@
     "SNACK_1": "נשנוש 1",
     "SNACK_2": "נשנוש 2"
   },
+  "product": {
+    "nameLabel": "שם מוצר *",
+    "brandLabel": "מותג",
+    "barcodeLabel": "ברקוד",
+    "imageUrlLabel": "קישור לתמונה",
+    "imagePlaceholder": "הוסיפי תמונת מוצר",
+    "noBrand": "ללא מותג",
+    "caloriesLabel": "קלוריות ל־100 גרם",
+    "proteinLabel": "חלבון (גרם)",
+    "carbsLabel": "פחמימות (גרם)",
+    "fatLabel": "שומן (גרם)",
+    "fiberLabel": "סיבים (גרם)",
+    "per100g": "ל־100 גרם",
+    "calUnit": "קק״ל",
+    "gramsUnit": "גרם"
+  },
   "addProduct": {
-    "title": "הוסף מוצר חדש",
-    "subtitle": "ערכי תזונה הם לכל 100 גרם",
+    "title": "הוספת מוצר",
+    "editTitle": "עריכת מוצר",
+    "subtitle": "הזיני פרטי מוצר וערכים תזונתיים.",
+    "editSubtitle": "עדכני את פרטי המוצר והערכים שלו.",
     "requiredHint": "* שדות חובה",
-    "nutritionSection": "ערכי תזונה ל-100 גרם",
+    "optionalNutritionHint": "שדות תזונה ריקים יישמרו כ־0.",
+    "nutritionSection": "ערכים תזונתיים",
+    "per100g": "ל־100 גרם",
+    "emptyValuesBecomeZero": "שדות ריקים יהפכו אוטומטית ל־0",
     "saveButton": "שמור מוצר",
+    "updateButton": "שמור שינויים",
     "saving": "שומר...",
+    "loadingProduct": "טוען מוצר...",
     "back": "חזור"
   },
   "productDetail": {
@@ -69,6 +79,7 @@
   "recipe": {
     "nameLabel": "שם המתכון *",
     "descriptionLabel": "תיאור",
+    "categoryLabel": "קטגוריה",
     "ingredientsSection": "מצרכים",
     "addIngredient": "+ הוסף מצרך",
     "gramsLabel": "גרם",

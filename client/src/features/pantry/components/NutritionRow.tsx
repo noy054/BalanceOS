@@ -40,18 +40,31 @@ export function NutritionRow({
         {label}
       </Text>
 
-      <Text
+      <View
         style={[
-          rowStyles.value,
-          highlight && rowStyles.valueHighlight,
-          {
-            textAlign: isRTL ? "left" : "right",
-            writingDirection: "ltr",
-          },
+          rowStyles.valueRow,
+          { flexDirection: isRTL ? "row-reverse" : "row" },
         ]}
       >
-        {value} <Text style={rowStyles.unit}>{unit}</Text>
-      </Text>
+        <Text
+          style={[rowStyles.value, highlight && rowStyles.valueHighlight]}
+          numberOfLines={1}
+        >
+          {value}
+        </Text>
+
+        <Text
+          style={[
+            rowStyles.unit,
+            {
+              writingDirection: isRTL ? "rtl" : "ltr",
+            },
+          ]}
+          numberOfLines={1}
+        >
+          {unit}
+        </Text>
+      </View>
     </View>
   );
 }

@@ -19,12 +19,7 @@ export function SavedMealAddButtons({
   const { t } = useTranslation("pantry");
 
   return (
-    <View
-      style={[
-        styles.addButtonsRow,
-        { flexDirection: isRTL ? "row-reverse" : "row" },
-      ]}
-    >
+    <View style={[styles.addButtonsRow, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
       <Pressable
         style={({ pressed }) => [
           styles.addItemBtn,

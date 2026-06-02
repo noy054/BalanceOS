@@ -27,10 +27,11 @@
     "pantry": "Pantry",
     "add": "Add",
     "statistics": "Stats",
-    "profile": "Profile"
+    "settings": "Settings"
   },
   "addItem": {
     "title": "Add to {{mealType}}",
+    "titleGeneral": "Add Item",
     "tabProducts": "Products",
     "tabRecipes": "Recipes",
     "tabSavedMeals": "Saved Meals",
@@ -45,6 +46,13 @@
     "loadError": "Failed to load",
     "logError": "Failed to log item",
     "wholeMeal": "Add whole meal",
-    "selectItem": "Select an item from the list above"
+    "selectItem": "Select an item from the list above",
+    "done": "Done",
+    "added": "Added",
+    "chooseMealType": "Choose a meal type to continue",
+    "addToList": "Add to List",
+    "saveButton": "Save to {{mealType}}",
+    "saving": "Saving...",
+    "cartItems": "{{count}} items to add"
   }
 }

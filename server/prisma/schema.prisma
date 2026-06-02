@@ -39,6 +39,7 @@ model UserNutritionSettings {
   targetMode          String  @default("AUTO")
   onboardingCompleted Boolean @default(false)
   preferredLanguage   String  @default("he")
+
   dailyCaloriesTarget Int?
   proteinTarget       Int?
   carbsTarget         Int?
@@ -56,14 +57,18 @@ model UserNutritionSettings {
   // Display
   themeMode String @default("LIGHT")
 
+  // Home display preferences
+  showFiberOnHome         Boolean @default(true)
+  showCarbsOnHome         Boolean @default(true)
+  showFatOnHome           Boolean @default(true)
+  showProgressPercentages Boolean @default(true)
+
+  // Guided mode features
+  showGuidedSuggestions Boolean @default(true)
+  showMotivation        Boolean @default(true)
+
   // Tracking preferences
-  showFiberOnHome            Boolean @default(true)
-  showCarbsAndFatOnHome      Boolean @default(true)
-  showProgressPercentages    Boolean @default(true)
-  showWeeklyBalance          Boolean @default(true)
-  showGuidedSuggestions      Boolean @default(true)
-  hideMotivationInExpertMode Boolean @default(true)
-  defaultFoodUnit            String  @default("GRAMS")
+  defaultFoodUnit FoodUnit @default(GRAMS)
 
   // Notification preferences
   breakfastReminderEnabled Boolean @default(false)
@@ -84,6 +89,12 @@ model UserNutritionSettings {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum FoodUnit {
+  GRAMS
+  SERVING
+  PIECE
 }
 
 model ProductCatalogItem {
@@ -180,6 +191,7 @@ model PantryProduct {
   name            String
   brand           String?
   barcode         String?
+  imageUrl String?
   caloriesPer100g Float
   proteinPer100g  Float
   carbsPer100g    Float
@@ -204,6 +216,7 @@ model PantryRecipe {
   userId      String
   name        String
   description String?
+  mealType    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

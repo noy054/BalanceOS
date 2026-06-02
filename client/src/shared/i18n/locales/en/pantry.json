@@ -19,14 +19,33 @@
     "nameLabel": "Product name *",
     "brandLabel": "Brand",
     "barcodeLabel": "Barcode",
-    "caloriesLabel": "Calories per 100g *",
-    "proteinLabel": "Protein (g) *",
-    "carbsLabel": "Carbs (g) *",
-    "fatLabel": "Fat (g) *",
+    "imageUrlLabel": "Image URL",
+    "imagePlaceholder": "Add product image",
+    "noBrand": "No brand",
+    "caloriesLabel": "Calories per 100g",
+    "proteinLabel": "Protein (g)",
+    "carbsLabel": "Carbs (g)",
+    "fatLabel": "Fat (g)",
     "fiberLabel": "Fiber (g)",
     "per100g": "per 100g",
     "calUnit": "kcal",
     "gramsUnit": "g"
+  },
+  "addProduct": {
+    "title": "Add Product",
+    "editTitle": "Edit Product",
+    "subtitle": "Enter product details and nutrition values.",
+    "editSubtitle": "Update the product details and nutrition values.",
+    "requiredHint": "* Required fields",
+    "optionalNutritionHint": "Empty nutrition fields will be saved as 0.",
+    "nutritionSection": "Nutrition values",
+    "per100g": "per 100g",
+    "emptyValuesBecomeZero": "Empty values automatically become 0",
+    "saveButton": "Save Product",
+    "updateButton": "Save Changes",
+    "saving": "Saving...",
+    "loadingProduct": "Loading product...",
+    "back": "Back"
   },
   "macros": {
     "protein": "Protein",
@@ -41,15 +60,6 @@
     "DINNER": "Dinner",
     "SNACK_1": "Snack 1",
     "SNACK_2": "Snack 2"
-  },
-  "addProduct": {
-    "title": "Add New Product",
-    "subtitle": "Nutrition values are per 100g",
-    "requiredHint": "* Required fields",
-    "nutritionSection": "Nutrition per 100g",
-    "saveButton": "Save Product",
-    "saving": "Saving...",
-    "back": "Back"
   },
   "productDetail": {
     "title": "Product Details",
@@ -69,6 +79,7 @@
   "recipe": {
     "nameLabel": "Recipe name *",
     "descriptionLabel": "Description",
+    "categoryLabel": "Category",
     "ingredientsSection": "Ingredients",
     "addIngredient": "+ Add Ingredient",
     "gramsLabel": "g",

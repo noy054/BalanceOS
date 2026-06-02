@@ -1,6 +1,7 @@
 import {
   ArrayMinSize,
   IsArray,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -10,6 +11,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+
+const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK_1', 'SNACK_2'] as const;
 
 export class RecipeItemDto {
   @IsString()
@@ -32,6 +35,10 @@ export class CreateRecipeDto {
   @IsString()
   @MaxLength(500)
   description?: string;
+
+  @IsOptional()
+  @IsIn(MEAL_TYPES)
+  mealType?: string;
 
   @IsArray()
   @ArrayMinSize(1)

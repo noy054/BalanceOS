@@ -16,6 +16,7 @@ import { styles, getDirectionStyles } from './styles/ProductPickerModal.styles';
 type ProductPickerModalProps = {
   visible: boolean;
   products: PantryProduct[];
+  selectedIds?: string[];
   onSelect: (product: PantryProduct) => void;
   onClose: () => void;
 };
@@ -23,6 +24,7 @@ type ProductPickerModalProps = {
 export function ProductPickerModal({
   visible,
   products,
+  selectedIds = [],
   onSelect,
   onClose,
 }: ProductPickerModalProps) {
@@ -78,18 +80,29 @@ export function ProductPickerModal({
           <FlatList
             data={filtered}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <Pressable
-                style={({ pressed }) => [styles.item, dir.row, pressed && styles.itemPressed]}
-                onPress={() => handleSelect(item)}
-              >
-                <View style={styles.itemInfo}>
-                  <Text style={styles.itemName}>{item.name}</Text>
-                  {item.brand ? <Text style={styles.itemBrand}>{item.brand}</Text> : null}
-                </View>
-                <Text style={styles.itemCals}>{item.caloriesPer100g} {t('product.calUnit')}/100{t('product.gramsUnit')}</Text>
-              </Pressable>
-            )}
+            renderItem={({ item }) => {
+              const isAdded = selectedIds.includes(item.id);
+              return (
+                <Pressable
+                  style={({ pressed }) => [styles.item, dir.row, pressed && styles.itemPressed]}
+                  onPress={() => handleSelect(item)}
+                >
+                  <View style={styles.itemInfo}>
+                    <Text style={styles.itemName}>{item.name}</Text>
+                    {item.brand ? <Text style={styles.itemBrand}>{item.brand}</Text> : null}
+                  </View>
+                  <Text style={styles.itemCals}>{item.caloriesPer100g} {t('product.calUnit')}/100{t('product.gramsUnit')}</Text>
+                  {isAdded ? (
+                    <MaterialCommunityIcons
+                      name="check-circle"
+                      size={18}
+                      color={colors.primaryGreen}
+                      style={{ marginStart: spacing.xs }}
+                    />
+                  ) : null}
+                </Pressable>
+              );
+            }}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
             contentContainerStyle={styles.list}
           />

@@ -3,7 +3,7 @@ import { I18nManager } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { PaperProvider } from "react-native-paper";
+import { MD3DarkTheme, PaperProvider } from "react-native-paper";
 
 import "../src/shared/i18n/i18n";
 
@@ -11,6 +11,22 @@ import { loadSavedLanguage } from "../src/shared/i18n";
 import i18n from "../src/shared/i18n/i18n";
 import { useAuthStore } from "../src/features/auth/hooks/useAuthStore";
 import { AppThemeProvider } from "../src/shared/theme";
+
+// Applied only to auth + onboarding screens — no other screens use Paper components.
+const paperTheme = {
+  ...MD3DarkTheme,
+  colors: {
+    ...MD3DarkTheme.colors,
+    primary: "#31D86B",                        // brand green — focus ring, active label
+    background: "#080C0A",                     // matches ScreenShell background
+    surface: "rgba(255, 255, 255, 0.09)",      // input fill
+    outline: "rgba(255, 255, 255, 0.20)",      // unfocused border
+    onSurface: "#FFFFFF",                      // input text
+    onSurfaceVariant: "rgba(255, 255, 255, 0.55)", // unfocused label / placeholder
+    error: "#F84B6A",
+    onError: "#FFFFFF",
+  },
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -68,7 +84,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppThemeProvider initialThemeMode="DARK">
-        <PaperProvider settings={{ icon }}>
+        <PaperProvider theme={paperTheme} settings={{ icon }}>
           <Stack screenOptions={{ headerShown: false }} />
         </PaperProvider>
       </AppThemeProvider>

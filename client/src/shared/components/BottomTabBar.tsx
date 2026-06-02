@@ -7,7 +7,7 @@ import { router } from "expo-router";
 import { colors, spacing } from "../theme";
 import { styles } from "./styles/BottomTabBar.styles";
 
-type TabId = "home" | "pantry" | "add" | "statistics" | "profile";
+type TabId = "home" | "pantry" | "add" | "statistics" | "settings";
 
 type TabItem = {
   id: TabId;
@@ -37,6 +37,7 @@ const TABS: TabItem[] = [
     labelKey: "add",
     icon: "plus",
     activeIcon: "plus",
+    route: "/(app)/meal/add-item",
   },
   {
     id: "statistics",
@@ -45,11 +46,10 @@ const TABS: TabItem[] = [
     activeIcon: "chart-bar-stacked",
   },
   {
-    id: "profile",
-    labelKey: "profile",
-    icon: "account-outline",
-    activeIcon: "account",
-    route: "/(app)/profile",
+    id: "settings",
+    labelKey: "settings",
+    icon: "cog-outline",
+    activeIcon: "cog",
     route: "/(app)/settings",
   },
 ];

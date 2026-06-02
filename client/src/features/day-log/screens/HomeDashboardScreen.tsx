@@ -6,15 +6,31 @@ import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
 import { HomeHeader } from "../components/HomeHeader";
 import { CalorieSummaryCard } from "../components/CalorieSummaryCard";
 import { MacroSummaryCard } from "../components/MacroSummaryCard";
-import { AddMealButton } from "../../meals/components/AddMealButton";
 import { MealShortcutList } from "../../meals/components/MealShortcutList";
-import { mockDayLogSummary } from "../constants/mockDashboard";
+import { useTodayDayLog } from "../hooks/useDayLog";
+import { DayLogSummary } from "../types";
+import { MealShortcut } from "../../meals/types";
 import { styles } from "./styles/HomeDashboardScreen.styles";
 
-const data = mockDayLogSummary;
+const EMPTY_SUMMARY: DayLogSummary = {
+  date: "",
+  caloriesEaten: 0,
+  caloriesTarget: 0,
+  macros: [
+    { key: "protein", current: 0, target: 0 },
+    { key: "carbs", current: 0, target: 0 },
+    { key: "fat", current: 0, target: 0 },
+    { key: "fiber", current: 0, target: 0 },
+  ],
+};
 
 export function HomeDashboardScreen() {
   const { i18n } = useTranslation();
+  const { data: summary = EMPTY_SUMMARY } = useTodayDayLog();
+
+  function handleMealTypeSelect(type: MealShortcut["type"]) {
+    router.push(`/(app)/meal/add-item?mealType=${type}`);
+  }
 
   return (
     <TabScreenLayout activeTab="home">
@@ -36,29 +52,20 @@ export function HomeDashboardScreen() {
         >
           <View style={styles.heroSection}>
             <CalorieSummaryCard
-              eaten={data.caloriesEaten}
-              target={data.caloriesTarget}
+              eaten={summary.caloriesEaten}
+              target={summary.caloriesTarget}
             />
           </View>
 
           <View style={styles.section}>
-            <MacroSummaryCard macros={data.macros} />
+            <MacroSummaryCard macros={summary.macros} />
           </View>
 
-          <View style={styles.actionSection}>
-            <AddMealButton
-              onPress={() => {
-                // TODO: navigate to add-meal screen
-              }}
-            />
-          </View>
+          {/* Keeps the shortcuts in the original vertical position after AddMealButton removal */}
+          <View style={[styles.actionSection, { minHeight: 58 }]} />
 
           <View style={styles.shortcutsSection}>
-            <MealShortcutList
-              onSelect={(_type) => {
-                // TODO: navigate to add-meal screen with pre-selected meal type
-              }}
-            />
+            <MealShortcutList onSelect={handleMealTypeSelect} />
           </View>
         </ScrollView>
       </View>

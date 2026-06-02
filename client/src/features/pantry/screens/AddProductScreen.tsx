@@ -1,11 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
-import { useCreatePantryProduct } from "../hooks/usePantry";
+import {
+  useCreatePantryProduct,
+  usePantryProduct,
+  useUpdatePantryProduct,
+} from "../hooks/usePantry";
 import { CreatePantryProductPayload } from "../types";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { FormInput } from "../../../shared/components/FormInput";
@@ -50,8 +57,21 @@ function parseOptionalNumber(value: string): number | null {
   return parsedNumber;
 }
 
+function toFormString(value?: number | null) {
+  if (value === undefined || value === null) {
+    return "";
+  }
+
+  return String(value);
+}
+
 export function AddProductScreen() {
   const { t, i18n } = useTranslation("pantry");
+  const params = useLocalSearchParams<{ id?: string; mode?: string }>();
+  const insets = useSafeAreaInsets();
+
+  const productId = typeof params.id === "string" ? params.id : "";
+  const isEditMode = params.mode === "edit" && Boolean(productId);
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const directionStyles = getDirectionStyles(isRTL);
@@ -62,6 +82,27 @@ export function AddProductScreen() {
   >({});
 
   const createProduct = useCreatePantryProduct();
+  const updateProduct = useUpdatePantryProduct(productId);
+
+  const { data: productToEdit, isLoading: isProductLoading } =
+    usePantryProduct(productId);
+
+  useEffect(() => {
+    if (!isEditMode || !productToEdit) {
+      return;
+    }
+
+    setForm({
+      name: productToEdit.name ?? "",
+      brand: productToEdit.brand ?? "",
+      imageUrl: productToEdit.imageUrl ?? "",
+      caloriesPer100g: toFormString(productToEdit.caloriesPer100g),
+      proteinPer100g: toFormString(productToEdit.proteinPer100g),
+      carbsPer100g: toFormString(productToEdit.carbsPer100g),
+      fatPer100g: toFormString(productToEdit.fatPer100g),
+      fiberPer100g: toFormString(productToEdit.fiberPer100g),
+    });
+  }, [isEditMode, productToEdit]);
 
   function field(key: keyof FormState) {
     return {
@@ -135,21 +176,60 @@ export function AddProductScreen() {
   async function handleSave() {
     const payload = validate();
 
-    if (!payload) return;
+    if (!payload) {
+      return;
+    }
 
     try {
-      await createProduct.mutateAsync(payload);
-      router.back();
+      if (isEditMode) {
+        await updateProduct.mutateAsync(payload);
+      } else {
+        await createProduct.mutateAsync(payload);
+      }
+
+      if (router.canGoBack()) {
+        router.back();
+        return;
+      }
+
+      router.replace("/(app)/pantry");
     } catch {
       Alert.alert("", t("errors.saveFailed"));
     }
   }
 
   const hasImagePreview = Boolean(form.imageUrl.trim());
+  const isSaving = createProduct.isPending || updateProduct.isPending;
+
+  if (isEditMode && isProductLoading) {
+    return (
+      <SafeAreaView style={styles.root} edges={["top"]}>
+        <ScreenHeader
+          title={t("addProduct.editTitle")}
+          fallbackRoute="/(app)/pantry"
+        />
+
+        <View style={styles.loadingContainer}>
+          <MaterialCommunityIcons
+            name="loading"
+            size={28}
+            color={colors.primaryGreen}
+          />
+
+          <Text style={[styles.loadingText, directionStyles.text]}>
+            {t("addProduct.loadingProduct")}
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView key={i18n.language} style={styles.root} edges={["top"]}>
-      <ScreenHeader title={t("addProduct.title")} />
+      <ScreenHeader
+        title={isEditMode ? t("addProduct.editTitle") : t("addProduct.title")}
+        fallbackRoute="/(app)/pantry"
+      />
 
       <ScrollView
         style={styles.scroll}
@@ -159,7 +239,9 @@ export function AddProductScreen() {
       >
         <View style={styles.introCard}>
           <Text style={[styles.subtitle, directionStyles.text]}>
-            {t("addProduct.subtitle")}
+            {isEditMode
+              ? t("addProduct.editSubtitle")
+              : t("addProduct.subtitle")}
           </Text>
 
           <Text style={[styles.optionalHint, directionStyles.text]}>
@@ -181,6 +263,7 @@ export function AddProductScreen() {
                 size={28}
                 color={colors.primaryGreen}
               />
+
               <Text style={styles.imagePlaceholderText}>
                 {t("product.imagePlaceholder")}
               </Text>
@@ -193,7 +276,7 @@ export function AddProductScreen() {
             key={`name-${i18n.language}`}
             label={t("product.nameLabel")}
             error={errors.name}
-            autoFocus
+            autoFocus={!isEditMode}
             {...field("name")}
           />
 
@@ -266,22 +349,33 @@ export function AddProductScreen() {
           />
         </View>
 
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
+
+      <View
+        style={[
+          styles.stickyFooter,
+          { paddingBottom: Math.max(insets.bottom, 16) },
+        ]}
+      >
         <Pressable
           style={({ pressed }) => [
             styles.saveBtn,
             pressed && styles.saveBtnPressed,
-            createProduct.isPending && styles.saveBtnDisabled,
+            isSaving && styles.saveBtnDisabled,
           ]}
           onPress={handleSave}
-          disabled={createProduct.isPending}
+          disabled={isSaving}
         >
           <Text style={[styles.saveBtnText, directionStyles.centeredText]}>
-            {createProduct.isPending
+            {isSaving
               ? t("addProduct.saving")
-              : t("addProduct.saveButton")}
+              : isEditMode
+                ? t("addProduct.updateButton")
+                : t("addProduct.saveButton")}
           </Text>
         </Pressable>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }

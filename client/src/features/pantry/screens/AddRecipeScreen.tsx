@@ -16,8 +16,9 @@ import { useCreateRecipe } from "../hooks/useRecipes";
 import { usePantryProducts } from "../hooks/usePantry";
 import { ProductPickerModal } from "../components/ProductPickerModal";
 import { NutritionTotals } from "../components/NutritionTotals";
+import { SavedMealTypeSelector } from "../components/SavedMealTypeSelector";
 import { calcProductNutrition, sumNutrition } from "../helpers/nutrition";
-import { PantryProduct } from "../types";
+import { MealType, PantryProduct } from "../types";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { colors } from "../../../shared/theme";
 import { styles, getDirectionStyles } from "./styles/AddRecipeScreen.styles";
@@ -42,6 +43,7 @@ export function AddRecipeScreen() {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [mealType, setMealType] = useState<MealType | null>(null);
   const [ingredients, setIngredients] = useState<IngredientDraft[]>([]);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [nameError, setNameError] = useState("");
@@ -62,17 +64,18 @@ export function AddRecipeScreen() {
     return sumNutrition(items);
   }, [ingredients]);
 
+  const selectedIngredientProductIds = ingredients.map((i) => i.product.id);
+
   function addIngredient(product: PantryProduct) {
     setIngredients((prev) => [
       ...prev,
       {
         key: makeKey(),
         product,
-        grams: "",
+        grams: "100",
       },
     ]);
-
-    setPickerVisible(false);
+    // Picker stays open so multiple ingredients can be added in one session.
   }
 
   function updateGrams(key: string, grams: string) {
@@ -112,6 +115,7 @@ export function AddRecipeScreen() {
       await createRecipe.mutateAsync({
         name: name.trim(),
         description: description.trim() || undefined,
+        mealType: mealType ?? undefined,
         items: validItems,
       });
 
@@ -177,6 +181,18 @@ export function AddRecipeScreen() {
               value={description}
               onChangeText={setDescription}
               multiline
+            />
+          </View>
+
+          <View style={styles.fieldGroup}>
+            <Text style={[styles.fieldLabel, dir.text]}>
+              {t("recipe.categoryLabel")}
+            </Text>
+
+            <SavedMealTypeSelector
+              selectedMealType={mealType}
+              isRTL={isRTL}
+              onSelect={setMealType}
             />
           </View>
         </View>
@@ -266,6 +282,9 @@ export function AddRecipeScreen() {
           </View>
         ) : null}
 
+      </ScrollView>
+
+      <View style={styles.footer}>
         <Pressable
           style={({ pressed }) => [
             styles.saveBtn,
@@ -281,11 +300,12 @@ export function AddRecipeScreen() {
               : t("recipe.saveButton")}
           </Text>
         </Pressable>
-      </ScrollView>
+      </View>
 
       <ProductPickerModal
         visible={pickerVisible}
         products={products}
+        selectedIds={selectedIngredientProductIds}
         onSelect={addIngredient}
         onClose={() => setPickerVisible(false)}
       />

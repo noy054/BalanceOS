@@ -28,7 +28,8 @@
     "saveButton": "Save Profile",
     "saving": "Saving...",
     "row": "Name & Profile",
-    "rowSubtitle": "Name, physique, goal"
+    "rowSubtitle": "Name, physique, goal",
+    "bodyDetailsTitle": "Body Details & Activity"
   },
   "languageDisplay": {
     "screenTitle": "Language & Display",
@@ -77,19 +78,35 @@
   },
   "tracking": {
     "screenTitle": "Tracking Preferences",
-    "row": "Tracking Preferences",
-    "rowSubtitle": "Home screen display options",
-    "section": "Home Screen",
-    "showFiber": "Show Fiber",
-    "showFiberHint": "Display fiber macro on home dashboard",
-    "showCarbsAndFat": "Show Carbs & Fat",
-    "showCarbsAndFatHint": "Display carbs and fat macros on home dashboard",
-    "showProgress": "Show Progress %",
-    "showProgressHint": "Show percentage bars for daily targets",
-    "showWeeklyBalance": "Show Weekly Balance",
-    "showWeeklyBalanceHint": "Display weekly calorie balance summary",
-    "showGuidedSuggestions": "Guided Suggestions",
-    "showGuidedSuggestionsHint": "Show smart meal suggestions"
+    "homeDisplaySection": "Home Display",
+    "guidedSection": "Guided Mode",
+    "unitsSection": "Units",
+
+    "showFiber": "Show fiber",
+    "showFiberHint": "Show fiber in the home macro card",
+
+    "showCarbs": "Show carbs",
+    "showCarbsHint": "Show carbs on the home screen",
+
+    "showFat": "Show fat",
+    "showFatHint": "Show fat on the home screen",
+
+    "showProgress": "Show progress percentages",
+    "showProgressHint": "Show percentages and progress rings",
+
+    "showGuidedSuggestions": "Show suggestions",
+    "showGuidedSuggestionsHint": "Helpful suggestions for guided users",
+
+    "showMotivation": "Show motivation",
+    "showMotivationHint": "Motivational messages and reminders",
+
+    "defaultFoodUnit": "Default food unit",
+
+    "units": {
+      "GRAMS": "Grams",
+      "SERVING": "Serving",
+      "PIECE": "Piece"
+    }
   },
   "notifications": {
     "screenTitle": "Notifications",
@@ -168,6 +185,7 @@
     "saveFailed": "Failed to save",
     "changePasswordFailed": "Failed to change password",
     "deleteAccountFailed": "Failed to delete account",
-    "profileSaveFailed": "Failed to save profile"
+    "profileSaveFailed": "Failed to save profile",
+    "fullNameRequired": "Full name is required"
   }
 }

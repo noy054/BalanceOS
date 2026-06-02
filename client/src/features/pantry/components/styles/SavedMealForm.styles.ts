@@ -73,6 +73,7 @@ export const styles = StyleSheet.create({
   },
 
   mealTypeRow: {
+    flexDirection: "row",
     gap: spacing.sm,
     paddingVertical: spacing.xs,
   },
@@ -122,10 +123,11 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.cardBackgroundStrong,
     borderRadius: radius.lg,
-    padding: spacing.sm,
+    paddingVertical: spacing.sm2,
+    paddingHorizontal: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
-    gap: spacing.sm,
+    gap: spacing.md,
   },
 
   itemInfo: {
@@ -140,8 +142,8 @@ export const styles = StyleSheet.create({
   },
 
   itemKind: {
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: 12,
+    fontWeight: "600",
     color: colors.textMuted,
     marginTop: 2,
   },

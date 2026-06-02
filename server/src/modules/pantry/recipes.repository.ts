@@ -51,6 +51,7 @@ export class RecipesRepository {
         userId,
         name: dto.name,
         description: dto.description,
+        mealType: dto.mealType ?? null,
         items: {
           create: dto.items.map((item) => ({
             productId: item.productId,
@@ -77,6 +78,7 @@ export class RecipesRepository {
     id: string,
     name: string | undefined,
     description: string | undefined,
+    mealType: string | undefined,
     items: RecipeItemDto[] | undefined,
   ) {
     return this.prisma.$transaction(async (tx) => {
@@ -97,6 +99,7 @@ export class RecipesRepository {
         data: {
           ...(name !== undefined ? { name } : {}),
           ...(description !== undefined ? { description } : {}),
+          ...(mealType !== undefined ? { mealType } : {}),
         },
         include: RECIPE_INCLUDE,
       });

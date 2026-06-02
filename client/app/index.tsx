@@ -11,7 +11,10 @@ export default function Index() {
   const isHydrating = useAuthStore((s) => s.isHydrating);
   const isLanguageReady = useAuthStore((s) => s.isLanguageReady);
   const hasSelectedLanguage = useAuthStore((s) => s.hasSelectedLanguage);
-  const { data: settings, isLoading } = useNutritionSettings();
+  // isPending = status is 'pending' (no data yet), even before isFetching becomes true.
+  // This prevents a one-frame race where enabled just became true but the fetch
+  // hasn't started yet, which would incorrectly redirect to onboarding.
+  const { data: settings, isPending } = useNutritionSettings();
 
   if (isHydrating || !isLanguageReady) {
     return (
@@ -25,7 +28,7 @@ export default function Index() {
 
   if (!isAuthenticated) return <Redirect href="/(auth)/login" />;
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />

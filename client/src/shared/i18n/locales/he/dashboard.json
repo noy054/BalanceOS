@@ -27,10 +27,11 @@
     "pantry": "מזווה",
     "add": "הוסף",
     "statistics": "סטטיסטיקות",
-    "profile": "פרופיל"
+    "settings": "הגדרות"
   },
   "addItem": {
     "title": "הוסף ל{{mealType}}",
+    "titleGeneral": "הוספה",
     "tabProducts": "מוצרים",
     "tabRecipes": "מתכונים",
     "tabSavedMeals": "ארוחות שמורות",
@@ -45,6 +46,13 @@
     "loadError": "שגיאה בטעינה",
     "logError": "שגיאה בשמירה",
     "wholeMeal": "הוסף ארוחה שלמה",
-    "selectItem": "בחר פריט מהרשימה למעלה"
+    "selectItem": "בחר פריט מהרשימה למעלה",
+    "done": "סיום",
+    "added": "נוסף",
+    "chooseMealType": "בחר סוג ארוחה להמשך",
+    "addToList": "הוסף לרשימה",
+    "saveButton": "שמור ל{{mealType}}",
+    "saving": "שומר...",
+    "cartItems": "{{count}} פריטים להוספה"
   }
 }

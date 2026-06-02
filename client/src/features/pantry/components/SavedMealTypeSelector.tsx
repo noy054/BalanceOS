@@ -13,19 +13,17 @@ type Props = {
 
 export function SavedMealTypeSelector({
   selectedMealType,
-  isRTL,
   onSelect,
 }: Props) {
   const { t } = useTranslation("pantry");
 
+  // System RTL (I18nManager.forceRTL set in _layout.tsx) reverses "row" automatically.
+  // No manual flexDirection override or array reversal needed.
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={[
-        styles.mealTypeRow,
-        { flexDirection: isRTL ? "row-reverse" : "row" },
-      ]}
+      contentContainerStyle={styles.mealTypeRow}
     >
       {MEAL_TYPES.map((type) => {
         const isActive = selectedMealType === type;

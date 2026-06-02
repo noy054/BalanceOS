@@ -95,6 +95,9 @@ export const styles = StyleSheet.create({
     opacity: 0.86,
     transform: [{ scale: 0.97 }],
   },
+  headerBlock: {
+    gap: 4,
+  },
 
   calcResultCard: {
     marginTop: spacing.sm,

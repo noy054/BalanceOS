@@ -27,7 +27,22 @@ export function ProductDetailScreen({ id }: Props) {
     useProductCalculator(product);
 
   function handleEdit() {
-    // TODO: edit product
+    router.push({
+      pathname: "/(app)/pantry/add-product",
+      params: {
+        id,
+        mode: "edit",
+      },
+    });
+  }
+
+  function navigateAfterDelete() {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace("/(app)/pantry");
   }
 
   function handleDelete() {
@@ -35,14 +50,17 @@ export function ProductDetailScreen({ id }: Props) {
       t("productDetail.deleteConfirmTitle"),
       t("productDetail.deleteConfirmMessage"),
       [
-        { text: t("productDetail.deleteConfirmNo"), style: "cancel" },
+        {
+          text: t("productDetail.deleteConfirmNo"),
+          style: "cancel",
+        },
         {
           text: t("productDetail.deleteConfirmYes"),
           style: "destructive",
           onPress: async () => {
             try {
               await deleteProduct.mutateAsync(id);
-              router.back();
+              navigateAfterDelete();
             } catch {
               Alert.alert("", t("errors.deleteFailed"));
             }
@@ -81,6 +99,7 @@ export function ProductDetailScreen({ id }: Props) {
 
       <ScreenHeader
         title={product.name}
+        fallbackRoute="/(app)/pantry"
         rightElement={
           <ProductHeaderActions
             isRTL={isRTL}

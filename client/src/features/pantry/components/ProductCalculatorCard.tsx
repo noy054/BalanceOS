@@ -29,24 +29,14 @@ export function ProductCalculatorCard({
 
   return (
     <View style={styles.calculatorCard}>
-      <View style={[styles.sectionHeaderRow, dir.row]}>
-        <View>
-          <Text style={[styles.sectionTitle, dir.text]}>
-            {t("productDetail.calculator")}
-          </Text>
+      <View style={styles.headerBlock}>
+        <Text style={[styles.sectionTitle, dir.text]}>
+          {t("productDetail.calculator")}
+        </Text>
 
-          <Text style={[styles.sectionHint, dir.text]}>
-            {t("productDetail.calculatorHint")}
-          </Text>
-        </View>
-
-        <View style={styles.calculatorIconBubble}>
-          <MaterialCommunityIcons
-            name="calculator-variant-outline"
-            size={22}
-            color={colors.primaryGreen}
-          />
-        </View>
+        <Text style={[styles.sectionHint, dir.text]}>
+          {t("productDetail.calculatorHint")}
+        </Text>
       </View>
 
       <View style={[styles.calcRow, dir.row]}>

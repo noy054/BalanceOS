@@ -18,6 +18,9 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
 
+  dateInputPressed: {
+    opacity: 0.82,
+  },
   glowTop: {
     position: "absolute",
     top: -70,

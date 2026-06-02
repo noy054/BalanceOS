@@ -52,6 +52,11 @@ export function AddSavedMealScreen() {
 
   const hasTotals = liveTotals.calories > 0;
 
+  const selectedProductIds = useMemo(
+    () => items.filter((i) => i.kind === "product").map((i) => i.product.id),
+    [items],
+  );
+
   function addProduct(product: PantryProduct) {
     setItems((prev) => [
       ...prev,
@@ -59,11 +64,11 @@ export function AddSavedMealScreen() {
         kind: "product",
         key: makeSavedMealDraftKey(),
         product,
-        grams: "",
+        grams: "100",
       },
     ]);
 
-    setProductPickerVisible(false);
+    // Picker stays open so the user can add more products in the same session.
   }
 
   function addRecipe(recipe: PantryRecipe) {
@@ -182,6 +187,9 @@ export function AddSavedMealScreen() {
           </View>
         ) : null}
 
+      </ScrollView>
+
+      <View style={styles.footer}>
         <Pressable
           style={({ pressed }) => [
             styles.saveBtn,
@@ -197,11 +205,12 @@ export function AddSavedMealScreen() {
               : t("savedMeal.saveButton")}
           </Text>
         </Pressable>
-      </ScrollView>
+      </View>
 
       <ProductPickerModal
         visible={productPickerVisible}
         products={products}
+        selectedIds={selectedProductIds}
         onSelect={addProduct}
         onClose={() => setProductPickerVisible(false)}
       />
