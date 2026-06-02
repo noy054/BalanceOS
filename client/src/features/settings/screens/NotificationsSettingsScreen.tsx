@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ScrollView, View, Text, TextInput, Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -73,6 +73,26 @@ export function NotificationsSettingsScreen() {
   const [weeklyDay, setWeeklyDay] = useState(settings?.weeklySummaryDay?.toString() ?? '0');
   const [weeklyTime, setWeeklyTime] = useState(settings?.weeklySummaryTime ?? '');
   const [isSaving, setIsSaving] = useState(false);
+
+  const settingsInitialized = useRef(false);
+  useEffect(() => {
+    if (settings && !settingsInitialized.current) {
+      settingsInitialized.current = true;
+      setBreakfast(settings.breakfastReminderEnabled ?? false);
+      setBreakfastTime(settings.breakfastReminderTime ?? '');
+      setLunch(settings.lunchReminderEnabled ?? false);
+      setLunchTime(settings.lunchReminderTime ?? '');
+      setDinner(settings.dinnerReminderEnabled ?? false);
+      setDinnerTime(settings.dinnerReminderTime ?? '');
+      setWater(settings.waterReminderEnabled ?? false);
+      setWaterInterval(settings.waterReminderInterval?.toString() ?? '');
+      setDaily(settings.dailySummaryEnabled ?? false);
+      setDailyTime(settings.dailySummaryTime ?? '');
+      setWeekly(settings.weeklySummaryEnabled ?? false);
+      setWeeklyDay(settings.weeklySummaryDay?.toString() ?? '0');
+      setWeeklyTime(settings.weeklySummaryTime ?? '');
+    }
+  }, [settings]);
 
   async function handleSave() {
     setIsSaving(true);

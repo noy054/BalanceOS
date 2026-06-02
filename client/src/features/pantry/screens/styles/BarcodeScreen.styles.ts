@@ -216,4 +216,93 @@ export const styles = StyleSheet.create({
     color: colors.textPrimary,
     letterSpacing: 0.1,
   },
+
+  // ── Camera ─────────────────────────────────────────────────────────────────
+  camera: {
+    ...StyleSheet.absoluteFill,
+  },
+
+  loadingOverlay: {
+    ...StyleSheet.absoluteFill,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    backgroundColor: "rgba(0,0,0,0.55)",
+  },
+
+  loadingText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#fff",
+  },
+
+  // ── Permission ─────────────────────────────────────────────────────────────
+  permissionCard: {
+    borderRadius: radius.xxl,
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xl,
+    alignItems: "center",
+    gap: spacing.md,
+  },
+
+  permissionTitle: {
+    fontSize: 17,
+    fontWeight: "800",
+    color: colors.textPrimary,
+    lineHeight: 24,
+    alignSelf: "stretch",
+  },
+
+  permissionMessage: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: colors.textMuted,
+    lineHeight: 20,
+    alignSelf: "stretch",
+  },
+
+  permissionBtn: {
+    minHeight: 50,
+    alignSelf: "stretch",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.primaryGreen,
+    borderRadius: radius.xl,
+    marginTop: spacing.xs,
+  },
+
+  permissionBtnPressed: { opacity: 0.85, transform: [{ scale: 0.985 }] },
+
+  permissionBtnText: {
+    fontSize: 15,
+    fontWeight: "800",
+    color: "#000",
+  },
+
+  // ── Not found ──────────────────────────────────────────────────────────────
+  notFoundBanner: {
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.cardBackgroundStrong,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+
+  notFoundTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.textPrimary,
+  },
+
+  notFoundHint: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: colors.textMuted,
+  },
 });

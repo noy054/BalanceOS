@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ScrollView, View, Text, Alert, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -49,6 +49,19 @@ export function ProfileSettingsScreen() {
   );
   const [nameError, setNameError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+
+  const settingsInitialized = useRef(false);
+  useEffect(() => {
+    if (settings && !settingsInitialized.current) {
+      settingsInitialized.current = true;
+      setHeightCm(settings.heightCm?.toString() ?? "");
+      setWeightKg(settings.weightKg?.toString() ?? "");
+      setTrainingDays(settings.trainingDaysPerWeek?.toString() ?? "");
+      setBirthDate(settings.birthDate?.slice(0, 10) ?? "");
+      setGender(settings.gender ?? "");
+      setGoalType(settings.goalType ?? "");
+    }
+  }, [settings]);
 
   async function handleSave() {
     if (!fullName.trim()) {

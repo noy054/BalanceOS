@@ -36,7 +36,7 @@ export function SettingsRow({
       <View style={[styles.right, dir.rightRow]}>
         {rightElement ?? null}
         {onPress && showChevron ? (
-          <MaterialCommunityIcons name="chevron-left" size={20} color={colors.textMuted} />
+          <MaterialCommunityIcons name={isRTL ? 'chevron-left' : 'chevron-right'} size={20} color={colors.textMuted} />
         ) : null}
       </View>
     </View>
