@@ -4,17 +4,17 @@ import { colors, spacing, radius } from '../../../../shared/theme';
 export const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: colors.cardBackground,
+    backgroundColor: colors.inputBackground,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
     marginHorizontal: spacing.md,
     paddingHorizontal: spacing.sm,
-    height: 46,
+    height: 50,
   },
   icon: {
     marginEnd: spacing.xs,
-    opacity: 0.55,
+    opacity: 0.45,
   },
   input: {
     flex: 1,

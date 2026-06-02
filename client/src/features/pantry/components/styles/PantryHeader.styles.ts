@@ -8,13 +8,14 @@ export const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.xs,
+    backgroundColor: 'transparent',
   },
   textGroup: {
     flex: 1,
   },
   title: {
     fontSize: 26,
-    fontWeight: '800',
+    fontWeight: '900',
     color: colors.textPrimary,
     letterSpacing: -0.5,
   },

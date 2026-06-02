@@ -1,134 +1,79 @@
-import { StyleSheet } from 'react-native';
-import { colors, spacing, radius, cardShadow } from '../../../../shared/theme';
+import { StyleSheet } from "react-native";
 
-export const rowStyles = StyleSheet.create({
-  row: {
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-  },
-  rowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  label: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  labelHighlight: {
-    color: colors.textPrimary,
-    fontWeight: '600',
-  },
-  value: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textPrimary,
-  },
-  valueHighlight: {
-    fontSize: 16,
-    color: colors.primaryGreen,
-    fontWeight: '700',
-  },
-  unit: {
-    fontSize: 12,
-    fontWeight: '400',
-    color: colors.textMuted,
-  },
-});
+import { colors, spacing } from "../../../../shared/theme";
+
+export function getDirectionStyles(isRTL: boolean) {
+  return {
+    row: {
+      flexDirection: isRTL ? "row-reverse" : "row",
+    } as const,
+    text: {
+      textAlign: isRTL ? "right" : "left",
+      writingDirection: isRTL ? "rtl" : "ltr",
+    } as const,
+  };
+}
 
 export const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: colors.background,
   },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+
+  backgroundLayer: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    overflow: "hidden",
+    backgroundColor: colors.background,
   },
-  errorText: {
-    fontSize: 14,
-    color: colors.textMuted,
+
+  glowTop: {
+    position: "absolute",
+    top: -60,
+    left: -40,
+    right: -40,
+    height: 220,
+    borderBottomLeftRadius: 90,
+    borderBottomRightRadius: 90,
+    backgroundColor: "rgba(255,255,255,0.03)",
   },
-  headerActions: {
-    gap: spacing.xs,
+
+  glowSide: {
+    position: "absolute",
+    top: 210,
+    right: -100,
+    width: 220,
+    height: 420,
+    borderRadius: 130,
+    backgroundColor: "rgba(49, 216, 107, 0.055)",
+    transform: [{ rotate: "12deg" }],
   },
-  headerActionBtn: {
-    padding: spacing.xs,
-  },
+
   scroll: {
     flex: 1,
   },
+
   content: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  barcodeRow: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: spacing.xs,
-    marginBottom: spacing.sm,
-  },
-  barcodeText: {
-    fontSize: 13,
-    color: colors.textMuted,
-  },
-  nutritionCard: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    ...cardShadow,
-  },
-  calcHint: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginBottom: spacing.sm,
-  },
-  calcRow: {
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  calcInput: {
-    flex: 1,
-    backgroundColor: colors.cardBackground,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    fontSize: 15,
-    color: colors.textPrimary,
-  },
-  calcBtn: {
-    backgroundColor: colors.primaryGreen,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  calcResultCard: {
-    backgroundColor: colors.primaryGreenLight,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-  },
-  calcResultTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: colors.primaryGreen,
+    paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
-    paddingBottom: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.primaryGreenMid,
+    paddingBottom: 42,
+    gap: spacing.lg,
+  },
+
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.xl,
+  },
+
+  errorText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.danger,
+    textAlign: "center",
   },
 });
-
-export function getDirectionStyles(isRTL: boolean) {
-  return {
-    text: {
-      textAlign: isRTL ? 'right' as const : 'left' as const,
-      writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,
-    },
-    row: {
-      flexDirection: isRTL ? 'row-reverse' as const : 'row' as const,
-    },
-  };
-}

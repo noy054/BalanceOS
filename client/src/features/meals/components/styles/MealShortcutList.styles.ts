@@ -1,10 +1,10 @@
-import { StyleSheet } from 'react-native';
-import { spacing } from '../../../../shared/theme';
+import { StyleSheet } from "react-native";
+
+import { homeDashboardSpacing } from "../../../day-log/constants/homeDashboardTheme";
 
 export const styles = StyleSheet.create({
   row: {
-    // flexDirection applied dynamically via isRTL
-    marginHorizontal: spacing.md,
-    gap: spacing.sm,
+    gap: homeDashboardSpacing.sm,
+    alignItems: "stretch",
   },
 });

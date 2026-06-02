@@ -2,9 +2,9 @@ import { Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
+import { colors } from "../../../shared/theme";
 import { MacroItem } from "../types";
 import { MACRO_CONFIG } from "../constants/macros";
-import { homeDashboardColors } from "../constants/homeDashboardTheme";
 import { styles } from "./styles/MacroProgressItem.styles";
 
 type Props = {
@@ -12,10 +12,10 @@ type Props = {
 };
 
 const macroColors: Record<MacroItem["key"], string> = {
-  protein: homeDashboardColors.lime,
-  carbs: homeDashboardColors.green,
-  fat: homeDashboardColors.warning,
-  fiber: homeDashboardColors.cyan,
+  protein: colors.macroProtein,
+  carbs: colors.macroCarbs,
+  fat: colors.macroFat,
+  fiber: colors.macroFiber,
 };
 
 export function MacroProgressItem({ macro }: Props) {
@@ -23,11 +23,11 @@ export function MacroProgressItem({ macro }: Props) {
   const config = MACRO_CONFIG[macro.key];
   const progress =
     macro.target > 0 ? Math.min(macro.current / macro.target, 1) : 0;
-  const accentColor = macroColors[macro.key] ?? homeDashboardColors.lime;
+  const accentColor = macroColors[macro.key] ?? colors.primaryGreen;
 
   return (
     <View style={styles.container}>
-      <View style={[styles.iconBubble, { borderColor: `${accentColor}33` }]}>
+      <View style={[styles.iconBubble, { borderColor: `${accentColor}55` }]}>
         <MaterialCommunityIcons
           name={
             config.icon as React.ComponentProps<

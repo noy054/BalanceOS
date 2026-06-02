@@ -10,9 +10,11 @@ export const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm2 + 2,
     paddingBottom: spacing.sm2,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...cardShadow,
   },
-  cardPressed: { opacity: 0.82 },
+  cardPressed: { opacity: 0.78 },
   topRow: {
     alignItems: 'flex-start',
     marginBottom: spacing.xs,

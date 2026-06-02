@@ -1,26 +1,22 @@
 import { Platform, StyleSheet } from "react-native";
 
-import {
-  homeDashboardColors,
-  homeDashboardRadius,
-  homeDashboardSpacing,
-} from "../../constants/homeDashboardTheme";
+import { colors, radius, spacing } from "../../../../shared/theme";
 
 export const styles = StyleSheet.create({
   card: {
     minHeight: 278,
-    borderRadius: homeDashboardRadius.xxl,
-    paddingTop: homeDashboardSpacing.xl,
-    paddingHorizontal: homeDashboardSpacing.xl,
-    paddingBottom: homeDashboardSpacing.lg,
+    borderRadius: radius.xxl,
+    paddingTop: spacing.xl,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.lg,
     overflow: "hidden",
-    backgroundColor: "rgba(12, 16, 14, 0.96)",
+    backgroundColor: colors.cardBackground,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.10)",
+    borderColor: colors.borderStrong,
     justifyContent: "space-between",
     ...Platform.select({
       ios: {
-        shadowColor: "rgba(0, 0, 0, 0.72)",
+        shadowColor: colors.shadow,
         shadowOpacity: 1,
         shadowRadius: 34,
         shadowOffset: { width: 0, height: 22 },
@@ -44,15 +40,15 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 13,
     paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: "rgba(185, 255, 59, 0.10)",
+    backgroundColor: colors.primaryGreenLight,
     borderWidth: 1,
-    borderColor: "rgba(185, 255, 59, 0.24)",
+    borderColor: colors.primaryGreenMid,
   },
 
   badgeText: {
     fontSize: 13,
     fontWeight: "900",
-    color: homeDashboardColors.lime,
+    color: colors.primaryGreen,
     letterSpacing: 0.2,
   },
 
@@ -63,7 +59,7 @@ export const styles = StyleSheet.create({
 
   label: {
     fontSize: 15,
-    color: "rgba(245, 255, 247, 0.68)",
+    color: colors.textSecondary,
     fontWeight: "800",
     textAlign: "center",
     letterSpacing: 0.25,
@@ -79,7 +75,7 @@ export const styles = StyleSheet.create({
   remainingNumber: {
     fontSize: 92,
     fontWeight: "900",
-    color: "#F7FFF8",
+    color: colors.textPrimary,
     lineHeight: 98,
     textAlign: "center",
     letterSpacing: -5.5,
@@ -88,14 +84,14 @@ export const styles = StyleSheet.create({
   unit: {
     fontSize: 15,
     fontWeight: "900",
-    color: homeDashboardColors.lime,
+    color: colors.primaryGreen,
     marginBottom: 19,
     letterSpacing: 0.2,
   },
 
   summary: {
     fontSize: 14,
-    color: "rgba(245, 255, 247, 0.48)",
+    color: colors.textMuted,
     fontWeight: "700",
     marginTop: 3,
     textAlign: "center",
@@ -108,16 +104,16 @@ export const styles = StyleSheet.create({
   progressTrack: {
     width: "100%",
     height: 13,
-    backgroundColor: "rgba(255, 255, 255, 0.10)",
+    backgroundColor: colors.progressTrack,
     borderRadius: 999,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.06)",
+    borderColor: colors.border,
   },
 
   progressFill: {
     height: "100%",
-    backgroundColor: homeDashboardColors.lime,
+    backgroundColor: colors.primaryGreen,
     borderRadius: 999,
   },
 
@@ -129,6 +125,6 @@ export const styles = StyleSheet.create({
   progressLabel: {
     fontSize: 12,
     fontWeight: "800",
-    color: "rgba(245, 255, 247, 0.42)",
+    color: colors.textMuted,
   },
 });

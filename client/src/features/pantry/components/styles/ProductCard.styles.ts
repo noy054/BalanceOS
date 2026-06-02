@@ -6,8 +6,8 @@ export const pillStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'baseline',
     backgroundColor: colors.primaryGreenLight,
-    borderRadius: 5,
-    paddingHorizontal: 5,
+    borderRadius: 6,
+    paddingHorizontal: 6,
     paddingVertical: 2,
     marginEnd: spacing.xs,
     marginTop: 5,
@@ -36,10 +36,12 @@ export const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm2 + 2,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...cardShadow,
   },
   cardPressed: {
-    opacity: 0.82,
+    opacity: 0.78,
   },
   mainRow: {
     alignItems: 'center',
@@ -55,7 +57,7 @@ export const styles = StyleSheet.create({
   },
   brand: {
     fontSize: 12,
-    color: colors.textSecondary,
+    color: colors.textMuted,
     marginBottom: 2,
   },
   macroRow: {

@@ -15,13 +15,13 @@ export const styles = StyleSheet.create({
   saveBtn: {
     backgroundColor: colors.primaryGreen,
     borderRadius: radius.md,
-    height: 52,
+    height: 56,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: spacing.sm,
   },
   saveBtnPressed: { opacity: 0.85 },
-  saveBtnText: { fontSize: 15, fontWeight: '700', color: colors.cardBackground, letterSpacing: 0.2 },
+  saveBtnText: { fontSize: 15, fontWeight: '800', color: '#081008', letterSpacing: 0.2 },
 });
 
 export function getDirectionStyles(isRTL: boolean) {

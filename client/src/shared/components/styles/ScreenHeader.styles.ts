@@ -1,25 +1,28 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { colors, spacing } from '../../theme';
 
 export const styles = StyleSheet.create({
   container: {
-    // flexDirection is applied dynamically via isRTL in the component
     alignItems: 'center',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm2,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 12,
     minHeight: 56,
     backgroundColor: colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.06)',
   },
   backBtn: {
     width: 40,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
   },
   title: {
     flex: 1,
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.textPrimary,
     textAlign: 'center',
     letterSpacing: -0.3,

@@ -6,11 +6,11 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: spacing.lg,
-    backgroundColor: colors.cardBackground,
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 26,
-    fontWeight: '700',
+    fontWeight: '900',
     color: colors.textPrimary,
     marginBottom: spacing.md,
     letterSpacing: -0.3,
@@ -21,8 +21,8 @@ export const styles = StyleSheet.create({
     lineHeight: 22,
     marginBottom: spacing.md,
   },
-  btnContent: { height: 52 },
-  btnLabel: { fontSize: 15, fontWeight: '600', letterSpacing: 0.2 },
+  btnContent: { height: 56 },
+  btnLabel: { fontSize: 15, fontWeight: '800', letterSpacing: 0.2, color: '#081008' },
   button: { marginTop: spacing.sm, borderRadius: radius.md },
 });
 

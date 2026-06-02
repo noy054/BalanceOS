@@ -6,6 +6,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
   },
   tab: {
     flex: 1,

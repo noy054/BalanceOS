@@ -97,6 +97,7 @@ export default function LoginScreen() {
         loading={login.isPending}
         disabled={isLoading || !email || !password}
         buttonColor={colors.primaryGreen}
+        textColor="#081008"
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}
         style={styles.primaryBtn}

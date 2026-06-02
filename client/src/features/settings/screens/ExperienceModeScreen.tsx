@@ -34,13 +34,13 @@ function ModeCard({ mode: _mode, title, description, icon, active, isRTL, onPres
           <MaterialCommunityIcons
             name={icon}
             size={22}
-            color={active ? colors.cardBackground : colors.textSecondary}
+            color={active ? '#081008' : colors.textSecondary}
           />
         </View>
         <Text style={[styles.cardTitle, active && styles.cardTitleActive, dir.text]}>{title}</Text>
         <View style={[styles.radio, active && styles.radioActive]}>
           {active ? (
-            <MaterialCommunityIcons name="check" size={14} color={colors.cardBackground} />
+            <MaterialCommunityIcons name="check" size={14} color="#081008" />
           ) : null}
         </View>
       </View>

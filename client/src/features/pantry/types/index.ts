@@ -18,7 +18,7 @@ export type PantryProduct = {
 export type CreatePantryProductPayload = {
   name: string;
   brand?: string;
-  barcode?: string;
+  imageUrl?: string;
   caloriesPer100g: number;
   proteinPer100g: number;
   carbsPer100g: number;
@@ -38,9 +38,9 @@ export type NutritionTotals = {
   fiber: number;
 };
 
-export type PantryTab = 'products' | 'recipes' | 'savedMeals';
+export type PantryTab = "products" | "recipes" | "savedMeals";
 
-export type MealType = 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK_1' | 'SNACK_2';
+export type MealType = "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK_1" | "SNACK_2";
 
 // kept for ProductDetailScreen calculator
 export type CalculatedNutrition = {
@@ -55,7 +55,14 @@ export type CalculatedNutrition = {
 
 export type RecipeItemProduct = Pick<
   PantryProduct,
-  'id' | 'name' | 'brand' | 'caloriesPer100g' | 'proteinPer100g' | 'carbsPer100g' | 'fatPer100g' | 'fiberPer100g'
+  | "id"
+  | "name"
+  | "brand"
+  | "caloriesPer100g"
+  | "proteinPer100g"
+  | "carbsPer100g"
+  | "fatPer100g"
+  | "fiberPer100g"
 >;
 
 export type RecipeItem = {
@@ -99,7 +106,11 @@ export type SavedMealItem = {
   grams: number | null;
   servings: number | null;
   product: RecipeItemProduct | null;
-  recipe: { id: string; name: string; items: Array<{ grams: number; product: RecipeItemProduct }> } | null;
+  recipe: {
+    id: string;
+    name: string;
+    items: Array<{ grams: number; product: RecipeItemProduct }>;
+  } | null;
   nutrition: NutritionTotals;
 };
 
@@ -128,5 +139,5 @@ export type CreateSavedMealPayload = {
 export type UpdateSavedMealPayload = {
   name?: string;
   mealType?: string;
-  items?: CreateSavedMealPayload['items'];
+  items?: CreateSavedMealPayload["items"];
 };

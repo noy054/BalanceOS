@@ -6,11 +6,11 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: spacing.lg,
-    backgroundColor: colors.cardBackground,
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 26,
-    fontWeight: '700',
+    fontWeight: '900',
     color: colors.textPrimary,
     marginBottom: spacing.xs,
     letterSpacing: -0.3,
@@ -30,13 +30,17 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.cardBackground,
     ...cardShadow,
   },
+  cardActive: {
+    borderColor: colors.primaryGreen,
+    backgroundColor: colors.primaryGreenLight,
+  },
   cardPressed: {
     opacity: 0.85,
     borderColor: colors.primaryGreen,
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.textPrimary,
     marginBottom: spacing.xs,
   },
@@ -44,6 +48,13 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     lineHeight: 20,
+  },
+  selectedIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.primaryGreen,
+    marginTop: spacing.sm,
   },
 });
 

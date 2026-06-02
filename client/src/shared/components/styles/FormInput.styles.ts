@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { colors, spacing, radius } from '../../theme';
 
 export const styles = StyleSheet.create({
@@ -7,12 +7,13 @@ export const styles = StyleSheet.create({
   },
   label: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.textSecondary,
     marginBottom: spacing.xs,
+    letterSpacing: 0.1,
   },
   input: {
-    backgroundColor: colors.cardBackground,
+    backgroundColor: colors.inputBackground,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.sm,
@@ -20,16 +21,17 @@ export const styles = StyleSheet.create({
     paddingVertical: spacing.sm2,
     fontSize: 15,
     color: colors.textPrimary,
-    minHeight: 48,
+    minHeight: 52,
   },
   inputError: {
     borderColor: colors.danger,
+    borderWidth: 1.5,
   },
   inputDisabled: {
-    opacity: 0.5,
+    opacity: 0.45,
   },
   inputMultiline: {
-    minHeight: 80,
+    minHeight: 84,
     paddingTop: spacing.sm,
     textAlignVertical: 'top',
   },
@@ -37,6 +39,7 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.danger,
     marginTop: spacing.xs,
+    fontWeight: '600',
   },
 });
 

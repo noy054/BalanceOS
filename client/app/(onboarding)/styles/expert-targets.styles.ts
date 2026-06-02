@@ -4,7 +4,7 @@ import { colors, spacing, radius } from '../../../src/shared/theme';
 export const styles = StyleSheet.create({
   title: {
     fontSize: 26,
-    fontWeight: '700',
+    fontWeight: '900',
     color: colors.textPrimary,
     marginBottom: spacing.xs,
     letterSpacing: -0.3,
@@ -15,9 +15,9 @@ export const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     lineHeight: 20,
   },
-  input: { marginBottom: spacing.sm, backgroundColor: colors.cardBackground },
-  btnContent: { height: 52 },
-  btnLabel: { fontSize: 15, fontWeight: '600', letterSpacing: 0.2 },
+  input: { marginBottom: spacing.sm, backgroundColor: colors.inputBackground },
+  btnContent: { height: 56 },
+  btnLabel: { fontSize: 15, fontWeight: '800', letterSpacing: 0.2, color: '#081008' },
   button: { marginTop: spacing.sm, borderRadius: radius.md },
 });
 

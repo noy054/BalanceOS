@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     paddingBottom: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    backgroundColor: colors.cardBackground,
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 17,
@@ -23,16 +23,16 @@ export const styles = StyleSheet.create({
   },
   searchRow: {
     alignItems: 'center',
-    backgroundColor: colors.cardBackground,
+    backgroundColor: colors.inputBackground,
     marginHorizontal: spacing.md,
     marginVertical: spacing.sm,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
     paddingHorizontal: spacing.sm,
-    height: 44,
+    height: 50,
   },
-  searchIcon: { marginEnd: spacing.xs },
+  searchIcon: { marginEnd: spacing.xs, opacity: 0.45 },
   searchInput: {
     flex: 1,
     fontSize: 15,
@@ -42,11 +42,11 @@ export const styles = StyleSheet.create({
   item: {
     alignItems: 'center',
     paddingVertical: spacing.md,
-    backgroundColor: colors.cardBackground,
+    backgroundColor: 'transparent',
     borderRadius: radius.sm,
     paddingHorizontal: spacing.md,
   },
-  itemPressed: { opacity: 0.7 },
+  itemPressed: { opacity: 0.65 },
   itemInfo: { flex: 1 },
   itemName: {
     fontSize: 14,

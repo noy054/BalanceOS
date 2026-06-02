@@ -8,10 +8,11 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.xl,
+    backgroundColor: 'transparent',
   },
   icon: {
     marginBottom: spacing.md,
-    opacity: 0.45,
+    opacity: 0.35,
   },
   message: {
     fontSize: 16,

@@ -2,7 +2,7 @@ import { Pressable, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
-import { homeDashboardColors } from "../constants/homeDashboardTheme";
+import { colors } from "../../../shared/theme";
 import { styles } from "./styles/HomeHeader.styles";
 
 type Props = {
@@ -27,7 +27,7 @@ export function HomeHeader({ onSettingsPress }: Props) {
           <MaterialCommunityIcons
             name="leaf"
             size={18}
-            color={homeDashboardColors.lime}
+            color={colors.primaryGreen}
             style={styles.logoLeaf}
           />
         </View>
@@ -45,7 +45,7 @@ export function HomeHeader({ onSettingsPress }: Props) {
         <MaterialCommunityIcons
           name="cog-outline"
           size={24}
-          color={homeDashboardColors.textPrimary}
+          color={colors.textPrimary}
         />
       </Pressable>
     </View>

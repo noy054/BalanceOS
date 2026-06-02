@@ -25,14 +25,14 @@ export const styles = StyleSheet.create({
     minHeight: 44,
   },
   actionBtnOutline: {
-    backgroundColor: colors.cardBackground,
+    backgroundColor: 'transparent',
     borderWidth: 1.5,
     borderColor: colors.primaryGreen,
   },
   actionBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: colors.cardBackground,
+    color: '#081008',
     letterSpacing: 0.1,
   },
   actionBtnTextOutline: {

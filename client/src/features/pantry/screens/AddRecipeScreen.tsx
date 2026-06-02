@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -6,20 +6,21 @@ import {
   ScrollView,
   Pressable,
   Alert,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useTranslation } from 'react-i18next';
-import { router } from 'expo-router';
-import { useCreateRecipe } from '../hooks/useRecipes';
-import { usePantryProducts } from '../hooks/usePantry';
-import { ProductPickerModal } from '../components/ProductPickerModal';
-import { NutritionTotals } from '../components/NutritionTotals';
-import { calcProductNutrition, sumNutrition } from '../helpers/nutrition';
-import { PantryProduct } from '../types';
-import { ScreenHeader } from '../../../shared/components/ScreenHeader';
-import { colors } from '../../../shared/theme';
-import { styles, getDirectionStyles } from './styles/AddRecipeScreen.styles';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTranslation } from "react-i18next";
+import { router } from "expo-router";
+
+import { useCreateRecipe } from "../hooks/useRecipes";
+import { usePantryProducts } from "../hooks/usePantry";
+import { ProductPickerModal } from "../components/ProductPickerModal";
+import { NutritionTotals } from "../components/NutritionTotals";
+import { calcProductNutrition, sumNutrition } from "../helpers/nutrition";
+import { PantryProduct } from "../types";
+import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { colors } from "../../../shared/theme";
+import { styles, getDirectionStyles } from "./styles/AddRecipeScreen.styles";
 
 type IngredientDraft = {
   key: string;
@@ -32,32 +33,45 @@ function makeKey() {
 }
 
 export function AddRecipeScreen() {
-  const { t, i18n } = useTranslation('pantry');
-  const isRTL = i18n.dir(i18n.language) === 'rtl';
+  const { t, i18n } = useTranslation("pantry");
+  const isRTL = i18n.dir(i18n.language) === "rtl";
   const dir = getDirectionStyles(isRTL);
 
   const createRecipe = useCreateRecipe();
   const { data: products = [] } = usePantryProducts();
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [ingredients, setIngredients] = useState<IngredientDraft[]>([]);
   const [pickerVisible, setPickerVisible] = useState(false);
-  const [nameError, setNameError] = useState('');
+  const [nameError, setNameError] = useState("");
 
   const liveTotals = useMemo(() => {
     const items = ingredients
       .map((ing) => {
-        const g = parseFloat(ing.grams);
-        if (!isNaN(g) && g > 0) return calcProductNutrition(ing.product, g);
+        const grams = parseFloat(ing.grams.replace(",", "."));
+
+        if (!Number.isNaN(grams) && grams > 0) {
+          return calcProductNutrition(ing.product, grams);
+        }
+
         return null;
       })
-      .filter((n): n is NonNullable<typeof n> => n !== null);
+      .filter((item): item is NonNullable<typeof item> => item !== null);
+
     return sumNutrition(items);
   }, [ingredients]);
 
   function addIngredient(product: PantryProduct) {
-    setIngredients((prev) => [...prev, { key: makeKey(), product, grams: '' }]);
+    setIngredients((prev) => [
+      ...prev,
+      {
+        key: makeKey(),
+        product,
+        grams: "",
+      },
+    ]);
+
     setPickerVisible(false);
   }
 
@@ -73,40 +87,48 @@ export function AddRecipeScreen() {
 
   async function handleSave() {
     if (!name.trim()) {
-      setNameError(t('errors.requiredField'));
+      setNameError(t("errors.requiredField"));
       return;
     }
+
     if (ingredients.length === 0) {
-      Alert.alert('', t('errors.noIngredients'));
+      Alert.alert("", t("errors.noIngredients"));
       return;
     }
+
     const validItems = ingredients
-      .map((ing) => ({ productId: ing.product.id, grams: parseFloat(ing.grams) }))
-      .filter((item) => !isNaN(item.grams) && item.grams > 0);
+      .map((ing) => ({
+        productId: ing.product.id,
+        grams: parseFloat(ing.grams.replace(",", ".")),
+      }))
+      .filter((item) => !Number.isNaN(item.grams) && item.grams > 0);
+
     if (validItems.length === 0) {
-      Alert.alert('', t('errors.noIngredients'));
+      Alert.alert("", t("errors.noIngredients"));
       return;
     }
+
     try {
       await createRecipe.mutateAsync({
         name: name.trim(),
         description: description.trim() || undefined,
         items: validItems,
       });
+
       router.back();
     } catch {
-      Alert.alert('', t('errors.saveRecipeFailed'));
+      Alert.alert("", t("errors.saveRecipeFailed"));
     }
   }
 
   const hasTotals = ingredients.some((ing) => {
-    const g = parseFloat(ing.grams);
-    return !isNaN(g) && g > 0;
+    const grams = parseFloat(ing.grams.replace(",", "."));
+    return !Number.isNaN(grams) && grams > 0;
   });
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      <ScreenHeader title={t('addRecipe.title')} />
+    <SafeAreaView style={styles.root} edges={["top"]}>
+      <ScreenHeader title={t("addRecipe.title")} />
 
       <ScrollView
         style={styles.scroll}
@@ -114,99 +136,149 @@ export function AddRecipeScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Text style={[{ fontSize: 13, color: colors.textSecondary, marginBottom: 12 }, dir.text]}>
-          {t('addRecipe.subtitle')}
-        </Text>
-
-        <View style={styles.fieldGroup}>
-          <Text style={[{ fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 4 }, dir.text]}>
-            {t('recipe.nameLabel')}
+        <View style={styles.introCard}>
+          <Text style={[styles.subtitle, dir.text]}>
+            {t("addRecipe.subtitle")}
           </Text>
-          <TextInput
-            style={[styles.input, nameError ? styles.inputError : null]}
-            value={name}
-            onChangeText={(v) => { setName(v); setNameError(''); }}
-            textAlign={isRTL ? 'right' : 'left'}
-            autoFocus
-          />
-          {nameError ? (
-            <Text style={[{ fontSize: 12, color: colors.danger, marginTop: 4 }, dir.text]}>{nameError}</Text>
-          ) : null}
         </View>
 
-        <View style={styles.fieldGroup}>
-          <Text style={[{ fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 4 }, dir.text]}>
-            {t('recipe.descriptionLabel')}
-          </Text>
-          <TextInput
-            style={styles.input}
-            value={description}
-            onChangeText={setDescription}
-            textAlign={isRTL ? 'right' : 'left'}
-            multiline
-          />
-        </View>
+        <View style={styles.formCard}>
+          <View style={styles.fieldGroup}>
+            <Text style={[styles.fieldLabel, dir.text]}>
+              {t("recipe.nameLabel")}
+            </Text>
 
-        <Text style={[{
-          fontSize: 11,
-          fontWeight: '700',
-          color: colors.textMuted,
-          marginBottom: 8,
-          marginTop: 4,
-          paddingBottom: 4,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.border,
-          textTransform: 'uppercase',
-          letterSpacing: 0.8,
-        }, dir.text]}>
-          {t('recipe.ingredientsSection')}
-        </Text>
-
-        {ingredients.map((ing) => (
-          <View key={ing.key} style={[styles.ingredientRow, dir.row]}>
-            <View style={styles.ingredientInfo}>
-              <Text style={styles.ingredientName} numberOfLines={1}>{ing.product.name}</Text>
-              {ing.product.brand ? (
-                <Text style={styles.ingredientBrand}>{ing.product.brand}</Text>
-              ) : null}
-            </View>
             <TextInput
-              style={styles.gramsInput}
-              value={ing.grams}
-              onChangeText={(v) => updateGrams(ing.key, v)}
-              keyboardType="decimal-pad"
-              placeholder={t('recipe.gramsPlaceholder')}
-              placeholderTextColor={colors.textMuted}
-              textAlign="center"
+              style={[
+                styles.input,
+                nameError ? styles.inputError : null,
+                dir.text,
+              ]}
+              value={name}
+              onChangeText={(value) => {
+                setName(value);
+                setNameError("");
+              }}
+              autoFocus
             />
-            <Text style={styles.gramsLabel}>{t('recipe.gramsLabel')}</Text>
-            <Pressable onPress={() => removeIngredient(ing.key)} hitSlop={8} style={styles.removeBtn}>
-              <MaterialCommunityIcons name="close-circle" size={20} color={colors.textMuted} />
-            </Pressable>
-          </View>
-        ))}
 
-        <Pressable style={styles.addIngredientBtn} onPress={() => setPickerVisible(true)}>
-          <Text style={styles.addIngredientText}>{t('recipe.addIngredient')}</Text>
-        </Pressable>
+            {nameError ? (
+              <Text style={[styles.errorText, dir.text]}>{nameError}</Text>
+            ) : null}
+          </View>
+
+          <View style={styles.fieldGroup}>
+            <Text style={[styles.fieldLabel, dir.text]}>
+              {t("recipe.descriptionLabel")}
+            </Text>
+
+            <TextInput
+              style={[styles.input, styles.descriptionInput, dir.text]}
+              value={description}
+              onChangeText={setDescription}
+              multiline
+            />
+          </View>
+        </View>
+
+        <View style={styles.formCard}>
+          <Text style={[styles.sectionTitle, dir.text]}>
+            {t("recipe.ingredientsSection")}
+          </Text>
+
+          {ingredients.map((ing) => (
+            <View key={ing.key} style={[styles.ingredientRow, dir.row]}>
+              <View style={styles.ingredientInfo}>
+                <Text
+                  style={[styles.ingredientName, dir.text]}
+                  numberOfLines={1}
+                >
+                  {ing.product.name}
+                </Text>
+
+                {ing.product.brand ? (
+                  <Text
+                    style={[styles.ingredientBrand, dir.text]}
+                    numberOfLines={1}
+                  >
+                    {ing.product.brand}
+                  </Text>
+                ) : null}
+              </View>
+
+              <View style={[styles.gramsBox, dir.row]}>
+                <TextInput
+                  style={styles.gramsInput}
+                  value={ing.grams}
+                  onChangeText={(value) => updateGrams(ing.key, value)}
+                  keyboardType="decimal-pad"
+                  placeholder={t("recipe.gramsPlaceholder")}
+                  placeholderTextColor={colors.textMuted}
+                  textAlign="center"
+                />
+
+                <Text style={styles.gramsLabel}>{t("recipe.gramsLabel")}</Text>
+              </View>
+
+              <Pressable
+                onPress={() => removeIngredient(ing.key)}
+                hitSlop={8}
+                style={({ pressed }) => [
+                  styles.removeBtn,
+                  pressed && styles.removeBtnPressed,
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="close"
+                  size={18}
+                  color={colors.textMuted}
+                />
+              </Pressable>
+            </View>
+          ))}
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.addIngredientBtn,
+              pressed && styles.addIngredientBtnPressed,
+            ]}
+            onPress={() => setPickerVisible(true)}
+          >
+            <MaterialCommunityIcons
+              name="plus"
+              size={18}
+              color={colors.primaryGreen}
+            />
+
+            <Text style={styles.addIngredientText}>
+              {t("recipe.addIngredient")}
+            </Text>
+          </Pressable>
+        </View>
 
         {hasTotals ? (
           <View style={styles.totalsContainer}>
             <NutritionTotals
               totals={liveTotals}
-              label={t('recipe.totalsSection')}
+              label={t("recipe.totalsSection")}
               variant="highlight"
             />
           </View>
         ) : null}
 
         <Pressable
-          style={({ pressed }) => [styles.saveBtn, pressed && styles.saveBtnPressed]}
+          style={({ pressed }) => [
+            styles.saveBtn,
+            pressed && styles.saveBtnPressed,
+            createRecipe.isPending && styles.saveBtnDisabled,
+          ]}
           onPress={handleSave}
           disabled={createRecipe.isPending}
         >
           <Text style={styles.saveBtnText}>
-            {createRecipe.isPending ? t('recipe.saving') : t('recipe.saveButton')}
+            {createRecipe.isPending
+              ? t("recipe.saving")
+              : t("recipe.saveButton")}
           </Text>
         </Pressable>
       </ScrollView>

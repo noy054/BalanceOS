@@ -2,7 +2,7 @@ import { Pressable, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
-import { homeDashboardColors } from "../../day-log/constants/homeDashboardTheme";
+import { colors } from "../../../shared/theme";
 import { styles } from "./styles/AddMealButton.styles";
 
 type Props = {
@@ -28,7 +28,7 @@ export function AddMealButton({ onPress }: Props) {
         <MaterialCommunityIcons
           name="plus"
           size={22}
-          color={homeDashboardColors.lime}
+          color={colors.primaryGreen}
         />
       </View>
 

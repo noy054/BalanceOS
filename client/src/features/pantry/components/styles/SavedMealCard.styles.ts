@@ -10,9 +10,11 @@ export const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm2 + 2,
     paddingBottom: spacing.sm2,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...cardShadow,
   },
-  cardPressed: { opacity: 0.82 },
+  cardPressed: { opacity: 0.78 },
   topRow: {
     alignItems: 'flex-start',
     marginBottom: spacing.xs,
@@ -30,15 +32,15 @@ export const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   badge: {
-    backgroundColor: colors.primaryGreenLight,
+    backgroundColor: colors.primaryGreen,
     borderRadius: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   badgeText: {
     fontSize: 10,
-    color: colors.primaryGreen,
-    fontWeight: '600',
+    color: '#081008',
+    fontWeight: '700',
   },
   count: {
     fontSize: 11,

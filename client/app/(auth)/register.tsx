@@ -107,6 +107,7 @@ export default function RegisterScreen() {
         loading={register.isPending}
         disabled={register.isPending || !fullName || !email || !password}
         buttonColor={colors.primaryGreen}
+        textColor="#081008"
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}
         style={styles.button}

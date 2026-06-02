@@ -1,67 +1,179 @@
-import { StyleSheet } from 'react-native';
-import { colors, spacing, radius } from '../../../../shared/theme';
+import { Platform, StyleSheet } from "react-native";
+
+import { colors, spacing, radius } from "../../../../shared/theme";
 
 export const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: colors.background,
   },
+
   scroll: {
     flex: 1,
   },
+
   content: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.xxl,
+    gap: spacing.lg,
   },
+
+  introCard: {
+    borderRadius: radius.xl,
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+  },
+
   subtitle: {
     fontSize: 13,
+    fontWeight: "700",
     color: colors.textSecondary,
     marginBottom: spacing.xs,
   },
-  requiredHint: {
+
+  optionalHint: {
     fontSize: 12,
+    fontWeight: "600",
     color: colors.textMuted,
-    marginBottom: spacing.md,
   },
+
+  imageSection: {
+    minHeight: 150,
+  },
+
+  imagePreview: {
+    width: "100%",
+    height: 150,
+    borderRadius: radius.xl,
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+
+  imagePlaceholder: {
+    height: 150,
+    borderRadius: radius.xl,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderStyle: "dashed",
+  },
+
+  imagePlaceholderText: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: colors.textSecondary,
+    textAlign: "center",
+  },
+
+  formCard: {
+    borderRadius: radius.xl,
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    gap: spacing.sm,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.shadow,
+        shadowOpacity: 1,
+        shadowRadius: 18,
+        shadowOffset: { width: 0, height: 10 },
+      },
+      android: {
+        elevation: 6,
+      },
+    }),
+  },
+
+  sectionHeaderRow: {
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.md,
+    marginBottom: spacing.xs,
+  },
+
   sectionTitle: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: colors.textMuted,
-    marginBottom: spacing.sm,
-    marginTop: spacing.xs,
-    paddingBottom: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    textTransform: 'uppercase',
+    fontSize: 12,
+    fontWeight: "900",
+    color: colors.textPrimary,
+    textTransform: "uppercase",
     letterSpacing: 0.8,
   },
+
+  sectionChip: {
+    fontSize: 11,
+    fontWeight: "900",
+    color: colors.primaryGreen,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 5,
+    borderRadius: radius.full,
+    backgroundColor: colors.primaryGreenLight,
+    borderWidth: 1,
+    borderColor: colors.primaryGreenMid,
+  },
+
+  sectionHint: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: colors.textMuted,
+    marginBottom: spacing.sm,
+  },
+
   saveBtn: {
     backgroundColor: colors.primaryGreen,
-    borderRadius: radius.md,
-    height: 52,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: spacing.lg,
+    borderRadius: radius.xl,
+    minHeight: 58,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: spacing.xs,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.primaryGreen,
+        shadowOpacity: 0.22,
+        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 10 },
+      },
+      android: {
+        elevation: 7,
+      },
+    }),
   },
+
   saveBtnPressed: {
-    opacity: 0.85,
+    opacity: 0.84,
+    transform: [{ scale: 0.985 }],
   },
+
+  saveBtnDisabled: {
+    opacity: 0.55,
+  },
+
   saveBtnText: {
     fontSize: 15,
-    fontWeight: '700',
-    color: colors.cardBackground,
+    fontWeight: "900",
+    color: colors.background,
     letterSpacing: 0.2,
   },
 });
 
 export function getDirectionStyles(isRTL: boolean) {
   return {
+    row: {
+      flexDirection: isRTL ? ("row-reverse" as const) : ("row" as const),
+    },
     text: {
-      textAlign: isRTL ? 'right' as const : 'left' as const,
-      writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,
+      textAlign: isRTL ? ("right" as const) : ("left" as const),
+      writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),
     },
     centeredText: {
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
     },
   };
 }

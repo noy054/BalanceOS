@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
   },
   timeRow: { paddingHorizontal: spacing.md, paddingBottom: spacing.sm },
   timeInput: {
-    backgroundColor: colors.background,
+    backgroundColor: colors.inputBackground,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.sm,
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
   },
   intervalInput: {
     width: 80,
-    backgroundColor: colors.background,
+    backgroundColor: colors.inputBackground,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.sm,
@@ -81,13 +81,13 @@ export const styles = StyleSheet.create({
   saveBtn: {
     backgroundColor: colors.primaryGreen,
     borderRadius: radius.md,
-    height: 52,
+    height: 56,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: spacing.sm,
   },
   saveBtnPressed: { opacity: 0.85 },
-  saveBtnText: { fontSize: 15, fontWeight: '700', color: colors.cardBackground, letterSpacing: 0.2 },
+  saveBtnText: { fontSize: 15, fontWeight: '800', color: '#081008', letterSpacing: 0.2 },
 });
 
 export function getDirectionStyles(isRTL: boolean) {

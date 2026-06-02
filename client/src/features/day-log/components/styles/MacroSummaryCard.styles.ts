@@ -1,21 +1,17 @@
 import { Platform, StyleSheet } from "react-native";
 
-import {
-  homeDashboardColors,
-  homeDashboardRadius,
-  homeDashboardSpacing,
-} from "../../constants/homeDashboardTheme";
+import { colors, radius, spacing } from "../../../../shared/theme";
 
 export const styles = StyleSheet.create({
   card: {
-    borderRadius: homeDashboardRadius.xl,
-    backgroundColor: "rgba(13, 18, 16, 0.94)",
+    borderRadius: radius.xl,
+    backgroundColor: colors.cardBackground,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.10)",
+    borderColor: colors.border,
     overflow: "hidden",
     ...Platform.select({
       ios: {
-        shadowColor: "rgba(0, 0, 0, 0.55)",
+        shadowColor: colors.shadow,
         shadowOpacity: 1,
         shadowRadius: 24,
         shadowOffset: { width: 0, height: 14 },
@@ -28,13 +24,13 @@ export const styles = StyleSheet.create({
 
   content: {
     alignItems: "stretch",
-    paddingVertical: homeDashboardSpacing.md,
-    paddingHorizontal: homeDashboardSpacing.sm,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
   },
 
   divider: {
     width: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.10)",
-    marginVertical: homeDashboardSpacing.sm,
+    backgroundColor: colors.border,
+    marginVertical: spacing.sm,
   },
 });

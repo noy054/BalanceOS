@@ -1,9 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import {
-  homeDashboardColors,
-  homeDashboardRadius,
-} from "../../constants/homeDashboardTheme";
+import { colors, radius } from "../../../../shared/theme";
 
 export const styles = StyleSheet.create({
   container: {
@@ -23,14 +20,14 @@ export const styles = StyleSheet.create({
   logoBalance: {
     fontSize: 26,
     fontWeight: "900",
-    color: "#FFFFFF",
+    color: colors.textPrimary,
     letterSpacing: -0.9,
   },
 
   logoOS: {
     fontSize: 26,
     fontWeight: "900",
-    color: homeDashboardColors.lime,
+    color: colors.primaryGreen,
     letterSpacing: -0.9,
   },
 
@@ -43,7 +40,7 @@ export const styles = StyleSheet.create({
   subtitle: {
     fontSize: 10,
     fontWeight: "800",
-    color: "rgba(255, 255, 255, 0.42)",
+    color: colors.textMuted,
     letterSpacing: 1.3,
     textTransform: "uppercase",
   },
@@ -53,10 +50,10 @@ export const styles = StyleSheet.create({
     height: 48,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: homeDashboardRadius.lg,
-    backgroundColor: "rgb(255, 255, 255)",
+    borderRadius: radius.lg,
+    backgroundColor: colors.cardBackgroundSoft,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.14)",
+    borderColor: colors.borderStrong,
   },
 
   settingsButtonPressed: {

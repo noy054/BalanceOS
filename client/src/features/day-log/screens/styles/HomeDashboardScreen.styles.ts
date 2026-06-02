@@ -1,14 +1,11 @@
 import { Platform, StyleSheet } from "react-native";
 
-import {
-  homeDashboardColors,
-  homeDashboardSpacing,
-} from "../../constants/homeDashboardTheme";
+import { colors, spacing } from "../../../../shared/theme";
 
 export const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#090909",
+    backgroundColor: colors.background,
   },
 
   backgroundLayer: {
@@ -18,7 +15,7 @@ export const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     overflow: "hidden",
-    backgroundColor: "#090909",
+    backgroundColor: colors.background,
   },
 
   glowTop: {
@@ -39,7 +36,7 @@ export const styles = StyleSheet.create({
     width: 180,
     height: 520,
     borderRadius: 120,
-    backgroundColor: "rgba(185, 255, 59, 0.05)",
+    backgroundColor: "rgba(49, 216, 107, 0.05)",
     transform: [{ rotate: "-12deg" }],
   },
 
@@ -55,9 +52,9 @@ export const styles = StyleSheet.create({
   },
 
   headerWrapper: {
-    paddingHorizontal: homeDashboardSpacing.xl,
-    paddingTop: homeDashboardSpacing.sm,
-    paddingBottom: homeDashboardSpacing.md,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
     zIndex: 3,
   },
 
@@ -67,17 +64,17 @@ export const styles = StyleSheet.create({
   },
 
   scrollContent: {
-    paddingHorizontal: homeDashboardSpacing.xl,
-    paddingTop: homeDashboardSpacing.xs,
-    paddingBottom: 96,
-    gap: homeDashboardSpacing.lg,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xs,
+    paddingBottom: 124,
+    gap: spacing.lg,
   },
 
   heroSection: {
     borderRadius: 36,
     ...Platform.select({
       ios: {
-        shadowColor: homeDashboardColors.shadow,
+        shadowColor: colors.shadow,
         shadowOpacity: 1,
         shadowRadius: 30,
         shadowOffset: { width: 0, height: 18 },
@@ -92,7 +89,7 @@ export const styles = StyleSheet.create({
     borderRadius: 30,
     ...Platform.select({
       ios: {
-        shadowColor: homeDashboardColors.shadow,
+        shadowColor: colors.shadow,
         shadowOpacity: 0.85,
         shadowRadius: 22,
         shadowOffset: { width: 0, height: 14 },
@@ -104,32 +101,10 @@ export const styles = StyleSheet.create({
   },
 
   actionSection: {
-    marginTop: -homeDashboardSpacing.sm,
+    marginTop: -spacing.sm,
   },
 
   shortcutsSection: {
-    marginTop: -homeDashboardSpacing.md,
-  },
-
-  bottomNavWrapper: {
-    position: "absolute",
-    left: homeDashboardSpacing.lg,
-    right: homeDashboardSpacing.lg,
-    bottom:
-      Platform.OS === "ios" ? homeDashboardSpacing.lg : homeDashboardSpacing.md,
-    zIndex: 20,
-    borderRadius: 34,
-    overflow: "hidden",
-    ...Platform.select({
-      ios: {
-        shadowColor: homeDashboardColors.shadow,
-        shadowOpacity: 1,
-        shadowRadius: 26,
-        shadowOffset: { width: 0, height: 16 },
-      },
-      android: {
-        elevation: 12,
-      },
-    }),
+    marginTop: -spacing.md,
   },
 });

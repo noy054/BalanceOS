@@ -5,9 +5,9 @@ export const chipStyles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    backgroundColor: colors.primaryGreenLight,
-    borderRadius: 5,
-    paddingHorizontal: 5,
+    backgroundColor: 'rgba(168, 241, 42, 0.10)',
+    borderRadius: 6,
+    paddingHorizontal: 6,
     paddingVertical: 2,
     marginEnd: spacing.xs,
     marginBottom: 4,
@@ -40,7 +40,7 @@ export const styles = StyleSheet.create({
     paddingTop: 4,
   },
   containerHighlight: {
-    backgroundColor: colors.primaryGreenLight,
+    backgroundColor: 'rgba(168, 241, 42, 0.08)',
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,

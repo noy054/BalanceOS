@@ -1,34 +1,30 @@
 import { StyleSheet } from "react-native";
 
-import {
-  homeDashboardColors,
-  homeDashboardRadius,
-  homeDashboardSpacing,
-} from "../../constants/homeDashboardTheme";
+import { colors, radius, spacing } from "../../../../shared/theme";
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    paddingHorizontal: homeDashboardSpacing.xs,
-    paddingVertical: homeDashboardSpacing.sm,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.sm,
   },
 
   iconBubble: {
     width: 42,
     height: 42,
-    borderRadius: homeDashboardRadius.lg,
+    borderRadius: radius.lg,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    backgroundColor: colors.cardBackgroundSoft,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.12)",
-    marginBottom: homeDashboardSpacing.sm,
+    borderColor: colors.borderStrong,
+    marginBottom: spacing.sm,
   },
 
   label: {
     fontSize: 11,
-    color: "rgba(255, 255, 255, 0.62)",
+    color: colors.textSecondary,
     fontWeight: "800",
     marginBottom: 7,
     textAlign: "center",
@@ -44,34 +40,34 @@ export const styles = StyleSheet.create({
   current: {
     fontSize: 21,
     fontWeight: "900",
-    color: "#FFFFFF",
+    color: colors.textPrimary,
     letterSpacing: -0.6,
   },
 
   separator: {
     fontSize: 12,
-    color: "rgba(255, 255, 255, 0.34)",
+    color: colors.textMuted,
     fontWeight: "800",
   },
 
   targetValue: {
     fontSize: 12,
-    color: "rgba(255, 255, 255, 0.42)",
+    color: colors.textMuted,
     fontWeight: "800",
   },
 
   unit: {
     fontSize: 10,
-    color: "rgba(255, 255, 255, 0.36)",
+    color: colors.textMuted,
     marginTop: 2,
-    marginBottom: homeDashboardSpacing.sm,
+    marginBottom: spacing.sm,
     fontWeight: "700",
   },
 
   progressTrack: {
     width: "86%",
     height: 6,
-    backgroundColor: "rgba(255, 255, 255, 0.12)",
+    backgroundColor: colors.progressTrack,
     borderRadius: 999,
     overflow: "hidden",
   },

@@ -6,11 +6,11 @@ import {
   Text,
   ActivityIndicator,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
+import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
 import { PantryHeader } from "../components/PantryHeader";
 import { PantrySearchBar } from "../components/PantrySearchBar";
 import { PantryTabBar } from "../components/PantryTabBar";
@@ -18,7 +18,6 @@ import { ProductCard } from "../components/ProductCard";
 import { RecipeCard } from "../components/RecipeCard";
 import { SavedMealCard } from "../components/SavedMealCard";
 import { PantryEmptyState } from "../components/PantryEmptyState";
-import { BottomTabBar } from "../../../shared/components/BottomTabBar";
 import { usePantryProducts } from "../hooks/usePantry";
 import { useRecipes } from "../hooks/useRecipes";
 import { useSavedMeals } from "../hooks/useSavedMeals";
@@ -107,145 +106,132 @@ export function PantryScreen() {
   }
 
   return (
-    <SafeAreaView
-      key={i18n.language}
-      style={styles.root}
-      edges={["top"]}
-    >
-      <PantryHeader />
+    <TabScreenLayout activeTab="pantry">
+      <View key={i18n.language} style={styles.root}>
+        <PantryHeader />
 
-      <View style={styles.searchRow}>
-        <PantrySearchBar value={search} onChangeText={setSearch} />
-      </View>
+        <View style={styles.searchRow}>
+          <PantrySearchBar value={search} onChangeText={setSearch} />
+        </View>
 
-      <View style={[styles.actionsRow, dir.row]}>
-        <Pressable
-          style={[styles.actionBtn, dir.row]}
-          onPress={handleAdd}
-        >
-          <MaterialCommunityIcons
-            name="plus"
-            size={16}
-            color={colors.cardBackground}
-          />
-
-          <Text style={[styles.actionBtnText, dir.text]}>
-            {addLabel()}
-          </Text>
-        </Pressable>
-
-        {activeTab === "products" ? (
-          <Pressable
-            style={[
-              styles.actionBtn,
-              dir.row,
-              styles.actionBtnOutline,
-            ]}
-            onPress={handleScanBarcode}
-          >
+        <View style={[styles.actionsRow, dir.row]}>
+          <Pressable style={[styles.actionBtn, dir.row]} onPress={handleAdd}>
             <MaterialCommunityIcons
-              name="barcode-scan"
+              name="plus"
               size={16}
-              color={colors.primaryGreen}
+              color={colors.background}
             />
 
-            <Text
-              style={[
-                styles.actionBtnText,
-                styles.actionBtnTextOutline,
-                dir.text,
-              ]}
-            >
-              {t("actions.scanBarcode")}
-            </Text>
+            <Text style={[styles.actionBtnText, dir.text]}>{addLabel()}</Text>
           </Pressable>
-        ) : null}
+
+          {activeTab === "products" ? (
+            <Pressable
+              style={[styles.actionBtn, dir.row, styles.actionBtnOutline]}
+              onPress={handleScanBarcode}
+            >
+              <MaterialCommunityIcons
+                name="barcode-scan"
+                size={16}
+                color={colors.primaryGreen}
+              />
+
+              <Text
+                style={[
+                  styles.actionBtnText,
+                  styles.actionBtnTextOutline,
+                  dir.text,
+                ]}
+              >
+                {t("actions.scanBarcode")}
+              </Text>
+            </Pressable>
+          ) : null}
+        </View>
+
+        <PantryTabBar activeTab={activeTab} onTabPress={setActiveTab} />
+
+        <View style={styles.content}>
+          {activeTab === "products" && (
+            <TabContent
+              isLoading={loadingProducts}
+              isError={errorProducts}
+              isEmpty={filteredProducts.length === 0}
+              errorKey="errors.loadFailed"
+              tab="products"
+              isRTL={isRTL}
+            >
+              <FlatList
+                data={filteredProducts}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <ProductCard
+                    product={item}
+                    onPress={(product: PantryProduct) =>
+                      router.push(`/(app)/pantry/${product.id}`)
+                    }
+                  />
+                )}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+              />
+            </TabContent>
+          )}
+
+          {activeTab === "recipes" && (
+            <TabContent
+              isLoading={loadingRecipes}
+              isError={errorRecipes}
+              isEmpty={filteredRecipes.length === 0}
+              errorKey="errors.loadRecipesFailed"
+              tab="recipes"
+              isRTL={isRTL}
+            >
+              <FlatList
+                data={filteredRecipes}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <RecipeCard
+                    recipe={item}
+                    onPress={(recipe: PantryRecipe) =>
+                      router.push(`/(app)/pantry/recipes/${recipe.id}`)
+                    }
+                  />
+                )}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+              />
+            </TabContent>
+          )}
+
+          {activeTab === "savedMeals" && (
+            <TabContent
+              isLoading={loadingSavedMeals}
+              isError={errorSavedMeals}
+              isEmpty={filteredMeals.length === 0}
+              errorKey="errors.loadSavedMealsFailed"
+              tab="savedMeals"
+              isRTL={isRTL}
+            >
+              <FlatList
+                data={filteredMeals}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <SavedMealCard
+                    meal={item}
+                    onPress={(meal: SavedMeal) =>
+                      router.push(`/(app)/pantry/saved-meals/${meal.id}`)
+                    }
+                  />
+                )}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+              />
+            </TabContent>
+          )}
+        </View>
       </View>
-
-      <PantryTabBar activeTab={activeTab} onTabPress={setActiveTab} />
-
-      <View style={styles.content}>
-        {activeTab === "products" && (
-          <TabContent
-            isLoading={loadingProducts}
-            isError={errorProducts}
-            isEmpty={filteredProducts.length === 0}
-            errorKey="errors.loadFailed"
-            tab="products"
-            isRTL={isRTL}
-          >
-            <FlatList
-              data={filteredProducts}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <ProductCard
-                  product={item}
-                  onPress={(product: PantryProduct) =>
-                    router.push(`/(app)/pantry/${product.id}`)
-                  }
-                />
-              )}
-              contentContainerStyle={styles.listContent}
-              showsVerticalScrollIndicator={false}
-            />
-          </TabContent>
-        )}
-
-        {activeTab === "recipes" && (
-          <TabContent
-            isLoading={loadingRecipes}
-            isError={errorRecipes}
-            isEmpty={filteredRecipes.length === 0}
-            errorKey="errors.loadRecipesFailed"
-            tab="recipes"
-            isRTL={isRTL}
-          >
-            <FlatList
-              data={filteredRecipes}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <RecipeCard
-                  recipe={item}
-                  onPress={(recipe: PantryRecipe) =>
-                    router.push(`/(app)/pantry/recipes/${recipe.id}`)
-                  }
-                />
-              )}
-              contentContainerStyle={styles.listContent}
-              showsVerticalScrollIndicator={false}
-            />
-          </TabContent>
-        )}
-
-        {activeTab === "savedMeals" && (
-          <TabContent
-            isLoading={loadingSavedMeals}
-            isError={errorSavedMeals}
-            isEmpty={filteredMeals.length === 0}
-            errorKey="errors.loadSavedMealsFailed"
-            tab="savedMeals"
-            isRTL={isRTL}
-          >
-            <FlatList
-              data={filteredMeals}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <SavedMealCard
-                  meal={item}
-                  onPress={(meal: SavedMeal) =>
-                    router.push(`/(app)/pantry/saved-meals/${meal.id}`)
-                  }
-                />
-              )}
-              contentContainerStyle={styles.listContent}
-              showsVerticalScrollIndicator={false}
-            />
-          </TabContent>
-        )}
-      </View>
-
-      <BottomTabBar activeTab="pantry" />
-    </SafeAreaView>
+    </TabScreenLayout>
   );
 }
 
@@ -279,7 +265,9 @@ function TabContent({
   if (isError) {
     return (
       <View style={styles.centered}>
-        <Text style={[styles.errorText, { textAlign: isRTL ? "right" : "left" }]}>
+        <Text
+          style={[styles.errorText, { textAlign: isRTL ? "right" : "left" }]}
+        >
           {t(errorKey as Parameters<typeof t>[0])}
         </Text>
       </View>

@@ -1,26 +1,22 @@
 import { Platform, StyleSheet } from "react-native";
 
-import {
-  homeDashboardColors,
-  homeDashboardRadius,
-  homeDashboardSpacing,
-} from "../../../day-log/constants/homeDashboardTheme";
+import { colors, radius, spacing } from "../../../../shared/theme";
 
 export const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     justifyContent: "center",
     minHeight: 58,
-    backgroundColor: "rgba(13, 18, 16, 0.96)",
-    borderRadius: homeDashboardRadius.xl,
-    paddingVertical: homeDashboardSpacing.md,
-    paddingHorizontal: homeDashboardSpacing.lg,
+    backgroundColor: colors.cardBackground,
+    borderRadius: radius.xl,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
     borderWidth: 1.5,
-    borderColor: "rgba(185, 255, 59, 0.42)",
+    borderColor: colors.primaryGreenMid,
     ...Platform.select({
       ios: {
-        shadowColor: "rgba(185, 255, 59, 0.18)",
-        shadowOpacity: 1,
+        shadowColor: colors.primaryGreen,
+        shadowOpacity: 0.18,
         shadowRadius: 18,
         shadowOffset: { width: 0, height: 10 },
       },
@@ -39,25 +35,25 @@ export const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: "rgba(185, 255, 59, 0.16)",
+    backgroundColor: colors.primaryGreenLight,
     borderWidth: 1,
-    borderColor: "rgba(185, 255, 59, 0.35)",
+    borderColor: colors.primaryGreenMid,
     alignItems: "center",
     justifyContent: "center",
   },
 
   iconRTL: {
-    marginStart: homeDashboardSpacing.md,
+    marginStart: spacing.md,
   },
 
   iconLTR: {
-    marginEnd: homeDashboardSpacing.md,
+    marginEnd: spacing.md,
   },
 
   label: {
     fontSize: 17,
     fontWeight: "900",
-    color: "#FFFFFF",
+    color: colors.textPrimary,
     letterSpacing: 0.1,
     textAlign: "center",
   },

@@ -17,6 +17,8 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.cardBackground,
     borderRadius: radius.md,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.border,
     ...cardShadow,
   },
 });

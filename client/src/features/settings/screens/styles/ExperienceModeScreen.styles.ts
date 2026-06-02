@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.textPrimary,
   },
-  cardTitleActive: { color: colors.primaryGreenDark },
+  cardTitleActive: { color: colors.primaryGreen },
   radio: {
     width: 22,
     height: 22,
@@ -64,7 +64,7 @@ export const styles = StyleSheet.create({
     color: colors.textSecondary,
     lineHeight: 18,
   },
-  cardDescriptionActive: { color: colors.primaryGreenDark },
+  cardDescriptionActive: { color: colors.textSecondary },
 });
 
 export function getDirectionStyles(isRTL: boolean) {
