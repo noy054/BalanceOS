@@ -1,35 +1,56 @@
-import { Platform, StyleSheet } from 'react-native';
-import { colors, spacing } from '../../theme';
+import { StyleSheet } from "react-native";
+
+import { colors, spacing, radius } from "../../theme";
 
 export const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: 12,
-    minHeight: 56,
+    minHeight: 72,
+    paddingHorizontal: spacing.lg,
+    alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.06)',
+    borderBottomColor: colors.border,
+    overflow: "visible",
+    zIndex: 20,
   },
-  backBtn: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+
+  sideSlot: {
+    width: 96,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "visible",
   },
-  title: {
+
+  titleSlot: {
     flex: 1,
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    textAlign: 'center',
-    letterSpacing: -0.3,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: spacing.sm,
   },
-  right: {
-    width: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+
+  title: {
+    fontSize: 18,
+    fontWeight: "900",
+    color: colors.textPrimary,
+    textAlign: "center",
+    letterSpacing: -0.25,
+  },
+
+  backBtn: {
+    width: 42,
+    height: 42,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: radius.lg,
+    backgroundColor: colors.cardBackgroundSoft,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+
+  pressed: {
+    opacity: 0.72,
+    transform: [{ scale: 0.96 }],
   },
 });

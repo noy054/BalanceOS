@@ -14,37 +14,38 @@ export function ProductHeaderActions({ isRTL, onEdit, onDelete }: Props) {
   return (
     <View
       style={[
-        styles.headerActions,
+        styles.container,
         { flexDirection: isRTL ? "row-reverse" : "row" },
       ]}
     >
       <Pressable
         onPress={onEdit}
-        hitSlop={12}
+        hitSlop={10}
         style={({ pressed }) => [
-          styles.headerActionBtn,
+          styles.actionButton,
+          styles.editButton,
           pressed && styles.pressed,
         ]}
       >
         <MaterialCommunityIcons
           name="pencil-outline"
-          size={20}
+          size={18}
           color={colors.primaryGreen}
         />
       </Pressable>
 
       <Pressable
         onPress={onDelete}
-        hitSlop={12}
+        hitSlop={10}
         style={({ pressed }) => [
-          styles.headerActionBtn,
-          styles.deleteActionBtn,
+          styles.actionButton,
+          styles.deleteButton,
           pressed && styles.pressed,
         ]}
       >
         <MaterialCommunityIcons
           name="trash-can-outline"
-          size={20}
+          size={18}
           color={colors.danger}
         />
       </Pressable>

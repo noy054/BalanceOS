@@ -5,6 +5,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { NutritionSettingsModule } from './modules/nutrition-settings/nutrition-settings.module';
 import { PantryModule } from './modules/pantry/pantry.module';
+import { DayLogsModule } from './modules/day-logs/day-logs.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PantryModule } from './modules/pantry/pantry.module';
     AuthModule,
     NutritionSettingsModule,
     PantryModule,
+    DayLogsModule,
   ],
 })
 export class AppModule {}

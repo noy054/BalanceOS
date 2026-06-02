@@ -28,5 +28,23 @@
     "add": "הוסף",
     "statistics": "סטטיסטיקות",
     "profile": "פרופיל"
+  },
+  "addItem": {
+    "title": "הוסף ל{{mealType}}",
+    "tabProducts": "מוצרים",
+    "tabRecipes": "מתכונים",
+    "tabSavedMeals": "ארוחות שמורות",
+    "searchPlaceholder": "חפש...",
+    "gramsLabel": "גרם",
+    "servingsLabel": "מנות",
+    "logButton": "רשום",
+    "logging": "שומר...",
+    "noProducts": "אין מוצרים במזווה",
+    "noRecipes": "אין מתכונים",
+    "noSavedMeals": "אין ארוחות שמורות",
+    "loadError": "שגיאה בטעינה",
+    "logError": "שגיאה בשמירה",
+    "wholeMeal": "הוסף ארוחה שלמה",
+    "selectItem": "בחר פריט מהרשימה למעלה"
   }
 }

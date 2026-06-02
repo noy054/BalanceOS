@@ -12,3 +12,33 @@ export type DayLogSummary = {
   caloriesTarget: number;
   macros: MacroItem[];
 };
+
+// ── Server response types ─────────────────────────────────────────────────────
+
+export type DayLogTargetsSnapshot = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+};
+
+export type DayLogResponse = {
+  id: string;
+  date: string;
+  targetsSnapshot: DayLogTargetsSnapshot;
+  caloriesTotal: number;
+  proteinTotal: number;
+  carbsTotal: number;
+  fatTotal: number;
+  fiberTotal: number;
+};
+
+export type AddMealItemPayload = {
+  mealType: string;
+  pantryProductId?: string;
+  grams?: number;
+  pantryRecipeId?: string;
+  servings?: number;
+  savedMealId?: string;
+};

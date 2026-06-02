@@ -28,5 +28,23 @@
     "add": "Add",
     "statistics": "Stats",
     "profile": "Profile"
+  },
+  "addItem": {
+    "title": "Add to {{mealType}}",
+    "tabProducts": "Products",
+    "tabRecipes": "Recipes",
+    "tabSavedMeals": "Saved Meals",
+    "searchPlaceholder": "Search...",
+    "gramsLabel": "Grams",
+    "servingsLabel": "Servings",
+    "logButton": "Log",
+    "logging": "Logging...",
+    "noProducts": "No products in pantry",
+    "noRecipes": "No recipes",
+    "noSavedMeals": "No saved meals",
+    "loadError": "Failed to load",
+    "logError": "Failed to log item",
+    "wholeMeal": "Add whole meal",
+    "selectItem": "Select an item from the list above"
   }
 }

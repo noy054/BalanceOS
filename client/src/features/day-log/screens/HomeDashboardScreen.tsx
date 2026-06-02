@@ -26,7 +26,7 @@ export function HomeDashboardScreen() {
         </View>
 
         <View style={styles.headerWrapper}>
-          <HomeHeader onSettingsPress={() => router.push("/(app)/settings")} />
+          <HomeHeader />
         </View>
 
         <ScrollView

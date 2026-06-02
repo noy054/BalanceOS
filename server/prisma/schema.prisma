@@ -24,6 +24,7 @@ model User {
   pantryProducts    PantryProduct[]
   pantryRecipes     PantryRecipe[]
   savedMeals        SavedMeal[]
+  dayLogs           DayLog[]
 
   @@index([email])
 }
@@ -110,9 +111,10 @@ model PantryProduct {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipeItems   PantryRecipeItem[]
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeItems    PantryRecipeItem[]
   savedMealItems SavedMealItem[]
+  mealItems      MealItem[]
 
   @@unique([userId, barcode])
   @@index([userId])
@@ -131,6 +133,7 @@ model PantryRecipe {
   user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   items          PantryRecipeItem[]
   savedMealItems SavedMealItem[]
+  mealItems      MealItem[]
 
   @@index([userId])
 }
@@ -159,8 +162,9 @@ model SavedMeal {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items SavedMealItem[]
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     SavedMealItem[]
+  mealItems MealItem[]
 
   @@index([userId])
 }
@@ -181,4 +185,61 @@ model SavedMealItem {
   recipe    PantryRecipe?  @relation(fields: [recipeId], references: [id], onDelete: SetNull)
 
   @@index([savedMealId])
+}
+
+model DayLog {
+  id              String  @id @default(cuid())
+  userId          String
+  date            String
+  targetsSnapshot Json
+  caloriesTotal   Float   @default(0)
+  proteinTotal    Float   @default(0)
+  carbsTotal      Float   @default(0)
+  fatTotal        Float   @default(0)
+  fiberTotal      Float   @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealEntries MealEntry[]
+
+  @@unique([userId, date])
+  @@index([userId])
+}
+
+model MealEntry {
+  id       String @id @default(cuid())
+  dayLogId String
+  mealType String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dayLog DayLog     @relation(fields: [dayLogId], references: [id], onDelete: Cascade)
+  items  MealItem[]
+
+  @@unique([dayLogId, mealType])
+  @@index([dayLogId])
+}
+
+model MealItem {
+  id              String  @id @default(cuid())
+  mealEntryId     String
+  pantryProductId String?
+  pantryRecipeId  String?
+  savedMealId     String?
+  grams           Float?
+  servings        Float?
+  macrosSnapshot  Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mealEntry     MealEntry      @relation(fields: [mealEntryId], references: [id], onDelete: Cascade)
+  pantryProduct PantryProduct? @relation(fields: [pantryProductId], references: [id], onDelete: SetNull)
+  pantryRecipe  PantryRecipe?  @relation(fields: [pantryRecipeId], references: [id], onDelete: SetNull)
+  savedMeal     SavedMeal?     @relation(fields: [savedMealId], references: [id], onDelete: SetNull)
+
+  @@index([mealEntryId])
 }
