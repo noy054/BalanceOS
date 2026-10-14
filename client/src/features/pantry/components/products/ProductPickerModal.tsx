@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
-import { PantryProduct, PantryRecipe } from "../../types";
+import { PantryProduct, PantryRecipe, ProductCategory } from "../../types";
+import { sortByMealCategory } from "../../helpers/sortByMealCategory";
 import { useAppTheme, spacing } from "../../../../shared/theme";
 import {
   useStyles,
@@ -20,16 +21,21 @@ type ProductPickerModalProps = {
   visible: boolean;
   products: PantryProduct[];
   selectedIds?: string[];
+  mealCategory?: ProductCategory | null;
   onSelect: (product: PantryProduct) => void;
   onClose: () => void;
+  /** Loads the next page of pantry products */
+  onEndReached?: () => void;
 };
 
 export function ProductPickerModal({
   visible,
   products,
   selectedIds = [],
+  mealCategory = null,
   onSelect,
   onClose,
+  onEndReached,
 }: ProductPickerModalProps) {
   const { t, i18n } = useTranslation("pantry");
   const { colors } = useAppTheme();
@@ -39,13 +45,16 @@ export function ProductPickerModal({
 
   const [search, setSearch] = useState("");
 
-  const filtered = search.trim()
-    ? products.filter(
-        (p) =>
-          p.name.toLowerCase().includes(search.toLowerCase()) ||
-          p.brand?.toLowerCase().includes(search.toLowerCase()),
-      )
-    : products;
+  const filtered = sortByMealCategory(
+    search.trim()
+      ? products.filter(
+          (p) =>
+            p.name.toLowerCase().includes(search.toLowerCase()) ||
+            p.brand?.toLowerCase().includes(search.toLowerCase()),
+        )
+      : products,
+    mealCategory,
+  );
 
   function handleSelect(product: PantryProduct) {
     setSearch("");
@@ -99,6 +108,8 @@ export function ProductPickerModal({
           <FlatList
             data={filtered}
             keyExtractor={(item) => item.id}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0.5}
             renderItem={({ item }) => {
               const isAdded = selectedIds.includes(item.id);
               const hasServing =

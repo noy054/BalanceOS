@@ -1,5 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { ProductSource, ProductVerificationStatus } from '../../../generated/prisma/enums';
+import {
+  ProductSource,
+  ProductVerificationStatus,
+} from '../../../generated/prisma/enums';
+import { NormalizedBarcode } from '../../common/barcode/barcode.utils';
+import {
+  ExternalLookupResult,
+  NormalizedProductData,
+} from './types/external-product.types';
 
 interface OFFNutriments {
   'energy-kcal_100g'?: number;
@@ -18,6 +26,7 @@ interface OFFProduct {
   /** 400px display-size variant provided by OFF v2 API */
   image_front_display_url?: string;
   nutriments?: OFFNutriments;
+  code?: string;
   [key: string]: unknown;
 }
 
@@ -26,50 +35,36 @@ interface OFFResponse {
   product?: OFFProduct;
 }
 
-export interface NormalizedProductData {
-  barcode: string;
-  normalizedBarcode: string;
-  name: string;
-  brand: string | null;
-  imageUrl: string | null;
-  caloriesPer100g: number | null;
-  proteinPer100g: number | null;
-  carbsPer100g: number | null;
-  fatPer100g: number | null;
-  fiberPer100g: number | null;
-  /** Grams per serving when the external source provides it */
-  servingSizeGrams?: number | null;
-  /** Human-readable serving description (e.g. "1 cup") */
-  servingSizeText?: string | null;
-  source: ProductSource;
-  verificationStatus: ProductVerificationStatus;
-  externalProvider: string;
-  externalRawData: Record<string, unknown>;
-}
-
 @Injectable()
 export class OpenFoodFactsClient {
   private readonly BASE_URL = 'https://world.openfoodfacts.org/api/v2/product';
 
-  async fetchByBarcode(barcode: string): Promise<NormalizedProductData | null> {
+  async fetchByBarcode(
+    barcode: NormalizedBarcode,
+  ): Promise<ExternalLookupResult> {
     try {
-      const response = await fetch(`${this.BASE_URL}/${barcode}.json`, {
+      // Only digits reach this point (validated by normalizeBarcode), so the URL cannot be manipulated
+      const response = await fetch(`${this.BASE_URL}/${barcode.digits}.json`, {
         signal: AbortSignal.timeout(8000),
         headers: { 'User-Agent': 'BalanceOS/1.0' },
       });
 
-      if (!response.ok) return null;
+      if (response.status === 404) return { status: 'not_found' };
+      if (!response.ok) return { status: 'error' };
 
       const data = (await response.json()) as OFFResponse;
-      if (data.status !== 1 || !data.product) return null;
+      if (data.status !== 1 || !data.product) return { status: 'not_found' };
 
-      return this.normalize(data.product, barcode);
+      return { status: 'found', data: this.normalize(data.product, barcode) };
     } catch {
-      return null;
+      return { status: 'error' };
     }
   }
 
-  private normalize(product: OFFProduct, barcode: string): NormalizedProductData {
+  private normalize(
+    product: OFFProduct,
+    barcode: NormalizedBarcode,
+  ): NormalizedProductData {
     const n = product.nutriments ?? {};
     const nullableNum = (v: number | undefined): number | null =>
       v != null ? v : null;
@@ -77,7 +72,7 @@ export class OpenFoodFactsClient {
     const name =
       product.product_name_he?.trim() ||
       product.product_name?.trim() ||
-      barcode;
+      barcode.digits;
 
     const brand = product.brands
       ? product.brands.split(',')[0].trim() || null
@@ -92,8 +87,8 @@ export class OpenFoodFactsClient {
       null;
 
     return {
-      barcode,
-      normalizedBarcode: barcode.trim().toLowerCase(),
+      barcode: barcode.digits,
+      normalizedBarcode: barcode.canonical,
       name,
       brand,
       imageUrl,
@@ -105,6 +100,8 @@ export class OpenFoodFactsClient {
       source: ProductSource.OPEN_FOOD_FACTS,
       verificationStatus: ProductVerificationStatus.AUTO_IMPORTED,
       externalProvider: 'open_food_facts',
+      externalId:
+        typeof product.code === 'string' ? product.code : barcode.digits,
       externalRawData: product as Record<string, unknown>,
     };
   }

@@ -22,6 +22,7 @@ type Props = {
   onPress: (product: ProductWithImage) => void;
   onDelete?: (product: ProductWithImage) => void;
   onQuickCalculate?: (product: ProductWithImage) => void;
+  isHighlighted?: boolean;
 };
 
 export function ProductCard({
@@ -29,6 +30,7 @@ export function ProductCard({
   onPress,
   onDelete,
   onQuickCalculate,
+  isHighlighted = false,
 }: Props) {
   const { t, i18n } = useTranslation("pantry");
   const { colors } = useAppTheme();
@@ -64,7 +66,11 @@ export function ProductCard({
   return (
     <>
       <Pressable
-        style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+        style={({ pressed }) => [
+          styles.card,
+          isHighlighted && styles.cardHighlighted,
+          pressed && styles.cardPressed,
+        ]}
         onPress={() => onPress(product)}
       >
         <View style={[styles.topRow, dir.row]}>

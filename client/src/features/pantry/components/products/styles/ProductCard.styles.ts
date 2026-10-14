@@ -31,6 +31,22 @@ export const useStyles = () =>
         transform: [{ scale: 0.99 }],
       },
 
+      cardHighlighted: {
+        borderColor: colors.primaryGreen,
+        borderWidth: 1.5,
+        ...Platform.select({
+          ios: {
+            shadowColor: colors.primaryGreen,
+            shadowOpacity: 0.35,
+            shadowRadius: 20,
+            shadowOffset: { width: 0, height: 8 },
+          },
+          android: {
+            elevation: 10,
+          },
+        }),
+      },
+
       topRow: {
         alignItems: "center",
         gap: spacing.md,

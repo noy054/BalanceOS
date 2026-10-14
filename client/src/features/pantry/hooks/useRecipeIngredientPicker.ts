@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 
 import { PantryProduct } from "../types";
 import { PickerDraft } from "../helpers/recipeIngredientPickerDraft";
+import { sortByMealCategory } from "../helpers/sortByMealCategory";
 
 export function useRecipeIngredientPicker(products: PantryProduct[]) {
   const [search, setSearch] = useState("");
@@ -10,15 +11,15 @@ export function useRecipeIngredientPicker(products: PantryProduct[]) {
   const filteredProducts = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    if (!normalizedSearch) {
-      return products;
-    }
+    const searched = normalizedSearch
+      ? products.filter(
+          (product) =>
+            product.name.toLowerCase().includes(normalizedSearch) ||
+            product.brand?.toLowerCase().includes(normalizedSearch),
+        )
+      : products;
 
-    return products.filter(
-      (product) =>
-        product.name.toLowerCase().includes(normalizedSearch) ||
-        product.brand?.toLowerCase().includes(normalizedSearch),
-    );
+    return sortByMealCategory(searched, null);
   }, [products, search]);
 
   const draftList = useMemo(() => [...drafts.values()], [drafts]);

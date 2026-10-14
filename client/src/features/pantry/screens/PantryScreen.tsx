@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   ActivityIndicator,
@@ -24,6 +24,7 @@ import { ProductCalculatorModal } from "../components/products/ProductCalculator
 import { RecipeCard } from "../components/recipes/RecipeCard";
 import { SavedMealCard } from "../components/saved-meals/SavedMealCard";
 import { usePantryProducts, useDeletePantryProduct } from "../hooks/usePantry";
+import { usePantryHighlight } from "../pantryHighlightStore";
 import { useRecipes, useDeleteRecipe } from "../hooks/useRecipes";
 import { useSavedMeals, useDeleteSavedMeal } from "../hooks/useSavedMeals";
 import { PantryProduct, PantryRecipe, PantryTab, SavedMeal } from "../types";
@@ -42,6 +43,9 @@ export function PantryScreen() {
   const [calculatorProduct, setCalculatorProduct] =
     useState<PantryProduct | null>(null);
 
+  const productListRef = useRef<FlatList>(null);
+  const { highlightedProductId, clearHighlight } = usePantryHighlight();
+
   const deleteProduct = useDeletePantryProduct();
   const deleteRecipe = useDeleteRecipe();
   const deleteSavedMeal = useDeleteSavedMeal();
@@ -50,6 +54,7 @@ export function PantryScreen() {
     data: products = [],
     isLoading: loadingProducts,
     isError: errorProducts,
+    loadMore: loadMoreProducts,
   } = usePantryProducts(search);
 
   const {
@@ -83,6 +88,36 @@ export function PantryScreen() {
 
     return savedMeals.filter((meal) => meal.name.toLowerCase().includes(q));
   }, [savedMeals, search]);
+
+  // Scroll to and highlight a product navigated from the barcode "exists" flow
+  useEffect(() => {
+    if (!highlightedProductId) return;
+
+    // Ensure the products tab is active and search is cleared so the item is visible
+    setActiveTab("products");
+    setSearch("");
+
+    // Always schedule the highlight clear, even if the item is not yet in the list
+    const clearTimer = setTimeout(() => clearHighlight(), 3500);
+
+    if (products.length === 0) return () => clearTimeout(clearTimer);
+
+    const index = products.findIndex((p) => p.id === highlightedProductId);
+    if (index === -1) return () => clearTimeout(clearTimer);
+
+    const scrollTimer = setTimeout(() => {
+      productListRef.current?.scrollToIndex({
+        index,
+        animated: true,
+        viewPosition: 0.3,
+      });
+    }, 350);
+
+    return () => {
+      clearTimeout(scrollTimer);
+      clearTimeout(clearTimer);
+    };
+  }, [highlightedProductId, products, clearHighlight]);
 
   const isDeletingRecipe = deleteRecipe.isPending;
   const isDeletingSavedMeal = deleteSavedMeal.isPending;
@@ -274,6 +309,7 @@ export function PantryScreen() {
               isRTL={isRTL}
             >
               <FlatList
+                ref={productListRef}
                 data={products}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
@@ -282,10 +318,27 @@ export function PantryScreen() {
                     onPress={handleProductPress}
                     onDelete={handleDeleteProduct}
                     onQuickCalculate={handleQuickCalculate}
+                    isHighlighted={item.id === highlightedProductId}
                   />
                 )}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
+                onScrollToIndexFailed={({ index, averageItemLength }) => {
+                  // Immediately jump to an estimated position, then retry the precise scroll
+                  productListRef.current?.scrollToOffset({
+                    offset: index * averageItemLength,
+                    animated: true,
+                  });
+                  setTimeout(() => {
+                    productListRef.current?.scrollToIndex({
+                      index,
+                      animated: false,
+                      viewPosition: 0.3,
+                    });
+                  }, 300);
+                }}
+                onEndReached={loadMoreProducts}
+                onEndReachedThreshold={0.5}
               />
             </TabContent>
           ) : null}

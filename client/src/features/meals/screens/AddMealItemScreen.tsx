@@ -25,6 +25,7 @@ import { AddMealItemPayload } from '../../day-log/types';
 import { MEAL_SHORTCUTS } from '../constants/mealShortcuts';
 import { PANTRY_QUERY_KEYS } from '../../pantry/constants';
 import { useMealReturn } from '../../pantry/mealReturnStore';
+import { sortByMealCategory } from '../../pantry/helpers/sortByMealCategory';
 import { useAppTheme } from '../../../shared/theme';
 import { useStyles } from './styles/AddMealItemScreen.styles';
 
@@ -86,7 +87,11 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
 
   const queryClient = useQueryClient();
 
-  const { data: products = [], isLoading: loadingProducts } = usePantryProducts(search);
+  const {
+    data: products = [],
+    isLoading: loadingProducts,
+    loadMore: loadMoreProducts,
+  } = usePantryProducts(search);
   const { data: recipes = [], isLoading: loadingRecipes } = useRecipes();
   const { data: savedMeals = [], isLoading: loadingSavedMeals } = useSavedMeals();
 
@@ -116,27 +121,8 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
 
   const filteredProducts = useMemo(() => {
     const matchCat = mealTypeToCategory(activeMealType);
-    if (!matchCat) return products;
-
-    const explicit = products.filter((p) =>
-      (p.mealCategories ?? []).includes(matchCat),
-    );
-    let result = explicit.length > 0
-      ? explicit
-      : products.filter((p) => (p.mealCategories ?? []).length === 0);
-
-    // Always keep the selected uncategorized product visible so the user
-    // can see it is still selected after choosing a meal type
-    if (
-      selected?.kind === 'product' &&
-      (selected.item.mealCategories ?? []).length === 0 &&
-      !result.find((p) => p.id === selected.item.id)
-    ) {
-      result = [selected.item, ...result];
-    }
-
-    return result;
-  }, [products, activeMealType, selected]);
+    return sortByMealCategory(products, matchCat);
+  }, [products, activeMealType]);
 
   const filteredRecipes = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -443,6 +429,8 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
           contentContainerStyle={styles.listContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          onEndReached={activeTab === 'products' ? loadMoreProducts : undefined}
+          onEndReachedThreshold={0.5}
           ListEmptyComponent={
             <View style={styles.centered}>
               <Text style={[styles.emptyText, { textAlign: isRTL ? 'right' : 'left' }]}>

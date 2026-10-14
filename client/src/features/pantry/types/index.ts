@@ -16,6 +16,9 @@ export type PantryProduct = {
   brand: string | null;
   imageUrl?: string | null;
   barcode: string | null;
+  normalizedBarcode: string | null;
+  /** Catalog item this product was copied from (provenance only; values are a snapshot) */
+  catalogItemId: string | null;
   caloriesPer100g: number;
   proteinPer100g: number;
   carbsPer100g: number;
@@ -56,6 +59,7 @@ export type UpdatePantryProductPayload = Omit<
 export type ProductCatalogSource =
   | "INTERNAL"
   | "OPEN_FOOD_FACTS"
+  | "USDA_FDC"
   | "MANUAL"
   | "ADMIN";
 
@@ -66,6 +70,7 @@ export type ProductCatalogVerificationStatus =
   | "ADMIN_VERIFIED"
   | "REJECTED";
 
+/** Global, read-only catalog item (server excludes raw provider data and user ids) */
 export type ProductCatalogProduct = {
   id: string;
   barcode: string | null;
@@ -83,27 +88,36 @@ export type ProductCatalogProduct = {
   source: ProductCatalogSource;
   verificationStatus: ProductCatalogVerificationStatus;
   externalProvider: string | null;
-  createdByUserId: string | null;
-  updatedByUserId: string | null;
   createdAt: string;
   updatedAt: string;
 };
 
-export type CreateProductCatalogPayload = {
-  barcode?: string;
-  name: string;
-  brand?: string;
+/** Copies a catalog item into the pantry; per-100g fields fill values the catalog lacks */
+export type AddFromCatalogPayload = {
   caloriesPer100g?: number;
   proteinPer100g?: number;
   carbsPer100g?: number;
   fatPer100g?: number;
   fiberPer100g?: number;
-  servingSizeGrams?: number;
+  servingSizeG?: number;
+  servingSizeText?: string;
+  mealCategories?: ProductCategory[];
 };
 
-export type UpdateProductCatalogPayload = Partial<CreateProductCatalogPayload>;
+// ── Barcode ─────────────────────────────────────────────────────────────────
+
+export type BarcodeResolveResult =
+  | { status: "IN_PANTRY"; barcode: string; pantryProduct: PantryProduct }
+  | { status: "IN_CATALOG"; barcode: string; catalogItem: ProductCatalogProduct }
+  | { status: "NOT_FOUND"; barcode: string };
 
 // ── Shared ──────────────────────────────────────────────────────────────────
+
+/** Cursor page returned by list/search endpoints; nextCursor is null on the last page */
+export type Page<T> = {
+  items: T[];
+  nextCursor: string | null;
+};
 
 export type NutritionTotals = {
   calories: number;

@@ -1,30 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ProductCatalogItemModel } from '../../../generated/prisma/models';
-import { NormalizedProductData } from './open-food-facts.client';
-import { CreateProductCatalogDto } from './dto/create-product-catalog.dto';
-import { UpdateProductCatalogDto } from './dto/update-product-catalog.dto';
-import { ProductSource, ProductVerificationStatus } from '../../../generated/prisma/enums';
+import { NormalizedProductData } from './types/external-product.types';
+import {
+  CATALOG_ITEM_PUBLIC_SELECT,
+  ProductCatalogItemDto,
+} from './types/product-catalog.types';
 
 @Injectable()
 export class ProductCatalogRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findByBarcode(barcode: string): Promise<ProductCatalogItemModel | null> {
-    return this.prisma.productCatalogItem.findUnique({ where: { barcode } });
-  }
-
-  findByNormalizedBarcode(normalizedBarcode: string): Promise<ProductCatalogItemModel | null> {
-    return this.prisma.productCatalogItem.findFirst({
+  findByNormalizedBarcode(
+    normalizedBarcode: string,
+  ): Promise<ProductCatalogItemDto | null> {
+    return this.prisma.productCatalogItem.findUnique({
       where: { normalizedBarcode },
+      select: CATALOG_ITEM_PUBLIC_SELECT,
     });
   }
 
-  findById(id: string): Promise<ProductCatalogItemModel | null> {
-    return this.prisma.productCatalogItem.findUnique({ where: { id } });
+  findById(id: string): Promise<ProductCatalogItemDto | null> {
+    return this.prisma.productCatalogItem.findUnique({
+      where: { id },
+      select: CATALOG_ITEM_PUBLIC_SELECT,
+    });
   }
 
-  search(query: string, limit: number): Promise<ProductCatalogItemModel[]> {
+  /** Fetches `take` rows (caller asks for limit + 1 to detect the next page). */
+  search(
+    query: string,
+    take: number,
+    cursor?: string,
+  ): Promise<ProductCatalogItemDto[]> {
     return this.prisma.productCatalogItem.findMany({
       where: {
         OR: [
@@ -32,15 +39,17 @@ export class ProductCatalogRepository {
           { brand: { contains: query, mode: 'insensitive' } },
         ],
       },
-      orderBy: { name: 'asc' },
-      take: limit,
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      take,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      select: CATALOG_ITEM_PUBLIC_SELECT,
     });
   }
 
   createFromExternal(
     data: NormalizedProductData,
     userId: string,
-  ): Promise<ProductCatalogItemModel> {
+  ): Promise<ProductCatalogItemDto> {
     return this.prisma.productCatalogItem.create({
       data: {
         barcode: data.barcode,
@@ -58,59 +67,34 @@ export class ProductCatalogRepository {
         source: data.source,
         verificationStatus: data.verificationStatus,
         externalProvider: data.externalProvider,
+        externalId: data.externalId,
         // Prisma JSON input type is incompatible with Record<string,unknown> at compile time but safe at runtime
         externalRawData: data.externalRawData as unknown as object,
         createdByUserId: userId,
         updatedByUserId: userId,
       },
+      select: CATALOG_ITEM_PUBLIC_SELECT,
     });
   }
 
-  createManual(
-    dto: CreateProductCatalogDto,
-    userId: string,
-  ): Promise<ProductCatalogItemModel> {
-    const normalized = dto.barcode ? dto.barcode.trim().toLowerCase() : undefined;
-    return this.prisma.productCatalogItem.create({
-      data: {
-        barcode: dto.barcode ?? null,
-        normalizedBarcode: normalized ?? null,
-        name: dto.name,
-        brand: dto.brand ?? null,
-        imageUrl: dto.imageUrl ?? null,
-        caloriesPer100g: dto.caloriesPer100g ?? null,
-        proteinPer100g: dto.proteinPer100g ?? null,
-        carbsPer100g: dto.carbsPer100g ?? null,
-        fatPer100g: dto.fatPer100g ?? null,
-        fiberPer100g: dto.fiberPer100g ?? null,
-        servingSizeGrams: dto.servingSizeGrams ?? null,
-        source: ProductSource.MANUAL,
-        verificationStatus: ProductVerificationStatus.USER_SUBMITTED,
-        createdByUserId: userId,
-        updatedByUserId: userId,
-      },
+  findMiss(normalizedBarcode: string): Promise<{ lastCheckedAt: Date } | null> {
+    return this.prisma.barcodeLookupMiss.findUnique({
+      where: { normalizedBarcode },
+      select: { lastCheckedAt: true },
     });
   }
 
-  update(
-    id: string,
-    dto: UpdateProductCatalogDto,
-    userId: string,
-  ): Promise<ProductCatalogItemModel> {
-    return this.prisma.productCatalogItem.update({
-      where: { id },
-      data: {
-        name: dto.name,
-        brand: dto.brand,
-        imageUrl: dto.imageUrl,
-        caloriesPer100g: dto.caloriesPer100g,
-        proteinPer100g: dto.proteinPer100g,
-        carbsPer100g: dto.carbsPer100g,
-        fatPer100g: dto.fatPer100g,
-        fiberPer100g: dto.fiberPer100g,
-        verificationStatus: dto.verificationStatus,
-        updatedByUserId: userId,
-      },
+  async recordMiss(normalizedBarcode: string): Promise<void> {
+    await this.prisma.barcodeLookupMiss.upsert({
+      where: { normalizedBarcode },
+      create: { normalizedBarcode },
+      update: { attempts: { increment: 1 }, lastCheckedAt: new Date() },
+    });
+  }
+
+  async clearMiss(normalizedBarcode: string): Promise<void> {
+    await this.prisma.barcodeLookupMiss.deleteMany({
+      where: { normalizedBarcode },
     });
   }
 }

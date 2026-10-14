@@ -22,6 +22,8 @@ type Props = {
   products: PantryProduct[];
   onAdd: (items: RecipeIngredientSelection[]) => void;
   onClose: () => void;
+  /** Loads the next page of pantry products */
+  onEndReached?: () => void;
 };
 
 export function RecipeIngredientPickerModal({
@@ -29,6 +31,7 @@ export function RecipeIngredientPickerModal({
   products,
   onAdd,
   onClose,
+  onEndReached,
 }: Props) {
   const { i18n } = useTranslation("pantry");
   const styles = useStyles();
@@ -86,6 +89,7 @@ export function RecipeIngredientPickerModal({
           drafts={picker.drafts}
           dir={dir}
           onToggleProduct={picker.toggleProduct}
+          onEndReached={onEndReached}
         />
 
         {picker.selectedCount > 0 ? (

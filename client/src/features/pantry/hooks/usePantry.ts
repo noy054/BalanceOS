@@ -1,9 +1,30 @@
-import { useEffect, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  QueryClient,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { pantryApi } from '../api/pantryApi';
-import { PANTRY_QUERY_KEYS } from '../constants';
-import { CreatePantryProductPayload, UpdatePantryProductPayload } from '../types';
+import { BARCODE_QUERY_KEYS, PANTRY_PAGE_SIZE, PANTRY_QUERY_KEYS } from '../constants';
+import {
+  AddFromCatalogPayload,
+  CreatePantryProductPayload,
+  PantryProduct,
+  UpdatePantryProductPayload,
+} from '../types';
 
+/** Product lists and cached barcode resolutions both depend on pantry contents */
+function invalidatePantryProducts(queryClient: QueryClient) {
+  queryClient.invalidateQueries({ queryKey: PANTRY_QUERY_KEYS.list });
+  queryClient.invalidateQueries({ queryKey: BARCODE_QUERY_KEYS.all });
+}
+
+/**
+ * Cursor-paginated pantry products. `data` is the flattened list of loaded pages;
+ * call `loadMore` from a list's onEndReached to fetch the next page.
+ */
 export function usePantryProducts(search?: string) {
   const trimmed = (search ?? '').trim();
   const [debouncedSearch, setDebouncedSearch] = useState(trimmed);
@@ -17,13 +38,26 @@ export function usePantryProducts(search?: string) {
     return () => clearTimeout(id);
   }, [trimmed]);
 
-  return useQuery({
-    queryKey: debouncedSearch
-      ? ([...PANTRY_QUERY_KEYS.list, debouncedSearch] as const)
-      : PANTRY_QUERY_KEYS.list,
-    queryFn: () => pantryApi.list(debouncedSearch || undefined),
+  const query = useInfiniteQuery({
+    queryKey: PANTRY_QUERY_KEYS.pages(debouncedSearch),
+    queryFn: ({ pageParam }) =>
+      pantryApi.list({
+        search: debouncedSearch || undefined,
+        cursor: pageParam,
+        limit: PANTRY_PAGE_SIZE,
+      }),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    select: (data): PantryProduct[] => data.pages.flatMap((page) => page.items),
     staleTime: 2 * 60 * 1000,
   });
+
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
+  const loadMore = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) void fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  return { ...query, loadMore };
 }
 
 export function usePantryProduct(id: string) {
@@ -38,8 +72,27 @@ export function useCreatePantryProduct() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: CreatePantryProductPayload) => pantryApi.create(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: PANTRY_QUERY_KEYS.list });
+    onSuccess: (created) => {
+      queryClient.setQueryData(PANTRY_QUERY_KEYS.detail(created.id), created);
+      invalidatePantryProducts(queryClient);
+    },
+  });
+}
+
+/** Copies a global catalog item into the pantry (server copies the values; idempotent per user) */
+export function useAddPantryProductFromCatalog() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      catalogItemId,
+      payload,
+    }: {
+      catalogItemId: string;
+      payload: AddFromCatalogPayload;
+    }) => pantryApi.addFromCatalog(catalogItemId, payload),
+    onSuccess: (created) => {
+      queryClient.setQueryData(PANTRY_QUERY_KEYS.detail(created.id), created);
+      invalidatePantryProducts(queryClient);
     },
   });
 }
@@ -51,7 +104,7 @@ export function useUpdatePantryProduct(id: string) {
       pantryApi.update(id, payload),
     onSuccess: (updated) => {
       queryClient.setQueryData(PANTRY_QUERY_KEYS.detail(id), updated);
-      queryClient.invalidateQueries({ queryKey: PANTRY_QUERY_KEYS.list });
+      invalidatePantryProducts(queryClient);
     },
   });
 }
@@ -62,7 +115,7 @@ export function useDeletePantryProduct() {
     mutationFn: (id: string) => pantryApi.delete(id),
     onSuccess: (_data, id) => {
       queryClient.removeQueries({ queryKey: PANTRY_QUERY_KEYS.detail(id) });
-      queryClient.invalidateQueries({ queryKey: PANTRY_QUERY_KEYS.list });
+      invalidatePantryProducts(queryClient);
     },
   });
 }

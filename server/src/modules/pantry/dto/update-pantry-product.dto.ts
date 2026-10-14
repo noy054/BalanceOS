@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { ProductCategory } from '../../../../generated/prisma/enums';
+import { IsBarcode } from '../../../common/barcode/is-barcode.validator';
 
 export class UpdatePantryProductDto {
   @IsOptional()
@@ -25,8 +26,7 @@ export class UpdatePantryProductDto {
   brand?: string;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(100)
+  @IsBarcode()
   barcode?: string;
 
   @IsOptional()

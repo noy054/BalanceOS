@@ -217,6 +217,13 @@
       "saveButton": "Save",
       "saving": "Saving...",
       "cancel": "Cancel"
+    },
+    "invalidBarcode": "This barcode is not a valid product barcode. Try scanning again.",
+    "lookupFailed": "Could not look up this barcode. Check your connection and try again.",
+    "rateLimited": "Too many scans in a short time. Wait a moment and try again.",
+    "missingNutrition": {
+      "title": "Missing nutrition values",
+      "hint": "The source did not provide these values. Enter them per 100g from the label."
     }
   },
   "empty": {

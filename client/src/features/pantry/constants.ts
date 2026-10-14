@@ -1,21 +1,36 @@
 export const PANTRY_ENDPOINTS = {
   BASE: "/pantry/products",
   BY_ID: (id: string) => `/pantry/products/${id}`,
-  BARCODE: (barcode: string) => `/pantry/products/barcode/${barcode}`,
+  FROM_CATALOG: (catalogItemId: string) =>
+    `/pantry/products/from-catalog/${encodeURIComponent(catalogItemId)}`,
 } as const;
 
+export const PANTRY_PAGE_SIZE = 50;
+
 export const PRODUCT_CATALOG_ENDPOINTS = {
-  BARCODE: (barcode: string) =>
-    `/product-catalog/barcode/${encodeURIComponent(barcode)}`,
   SEARCH: "/product-catalog/search",
-  CREATE: "/product-catalog",
-  UPDATE: (id: string) => `/product-catalog/${id}`,
+  BY_ID: (id: string) => `/product-catalog/${encodeURIComponent(id)}`,
 } as const;
 
 export const PRODUCT_CATALOG_QUERY_KEYS = {
-  barcode: (barcode: string) => ["product-catalog", "barcode", barcode] as const,
   search: (q: string) => ["product-catalog", "search", q] as const,
+  detail: (id: string) => ["product-catalog", id] as const,
 };
+
+export const BARCODE_ENDPOINTS = {
+  RESOLVE: (barcode: string) => `/barcode/${encodeURIComponent(barcode)}/resolve`,
+} as const;
+
+export const BARCODE_QUERY_KEYS = {
+  all: ["barcode"] as const,
+  resolve: (barcode: string) => ["barcode", "resolve", barcode] as const,
+};
+
+/** Catalog data rarely changes; pantry mutations invalidate these results explicitly */
+export const BARCODE_RESOLVE_STALE_TIME = 10 * 60 * 1000;
+
+/** GTIN formats only — the server rejects anything else */
+export const SCANNABLE_BARCODE_TYPES = ["ean13", "ean8", "upc_a"] as const;
 
 export const RECIPE_ENDPOINTS = {
   BASE: "/pantry/recipes",
@@ -28,8 +43,11 @@ export const SAVED_MEAL_ENDPOINTS = {
 } as const;
 
 export const PANTRY_QUERY_KEYS = {
+  /** Prefix for every product query — invalidate this after any product mutation */
   list: ["pantry", "products"] as const,
-  detail: (id: string) => ["pantry", "products", id] as const,
+  /** Paginated list, kept under its own segment so a search term never collides with a product id */
+  pages: (search: string) => ["pantry", "products", "pages", search] as const,
+  detail: (id: string) => ["pantry", "products", "detail", id] as const,
 };
 
 export const RECIPE_QUERY_KEYS = {

@@ -55,7 +55,7 @@ export function AddSavedMealScreen() {
   const { data: existingMeal, isLoading: isMealLoading } =
     useSavedMeal(savedMealId);
 
-  const { data: products = [] } = usePantryProducts();
+  const { data: products = [], loadMore: loadMoreProducts } = usePantryProducts();
   const { data: recipes = [] } = useRecipes();
 
   const form = useAddSavedMealForm(existingMeal, isEditMode);
@@ -217,6 +217,7 @@ export function AddSavedMealScreen() {
       <ProductPickerModal
         visible={form.productPickerVisible}
         products={products}
+        onEndReached={loadMoreProducts}
         selectedIds={form.selectedProductIds}
         onSelect={form.addProduct}
         onClose={() => form.setProductPickerVisible(false)}

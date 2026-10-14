@@ -53,7 +53,7 @@ export function AddRecipeScreen() {
   const { data: existingRecipe, isLoading: isRecipeLoading } =
     useRecipe(recipeId);
 
-  const { data: products = [] } = usePantryProducts();
+  const { data: products = [], loadMore: loadMoreProducts } = usePantryProducts();
 
   const form = useAddRecipeForm(existingRecipe, isEditMode);
   const hydratedRecipeImageIdRef = useRef<string | null>(null);
@@ -236,6 +236,7 @@ export function AddRecipeScreen() {
       <RecipeIngredientPickerModal
         visible={form.pickerVisible}
         products={products}
+        onEndReached={loadMoreProducts}
         onAdd={form.addIngredients}
         onClose={() => form.setPickerVisible(false)}
       />

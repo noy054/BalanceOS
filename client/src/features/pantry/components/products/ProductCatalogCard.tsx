@@ -3,10 +3,14 @@ import { View, Text, Pressable, Alert, TextInput } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { PantryProduct, ProductCatalogProduct } from "../../types";
-import { pantryApi } from "../../api/pantryApi";
-import { PANTRY_QUERY_KEYS } from "../../constants";
+import { useAddPantryProductFromCatalog } from "../../hooks/usePantry";
+import {
+  RequiredMacroKey,
+  getEffectiveMacro,
+  getMissingMacroKeys,
+} from "../../helpers/catalogNutrition";
+import { MissingNutritionFields } from "./MissingNutritionFields";
 import { useAppTheme } from "../../../../shared/theme";
 import { useStyles } from "./styles/ProductCatalogCard.styles";
 
@@ -54,9 +58,15 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
   const { t, i18n } = useTranslation("pantry");
   const { colors } = useAppTheme();
   const styles = useStyles();
-  const queryClient = useQueryClient();
   const isRTL = i18n.dir(i18n.language) === "rtl";
-  const [isAdding, setIsAdding] = useState(false);
+  const addMutation = useAddPantryProductFromCatalog();
+  const isAdding = addMutation.isPending;
+  const [missingValues, setMissingValues] = useState<
+    Partial<Record<RequiredMacroKey, string>>
+  >({});
+  const [missingErrors, setMissingErrors] = useState<
+    Partial<Record<RequiredMacroKey, string>>
+  >({});
   const [calcMode, setCalcMode] = useState<"grams" | "calories">("grams");
   const [calcInput, setCalcInput] = useState("");
   const [servingSizeStr, setServingSizeStr] = useState(
@@ -70,23 +80,29 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
     product.source === "OPEN_FOOD_FACTS" ||
     product.verificationStatus === "AUTO_IMPORTED";
 
+  const missingKeys = getMissingMacroKeys(product);
+  // Previews use catalog values, falling back to what the user typed for missing ones
+  const cal100 = getEffectiveMacro(product, "caloriesPer100g", missingValues) ?? 0;
+  const protein100 = getEffectiveMacro(product, "proteinPer100g", missingValues) ?? 0;
+  const carbs100 = getEffectiveMacro(product, "carbsPer100g", missingValues) ?? 0;
+  const fat100 = getEffectiveMacro(product, "fatPer100g", missingValues) ?? 0;
+
   const servingG = parseFloat(servingSizeStr);
   const hasServing = !isNaN(servingG) && servingG > 0;
 
   const perServingPreview = hasServing
     ? {
-        cal: Math.round(((product.caloriesPer100g ?? 0) * servingG) / 100),
+        cal: Math.round((cal100 * servingG) / 100),
         p:
-          Math.round(((product.proteinPer100g ?? 0) * servingG) / 100 * 10) /
+          Math.round((protein100 * servingG) / 100 * 10) /
           10,
         c:
-          Math.round(((product.carbsPer100g ?? 0) * servingG) / 100 * 10) / 10,
+          Math.round((carbs100 * servingG) / 100 * 10) / 10,
         f:
-          Math.round(((product.fatPer100g ?? 0) * servingG) / 100 * 10) / 10,
+          Math.round((fat100 * servingG) / 100 * 10) / 10,
       }
     : null;
 
-  const cal100 = product.caloriesPer100g ?? 0;
   const calcVal = parseFloat(calcInput);
   const calcResult = (() => {
     if (isNaN(calcVal) || calcVal <= 0) return null;
@@ -100,43 +116,48 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
     return {
       grams,
       cal: Math.round((cal100 * grams) / 100),
-      p: Math.round(((product.proteinPer100g ?? 0) * grams) / 100 * 10) / 10,
-      c: Math.round(((product.carbsPer100g ?? 0) * grams) / 100 * 10) / 10,
-      f: Math.round(((product.fatPer100g ?? 0) * grams) / 100 * 10) / 10,
+      p: Math.round((protein100 * grams) / 100 * 10) / 10,
+      c: Math.round((carbs100 * grams) / 100 * 10) / 10,
+      f: Math.round((fat100 * grams) / 100 * 10) / 10,
     };
   })();
 
+  function handleMissingChange(key: RequiredMacroKey, value: string) {
+    setMissingValues((prev) => ({ ...prev, [key]: value }));
+    setMissingErrors((prev) => ({ ...prev, [key]: undefined }));
+  }
+
+  function validateMissing(): boolean {
+    const errs: Partial<Record<RequiredMacroKey, string>> = {};
+    for (const key of missingKeys) {
+      if (getEffectiveMacro(product, key, missingValues) == null) {
+        errs[key] = t("errors.invalidNumber");
+      }
+    }
+    setMissingErrors(errs);
+    return Object.keys(errs).length === 0;
+  }
+
   async function handleAddToPantry() {
-    if (isAdding) return;
-    setIsAdding(true);
+    if (isAdding || !validateMissing()) return;
+    const overrides: Partial<Record<RequiredMacroKey, number>> = {};
+    for (const key of missingKeys) {
+      overrides[key] = getEffectiveMacro(product, key, missingValues) ?? undefined;
+    }
     try {
-      const created = await pantryApi.create({
-        name: product.name,
-        brand: product.brand ?? undefined,
-        barcode: product.barcode ?? undefined,
-        imageUrl: product.imageUrl ?? undefined,
-        caloriesPer100g: product.caloriesPer100g ?? 0,
-        proteinPer100g: product.proteinPer100g ?? 0,
-        carbsPer100g: product.carbsPer100g ?? 0,
-        fatPer100g: product.fatPer100g ?? 0,
-        fiberPer100g: product.fiberPer100g ?? undefined,
-        servingSizeG: hasServing ? servingG : undefined,
-        servingSizeText: servingTextStr.trim() || undefined,
+      // Server copies catalog values and returns the existing product if already owned
+      const created: PantryProduct = await addMutation.mutateAsync({
+        catalogItemId: product.id,
+        payload: {
+          ...overrides,
+          servingSizeG: hasServing ? servingG : undefined,
+          servingSizeText: servingTextStr.trim() || undefined,
+        },
       });
-      queryClient.invalidateQueries({ queryKey: PANTRY_QUERY_KEYS.list });
       onAdded?.(created);
       router.back();
-    } catch (err: unknown) {
-      if (
-        (err as { response?: { status?: number } })?.response?.status === 409
-      ) {
-        Alert.alert("", t("barcode.alreadyInPantry"));
-        router.back();
-      } else {
-        Alert.alert("", t("errors.saveFailed"));
-      }
-    } finally {
-      setIsAdding(false);
+    } catch {
+      Alert.alert("", t("errors.saveFailed"));
     }
   }
 
@@ -236,6 +257,13 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
           />
         ) : null}
       </View>
+
+      <MissingNutritionFields
+        missingKeys={missingKeys}
+        values={missingValues}
+        errors={missingErrors}
+        onChange={handleMissingChange}
+      />
 
       {/* Serving size section */}
       <View style={styles.servingSection}>

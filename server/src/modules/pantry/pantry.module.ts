@@ -8,8 +8,10 @@ import { RecipesRepository } from './recipes.repository';
 import { SavedMealsController } from './saved-meals.controller';
 import { SavedMealsService } from './saved-meals.service';
 import { SavedMealsRepository } from './saved-meals.repository';
+import { ProductCatalogModule } from '../product-catalog/product-catalog.module';
 
 @Module({
+  imports: [ProductCatalogModule],
   controllers: [PantryController, RecipesController, SavedMealsController],
   providers: [
     PantryService,
@@ -19,5 +21,6 @@ import { SavedMealsRepository } from './saved-meals.repository';
     SavedMealsService,
     SavedMealsRepository,
   ],
+  exports: [PantryService],
 })
 export class PantryModule {}

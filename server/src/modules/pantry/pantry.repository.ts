@@ -3,12 +3,19 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePantryProductDto } from './dto/create-pantry-product.dto';
 import { UpdatePantryProductDto } from './dto/update-pantry-product.dto';
 import { PantryProductModel } from '../../../generated/prisma/models';
+import { Prisma } from '../../../generated/prisma/client';
 
 @Injectable()
 export class PantryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findAllByUserId(userId: string, search?: string): Promise<PantryProductModel[]> {
+  /** Fetches `take` rows ordered by (name, id); uses the (userId, name, id) index. */
+  findPageByUserId(
+    userId: string,
+    take: number,
+    search?: string,
+    cursor?: string,
+  ): Promise<PantryProductModel[]> {
     return this.prisma.pantryProduct.findMany({
       where: {
         userId,
@@ -21,24 +28,62 @@ export class PantryRepository {
             }
           : {}),
       },
-      orderBy: { name: 'asc' },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      take,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     });
   }
 
-  findByIdAndUserId(id: string, userId: string): Promise<PantryProductModel | null> {
+  findByIdAndUserId(
+    id: string,
+    userId: string,
+  ): Promise<PantryProductModel | null> {
     return this.prisma.pantryProduct.findFirst({ where: { id, userId } });
   }
 
-  findByBarcodeAndUserId(barcode: string, userId: string): Promise<PantryProductModel | null> {
-    return this.prisma.pantryProduct.findFirst({ where: { barcode, userId } });
+  findByNormalizedBarcode(
+    userId: string,
+    normalizedBarcode: string,
+  ): Promise<PantryProductModel | null> {
+    return this.prisma.pantryProduct.findUnique({
+      where: { userId_normalizedBarcode: { userId, normalizedBarcode } },
+    });
   }
 
-  create(userId: string, dto: CreatePantryProductDto): Promise<PantryProductModel> {
-    return this.prisma.pantryProduct.create({ data: { userId, ...dto } });
+  findByCatalogItemId(
+    userId: string,
+    catalogItemId: string,
+  ): Promise<PantryProductModel | null> {
+    return this.prisma.pantryProduct.findFirst({
+      where: { userId, catalogItemId },
+    });
   }
 
-  update(id: string, dto: UpdatePantryProductDto): Promise<PantryProductModel> {
-    return this.prisma.pantryProduct.update({ where: { id }, data: dto });
+  create(
+    userId: string,
+    dto: CreatePantryProductDto,
+    normalizedBarcode: string | null,
+  ): Promise<PantryProductModel> {
+    return this.prisma.pantryProduct.create({
+      data: { userId, ...dto, normalizedBarcode },
+    });
+  }
+
+  createFromCatalog(
+    data: Prisma.PantryProductUncheckedCreateInput,
+  ): Promise<PantryProductModel> {
+    return this.prisma.pantryProduct.create({ data });
+  }
+
+  update(
+    id: string,
+    dto: UpdatePantryProductDto,
+    normalizedBarcode?: string,
+  ): Promise<PantryProductModel> {
+    return this.prisma.pantryProduct.update({
+      where: { id },
+      data: { ...dto, ...(normalizedBarcode ? { normalizedBarcode } : {}) },
+    });
   }
 
   delete(id: string): Promise<PantryProductModel> {

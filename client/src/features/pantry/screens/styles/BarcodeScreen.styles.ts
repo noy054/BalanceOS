@@ -284,6 +284,103 @@ export const useStyles = () =>
     color: "#000",
   },
 
+  // ── Distance hint ──────────────────────────────────────────────────────────
+  distanceHint: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: colors.textMuted,
+    lineHeight: 18,
+  },
+
+  // ── Already in pantry (exists phase) ──────────────────────────────────────
+  existsCard: {
+    borderRadius: radius.xxl,
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.primaryGreenMid,
+    padding: spacing.lg,
+    gap: spacing.sm,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.primaryGreen,
+        shadowOpacity: 0.14,
+        shadowRadius: 20,
+        shadowOffset: { width: 0, height: 10 },
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+
+  existsIconRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+
+  existsTitle: {
+    fontSize: 17,
+    fontWeight: "800",
+    color: colors.primaryGreen,
+    flex: 1,
+  },
+
+  existsName: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.textPrimary,
+    lineHeight: 22,
+  },
+
+  existsBrand: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: colors.textMuted,
+  },
+
+  existsHint: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: colors.textMuted,
+    lineHeight: 18,
+    marginTop: spacing.xs,
+  },
+
+  viewPantryBtn: {
+    minHeight: 54,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+    borderRadius: radius.xl,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    backgroundColor: colors.primaryGreen,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.primaryGreen,
+        shadowOpacity: 0.3,
+        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 9 },
+      },
+      android: {
+        elevation: 6,
+      },
+    }),
+  },
+
+  viewPantryBtnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.985 }],
+  },
+
+  viewPantryBtnText: {
+    fontSize: 15,
+    fontWeight: "900",
+    color: "#000",
+  },
+
   // ── Not found ──────────────────────────────────────────────────────────────
   notFoundBanner: {
     alignItems: "center",

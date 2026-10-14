@@ -15,5 +15,6 @@ import { PrismaModule } from '../../prisma/prisma.module';
     OpenFoodFactsClient,
     UsdaFoodDataCentralClient,
   ],
+  exports: [ProductCatalogService],
 })
 export class ProductCatalogModule {}

@@ -1,14 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ProductSource, ProductVerificationStatus } from '../../../generated/prisma/enums';
-import { NormalizedProductData } from './open-food-facts.client';
+import {
+  ProductSource,
+  ProductVerificationStatus,
+} from '../../../generated/prisma/enums';
+import { NormalizedBarcode } from '../../common/barcode/barcode.utils';
+import {
+  ExternalLookupResult,
+  NormalizedProductData,
+} from './types/external-product.types';
 
 // Nutrient IDs from the USDA FDC branded-food dataset (values are per 100g)
 const NUTRIENT_CALORIES = 1008; // Energy (kcal)
-const NUTRIENT_PROTEIN = 1003;  // Protein
-const NUTRIENT_CARBS = 1005;    // Carbohydrate, by difference
-const NUTRIENT_FAT = 1004;      // Total lipid (fat)
-const NUTRIENT_FIBER = 1079;    // Fiber, total dietary
+const NUTRIENT_PROTEIN = 1003; // Protein
+const NUTRIENT_CARBS = 1005; // Carbohydrate, by difference
+const NUTRIENT_FAT = 1004; // Total lipid (fat)
+const NUTRIENT_FIBER = 1079; // Fiber, total dietary
 
 interface FDCFoodNutrient {
   nutrientId: number;
@@ -45,41 +52,43 @@ export class UsdaFoodDataCentralClient {
 
   constructor(private readonly config: ConfigService) {}
 
-  async fetchByBarcode(barcode: string): Promise<NormalizedProductData | null> {
+  async fetchByBarcode(
+    barcode: NormalizedBarcode,
+  ): Promise<ExternalLookupResult> {
     const apiKey = this.config.get<string>('USDA_API_KEY');
-    if (!apiKey) return null;
+    // Not configured: nothing to ask, which is a definitive miss for this provider
+    if (!apiKey) return { status: 'not_found' };
 
     try {
       const url =
         `${this.BASE_URL}/foods/search` +
-        `?query=${encodeURIComponent(barcode)}` +
+        `?query=${encodeURIComponent(barcode.digits)}` +
         `&dataType=Branded` +
         `&pageSize=5` +
-        `&api_key=${apiKey}`;
+        `&api_key=${encodeURIComponent(apiKey)}`;
 
       const response = await fetch(url, {
         signal: AbortSignal.timeout(8000),
         headers: { 'User-Agent': 'BalanceOS/1.0' },
       });
 
-      if (!response.ok) return null;
+      if (!response.ok) return { status: 'error' };
 
       const data = (await response.json()) as FDCSearchResponse;
-      if (!data.foods?.length) return null;
+      if (!data.foods?.length) return { status: 'not_found' };
 
-      const food = this.findBestMatch(data.foods, barcode);
-      if (!food) return null;
+      const food = this.findBestMatch(data.foods, barcode.digits);
+      if (!food) return { status: 'not_found' };
 
-      return this.normalize(food, barcode);
+      return { status: 'found', data: this.normalize(food, barcode) };
     } catch {
-      return null;
+      return { status: 'error' };
     }
   }
 
   /**
    * Finds the food whose gtinUpc matches the scanned barcode.
    * UPC-A (12 digits) and EAN-13 (13 digits, UPC with leading zero) are treated as equivalent.
-   * Falls back to the first result only when the response contains a single food and no gtinUpc is present.
    */
   private findBestMatch(foods: FDCFood[], barcode: string): FDCFood | null {
     const stripped = barcode.trim().replace(/^0+/, '');
@@ -87,27 +96,24 @@ export class UsdaFoodDataCentralClient {
     const match = foods.find((f) => {
       if (!f.gtinUpc) return false;
       const gtin = f.gtinUpc.trim();
-      return (
-        gtin === barcode.trim() ||
-        gtin.replace(/^0+/, '') === stripped
-      );
+      return gtin === barcode.trim() || gtin.replace(/^0+/, '') === stripped;
     });
 
-    if (match) return match;
-
-    // Accept a single-result response that has no gtinUpc (uncommon but possible)
-    if (foods.length === 1 && !foods[0].gtinUpc) return foods[0];
-
-    return null;
+    // No fallback to un-barcoded results: the search is full-text, so a lone result without
+    // gtinUpc is not proof of a match and would be cached globally under this barcode.
+    return match ?? null;
   }
 
-  private normalize(food: FDCFood, barcode: string): NormalizedProductData {
+  private normalize(
+    food: FDCFood,
+    barcode: NormalizedBarcode,
+  ): NormalizedProductData {
     const findNutrient = (id: number): number | null => {
       const n = food.foodNutrients.find((fn) => fn.nutrientId === id);
       return n?.value != null ? n.value : null;
     };
 
-    const name = food.description?.trim() || barcode;
+    const name = food.description?.trim() || barcode.digits;
     const brand = food.brandOwner?.trim() || food.brandName?.trim() || null;
 
     let servingSizeGrams: number | null = null;
@@ -121,8 +127,8 @@ export class UsdaFoodDataCentralClient {
     const servingSizeText = food.householdServingFullText?.trim() || null;
 
     return {
-      barcode,
-      normalizedBarcode: barcode.trim().toLowerCase(),
+      barcode: barcode.digits,
+      normalizedBarcode: barcode.canonical,
       name,
       brand,
       imageUrl: null, // USDA FDC does not provide product images
@@ -136,6 +142,7 @@ export class UsdaFoodDataCentralClient {
       source: ProductSource.USDA_FDC,
       verificationStatus: ProductVerificationStatus.AUTO_IMPORTED,
       externalProvider: 'usda_fdc',
+      externalId: String(food.fdcId),
       externalRawData: food as unknown as Record<string, unknown>,
     };
   }

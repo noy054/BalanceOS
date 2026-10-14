@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Animated, View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
+import { Alert, Animated, View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import type { BarcodeScanningResult } from "expo-camera";
@@ -10,14 +10,17 @@ import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { ProductCatalogCard } from "../components/products/ProductCatalogCard";
 import { ManualProductCatalogForm } from "../components/products/ManualProductCatalogForm";
-import { productCatalogApi } from "../api/productCatalogApi";
-import { ProductCatalogProduct } from "../types";
+import { useBarcodeResolver } from "../hooks/useBarcodeResolver";
+import { getBarcodeLookupErrorKey } from "../helpers/barcode";
+import { SCANNABLE_BARCODE_TYPES } from "../constants";
+import { PantryProduct, ProductCatalogProduct } from "../types";
 import { useRecipeReturn } from "../recipeReturnStore";
 import { useMealReturn } from "../mealReturnStore";
+import { usePantryHighlight } from "../pantryHighlightStore";
 import { useAppTheme } from "../../../shared/theme";
 import { useStyles } from "./styles/BarcodeScreen.styles";
 
-type Phase = "scanning" | "loading" | "found" | "not_found" | "manual";
+type Phase = "scanning" | "loading" | "found" | "not_found" | "manual" | "exists";
 
 export function BarcodeScreen() {
   const { t, i18n } = useTranslation("pantry");
@@ -32,6 +35,8 @@ export function BarcodeScreen() {
 
   const fromRecipePicker = returnTo === "recipe";
   const fromMealFlow = returnTo === "meal";
+
+  const setHighlight = usePantryHighlight((s) => s.setHighlight);
 
   const navigation = useNavigation();
   const productWasSavedRef = useRef(false);
@@ -48,12 +53,14 @@ export function BarcodeScreen() {
     });
   }, [navigation, fromRecipePicker, setReopenPicker]);
 
-  function handleProductAdded(product: Parameters<typeof setPending>[0]) {
+  function handleProductAdded(product: PantryProduct) {
     productWasSavedRef.current = true;
     if (fromRecipePicker) {
       setPending(product);
     } else if (fromMealFlow) {
       setMealPending(product);
+    } else {
+      setHighlight(product.id);
     }
   }
 
@@ -65,8 +72,10 @@ export function BarcodeScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [phase, setPhase] = useState<Phase>("scanning");
   const [product, setProduct] = useState<ProductCatalogProduct | null>(null);
+  const [existingPantryProduct, setExistingPantryProduct] = useState<PantryProduct | null>(null);
   const [scannedBarcode, setScannedBarcode] = useState("");
   const scanLocked = useRef(false);
+  const resolveBarcode = useBarcodeResolver();
 
   // Animate the scan line up and down while actively scanning
   const scanLineAnim = useRef(new Animated.Value(0)).current;
@@ -89,28 +98,48 @@ export function BarcodeScreen() {
     setPhase("loading");
 
     try {
-      const found = await productCatalogApi.lookupByBarcode(data);
-      if (found) {
-        setProduct(found);
+      // Server checks the user's pantry first, then the global catalog / external sources
+      const result = await resolveBarcode(data);
+
+      if (result.status === "IN_PANTRY") {
+        if (fromRecipePicker || fromMealFlow) {
+          // Already owned: hand it straight back to the calling flow
+          handleProductAdded(result.pantryProduct);
+          router.back();
+          return;
+        }
+        setExistingPantryProduct(result.pantryProduct);
+        setPhase("exists");
+      } else if (result.status === "IN_CATALOG") {
+        setProduct(result.catalogItem);
         setPhase("found");
       } else {
         setPhase("not_found");
       }
-    } catch {
-      setPhase("not_found");
+    } catch (err: unknown) {
+      // Invalid barcode / rate limit / network: let the user rescan instead of forcing manual entry
+      Alert.alert("", t(getBarcodeLookupErrorKey(err)));
+      handleReset();
     }
+  }
+
+  function handleViewInPantry() {
+    if (!existingPantryProduct) return;
+    setHighlight(existingPantryProduct.id);
+    router.navigate("/(app)/pantry");
   }
 
   function handleReset() {
     scanLocked.current = false;
     setProduct(null);
+    setExistingPantryProduct(null);
     setScannedBarcode("");
     setPhase("scanning");
   }
 
-  function handleManualSuccess(p: ProductCatalogProduct) {
-    setProduct(p);
-    setPhase("found");
+  function handleManualSuccess(p: PantryProduct) {
+    handleProductAdded(p);
+    router.back();
   }
 
   function handleOpenManual() {
@@ -186,6 +215,88 @@ export function BarcodeScreen() {
     );
   }
 
+  // ── Product already in pantry ─────────────────────────────────────────────
+
+  if (phase === "exists" && existingPantryProduct) {
+    return (
+      <SafeAreaView style={styles.root} edges={["top"]}>
+        <View pointerEvents="none" style={styles.backgroundLayer}>
+          <View style={styles.glowTop} />
+          <View style={styles.glowSide} />
+        </View>
+        <ScreenHeader
+          title={t("barcode.title")}
+          onBack={fromRecipePicker ? handleBackFromRecipe : undefined}
+        />
+        <View style={styles.body}>
+          <View style={styles.existsCard}>
+            <View style={styles.existsIconRow}>
+              <MaterialCommunityIcons
+                name="check-circle"
+                size={36}
+                color={colors.primaryGreen}
+              />
+              <Text style={styles.existsTitle}>{t("barcode.existsTitle")}</Text>
+            </View>
+            <Text
+              style={[styles.existsName, { textAlign: isRTL ? "right" : "left" }]}
+              numberOfLines={2}
+            >
+              {existingPantryProduct.name}
+            </Text>
+            {existingPantryProduct.brand ? (
+              <Text
+                style={[styles.existsBrand, { textAlign: isRTL ? "right" : "left" }]}
+                numberOfLines={1}
+              >
+                {existingPantryProduct.brand}
+              </Text>
+            ) : null}
+            <Text
+              style={[styles.existsHint, { textAlign: isRTL ? "right" : "left" }]}
+            >
+              {t("barcode.existsProductIn")}
+            </Text>
+          </View>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.viewPantryBtn,
+              { flexDirection: isRTL ? "row-reverse" : "row" },
+              pressed && styles.viewPantryBtnPressed,
+            ]}
+            onPress={handleViewInPantry}
+          >
+            <MaterialCommunityIcons
+              name="package-variant"
+              size={17}
+              color="#000"
+            />
+            <Text style={styles.viewPantryBtnText}>{t("barcode.viewInPantry")}</Text>
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.manualBtn,
+              { flexDirection: isRTL ? "row-reverse" : "row" },
+              pressed && styles.manualBtnPressed,
+            ]}
+            onPress={handleReset}
+          >
+            <View style={styles.manualIconCircle}>
+              <MaterialCommunityIcons
+                name="barcode-scan"
+                size={17}
+                color={colors.primaryGreen}
+              />
+            </View>
+            <Text style={styles.manualBtnText}>{t("barcode.scanAnother")}</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   // ── Product found ──────────────────────────────────────────────────────────
 
   if (phase === "found" && product) {
@@ -208,7 +319,7 @@ export function BarcodeScreen() {
           <ProductCatalogCard
             product={product}
             onScanAnother={handleReset}
-            onAdded={fromRecipePicker || fromMealFlow ? handleProductAdded : undefined}
+            onAdded={handleProductAdded}
           />
         </ScrollView>
       </SafeAreaView>
@@ -293,9 +404,10 @@ export function BarcodeScreen() {
               style={styles.camera}
               facing="back"
               autofocus="on"
+              zoom={0}
               onBarcodeScanned={phase === "loading" ? undefined : handleScan}
               barcodeScannerSettings={{
-                barcodeTypes: ["ean13", "ean8", "code128", "code39", "qr"],
+                barcodeTypes: [...SCANNABLE_BARCODE_TYPES],
               }}
             />
 
@@ -330,6 +442,11 @@ export function BarcodeScreen() {
             style={[styles.subtitle, { textAlign: isRTL ? "right" : "left" }]}
           >
             {t("barcode.subtitle")}
+          </Text>
+          <Text
+            style={[styles.distanceHint, { textAlign: isRTL ? "right" : "left" }]}
+          >
+            {t("barcode.distanceHint")}
           </Text>
         </View>
 

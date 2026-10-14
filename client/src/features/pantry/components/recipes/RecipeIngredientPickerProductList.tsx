@@ -15,6 +15,8 @@ type Props = {
   drafts: Map<string, PickerDraft>;
   dir: DirectionStyles;
   onToggleProduct: (product: PantryProduct) => void;
+  /** Loads the next page of pantry products */
+  onEndReached?: () => void;
 };
 
 export function RecipeIngredientPickerProductList({
@@ -22,6 +24,7 @@ export function RecipeIngredientPickerProductList({
   drafts,
   dir,
   onToggleProduct,
+  onEndReached,
 }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
@@ -43,6 +46,8 @@ export function RecipeIngredientPickerProductList({
       style={styles.list}
       contentContainerStyle={styles.listContent}
       keyboardShouldPersistTaps="handled"
+      onEndReached={onEndReached}
+      onEndReachedThreshold={0.5}
       renderItem={({ item }) => (
         <RecipeIngredientPickerProductRow
           product={item}

@@ -3,14 +3,15 @@ import { View, Text, ScrollView, Pressable, Alert } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { FormInput } from "../../../../shared/components/FormInput";
-import { useCreateProductCatalog } from "../../hooks/useProductCatalog";
-import { ProductCatalogProduct } from "../../types";
+import { isAxiosError } from "axios";
+import { useCreatePantryProduct } from "../../hooks/usePantry";
+import { PantryProduct } from "../../types";
 import { useAppTheme } from "../../../../shared/theme";
 import { useStyles } from "./styles/ManualProductCatalogForm.styles";
 
 type Props = {
   barcode: string;
-  onSuccess: (product: ProductCatalogProduct) => void;
+  onSuccess: (product: PantryProduct) => void;
   onCancel: () => void;
 };
 
@@ -19,6 +20,10 @@ function parsePositive(val: string): number | undefined {
   return isNaN(n) || n < 0 ? undefined : n;
 }
 
+/**
+ * Manual entry for a barcode no source knows. Saves to the user's own pantry only —
+ * user-entered values never go into the shared global catalog.
+ */
 export function ManualProductCatalogForm({
   barcode,
   onSuccess,
@@ -30,7 +35,7 @@ export function ManualProductCatalogForm({
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const textAlign = isRTL ? "right" : "left";
 
-  const createMutation = useCreateProductCatalog();
+  const createMutation = useCreatePantryProduct();
 
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
@@ -60,20 +65,23 @@ export function ManualProductCatalogForm({
   async function handleSubmit() {
     if (!validate() || createMutation.isPending) return;
     try {
+      const servingSize = parsePositive(servingSizeG);
       const product = await createMutation.mutateAsync({
         barcode: barcode || undefined,
         name: name.trim(),
         brand: brand.trim() || undefined,
-        caloriesPer100g: parsePositive(calories),
-        proteinPer100g: parsePositive(protein),
-        carbsPer100g: parsePositive(carbs),
-        fatPer100g: parsePositive(fat),
+        // validate() guarantees the four required macros parse
+        caloriesPer100g: parsePositive(calories) ?? 0,
+        proteinPer100g: parsePositive(protein) ?? 0,
+        carbsPer100g: parsePositive(carbs) ?? 0,
+        fatPer100g: parsePositive(fat) ?? 0,
         fiberPer100g: parsePositive(fiber),
-        servingSizeGrams: parsePositive(servingSizeG),
+        servingSizeG: servingSize != null && servingSize >= 1 ? servingSize : undefined,
       });
       onSuccess(product);
-    } catch {
-      Alert.alert("", t("errors.saveFailed"));
+    } catch (err: unknown) {
+      const alreadyExists = isAxiosError(err) && err.response?.status === 409;
+      Alert.alert("", t(alreadyExists ? "barcode.alreadyInPantry" : "errors.saveFailed"));
     }
   }
 

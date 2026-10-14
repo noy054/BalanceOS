@@ -1,100 +1,140 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '../../../generated/prisma/client';
+import { NormalizedBarcode } from '../../common/barcode/barcode.utils';
+import { Page, toPage } from '../../common/pagination/page.types';
 import { ProductCatalogRepository } from './product-catalog.repository';
 import { OpenFoodFactsClient } from './open-food-facts.client';
 import { UsdaFoodDataCentralClient } from './usda-food-data-central.client';
-import { CreateProductCatalogDto } from './dto/create-product-catalog.dto';
-import { UpdateProductCatalogDto } from './dto/update-product-catalog.dto';
-import { ProductCatalogItemModel } from '../../../generated/prisma/models';
+import { ExternalCircuitBreaker } from './external-circuit-breaker';
+import {
+  ExternalLookupResult,
+  NormalizedProductData,
+} from './types/external-product.types';
+import { ProductCatalogItemDto } from './types/product-catalog.types';
+
+/** How long a barcode unknown to every provider is trusted as "not found" before re-asking them. */
+const MISS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const DEFAULT_SEARCH_LIMIT = 20;
+
+interface ExternalProvider {
+  breaker: ExternalCircuitBreaker;
+  fetch: (barcode: NormalizedBarcode) => Promise<ExternalLookupResult>;
+}
 
 @Injectable()
 export class ProductCatalogService {
+  private readonly providers: ExternalProvider[];
+  /** Concurrent lookups for the same barcode share one external round-trip */
+  private readonly inFlight = new Map<
+    string,
+    Promise<ProductCatalogItemDto | null>
+  >();
+
   constructor(
     private readonly repo: ProductCatalogRepository,
-    private readonly offClient: OpenFoodFactsClient,
-    private readonly usdaClient: UsdaFoodDataCentralClient,
-  ) {}
+    offClient: OpenFoodFactsClient,
+    usdaClient: UsdaFoodDataCentralClient,
+  ) {
+    // Order matters: OFF covers Israeli/European products best, USDA is the US fallback
+    this.providers = [
+      {
+        breaker: new ExternalCircuitBreaker('OpenFoodFacts'),
+        fetch: (b) => offClient.fetchByBarcode(b),
+      },
+      {
+        breaker: new ExternalCircuitBreaker('USDA-FDC'),
+        fetch: (b) => usdaClient.fetchByBarcode(b),
+      },
+    ];
+  }
 
+  /**
+   * Global catalog lookup: internal DB first (indexed unique lookup), then external providers.
+   * External hits are persisted so every later scan of that barcode is served from our DB.
+   */
   async lookupByBarcode(
     userId: string,
-    barcode: string,
-  ): Promise<ProductCatalogItemModel | null> {
-    const normalized = barcode.trim().toLowerCase();
-
-    // 1. Internal DB cache — fastest path, shared across all users
-    const internal = await this.repo.findByNormalizedBarcode(normalized);
+    barcode: NormalizedBarcode,
+  ): Promise<ProductCatalogItemDto | null> {
+    const internal = await this.repo.findByNormalizedBarcode(barcode.canonical);
     if (internal) return internal;
 
-    // 2. Open Food Facts
-    const offData = await this.offClient.fetchByBarcode(barcode);
-    if (offData) {
-      return this.saveExternal(offData, userId, normalized);
+    const miss = await this.repo.findMiss(barcode.canonical);
+    if (miss && Date.now() - miss.lastCheckedAt.getTime() < MISS_TTL_MS)
+      return null;
+
+    const pending = this.inFlight.get(barcode.canonical);
+    if (pending) return pending;
+
+    const lookup = this.lookupExternal(userId, barcode).finally(() =>
+      this.inFlight.delete(barcode.canonical),
+    );
+    this.inFlight.set(barcode.canonical, lookup);
+    return lookup;
+  }
+
+  async getById(id: string): Promise<ProductCatalogItemDto> {
+    const item = await this.repo.findById(id);
+    if (!item) throw new NotFoundException('Product not found in catalog');
+    return item;
+  }
+
+  async search(
+    query: string,
+    limit = DEFAULT_SEARCH_LIMIT,
+    cursor?: string,
+  ): Promise<Page<ProductCatalogItemDto>> {
+    const rows = await this.repo.search(query.trim(), limit + 1, cursor);
+    return toPage(rows, limit);
+  }
+
+  private async lookupExternal(
+    userId: string,
+    barcode: NormalizedBarcode,
+  ): Promise<ProductCatalogItemDto | null> {
+    let hadError = false;
+
+    for (const provider of this.providers) {
+      if (provider.breaker.isOpen()) {
+        hadError = true;
+        continue;
+      }
+
+      const result = await provider.fetch(barcode);
+      if (result.status === 'error') {
+        provider.breaker.recordFailure();
+        hadError = true;
+        continue;
+      }
+
+      provider.breaker.recordSuccess();
+      if (result.status === 'found') {
+        return this.saveExternal(result.data, userId);
+      }
     }
 
-    // 3. USDA FoodData Central fallback
-    const usdaData = await this.usdaClient.fetchByBarcode(barcode);
-    if (usdaData) {
-      return this.saveExternal(usdaData, userId, normalized);
-    }
-
+    // Only cache definitive misses; a provider outage must not hide a product for a week
+    if (!hadError) await this.repo.recordMiss(barcode.canonical);
     return null;
   }
 
-  /** Saves external product data, guarding against race conditions on simultaneous first-scans. */
+  /** Saves external product data, guarding against race conditions on simultaneous first-scans across instances. */
   private async saveExternal(
-    data: Parameters<ProductCatalogRepository['createFromExternal']>[0],
+    data: NormalizedProductData,
     userId: string,
-    normalizedBarcode: string,
-  ): Promise<ProductCatalogItemModel | null> {
+  ): Promise<ProductCatalogItemDto | null> {
     try {
-      return await this.repo.createFromExternal(data, userId);
-    } catch {
-      // Another request saved the same barcode concurrently; return what's now in the DB
-      return this.repo.findByNormalizedBarcode(normalizedBarcode);
-    }
-  }
-
-  async create(
-    userId: string,
-    dto: CreateProductCatalogDto,
-  ): Promise<ProductCatalogItemModel> {
-    if (dto.barcode) {
-      const normalized = dto.barcode.trim().toLowerCase();
-      const existing = await this.repo.findByNormalizedBarcode(normalized);
-      if (existing) return existing;
-    }
-
-    try {
-      return await this.repo.createManual(dto, userId);
+      const created = await this.repo.createFromExternal(data, userId);
+      await this.repo.clearMiss(data.normalizedBarcode);
+      return created;
     } catch (err: unknown) {
       if (
-        err instanceof Error &&
-        err.message.includes('Unique constraint') &&
-        dto.barcode
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2002'
       ) {
-        const found = await this.repo.findByNormalizedBarcode(
-          dto.barcode.trim().toLowerCase(),
-        );
-        if (found) return found;
+        return this.repo.findByNormalizedBarcode(data.normalizedBarcode);
       }
-      throw new ConflictException('Could not create product catalog item');
+      throw err;
     }
-  }
-
-  search(query: string, limit = 20): Promise<ProductCatalogItemModel[]> {
-    return this.repo.search(query, limit);
-  }
-
-  async update(
-    userId: string,
-    id: string,
-    dto: UpdateProductCatalogDto,
-  ): Promise<ProductCatalogItemModel> {
-    const existing = await this.repo.findById(id);
-    if (!existing) throw new NotFoundException('Product not found in catalog');
-    return this.repo.update(id, dto, userId);
   }
 }

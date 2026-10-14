@@ -19,13 +19,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  refreshTokens      RefreshToken[]
+  refreshTokens       RefreshToken[]
   passwordResetTokens PasswordResetToken[]
-  nutritionSettings UserNutritionSettings?
-  pantryProducts    PantryProduct[]
-  pantryRecipes     PantryRecipe[]
-  savedMeals        SavedMeal[]
-  dayLogs           DayLog[]
+  nutritionSettings   UserNutritionSettings?
+  pantryProducts      PantryProduct[]
+  pantryRecipes       PantryRecipe[]
+  savedMeals          SavedMeal[]
+  dayLogs             DayLog[]
 
   createdCatalogItems ProductCatalogItem[] @relation("ProductCatalogCreatedBy")
   updatedCatalogItems ProductCatalogItem[] @relation("ProductCatalogUpdatedBy")
@@ -101,9 +101,11 @@ enum FoodUnit {
 model ProductCatalogItem {
   id String @id @default(cuid())
 
-  barcode           String? @unique
+  /// Raw barcode as received. Lookups and uniqueness use normalizedBarcode.
+  barcode           String?
   gtin              String?
-  normalizedBarcode String?
+  /// Canonical 13-digit GTIN (see common/barcode/barcode.utils.ts)
+  normalizedBarcode String? @unique
 
   name         String
   brand        String?
@@ -147,15 +149,20 @@ model ProductCatalogItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([barcode])
-  @@index([normalizedBarcode])
-  @@index([name])
-  @@index([brand])
-  @@index([category])
-  @@index([countryCode])
-  @@index([source])
-  @@index([verificationStatus])
+  pantryProducts PantryProduct[]
+
+  // Trigram GIN indexes make ILIKE '%q%' search index-backed (requires pg_trgm)
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "ProductCatalogItem_name_trgm_idx")
+  @@index([brand(ops: raw("gin_trgm_ops"))], type: Gin, map: "ProductCatalogItem_brand_trgm_idx")
   @@index([createdByUserId])
+  @@index([updatedByUserId])
+}
+
+/// Negative cache: barcodes that no provider knows, so repeated scans skip external APIs.
+model BarcodeLookupMiss {
+  normalizedBarcode String   @id
+  attempts          Int      @default(1)
+  lastCheckedAt     DateTime @default(now())
 }
 
 enum ProductSource {
@@ -207,32 +214,39 @@ model PasswordResetToken {
 }
 
 model PantryProduct {
-  id              String  @id @default(cuid())
-  userId          String
-  name            String
-  brand           String?
-  barcode         String?
-  imageUrl String?
-  caloriesPer100g  Float
-  proteinPer100g   Float
-  carbsPer100g     Float
-  fatPer100g       Float
-  fiberPer100g     Float?
-  servingSizeG     Float?
-  servingSizeText  String?
-  mealCategories   ProductCategory[]
+  id                String            @id @default(cuid())
+  userId            String
+  name              String
+  brand             String?
+  barcode           String?
+  /// Canonical 13-digit GTIN (see common/barcode/barcode.utils.ts)
+  normalizedBarcode String?
+  /// Catalog item this product was copied from. Values are copied (snapshot), this only keeps provenance.
+  catalogItemId     String?
+  imageUrl          String?
+  caloriesPer100g   Float
+  proteinPer100g    Float
+  carbsPer100g      Float
+  fatPer100g        Float
+  fiberPer100g      Float?
+  servingSizeG      Float?
+  servingSizeText   String?
+  mealCategories    ProductCategory[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipeItems     PantryRecipeItem[]
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  catalogItem    ProductCatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: SetNull)
+  recipeItems    PantryRecipeItem[]
   savedMealItems SavedMealItem[]
   mealItems      MealItem[]
 
-  @@unique([userId, barcode])
-  @@index([userId])
-  @@index([barcode])
+  @@unique([userId, normalizedBarcode])
+  @@index([userId, name, id])
+  @@index([catalogItemId])
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "PantryProduct_name_trgm_idx")
+  @@index([brand(ops: raw("gin_trgm_ops"))], type: Gin, map: "PantryProduct_brand_trgm_idx")
 }
 
 model PantryRecipe {
@@ -301,16 +315,17 @@ model SavedMealItem {
 
   @@index([savedMealId])
 }
+
 model DayLog {
-  id              String  @id @default(cuid())
+  id              String @id @default(cuid())
   userId          String
   date            String
   targetsSnapshot Json
-  caloriesTotal   Float   @default(0)
-  proteinTotal    Float   @default(0)
-  carbsTotal      Float   @default(0)
-  fatTotal        Float   @default(0)
-  fiberTotal      Float   @default(0)
+  caloriesTotal   Float  @default(0)
+  proteinTotal    Float  @default(0)
+  carbsTotal      Float  @default(0)
+  fatTotal        Float  @default(0)
+  fiberTotal      Float  @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

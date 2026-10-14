@@ -8,6 +8,7 @@ import { PantryModule } from './modules/pantry/pantry.module';
 import { DayLogsModule } from './modules/day-logs/day-logs.module';
 import { ProductCatalogModule } from './modules/product-catalog/product-catalog.module';
 import { StatisticsModule } from './modules/statistics/statistics.module';
+import { BarcodeModule } from './modules/barcode/barcode.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { StatisticsModule } from './modules/statistics/statistics.module';
     DayLogsModule,
     ProductCatalogModule,
     StatisticsModule,
+    BarcodeModule,
   ],
 })
 export class AppModule {}

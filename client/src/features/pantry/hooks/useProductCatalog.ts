@@ -1,42 +1,27 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { productCatalogApi } from '../api/productCatalogApi';
 import { PRODUCT_CATALOG_QUERY_KEYS } from '../constants';
-import { CreateProductCatalogPayload, UpdateProductCatalogPayload } from '../types';
+import { ProductCatalogProduct } from '../types';
 
-export function useProductCatalogBarcode(barcode: string | null) {
-  return useQuery({
-    queryKey: PRODUCT_CATALOG_QUERY_KEYS.barcode(barcode ?? ''),
-    queryFn: () => productCatalogApi.lookupByBarcode(barcode!),
-    enabled: !!barcode,
-    staleTime: 5 * 60 * 1000,
-    retry: false,
-  });
-}
-
+/** Cursor-paginated global catalog search (server requires at least 2 characters) */
 export function useProductCatalogSearch(q: string) {
-  return useQuery({
-    queryKey: PRODUCT_CATALOG_QUERY_KEYS.search(q),
-    queryFn: () => productCatalogApi.search(q),
-    enabled: q.length >= 2,
+  const trimmed = q.trim();
+  return useInfiniteQuery({
+    queryKey: PRODUCT_CATALOG_QUERY_KEYS.search(trimmed),
+    queryFn: ({ pageParam }) => productCatalogApi.search(trimmed, pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    select: (data): ProductCatalogProduct[] => data.pages.flatMap((page) => page.items),
+    enabled: trimmed.length >= 2,
     staleTime: 60 * 1000,
   });
 }
 
-export function useCreateProductCatalog() {
-  return useMutation({
-    mutationFn: (payload: CreateProductCatalogPayload) =>
-      productCatalogApi.create(payload),
-  });
-}
-
-export function useUpdateProductCatalog() {
-  return useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: UpdateProductCatalogPayload;
-    }) => productCatalogApi.update(id, payload),
+export function useProductCatalogItem(id: string) {
+  return useQuery({
+    queryKey: PRODUCT_CATALOG_QUERY_KEYS.detail(id),
+    queryFn: () => productCatalogApi.getById(id),
+    enabled: Boolean(id),
+    staleTime: 10 * 60 * 1000,
   });
 }
