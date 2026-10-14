@@ -7,9 +7,11 @@ import {
 } from '../types';
 
 export const pantryApi = {
-  list(): Promise<PantryProduct[]> {
+  list(search?: string): Promise<PantryProduct[]> {
     return apiClient
-      .get<PantryProduct[]>(PANTRY_ENDPOINTS.BASE)
+      .get<PantryProduct[]>(PANTRY_ENDPOINTS.BASE, {
+        params: search ? { search } : undefined,
+      })
       .then((r) => r.data);
   },
 

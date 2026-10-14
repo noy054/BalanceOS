@@ -1,19 +1,24 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { UsersService } from '../users/users.service';
 import { AuthRepository } from './auth.repository';
+import { MailerService } from './mailer.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateProfileDto } from '../users/dto/update-profile.dto';
 import { AuthResponse, TokenPair } from './types/auth.types';
 import { UserPublic } from '../users/types/user.types';
@@ -22,14 +27,17 @@ const BCRYPT_ROUNDS = 10;
 const ACCESS_TOKEN_EXPIRES_SECONDS = 15 * 60; // 15 minutes
 const REFRESH_TOKEN_EXPIRES_SECONDS = 7 * 24 * 60 * 60; // 7 days
 const REFRESH_TOKEN_EXPIRES_DAYS = 7;
+const RESET_TOKEN_EXPIRES_MINUTES = 60;
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   private googleClient: OAuth2Client | null = null;
 
   constructor(
     private readonly usersService: UsersService,
     private readonly authRepository: AuthRepository,
+    private readonly mailerService: MailerService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -156,6 +164,36 @@ export class AuthService {
 
   async deleteAccount(userId: string): Promise<void> {
     await this.usersService.deleteById(userId);
+  }
+
+  async forgotPassword(dto: ForgotPasswordDto): Promise<void> {
+    const user = await this.usersService.findByEmail(dto.email);
+
+    // Always respond with success to avoid revealing whether the email exists
+    if (!user || !user.passwordHash) return;
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + RESET_TOKEN_EXPIRES_MINUTES * 60 * 1000);
+    await this.authRepository.saveResetToken(user.id, rawToken, expiresAt);
+
+    // Fire-and-forget: email failures must not surface to the client
+    void this.mailerService
+      .sendPasswordResetEmail(user.email, rawToken)
+      .catch((err: unknown) =>
+        this.logger.error('Failed to send password reset email', err),
+      );
+  }
+
+  async resetPassword(dto: ResetPasswordDto): Promise<void> {
+    const record = await this.authRepository.findResetToken(dto.token);
+    if (!record || record.expiresAt < new Date()) {
+      throw new BadRequestException('Invalid or expired reset token.');
+    }
+
+    const newHash = await bcrypt.hash(dto.newPassword, BCRYPT_ROUNDS);
+    await this.usersService.updatePasswordHash(record.userId, newHash);
+    await this.authRepository.deleteResetToken(dto.token);
+    await this.authRepository.deleteAllUserRefreshTokens(record.userId);
   }
 
   private async issueTokenPair(userId: string): Promise<TokenPair> {

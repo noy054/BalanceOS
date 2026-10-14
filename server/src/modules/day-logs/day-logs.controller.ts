@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { DayLogsService } from './day-logs.service';
 import { AddMealItemDto } from './dto/add-meal-item.dto';
+import { CopyMealDto } from './dto/copy-meal.dto';
 import { JwtGuard } from '../../common/guards/jwt.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { UserPublic } from '../users/types/user.types';
@@ -24,6 +25,11 @@ export class DayLogsController {
     return this.service.getOrCreateToday(user.id);
   }
 
+  @Get('today/meals')
+  getTodayMeals(@CurrentUser() user: UserPublic) {
+    return this.service.getTodayMeals(user.id);
+  }
+
   @Post('today/meal-items')
   @HttpCode(201)
   addMealItem(
@@ -31,6 +37,16 @@ export class DayLogsController {
     @Body() dto: AddMealItemDto,
   ) {
     return this.service.addMealItem(user.id, dto);
+  }
+
+  @Post('meal-entries/:mealEntryId/copy')
+  @HttpCode(204)
+  async copyMealEntry(
+    @CurrentUser() user: UserPublic,
+    @Param('mealEntryId') mealEntryId: string,
+    @Body() dto: CopyMealDto,
+  ): Promise<void> {
+    return this.service.copyMealEntry(user.id, mealEntryId, dto);
   }
 
   @Delete('meal-items/:itemId')

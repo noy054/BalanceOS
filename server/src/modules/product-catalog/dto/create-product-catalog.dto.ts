@@ -51,4 +51,9 @@ export class CreateProductCatalogDto {
   @IsNumber()
   @Min(0)
   fiberPer100g?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0.1)
+  servingSizeGrams?: number;
 }

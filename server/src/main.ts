@@ -19,6 +19,15 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT ?? 3000;
+  const host = '0.0.0.0';
+
+  await app.listen(port, host);
+
+  console.log(`🚀 Server is running locally on: http://localhost:${port}`);
+  console.log(
+    `📱 Server is available on network: http://192.168.1.187:${port}`,
+  );
 }
+
 bootstrap();

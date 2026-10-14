@@ -1,12 +1,27 @@
+import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { pantryApi } from '../api/pantryApi';
 import { PANTRY_QUERY_KEYS } from '../constants';
 import { CreatePantryProductPayload, UpdatePantryProductPayload } from '../types';
 
-export function usePantryProducts() {
+export function usePantryProducts(search?: string) {
+  const trimmed = (search ?? '').trim();
+  const [debouncedSearch, setDebouncedSearch] = useState(trimmed);
+
+  useEffect(() => {
+    if (!trimmed) {
+      setDebouncedSearch('');
+      return;
+    }
+    const id = setTimeout(() => setDebouncedSearch(trimmed), 300);
+    return () => clearTimeout(id);
+  }, [trimmed]);
+
   return useQuery({
-    queryKey: PANTRY_QUERY_KEYS.list,
-    queryFn: () => pantryApi.list(),
+    queryKey: debouncedSearch
+      ? ([...PANTRY_QUERY_KEYS.list, debouncedSearch] as const)
+      : PANTRY_QUERY_KEYS.list,
+    queryFn: () => pantryApi.list(debouncedSearch || undefined),
     staleTime: 2 * 60 * 1000,
   });
 }

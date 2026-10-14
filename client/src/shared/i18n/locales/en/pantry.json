@@ -31,6 +31,12 @@
     "calUnit": "kcal",
     "gramsUnit": "g"
   },
+  "categories": {
+    "BREAKFAST": "Breakfast",
+    "LUNCH": "Lunch",
+    "DINNER": "Dinner",
+    "SNACK": "Snack"
+  },
   "addProduct": {
     "title": "Add Product",
     "editTitle": "Edit Product",
@@ -38,8 +44,11 @@
     "editSubtitle": "Update the product details and nutrition values.",
     "requiredHint": "* Required fields",
     "optionalNutritionHint": "Empty nutrition fields will be saved as 0.",
+    "categoriesLabel": "Meal Categories",
     "nutritionSection": "Nutrition values",
     "per100g": "per 100g",
+    "perServing": "per serving",
+    "servingSizeLabel": "Serving size (g) *",
     "emptyValuesBecomeZero": "Empty values automatically become 0",
     "saveButton": "Save Product",
     "updateButton": "Save Changes",
@@ -64,9 +73,14 @@
   "productDetail": {
     "title": "Product Details",
     "nutritionSection": "Nutrition per 100g",
+    "nutritionPerServing": "Nutrition per serving ({{size}}g)",
     "calculator": "Meal Calculator",
-    "calculatorHint": "Enter grams to calculate nutrition values",
+    "calculatorHint": "Enter amount to calculate nutrition values",
     "calculatorPlaceholder": "Amount in grams",
+    "calculatorPlaceholderServings": "Number of servings",
+    "calculatorPlaceholderCalories": "Target kcal",
+    "calculatorByCalories": "kcal",
+    "calculatorQuantity": "Quantity",
     "calculatorResult": "Result",
     "editButton": "Edit",
     "deleteButton": "Delete",
@@ -81,9 +95,12 @@
     "descriptionLabel": "Description",
     "categoryLabel": "Category",
     "ingredientsSection": "Ingredients",
-    "addIngredient": "+ Add Ingredient",
+    "addIngredient": "Add Ingredient",
     "gramsLabel": "g",
+    "servingsLabel": "sv",
     "gramsPlaceholder": "Amount",
+    "selectedSection": "Selected ({{count}})",
+    "addSelectedBtn": "Add {{count}} to recipe",
     "selectProduct": "Select product from pantry",
     "removeItem": "Remove",
     "totalsSection": "Total for this recipe",
@@ -92,7 +109,12 @@
     "deleteConfirmTitle": "Delete Recipe",
     "deleteConfirmMessage": "Delete this recipe permanently?",
     "deleteConfirmYes": "Delete",
-    "deleteConfirmNo": "Cancel"
+    "deleteConfirmNo": "Cancel",
+    "createManualBtn": "New Product",
+    "scanBarcodeBtn": "Scan Barcode",
+    "newProductTitle": "New Product",
+    "addAndSelectBtn": "Save & Add to Recipe",
+    "servingSizeOptional": "Serving size (g, optional)"
   },
   "addRecipe": {
     "title": "New Recipe",
@@ -160,6 +182,26 @@
     "fromOpenFoodFacts": "Imported from Open Food Facts — verify the data",
     "addToPantry": "Add to My Pantry",
     "alreadyInPantry": "Already in your pantry",
+    "distanceHint": "Hold the barcode 15–25 cm from the camera",
+    "existsTitle": "Already in Your Pantry",
+    "existsProductIn": "This product is already saved in your pantry",
+    "viewInPantry": "View in Pantry",
+    "servingSection": {
+      "title": "Serving Size",
+      "hint": "Enables per-serving & calorie calculator",
+      "sizeLabel": "Size",
+      "labelField": "Label",
+      "labelPlaceholder": "e.g. 1 cup, 1 slice",
+      "preview": "Per serving ({{g}}g)"
+    },
+    "calcSection": {
+      "title": "Calculator",
+      "grams": "g",
+      "calories": "kcal",
+      "placeholder": "Enter value",
+      "resultByGrams": "{{cal}} kcal · {{p}}g P · {{c}}g C · {{f}}g F",
+      "resultByCalories": "≈ {{grams}}g · {{cal}} kcal · {{p}}g P · {{c}}g C · {{f}}g F"
+    },
     "manualForm": {
       "title": "Add Product Manually",
       "barcodeLabel": "Barcode",
@@ -171,6 +213,7 @@
       "carbsLabel": "Carbs (g) *",
       "fatLabel": "Fat (g) *",
       "fiberLabel": "Fiber (g)",
+      "servingSizeLabel": "Serving size (g, optional)",
       "saveButton": "Save",
       "saving": "Saving...",
       "cancel": "Cancel"

@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { colors, spacing } from "../../../../shared/theme";
+import { spacing, useThemedStyles } from "../../../../shared/theme";
 
 export function getDirectionStyles(isRTL: boolean) {
   return {
@@ -14,7 +14,9 @@ export function getDirectionStyles(isRTL: boolean) {
   };
 }
 
-export const styles = StyleSheet.create({
+export const useStyles = () =>
+  useThemedStyles((colors) =>
+    StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: colors.background,
@@ -76,4 +78,5 @@ export const styles = StyleSheet.create({
     color: colors.danger,
     textAlign: "center",
   },
-});
+    }),
+  );

@@ -1,4 +1,6 @@
 import {
+  IsArray,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -7,6 +9,7 @@ import {
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ProductCategory } from '../../../../generated/prisma/enums';
 
 export class CreatePantryProductDto {
   @IsString()
@@ -23,6 +26,10 @@ export class CreatePantryProductDto {
   @IsString()
   @MaxLength(100)
   barcode?: string;
+
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
 
   @IsNumber()
   @Min(0)
@@ -49,4 +56,20 @@ export class CreatePantryProductDto {
   @Min(0)
   @Type(() => Number)
   fiberPer100g?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  servingSizeG?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  servingSizeText?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsEnum(ProductCategory, { each: true })
+  mealCategories?: ProductCategory[];
 }

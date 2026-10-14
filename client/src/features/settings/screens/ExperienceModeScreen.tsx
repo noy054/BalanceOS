@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { ScreenHeader } from '../../../shared/components/ScreenHeader';
 import { useNutritionSettings, useUpdateSettings } from '../hooks/useSettings';
 import { ExperienceMode } from '../types';
-import { colors } from '../../../shared/theme';
-import { styles, getDirectionStyles } from './styles/ExperienceModeScreen.styles';
+import { useAppTheme } from '../../../shared/theme';
+import { useStyles, getDirectionStyles } from './styles/ExperienceModeScreen.styles';
 
 type ModeCardProps = {
   mode: ExperienceMode;
@@ -19,6 +19,8 @@ type ModeCardProps = {
 };
 
 function ModeCard({ mode: _mode, title, description, icon, active, isRTL, onPress }: ModeCardProps) {
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const dir = getDirectionStyles(isRTL);
   return (
     <Pressable
@@ -53,6 +55,8 @@ function ModeCard({ mode: _mode, title, description, icon, active, isRTL, onPres
 
 export function ExperienceModeScreen() {
   const { t, i18n } = useTranslation('settings');
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === 'rtl';
 
   const { data: settings } = useNutritionSettings();

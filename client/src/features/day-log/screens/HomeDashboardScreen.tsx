@@ -1,4 +1,6 @@
+import { useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
@@ -6,11 +8,13 @@ import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
 import { HomeHeader } from "../components/HomeHeader";
 import { CalorieSummaryCard } from "../components/CalorieSummaryCard";
 import { MacroSummaryCard } from "../components/MacroSummaryCard";
+import { MealLogCard } from "../components/MealLogCard";
+import { CopyMealModal } from "../components/CopyMealModal";
 import { MealShortcutList } from "../../meals/components/MealShortcutList";
-import { useTodayDayLog } from "../hooks/useDayLog";
-import { DayLogSummary } from "../types";
-import { MealShortcut } from "../../meals/types";
-import { styles } from "./styles/HomeDashboardScreen.styles";
+import { useTodayDayLog, useTodayMeals } from "../hooks/useDayLog";
+import { DayLogSummary, MealEntrySummary } from "../types";
+import { useNutritionSettings } from "../../settings/hooks/useSettings";
+import { useStyles } from "./styles/HomeDashboardScreen.styles";
 
 const EMPTY_SUMMARY: DayLogSummary = {
   date: "",
@@ -24,11 +28,50 @@ const EMPTY_SUMMARY: DayLogSummary = {
   ],
 };
 
+// Tab bar height + wrapper offset — gives content room to scroll clear of the pill.
+const TAB_BAR_CLEARANCE = 100;
+
 export function HomeDashboardScreen() {
   const { i18n } = useTranslation();
-  const { data: summary = EMPTY_SUMMARY } = useTodayDayLog();
+  const styles = useStyles();
+  const insets = useSafeAreaInsets();
 
-  function handleMealTypeSelect(type: MealShortcut["type"]) {
+  const { data: summary = EMPTY_SUMMARY } = useTodayDayLog();
+  const { data: mealsData } = useTodayMeals();
+  const { data: settings } = useNutritionSettings();
+
+  const meals = mealsData?.meals ?? [];
+
+  const visibleMacros = useMemo(() => {
+    return summary.macros.filter((macro) => {
+      if (macro.key === "protein") {
+        return true;
+      }
+
+      if (macro.key === "carbs") {
+        return settings?.showCarbsOnHome ?? true;
+      }
+
+      if (macro.key === "fat") {
+        return settings?.showFatOnHome ?? true;
+      }
+
+      if (macro.key === "fiber") {
+        return settings?.showFiberOnHome ?? true;
+      }
+
+      return true;
+    });
+  }, [
+    summary.macros,
+    settings?.showCarbsOnHome,
+    settings?.showFatOnHome,
+    settings?.showFiberOnHome,
+  ]);
+
+  const [copyingMeal, setCopyingMeal] = useState<MealEntrySummary | null>(null);
+
+  function handleMealTypeSelect(type: string) {
     router.push(`/(app)/meal/add-item?mealType=${type}`);
   }
 
@@ -47,8 +90,12 @@ export function HomeDashboardScreen() {
 
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: insets.bottom + TAB_BAR_CLEARANCE },
+          ]}
           showsVerticalScrollIndicator={false}
+          bounces
         >
           <View style={styles.heroSection}>
             <CalorieSummaryCard
@@ -57,18 +104,43 @@ export function HomeDashboardScreen() {
             />
           </View>
 
-          <View style={styles.section}>
-            <MacroSummaryCard macros={summary.macros} />
-          </View>
-
-          {/* Keeps the shortcuts in the original vertical position after AddMealButton removal */}
-          <View style={[styles.actionSection, { minHeight: 58 }]} />
+          {visibleMacros.length > 0 && (
+            <View style={styles.section}>
+              <MacroSummaryCard
+                macros={visibleMacros}
+                showProgressPercentages={
+                  settings?.showProgressPercentages ?? true
+                }
+              />
+            </View>
+          )}
 
           <View style={styles.shortcutsSection}>
             <MealShortcutList onSelect={handleMealTypeSelect} />
           </View>
+
+          {meals.length > 0 && (
+            <View style={styles.mealsSection}>
+              {meals.map((meal) => (
+                <MealLogCard
+                  key={meal.id}
+                  meal={meal}
+                  isRTL={i18n.dir(i18n.language) === "rtl"}
+                  onPress={handleMealTypeSelect}
+                  onCopy={setCopyingMeal}
+                />
+              ))}
+            </View>
+          )}
+
+          <View style={styles.bottomSpacer} />
         </ScrollView>
       </View>
+
+      <CopyMealModal
+        meal={copyingMeal}
+        onClose={() => setCopyingMeal(null)}
+      />
     </TabScreenLayout>
   );
 }

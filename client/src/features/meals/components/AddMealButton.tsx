@@ -2,8 +2,8 @@ import { Pressable, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
-import { colors } from "../../../shared/theme";
-import { styles } from "./styles/AddMealButton.styles";
+import { useAppTheme } from "../../../shared/theme";
+import { useStyles } from "./styles/AddMealButton.styles";
 
 type Props = {
   onPress?: () => void;
@@ -11,6 +11,8 @@ type Props = {
 
 export function AddMealButton({ onPress }: Props) {
   const { t, i18n } = useTranslation("dashboard");
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === "rtl";
 
   return (

@@ -2,9 +2,11 @@ import { apiClient } from '../../../shared/api/client';
 import { AUTH_ENDPOINTS } from '../constants';
 import {
   AuthResponse,
+  ForgotPasswordPayload,
   GoogleLoginPayload,
   LoginPayload,
   RegisterPayload,
+  ResetPasswordPayload,
   TokenPair,
   UserPublic,
 } from '../types';
@@ -40,5 +42,13 @@ export const authApi = {
 
   me(): Promise<UserPublic> {
     return apiClient.get<UserPublic>(AUTH_ENDPOINTS.ME).then((r) => r.data);
+  },
+
+  forgotPassword(payload: ForgotPasswordPayload): Promise<void> {
+    return apiClient.post(AUTH_ENDPOINTS.FORGOT_PASSWORD, payload).then(() => undefined);
+  },
+
+  resetPassword(payload: ResetPasswordPayload): Promise<void> {
+    return apiClient.post(AUTH_ENDPOINTS.RESET_PASSWORD, payload).then(() => undefined);
   },
 };

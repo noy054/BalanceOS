@@ -1,11 +1,11 @@
-import { View, Text, Pressable } from "react-native";
+import { Platform, View, Text, Pressable } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
-import { colors, spacing } from "../theme";
-import { styles } from "./styles/BottomTabBar.styles";
+import { useAppTheme, spacing } from "../theme";
+import { useStyles } from "./styles/BottomTabBar.styles";
 
 type TabId = "home" | "pantry" | "add" | "statistics" | "settings";
 
@@ -44,6 +44,7 @@ const TABS: TabItem[] = [
     labelKey: "statistics",
     icon: "chart-bar-stacked",
     activeIcon: "chart-bar-stacked",
+    route: "/(app)/statistics",
   },
   {
     id: "settings",
@@ -61,6 +62,8 @@ type Props = {
 
 export function BottomTabBar({ activeTab = "home", onTabPress }: Props) {
   const { t, i18n } = useTranslation("dashboard");
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const insets = useSafeAreaInsets();
 
@@ -68,7 +71,7 @@ export function BottomTabBar({ activeTab = "home", onTabPress }: Props) {
     onTabPress?.(tab.id);
 
     if (tab.route) {
-      router.push(tab.route as Parameters<typeof router.push>[0]);
+      router.navigate(tab.route as Parameters<typeof router.navigate>[0]);
     }
   }
 
@@ -78,7 +81,11 @@ export function BottomTabBar({ activeTab = "home", onTabPress }: Props) {
         styles.container,
         {
           flexDirection: isRTL ? "row-reverse" : "row",
-          paddingBottom: Math.max(insets.bottom, spacing.sm),
+          // iOS: pad for home indicator; Android: wrapper already sits above the
+          // system nav bar, so only a small constant baseline is needed.
+          paddingBottom: Platform.OS === "ios"
+            ? Math.max(insets.bottom, spacing.sm)
+            : spacing.sm,
         },
       ]}
     >

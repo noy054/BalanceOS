@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { dayLogApi } from '../api/dayLogApi';
 import { DAY_LOG_QUERY_KEYS } from '../constants';
-import { AddMealItemPayload, DayLogResponse, DayLogSummary } from '../types';
+import { AddMealItemPayload, CopyMealPayload, DayLogResponse, DayLogSummary } from '../types';
 
 function toDayLogSummary(r: DayLogResponse): DayLogSummary {
   return {
@@ -25,12 +25,21 @@ export function useTodayDayLog() {
   });
 }
 
+export function useTodayMeals() {
+  return useQuery({
+    queryKey: DAY_LOG_QUERY_KEYS.todayMeals,
+    queryFn: () => dayLogApi.getTodayMeals(),
+    staleTime: 30 * 1000,
+  });
+}
+
 export function useAddMealItem() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: AddMealItemPayload) => dayLogApi.addMealItem(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.today });
+      queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.todayMeals });
     },
   });
 }
@@ -41,6 +50,18 @@ export function useRemoveMealItem() {
     mutationFn: (itemId: string) => dayLogApi.removeMealItem(itemId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.today });
+      queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.todayMeals });
+    },
+  });
+}
+
+export function useCopyMealEntry() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CopyMealPayload) => dayLogApi.copyMealEntry(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.today });
+      queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.todayMeals });
     },
   });
 }

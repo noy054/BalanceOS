@@ -13,7 +13,12 @@ export class PantryRepository {
       where: {
         userId,
         ...(search
-          ? { name: { contains: search, mode: 'insensitive' } }
+          ? {
+              OR: [
+                { name: { contains: search, mode: 'insensitive' } },
+                { brand: { contains: search, mode: 'insensitive' } },
+              ],
+            }
           : {}),
       },
       orderBy: { name: 'asc' },

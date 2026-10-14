@@ -2,11 +2,13 @@ import { Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
-import { colors } from "../../../shared/theme";
-import { styles } from "./styles/HomeHeader.styles";
+import { useAppTheme } from "../../../shared/theme";
+import { useStyles } from "./styles/HomeHeader.styles";
 
 export function HomeHeader() {
   const { i18n } = useTranslation();
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === "rtl";
 
   return (

@@ -1,15 +1,22 @@
 import { View, Text, Pressable } from "react-native";
+import type { ReactNode } from "react";
+import type { ComponentProps } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
-import { colors } from "../theme";
-import { styles } from "./styles/ScreenHeader.styles";
+import { useAppTheme } from "../theme";
+import { useStyles } from "./styles/ScreenHeader.styles";
+
+type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
 type Props = {
   title: string;
   onBack?: () => void;
-  rightElement?: React.ReactNode;
+  rightElement?: ReactNode;
+  rightIconName?: IconName;
+  onRightPress?: () => void;
+  rightIconColor?: string;
   fallbackRoute?: Parameters<typeof router.replace>[0];
 };
 
@@ -17,9 +24,14 @@ export function ScreenHeader({
   title,
   onBack,
   rightElement,
+  rightIconName,
+  onRightPress,
+  rightIconColor,
   fallbackRoute = "/(app)/dashboard",
 }: Props) {
   const { i18n } = useTranslation();
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === "rtl";
 
   function handleBack() {
@@ -36,18 +48,20 @@ export function ScreenHeader({
     router.replace(fallbackRoute);
   }
 
+  const shouldRenderRightButton = Boolean(rightIconName && onRightPress);
+
   return (
-    <View
-      style={[
-        styles.container,
-        { flexDirection: isRTL ? "row-reverse" : "row" },
-      ]}
-    >
-      <View style={styles.sideSlot}>
+    <View style={styles.container}>
+      <View
+        style={[styles.sideSlot, isRTL ? styles.rightSlot : styles.leftSlot]}
+      >
         <Pressable
           onPress={handleBack}
           hitSlop={14}
-          style={({ pressed }) => [styles.backBtn, pressed && styles.pressed]}
+          style={({ pressed }) => [
+            styles.iconButton,
+            pressed && styles.pressed,
+          ]}
         >
           <MaterialCommunityIcons
             name={isRTL ? "chevron-right" : "chevron-left"}
@@ -57,7 +71,7 @@ export function ScreenHeader({
         </Pressable>
       </View>
 
-      <View style={styles.titleSlot}>
+      <View pointerEvents="none" style={styles.titleSlot}>
         <Text
           style={[
             styles.title,
@@ -72,7 +86,28 @@ export function ScreenHeader({
         </Text>
       </View>
 
-      <View style={styles.sideSlot}>{rightElement ?? null}</View>
+      <View
+        style={[styles.sideSlot, isRTL ? styles.leftSlot : styles.rightSlot]}
+      >
+        {shouldRenderRightButton ? (
+          <Pressable
+            onPress={onRightPress}
+            hitSlop={14}
+            style={({ pressed }) => [
+              styles.iconButton,
+              pressed && styles.pressed,
+            ]}
+          >
+            <MaterialCommunityIcons
+              name={rightIconName}
+              size={22}
+              color={rightIconColor ?? colors.textPrimary}
+            />
+          </Pressable>
+        ) : (
+          (rightElement ?? null)
+        )}
+      </View>
     </View>
   );
 }

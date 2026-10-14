@@ -215,6 +215,46 @@ export class DayLogsRepository {
     });
   }
 
+  async findTodayMeals(userId: string, date: string) {
+    return this.prisma.dayLog.findUnique({
+      where: { userId_date: { userId, date } },
+      select: {
+        mealEntries: {
+          select: {
+            id: true,
+            mealType: true,
+            items: {
+              select: {
+                id: true,
+                macrosSnapshot: true,
+              },
+              orderBy: { createdAt: 'asc' },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async findMealEntryWithItems(mealEntryId: string) {
+    return this.prisma.mealEntry.findUnique({
+      where: { id: mealEntryId },
+      include: {
+        dayLog: { select: { userId: true } },
+        items: {
+          select: {
+            pantryProductId: true,
+            pantryRecipeId: true,
+            savedMealId: true,
+            grams: true,
+            servings: true,
+            macrosSnapshot: true,
+          },
+        },
+      },
+    });
+  }
+
   async findMealItemWithOwnership(itemId: string) {
     return this.prisma.mealItem.findUnique({
       where: { id: itemId },

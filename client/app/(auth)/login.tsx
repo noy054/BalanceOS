@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Text, View } from "react-native";
-import { Button, HelperText, TextInput } from "react-native-paper";
+import { Button, TextInput } from "react-native-paper";
 import { Link } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { isAxiosError } from "axios";
 
 import { useLogin, useGoogleLogin } from "../../src/features/auth/hooks/useAuth";
-import { extractErrorMessage } from "../../src/shared/helpers/extractErrorMessage";
 import { ScreenShell } from "../../src/shared/components/ScreenShell";
 import { colors } from "../../src/shared/theme";
 import { styles, getDirectionStyles } from "./styles/login.styles";
@@ -24,10 +24,17 @@ export default function LoginScreen() {
   const googleLogin = useGoogleLogin();
   const isLoading = login.isPending || googleLogin.isPending;
 
+  function getLoginError(error: unknown): string {
+    if (isAxiosError(error) && error.response?.status === 401) {
+      return t("login.errors.invalidCredentials");
+    }
+    return t("login.errors.generic");
+  }
+
   const errorMessage = login.error
-    ? extractErrorMessage(login.error)
+    ? getLoginError(login.error)
     : googleLogin.error
-      ? extractErrorMessage(googleLogin.error)
+      ? getLoginError(googleLogin.error)
       : null;
 
   function handleLogin() {
@@ -83,12 +90,15 @@ export default function LoginScreen() {
           left={isRTL ? passwordIcon : undefined}
           right={!isRTL ? passwordIcon : undefined}
         />
+        <Link href="/(auth)/forgot-password" style={[styles.forgotLink, dir.text]}>
+          {t("login.forgotPassword")}
+        </Link>
       </View>
 
       {errorMessage ? (
-        <HelperText type="error" visible style={dir.text}>
-          {errorMessage}
-        </HelperText>
+        <View style={styles.errorBox}>
+          <Text style={[styles.errorText, dir.text]}>{errorMessage}</Text>
+        </View>
       ) : null}
 
       <Button

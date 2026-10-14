@@ -1,49 +1,52 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing, radius } from '../../../../shared/theme';
+import { spacing, radius, useThemedStyles } from '../../../../shared/theme';
 
-export const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.background },
-  scroll: { flex: 1 },
-  content: { paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.xl },
-  userCard: {
-    alignItems: 'center',
-    backgroundColor: colors.cardBackground,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    marginBottom: spacing.lg,
-    gap: spacing.md,
-  },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primaryGreen,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  avatarInitials: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#081008',
-    letterSpacing: 0.5,
-  },
-  userInfo: { flex: 1 },
-  userName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    letterSpacing: -0.2,
-  },
-  userEmail: {
-    fontSize: 13,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-});
+export const useStyles = () =>
+  useThemedStyles((colors) =>
+    StyleSheet.create({
+      root: { flex: 1, backgroundColor: colors.background },
+      scroll: { flex: 1 },
+      content: { paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.xl },
+      userCard: {
+        alignItems: 'center',
+        backgroundColor: colors.cardBackground,
+        borderRadius: radius.md,
+        borderWidth: 1,
+        borderColor: colors.border,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.md,
+        marginBottom: spacing.lg,
+        gap: spacing.md,
+      },
+      avatar: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: colors.primaryGreen,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+      },
+      avatarInitials: {
+        fontSize: 20,
+        fontWeight: '800',
+        color: '#081008',
+        letterSpacing: 0.5,
+      },
+      userInfo: { flex: 1 },
+      userName: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: colors.textPrimary,
+        letterSpacing: -0.2,
+      },
+      userEmail: {
+        fontSize: 13,
+        color: colors.textMuted,
+        marginTop: 2,
+      },
+    }),
+  );
 
 export function getDirectionStyles(isRTL: boolean) {
   return {

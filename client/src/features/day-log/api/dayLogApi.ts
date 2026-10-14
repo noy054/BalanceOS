@@ -1,10 +1,14 @@
 import { apiClient } from '../../../shared/api/client';
 import { DAY_LOG_ENDPOINTS } from '../constants';
-import { AddMealItemPayload, DayLogResponse } from '../types';
+import { AddMealItemPayload, CopyMealPayload, DayLogMealsResponse, DayLogResponse } from '../types';
 
 export const dayLogApi = {
   getToday(): Promise<DayLogResponse> {
     return apiClient.get<DayLogResponse>(DAY_LOG_ENDPOINTS.TODAY).then((r) => r.data);
+  },
+
+  getTodayMeals(): Promise<DayLogMealsResponse> {
+    return apiClient.get<DayLogMealsResponse>(DAY_LOG_ENDPOINTS.TODAY_MEALS).then((r) => r.data);
   },
 
   addMealItem(payload: AddMealItemPayload): Promise<{ id: string }> {
@@ -16,6 +20,12 @@ export const dayLogApi = {
   removeMealItem(itemId: string): Promise<void> {
     return apiClient
       .delete(DAY_LOG_ENDPOINTS.REMOVE_MEAL_ITEM(itemId))
+      .then(() => undefined);
+  },
+
+  copyMealEntry(payload: CopyMealPayload): Promise<void> {
+    return apiClient
+      .post(DAY_LOG_ENDPOINTS.COPY_MEAL_ENTRY(payload.mealEntryId), { targetDates: payload.targetDates })
       .then(() => undefined);
   },
 };

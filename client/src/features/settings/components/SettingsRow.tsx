@@ -1,8 +1,8 @@
 import { View, Text, Pressable } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
-import { colors } from '../../../shared/theme';
-import { styles, getDirectionStyles } from './styles/SettingsRow.styles';
+import { useAppTheme } from '../../../shared/theme';
+import { useStyles, getDirectionStyles } from './styles/SettingsRow.styles';
 
 type Props = {
   label: string;
@@ -24,6 +24,8 @@ export function SettingsRow({
   showChevron = true,
 }: Props) {
   const { i18n } = useTranslation();
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === 'rtl';
   const dir = getDirectionStyles(isRTL);
 

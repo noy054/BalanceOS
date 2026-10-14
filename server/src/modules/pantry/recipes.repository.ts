@@ -15,6 +15,7 @@ const RECIPE_INCLUDE = {
           carbsPer100g: true,
           fatPer100g: true,
           fiberPer100g: true,
+          servingSizeG: true,
         },
       },
     },

@@ -1,190 +1,119 @@
-import { useEffect, useState } from "react";
-import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 
 import {
   useCreatePantryProduct,
   usePantryProduct,
   useUpdatePantryProduct,
 } from "../hooks/usePantry";
-import { CreatePantryProductPayload } from "../types";
+import { useRecipeReturn } from "../recipeReturnStore";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
-import { FormInput } from "../../../shared/components/FormInput";
-import { colors } from "../../../shared/theme";
-import { getDirectionStyles, styles } from "./styles/AddProductScreen.styles";
-
-type FormState = {
-  name: string;
-  brand: string;
-  imageUrl: string;
-  caloriesPer100g: string;
-  proteinPer100g: string;
-  carbsPer100g: string;
-  fatPer100g: string;
-  fiberPer100g: string;
-};
-
-const INITIAL: FormState = {
-  name: "",
-  brand: "",
-  imageUrl: "",
-  caloriesPer100g: "",
-  proteinPer100g: "",
-  carbsPer100g: "",
-  fatPer100g: "",
-  fiberPer100g: "",
-};
-
-function parseOptionalNumber(value: string): number | null {
-  const normalizedValue = value.trim().replace(",", ".");
-
-  if (!normalizedValue) {
-    return 0;
-  }
-
-  const parsedNumber = parseFloat(normalizedValue);
-
-  if (Number.isNaN(parsedNumber) || parsedNumber < 0) {
-    return null;
-  }
-
-  return parsedNumber;
-}
-
-function toFormString(value?: number | null) {
-  if (value === undefined || value === null) {
-    return "";
-  }
-
-  return String(value);
-}
+import { useAppTheme } from "../../../shared/theme";
+import { ProductBasicInfoForm } from "../components/products/ProductBasicInfoForm";
+import { ProductCategoryPicker } from "../components/products/ProductCategoryPicker";
+import { ProductImagePicker } from "../components/products/ProductImagePicker";
+import { ProductNutritionForm } from "../components/products/ProductNutritionForm";
+import { useAddProductForm } from "../hooks/useAddProductForm";
+import { useProductImagePicker } from "../hooks/useProductImagePicker";
+import {
+  getDirectionStyles,
+  useStyles,
+} from "./styles/AddProductScreen.styles";
 
 export function AddProductScreen() {
   const { t, i18n } = useTranslation("pantry");
-  const params = useLocalSearchParams<{ id?: string; mode?: string }>();
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
+
+  const params = useLocalSearchParams<{
+    id?: string;
+    mode?: string;
+    returnTo?: string;
+  }>();
 
   const productId = typeof params.id === "string" ? params.id : "";
   const isEditMode = params.mode === "edit" && Boolean(productId);
+  const fromRecipePicker = params.returnTo === "recipe";
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const directionStyles = getDirectionStyles(isRTL);
 
-  const [form, setForm] = useState<FormState>(INITIAL);
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof FormState, string>>
-  >({});
+  const [isSavingLocal, setIsSavingLocal] = useState(false);
+  const isSavingRef = useRef(false);
 
   const createProduct = useCreatePantryProduct();
   const updateProduct = useUpdatePantryProduct(productId);
+  const setPending = useRecipeReturn((state) => state.setPending);
+  const setReopenPicker = useRecipeReturn((state) => state.setReopenPicker);
 
   const { data: productToEdit, isLoading: isProductLoading } =
     usePantryProduct(productId);
 
+  const form = useAddProductForm({
+    productToEdit,
+    isEditMode,
+    requiredFieldError: t("errors.requiredField"),
+    invalidNumberError: t("errors.invalidNumber"),
+  });
+
+  const imagePicker = useProductImagePicker({
+    onPick: form.updateImage,
+    permissionDeniedMessage: t("errors.galleryPermissionDenied", {
+      defaultValue: "צריך לאשר גישה לגלריה כדי לבחור תמונה",
+    }),
+  });
+
   useEffect(() => {
-    if (!isEditMode || !productToEdit) {
+    if (!fromRecipePicker) {
       return;
     }
 
-    setForm({
-      name: productToEdit.name ?? "",
-      brand: productToEdit.brand ?? "",
-      imageUrl: productToEdit.imageUrl ?? "",
-      caloriesPer100g: toFormString(productToEdit.caloriesPer100g),
-      proteinPer100g: toFormString(productToEdit.proteinPer100g),
-      carbsPer100g: toFormString(productToEdit.carbsPer100g),
-      fatPer100g: toFormString(productToEdit.fatPer100g),
-      fiberPer100g: toFormString(productToEdit.fiberPer100g),
+    return navigation.addListener("beforeRemove", () => {
+      if (isSavingRef.current) {
+        isSavingRef.current = false;
+        return;
+      }
+
+      setReopenPicker(true);
     });
-  }, [isEditMode, productToEdit]);
+  }, [navigation, fromRecipePicker, setReopenPicker]);
 
-  function field(key: keyof FormState) {
-    return {
-      value: form[key],
-      onChangeText: (text: string) => {
-        setForm((prev) => ({
-          ...prev,
-          [key]: text,
-        }));
-
-        if (errors[key]) {
-          setErrors((prev) => ({
-            ...prev,
-            [key]: undefined,
-          }));
-        }
-      },
-    };
-  }
-
-  function validate(): CreatePantryProductPayload | null {
-    const newErrors: Partial<Record<keyof FormState, string>> = {};
-
-    if (!form.name.trim()) {
-      newErrors.name = t("errors.requiredField");
-    }
-
-    const calories = parseOptionalNumber(form.caloriesPer100g);
-    const protein = parseOptionalNumber(form.proteinPer100g);
-    const carbs = parseOptionalNumber(form.carbsPer100g);
-    const fat = parseOptionalNumber(form.fatPer100g);
-    const fiber = parseOptionalNumber(form.fiberPer100g);
-
-    if (calories === null) {
-      newErrors.caloriesPer100g = t("errors.invalidNumber");
-    }
-
-    if (protein === null) {
-      newErrors.proteinPer100g = t("errors.invalidNumber");
-    }
-
-    if (carbs === null) {
-      newErrors.carbsPer100g = t("errors.invalidNumber");
-    }
-
-    if (fat === null) {
-      newErrors.fatPer100g = t("errors.invalidNumber");
-    }
-
-    if (fiber === null) {
-      newErrors.fiberPer100g = t("errors.invalidNumber");
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return null;
-    }
-
-    return {
-      name: form.name.trim(),
-      brand: form.brand.trim() || undefined,
-      imageUrl: form.imageUrl.trim() || undefined,
-      caloriesPer100g: calories ?? 0,
-      proteinPer100g: protein ?? 0,
-      carbsPer100g: carbs ?? 0,
-      fatPer100g: fat ?? 0,
-      fiberPer100g: fiber ?? 0,
-    };
+  function handleBackFromRecipe() {
+    setReopenPicker(true);
+    router.back();
   }
 
   async function handleSave() {
-    const payload = validate();
+    const payload = form.validate();
 
     if (!payload) {
       return;
     }
 
+    setIsSavingLocal(true);
+    isSavingRef.current = true;
+
     try {
       if (isEditMode) {
-        await updateProduct.mutateAsync(payload);
+        await updateProduct.mutateAsync({
+          ...payload,
+          ...(form.nutritionMode === "per100g" && { servingSizeG: null }),
+        });
       } else {
-        await createProduct.mutateAsync(payload);
+        const created = await createProduct.mutateAsync(payload);
+
+        if (fromRecipePicker) {
+          setPending(created);
+        }
       }
 
       if (router.canGoBack()) {
@@ -194,12 +123,15 @@ export function AddProductScreen() {
 
       router.replace("/(app)/pantry");
     } catch {
+      isSavingRef.current = false;
       Alert.alert("", t("errors.saveFailed"));
+    } finally {
+      setIsSavingLocal(false);
     }
   }
 
-  const hasImagePreview = Boolean(form.imageUrl.trim());
-  const isSaving = createProduct.isPending || updateProduct.isPending;
+  const isSaving =
+    isSavingLocal || createProduct.isPending || updateProduct.isPending;
 
   if (isEditMode && isProductLoading) {
     return (
@@ -229,6 +161,7 @@ export function AddProductScreen() {
       <ScreenHeader
         title={isEditMode ? t("addProduct.editTitle") : t("addProduct.title")}
         fallbackRoute="/(app)/pantry"
+        onBack={fromRecipePicker ? handleBackFromRecipe : undefined}
       />
 
       <ScrollView
@@ -249,105 +182,42 @@ export function AddProductScreen() {
           </Text>
         </View>
 
-        <View style={styles.imageSection}>
-          {hasImagePreview ? (
-            <Image
-              source={{ uri: form.imageUrl.trim() }}
-              style={styles.imagePreview}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.imagePlaceholder}>
-              <MaterialCommunityIcons
-                name="image-plus-outline"
-                size={28}
-                color={colors.primaryGreen}
-              />
+        <ProductImagePicker
+          imageUrl={form.form.imageUrl}
+          hasImagePreview={form.hasImagePreview}
+          isRTL={isRTL}
+          t={t}
+          onPickImage={imagePicker.pickImage}
+          onRemoveImage={form.removeImage}
+        />
 
-              <Text style={styles.imagePlaceholderText}>
-                {t("product.imagePlaceholder")}
-              </Text>
-            </View>
-          )}
-        </View>
+        <ProductBasicInfoForm
+          t={t}
+          language={i18n.language}
+          errors={form.errors}
+          autoFocus={!isEditMode && !fromRecipePicker}
+          field={form.field}
+        />
 
-        <View style={styles.formCard}>
-          <FormInput
-            key={`name-${i18n.language}`}
-            label={t("product.nameLabel")}
-            error={errors.name}
-            autoFocus={!isEditMode}
-            {...field("name")}
-          />
+        <ProductCategoryPicker
+          t={t}
+          isRTL={isRTL}
+          selectedCategories={form.mealCategories}
+          onToggle={form.toggleCategory}
+        />
 
-          <FormInput
-            key={`brand-${i18n.language}`}
-            label={t("product.brandLabel")}
-            error={errors.brand}
-            {...field("brand")}
-          />
-
-          <FormInput
-            key={`image-${i18n.language}`}
-            label={t("product.imageUrlLabel")}
-            error={errors.imageUrl}
-            {...field("imageUrl")}
-          />
-        </View>
-
-        <View style={styles.formCard}>
-          <View style={[styles.sectionHeaderRow, directionStyles.row]}>
-            <Text style={[styles.sectionTitle, directionStyles.text]}>
-              {t("addProduct.nutritionSection")}
-            </Text>
-
-            <Text style={styles.sectionChip}>{t("addProduct.per100g")}</Text>
-          </View>
-
-          <Text style={[styles.sectionHint, directionStyles.text]}>
-            {t("addProduct.emptyValuesBecomeZero")}
-          </Text>
-
-          <FormInput
-            key={`calories-${i18n.language}`}
-            label={t("product.caloriesLabel")}
-            error={errors.caloriesPer100g}
-            keyboardType="decimal-pad"
-            {...field("caloriesPer100g")}
-          />
-
-          <FormInput
-            key={`protein-${i18n.language}`}
-            label={t("product.proteinLabel")}
-            error={errors.proteinPer100g}
-            keyboardType="decimal-pad"
-            {...field("proteinPer100g")}
-          />
-
-          <FormInput
-            key={`carbs-${i18n.language}`}
-            label={t("product.carbsLabel")}
-            error={errors.carbsPer100g}
-            keyboardType="decimal-pad"
-            {...field("carbsPer100g")}
-          />
-
-          <FormInput
-            key={`fat-${i18n.language}`}
-            label={t("product.fatLabel")}
-            error={errors.fatPer100g}
-            keyboardType="decimal-pad"
-            {...field("fatPer100g")}
-          />
-
-          <FormInput
-            key={`fiber-${i18n.language}`}
-            label={t("product.fiberLabel")}
-            error={errors.fiberPer100g}
-            keyboardType="decimal-pad"
-            {...field("fiberPer100g")}
-          />
-        </View>
+        <ProductNutritionForm
+          t={t}
+          language={i18n.language}
+          isRTL={isRTL}
+          errors={form.errors}
+          nutritionMode={form.nutritionMode}
+          isPerServing={form.isPerServing}
+          servingSizeG={form.servingSizeG}
+          onSwitchMode={form.switchMode}
+          onChangeServingSize={form.updateServingSize}
+          field={form.field}
+        />
 
         <View style={styles.bottomSpacer} />
       </ScrollView>

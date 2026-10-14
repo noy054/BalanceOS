@@ -4,13 +4,13 @@ import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
-import { colors } from "../../../shared/theme";
+import { useAppTheme } from "../../../shared/theme";
 import { usePantryProduct, useDeletePantryProduct } from "../hooks/usePantry";
 import { useProductCalculator } from "../hooks/useProductCalculator";
-import { ProductHeaderActions } from "../components/ProductHeaderActions";
-import { NutritionFactsCard } from "../components/NutritionFactsCard";
-import { ProductCalculatorCard } from "../components/ProductCalculatorCard";
-import { styles } from "./styles/ProductDetailScreen.styles";
+import { ProductHeaderActions } from "../components/products/ProductHeaderActions";
+import { NutritionFactsCard } from "../components/nutrition/NutritionFactsCard";
+import { ProductCalculatorCard } from "../components/products/ProductCalculatorCard";
+import { useStyles } from "./styles/ProductDetailScreen.styles";
 
 type Props = {
   id: string;
@@ -18,12 +18,14 @@ type Props = {
 
 export function ProductDetailScreen({ id }: Props) {
   const { t, i18n } = useTranslation("pantry");
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === "rtl";
 
   const { data: product, isLoading } = usePantryProduct(id);
   const deleteProduct = useDeletePantryProduct();
 
-  const { grams, calcResult, updateGrams, calculate } =
+  const { quantity, unit, calcResult, gramsResult, updateQuantity, selectUnit, calculate } =
     useProductCalculator(product);
 
   function handleEdit() {
@@ -117,11 +119,15 @@ export function ProductDetailScreen({ id }: Props) {
         <NutritionFactsCard product={product} t={t} isRTL={isRTL} />
 
         <ProductCalculatorCard
-          grams={grams}
+          quantity={quantity}
+          unit={unit}
+          servingSizeG={product?.servingSizeG}
           calcResult={calcResult}
           isRTL={isRTL}
           t={t}
-          onChangeGrams={updateGrams}
+          gramsResult={gramsResult}
+          onChangeQuantity={updateQuantity}
+          onSelectUnit={selectUnit}
           onCalculate={calculate}
         />
       </ScrollView>

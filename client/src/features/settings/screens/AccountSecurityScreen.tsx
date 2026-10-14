@@ -8,10 +8,11 @@ import { SettingsRow } from '../components/SettingsRow';
 import { useDeleteAccount } from '../hooks/useSettings';
 import { useLogout } from '../../auth/hooks/useAuth';
 import { useAuthStore } from '../../auth/hooks/useAuthStore';
-import { styles } from './styles/AccountSecurityScreen.styles';
+import { useStyles } from './styles/AccountSecurityScreen.styles';
 
 export function AccountSecurityScreen() {
   const { t } = useTranslation('settings');
+  const styles = useStyles();
   const user = useAuthStore((s) => s.user);
   const logout = useLogout();
   const deleteAccount = useDeleteAccount();

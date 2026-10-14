@@ -4,14 +4,19 @@ import { useTranslation } from "react-i18next";
 
 import { MacroItem } from "../types";
 import { MacroProgressItem } from "./MacroProgressItem";
-import { styles } from "./styles/MacroSummaryCard.styles";
+import { useStyles } from "./styles/MacroSummaryCard.styles";
 
 type Props = {
   macros: MacroItem[];
+  showProgressPercentages?: boolean;
 };
 
-export function MacroSummaryCard({ macros }: Props) {
+export function MacroSummaryCard({
+  macros,
+  showProgressPercentages = true,
+}: Props) {
   const { i18n } = useTranslation();
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === "rtl";
 
   return (
@@ -25,7 +30,11 @@ export function MacroSummaryCard({ macros }: Props) {
         {macros.map((macro, index) => (
           <Fragment key={macro.key}>
             {index > 0 && <View style={styles.divider} />}
-            <MacroProgressItem macro={macro} />
+
+            <MacroProgressItem
+              macro={macro}
+              showProgressPercentage={showProgressPercentages}
+            />
           </Fragment>
         ))}
       </View>

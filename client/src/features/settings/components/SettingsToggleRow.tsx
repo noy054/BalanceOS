@@ -1,7 +1,7 @@
 import { View, Text, Switch } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors } from '../../../shared/theme';
-import { styles, getDirectionStyles } from './styles/SettingsToggleRow.styles';
+import { useAppTheme } from '../../../shared/theme';
+import { useStyles, getDirectionStyles } from './styles/SettingsToggleRow.styles';
 
 type Props = {
   label: string;
@@ -14,6 +14,8 @@ type Props = {
 
 export function SettingsToggleRow({ label, hint, value, onValueChange, last = false, disabled = false }: Props) {
   const { i18n } = useTranslation();
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === 'rtl';
   const dir = getDirectionStyles(isRTL);
 

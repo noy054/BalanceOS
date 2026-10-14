@@ -37,7 +37,7 @@ export class ProductCatalogRepository {
     });
   }
 
-  createFromOFF(
+  createFromExternal(
     data: NormalizedProductData,
     userId: string,
   ): Promise<ProductCatalogItemModel> {
@@ -53,6 +53,8 @@ export class ProductCatalogRepository {
         carbsPer100g: data.carbsPer100g,
         fatPer100g: data.fatPer100g,
         fiberPer100g: data.fiberPer100g,
+        servingSizeGrams: data.servingSizeGrams ?? null,
+        servingSizeText: data.servingSizeText ?? null,
         source: data.source,
         verificationStatus: data.verificationStatus,
         externalProvider: data.externalProvider,
@@ -81,6 +83,7 @@ export class ProductCatalogRepository {
         carbsPer100g: dto.carbsPer100g ?? null,
         fatPer100g: dto.fatPer100g ?? null,
         fiberPer100g: dto.fiberPer100g ?? null,
+        servingSizeGrams: dto.servingSizeGrams ?? null,
         source: ProductSource.MANUAL,
         verificationStatus: ProductVerificationStatus.USER_SUBMITTED,
         createdByUserId: userId,

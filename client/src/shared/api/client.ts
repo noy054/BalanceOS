@@ -1,21 +1,23 @@
-import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
-import { tokenStorage } from './tokenStorage';
-import { router } from 'expo-router';
+import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
+import { tokenStorage } from "./tokenStorage";
+import { router } from "expo-router";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://192.168.1.187:3000";
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { "Content-Type": "application/json" },
 });
 
-apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
-  const token = await tokenStorage.getAccessToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+apiClient.interceptors.request.use(
+  async (config: InternalAxiosRequestConfig) => {
+    const token = await tokenStorage.getAccessToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+);
 
 let isRefreshing = false;
 let pendingQueue: Array<{
@@ -49,7 +51,7 @@ apiClient.interceptors.response.use(
         pendingQueue.push({
           resolve: (token) => {
             if (originalRequest.headers) {
-              originalRequest.headers['Authorization'] = `Bearer ${token}`;
+              originalRequest.headers["Authorization"] = `Bearer ${token}`;
             }
             resolve(apiClient(originalRequest));
           },
@@ -63,7 +65,10 @@ apiClient.interceptors.response.use(
 
     try {
       const refreshToken = await tokenStorage.getRefreshToken();
-      if (!refreshToken) throw new Error('No refresh token');
+      if (!refreshToken) {
+        isRefreshing = false;
+        return Promise.reject(error);
+      }
 
       const { data } = await axios.post(`${BASE_URL}/auth/refresh`, {
         refreshToken,
@@ -73,13 +78,13 @@ apiClient.interceptors.response.use(
       processPendingQueue(null, data.accessToken);
 
       if (originalRequest.headers) {
-        originalRequest.headers['Authorization'] = `Bearer ${data.accessToken}`;
+        originalRequest.headers["Authorization"] = `Bearer ${data.accessToken}`;
       }
       return apiClient(originalRequest);
     } catch (refreshError) {
       processPendingQueue(refreshError, null);
       await tokenStorage.clearTokens();
-      router.replace('/(auth)/login');
+      router.replace("/(auth)/login");
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

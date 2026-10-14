@@ -78,6 +78,13 @@
   },
   "tracking": {
     "screenTitle": "Tracking Preferences",
+    "row": "Tracking Preferences",
+    "rowSubtitle": "Units, display",
+
+    "defaultUnitSection": "Default Unit",
+    "defaultUnitTitle": "How food is added",
+    "defaultUnitDescription": "Choose whether food should be added by grams, serving, or piece by default.",
+
     "homeDisplaySection": "Home Display",
     "guidedSection": "Guided Mode",
     "unitsSection": "Units",
@@ -102,6 +109,20 @@
 
     "defaultFoodUnit": "Default food unit",
 
+    "comingSoon": "Coming soon",
+
+    "foodUnitGrams": "Grams",
+    "foodUnitServing": "Serving",
+    "foodUnitPiece": "Piece",
+
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+
+    "saveButton": "Save Preferences",
+    "saving": "Saving...",
+    "saved": "Saved successfully",
+    "noChanges": "No changes to save",
+
     "units": {
       "GRAMS": "Grams",
       "SERVING": "Serving",
@@ -113,20 +134,28 @@
     "row": "Notifications",
     "rowSubtitle": "Meal reminders, daily summary",
     "comingSoon": "Notification scheduling requires expo-notifications to be installed",
+
     "mealRemindersSection": "Meal Reminders",
     "breakfastReminder": "Breakfast",
     "lunchReminder": "Lunch",
     "dinnerReminder": "Dinner",
+
     "summariesSection": "Summaries",
     "waterSection": "Water",
     "waterReminder": "Water Reminder",
     "waterIntervalLabel": "Interval (minutes)",
+
     "dailySummary": "Daily Summary",
     "weeklySummary": "Weekly Summary",
     "weeklySummaryDayLabel": "Day of week",
+
     "timePlaceholder": "HH:MM",
+    "pickTime": "Pick time",
+    "permissionDenied": "Please allow notifications on your phone to enable reminders",
+
     "saveButton": "Save",
     "saving": "Saving...",
+
     "days": {
       "0": "Sunday",
       "1": "Monday",
@@ -176,9 +205,29 @@
     "rowSubtitlePrefix": "Version",
     "versionValue": "1.0.0",
     "versionLabel": "App Version",
+
+    "tagline": "Simple, precise nutrition tracking for people who want control.",
+
+    "website": "Website",
+    "websiteHint": "Open the official website",
+
+    "rateApp": "Rate the app",
+    "rateAppHint": "Open the app store page",
+
+    "shareApp": "Share app",
+    "shareAppHint": "Send the app link",
+
+    "legalSection": "Legal",
     "terms": "Terms of Service",
+    "termsHint": "Read the terms of service",
+
     "privacy": "Privacy Policy",
-    "contact": "Contact Us"
+    "privacyHint": "Read the privacy policy",
+
+    "contact": "Contact Us",
+    "contactHint": "Contact support",
+
+    "storeNote": "Store links will be updated after the app is published."
   },
   "errors": {
     "loadFailed": "Failed to load settings",

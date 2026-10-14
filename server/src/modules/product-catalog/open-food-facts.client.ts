@@ -15,6 +15,8 @@ interface OFFProduct {
   brands?: string;
   image_url?: string;
   image_front_url?: string;
+  /** 400px display-size variant provided by OFF v2 API */
+  image_front_display_url?: string;
   nutriments?: OFFNutriments;
   [key: string]: unknown;
 }
@@ -35,6 +37,10 @@ export interface NormalizedProductData {
   carbsPer100g: number | null;
   fatPer100g: number | null;
   fiberPer100g: number | null;
+  /** Grams per serving when the external source provides it */
+  servingSizeGrams?: number | null;
+  /** Human-readable serving description (e.g. "1 cup") */
+  servingSizeText?: string | null;
   source: ProductSource;
   verificationStatus: ProductVerificationStatus;
   externalProvider: string;
@@ -77,8 +83,13 @@ export class OpenFoodFactsClient {
       ? product.brands.split(',')[0].trim() || null
       : null;
 
+    // Prefer the 400px display variant to avoid fetching multi-MB full images.
+    // Fall back to image_front_url then image_url if the display variant is absent.
     const imageUrl =
-      product.image_front_url || product.image_url || null;
+      product.image_front_display_url ||
+      product.image_front_url ||
+      product.image_url ||
+      null;
 
     return {
       barcode,

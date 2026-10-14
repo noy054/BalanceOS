@@ -41,4 +41,20 @@ export class AuthRepository {
       where: { expiresAt: { lt: new Date() } },
     });
   }
+
+  async saveResetToken(userId: string, token: string, expiresAt: Date): Promise<void> {
+    const tokenHash = this.hashToken(token);
+    await this.prisma.passwordResetToken.deleteMany({ where: { userId } });
+    await this.prisma.passwordResetToken.create({ data: { userId, tokenHash, expiresAt } });
+  }
+
+  async findResetToken(token: string) {
+    const tokenHash = this.hashToken(token);
+    return this.prisma.passwordResetToken.findUnique({ where: { tokenHash } });
+  }
+
+  async deleteResetToken(token: string): Promise<void> {
+    const tokenHash = this.hashToken(token);
+    await this.prisma.passwordResetToken.deleteMany({ where: { tokenHash } });
+  }
 }

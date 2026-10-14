@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -9,20 +9,24 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { ScreenHeader } from '../../../shared/components/ScreenHeader';
+import { CategoryChips } from '../../../shared/components/CategoryChips';
 import { usePantryProducts } from '../../pantry/hooks/usePantry';
 import { useRecipes } from '../../pantry/hooks/useRecipes';
 import { useSavedMeals } from '../../pantry/hooks/useSavedMeals';
 import { useAddMealItem } from '../../day-log/hooks/useDayLog';
-import { PantryProduct, PantryRecipe, SavedMeal } from '../../pantry/types';
+import { PantryProduct, PantryRecipe, ProductCategory, SavedMeal } from '../../pantry/types';
 import { AddMealItemPayload } from '../../day-log/types';
 import { MEAL_SHORTCUTS } from '../constants/mealShortcuts';
-import { colors } from '../../../shared/theme';
-import { styles } from './styles/AddMealItemScreen.styles';
+import { PANTRY_QUERY_KEYS } from '../../pantry/constants';
+import { useMealReturn } from '../../pantry/mealReturnStore';
+import { useAppTheme } from '../../../shared/theme';
+import { useStyles } from './styles/AddMealItemScreen.styles';
 
 type Tab = 'products' | 'recipes' | 'savedMeals';
 
@@ -50,6 +54,14 @@ function isSnack(mt: string) {
   return mt === 'SNACK_1' || mt === 'SNACK_2';
 }
 
+function mealTypeToCategory(mealType: string): ProductCategory | null {
+  if (mealType === 'BREAKFAST') return 'BREAKFAST';
+  if (mealType === 'LUNCH') return 'LUNCH';
+  if (mealType === 'DINNER') return 'DINNER';
+  if (isSnack(mealType)) return 'SNACK';
+  return null;
+}
+
 type Props = {
   /** When provided (tapped from a shortcut), locks to that meal type.
    *  When absent (opened from the + button), shows a meal-type picker. */
@@ -58,6 +70,8 @@ type Props = {
 
 export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
   const { t, i18n } = useTranslation('dashboard');
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === 'rtl';
 
   const isGeneralMode = !mealTypeProp;
@@ -70,11 +84,25 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
   const [cart, setCart] = useState<CartEntry[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { data: products = [], isLoading: loadingProducts } = usePantryProducts();
+  const queryClient = useQueryClient();
+
+  const { data: products = [], isLoading: loadingProducts } = usePantryProducts(search);
   const { data: recipes = [], isLoading: loadingRecipes } = useRecipes();
   const { data: savedMeals = [], isLoading: loadingSavedMeals } = useSavedMeals();
 
   const addMealItem = useAddMealItem();
+
+  useFocusEffect(
+    useCallback(() => {
+      const pending = useMealReturn.getState().pendingProduct;
+      if (!pending) return;
+      queryClient.invalidateQueries({ queryKey: PANTRY_QUERY_KEYS.list });
+      setActiveTab('products');
+      setSelected({ kind: 'product', item: pending });
+      setQuantity(pending.servingSizeG ? '1' : '100');
+      useMealReturn.getState().clearPending();
+    }, [queryClient]),
+  );
 
   const mealTypeLabel = MEAL_TYPE_KEY[activeMealType]
     ? t(`mealTypes.${MEAL_TYPE_KEY[activeMealType]}`)
@@ -87,33 +115,57 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
   // ── Filtering ──────────────────────────────────────────────────────────────
 
   const filteredProducts = useMemo(() => {
-    const q = search.toLowerCase().trim();
-    if (!q) return products;
-    return products.filter(
-      (p) => p.name.toLowerCase().includes(q) || p.brand?.toLowerCase().includes(q),
+    const matchCat = mealTypeToCategory(activeMealType);
+    if (!matchCat) return products;
+
+    const explicit = products.filter((p) =>
+      (p.mealCategories ?? []).includes(matchCat),
     );
-  }, [products, search]);
+    let result = explicit.length > 0
+      ? explicit
+      : products.filter((p) => (p.mealCategories ?? []).length === 0);
+
+    // Always keep the selected uncategorized product visible so the user
+    // can see it is still selected after choosing a meal type
+    if (
+      selected?.kind === 'product' &&
+      (selected.item.mealCategories ?? []).length === 0 &&
+      !result.find((p) => p.id === selected.item.id)
+    ) {
+      result = [selected.item, ...result];
+    }
+
+    return result;
+  }, [products, activeMealType, selected]);
 
   const filteredRecipes = useMemo(() => {
     const q = search.toLowerCase().trim();
-    // Category filter: show recipes matching the active meal type or uncategorized
-    const base = recipes.filter((r) => {
-      if (!r.mealType) return true;
-      if (isSnack(activeMealType) && isSnack(r.mealType)) return true;
-      return r.mealType === activeMealType;
-    });
+
+    let base = recipes;
+    if (activeMealType) {
+      base = recipes.filter((r) => {
+        if (!r.mealType) return true;
+        if (isSnack(activeMealType) && isSnack(r.mealType)) return true;
+        return r.mealType === activeMealType;
+      });
+    }
+
     if (!q) return base;
     return base.filter((r) => r.name.toLowerCase().includes(q));
   }, [recipes, search, activeMealType]);
 
   const filteredMeals = useMemo(() => {
     const q = search.toLowerCase().trim();
-    // Category filter: show meals matching the active type or uncategorized
-    const base = savedMeals.filter((m) => {
-      if (!m.mealType) return true;
-      if (isSnack(activeMealType) && isSnack(m.mealType)) return true;
-      return m.mealType === activeMealType;
-    });
+
+    let base = savedMeals;
+    if (activeMealType) {
+      base = savedMeals.filter((m) => {
+        if (!m.mealType) return true;
+        if (isSnack(activeMealType) && isSnack(m.mealType)) return true;
+        return m.mealType === activeMealType;
+      });
+    }
+
     if (!q) return base;
     return base.filter((m) => m.name.toLowerCase().includes(q));
   }, [savedMeals, search, activeMealType]);
@@ -128,7 +180,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
 
   function handleSelectProduct(item: PantryProduct) {
     setSelected({ kind: 'product', item });
-    setQuantity('100');
+    setQuantity(item.servingSizeG ? '1' : '100');
   }
 
   function handleSelectRecipe(item: PantryRecipe) {
@@ -142,7 +194,11 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
   }
 
   function handleAddToCart() {
-    if (!selected || !activeMealType) return;
+    if (!selected) return;
+    if (!activeMealType) {
+      Alert.alert('', t('addItem.chooseMealType'));
+      return;
+    }
 
     const qty = parseFloat(quantity);
     if (selected.kind !== 'savedMeal' && (isNaN(qty) || qty <= 0)) {
@@ -155,8 +211,14 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
 
     if (selected.kind === 'product') {
       payload.pantryProductId = selected.item.id;
-      payload.grams = qty;
-      qtyLabel = `${qty}g`;
+      const servingSize = selected.item.servingSizeG;
+      if (servingSize) {
+        payload.grams = qty * servingSize;
+        qtyLabel = `×${qty}`;
+      } else {
+        payload.grams = qty;
+        qtyLabel = `${qty}g`;
+      }
     } else if (selected.kind === 'recipe') {
       payload.pantryRecipeId = selected.item.id;
       payload.servings = qty;
@@ -230,12 +292,18 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
     let isSelected = false;
     let sub: string | null = null;
     let macros = '';
+    let mealCategories: ProductCategory[] = [];
 
     if (activeTab === 'products') {
       const p = item as PantryProduct;
       isSelected = selected?.kind === 'product' && selected.item.id === p.id;
       sub = p.brand ?? null;
-      macros = `${p.caloriesPer100g} kcal · ${p.proteinPer100g}g P · ${p.carbsPer100g}g C · ${p.fatPer100g}g F`;
+      mealCategories = p.mealCategories;
+      const hasServing = p.servingSizeG != null && p.servingSizeG > 0;
+      const mul = hasServing ? p.servingSizeG! / 100 : 1;
+      const r1 = (n: number) => Math.round(n * mul * 10) / 10;
+      const basis = hasServing ? `/sv` : `/100g`;
+      macros = `${r1(p.caloriesPer100g)} kcal · ${r1(p.proteinPer100g)}g P · ${r1(p.carbsPer100g)}g C · ${r1(p.fatPer100g)}g F ${basis}`;
     } else if (activeTab === 'recipes') {
       const r = item as PantryRecipe;
       isSelected = selected?.kind === 'recipe' && selected.item.id === r.id;
@@ -269,6 +337,11 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
             {sub}
           </Text>
         ) : null}
+        <CategoryChips
+          categories={mealCategories}
+          isRTL={isRTL}
+          style={{ marginTop: 4, marginBottom: 4 }}
+        />
         <Text style={[styles.itemMacros, { textAlign: isRTL ? 'right' : 'left' }]}>
           {macros}
         </Text>
@@ -299,8 +372,14 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
                 key={s.type}
                 style={[styles.mealTypeBtn, isActive && styles.mealTypeBtnActive]}
                 onPress={() => {
-                  setActiveMealType(s.type);
-                  setSelected(null);
+                  setActiveMealType(isActive ? '' : s.type);
+                  // Keep selection if it's an uncategorized product — it's valid for any meal type
+                  const isUncategorizedProduct =
+                    selected?.kind === 'product' &&
+                    (selected.item.mealCategories ?? []).length === 0;
+                  if (!isUncategorizedProduct) {
+                    setSelected(null);
+                  }
                 }}
               >
                 <Text style={[styles.mealTypeBtnLabel, isActive && styles.mealTypeBtnLabelActive]}>
@@ -329,26 +408,30 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
 
       {/* Search */}
       <View style={styles.searchWrapper}>
-        <TextInput
-          style={[styles.searchInput, { textAlign: isRTL ? 'right' : 'left' }]}
-          placeholder={t('addItem.searchPlaceholder')}
-          placeholderTextColor={colors.textMuted}
-          value={search}
-          onChangeText={(v) => {
-            setSearch(v);
-            setSelected(null);
-          }}
-        />
+        <View style={[styles.searchRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <TextInput
+            style={[styles.searchInput, { textAlign: isRTL ? 'right' : 'left' }]}
+            placeholder={t('addItem.searchPlaceholder')}
+            placeholderTextColor={colors.textMuted}
+            value={search}
+            onChangeText={(v) => {
+              setSearch(v);
+              setSelected(null);
+            }}
+          />
+          {activeTab === 'products' ? (
+            <Pressable
+              style={({ pressed }) => [styles.barcodeBtn, pressed && styles.barcodeBtnPressed]}
+              onPress={() => router.push('/(app)/pantry/barcode?returnTo=meal')}
+              hitSlop={4}
+            >
+              <MaterialCommunityIcons name="barcode-scan" size={22} color={colors.primaryGreen} />
+            </Pressable>
+          ) : null}
+        </View>
       </View>
 
-      {/* Empty state when general mode and no meal type selected yet */}
-      {isGeneralMode && !activeMealType ? (
-        <View style={styles.centered}>
-          <Text style={[styles.emptyText, { textAlign: 'center' }]}>
-            {t('addItem.chooseMealType')}
-          </Text>
-        </View>
-      ) : isLoading ? (
+      {isLoading ? (
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={colors.primaryGreen} />
         </View>
@@ -405,7 +488,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
             <View style={[styles.quantityRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <Text style={styles.quantityLabel}>
                 {selected.kind === 'product'
-                  ? t('addItem.gramsLabel')
+                  ? (selected.item.servingSizeG ? t('addItem.servingsLabel') : t('addItem.gramsLabel'))
                   : t('addItem.servingsLabel')}
               </Text>
               <TextInput
@@ -425,11 +508,9 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
           <Pressable
             style={({ pressed }) => [
               styles.logBtn,
-              !activeMealType && styles.logBtnDisabled,
               pressed && styles.logBtnPressed,
             ]}
             onPress={handleAddToCart}
-            disabled={!activeMealType}
           >
             <Text style={styles.logBtnText}>{t('addItem.addToList')}</Text>
           </Pressable>

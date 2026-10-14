@@ -45,6 +45,12 @@
     "calUnit": "קק״ל",
     "gramsUnit": "גרם"
   },
+  "categories": {
+    "BREAKFAST": "בוקר",
+    "LUNCH": "צהריים",
+    "DINNER": "ערב",
+    "SNACK": "נשנוש"
+  },
   "addProduct": {
     "title": "הוספת מוצר",
     "editTitle": "עריכת מוצר",
@@ -52,8 +58,11 @@
     "editSubtitle": "עדכני את פרטי המוצר והערכים שלו.",
     "requiredHint": "* שדות חובה",
     "optionalNutritionHint": "שדות תזונה ריקים יישמרו כ־0.",
+    "categoriesLabel": "קטגוריות ארוחה",
     "nutritionSection": "ערכים תזונתיים",
     "per100g": "ל־100 גרם",
+    "perServing": "למנה",
+    "servingSizeLabel": "גודל מנה (גרם) *",
     "emptyValuesBecomeZero": "שדות ריקים יהפכו אוטומטית ל־0",
     "saveButton": "שמור מוצר",
     "updateButton": "שמור שינויים",
@@ -64,9 +73,14 @@
   "productDetail": {
     "title": "פרטי מוצר",
     "nutritionSection": "ערכי תזונה ל-100 גרם",
+    "nutritionPerServing": "ערכי תזונה למנה ({{size}} גרם)",
     "calculator": "מחשבון ארוחה",
-    "calculatorHint": "הזן כמות בגרמים לחישוב ערכי תזונה",
+    "calculatorHint": "הזן כמות לחישוב ערכי תזונה",
     "calculatorPlaceholder": "כמות בגרמים",
+    "calculatorPlaceholderServings": "מספר מנות",
+    "calculatorPlaceholderCalories": "קלוריות יעד",
+    "calculatorByCalories": "קק״ל",
+    "calculatorQuantity": "כמות",
     "calculatorResult": "תוצאה",
     "editButton": "ערוך",
     "deleteButton": "מחק",
@@ -81,9 +95,12 @@
     "descriptionLabel": "תיאור",
     "categoryLabel": "קטגוריה",
     "ingredientsSection": "מצרכים",
-    "addIngredient": "+ הוסף מצרך",
+    "addIngredient": "הוסף מצרך",
     "gramsLabel": "גרם",
+    "servingsLabel": "מנ׳",
     "gramsPlaceholder": "כמות",
+    "selectedSection": "נבחרו ({{count}})",
+    "addSelectedBtn": "הוסף {{count}} למתכון",
     "selectProduct": "בחר מוצר מהמזווה",
     "removeItem": "הסר",
     "totalsSection": "סה״כ לכל המתכון",
@@ -92,7 +109,12 @@
     "deleteConfirmTitle": "מחיקת מתכון",
     "deleteConfirmMessage": "האם למחוק מתכון זה לצמיתות?",
     "deleteConfirmYes": "מחק",
-    "deleteConfirmNo": "ביטול"
+    "deleteConfirmNo": "ביטול",
+    "createManualBtn": "מוצר חדש",
+    "scanBarcodeBtn": "סרוק ברקוד",
+    "newProductTitle": "מוצר חדש",
+    "addAndSelectBtn": "שמור והוסף למתכון",
+    "servingSizeOptional": "גודל מנה (גרם, אופציונלי)"
   },
   "addRecipe": {
     "title": "מתכון חדש",
@@ -160,6 +182,26 @@
     "fromOpenFoodFacts": "נתונים ממקור חיצוני — יש לאמת",
     "addToPantry": "הוסף למזווה שלי",
     "alreadyInPantry": "כבר קיים במזווה שלך",
+    "distanceHint": "החזק את הברקוד במרחק 15–25 ס\"מ מהמצלמה",
+    "existsTitle": "כבר קיים במזווה שלך",
+    "existsProductIn": "מוצר זה כבר שמור במזווה שלך",
+    "viewInPantry": "הצג במזווה",
+    "servingSection": {
+      "title": "גודל מנה",
+      "hint": "מאפשר חישוב לפי מנה וקלוריות",
+      "sizeLabel": "גודל",
+      "labelField": "תיאור",
+      "labelPlaceholder": "למשל: כוס, פרוסה",
+      "preview": "לפי מנה ({{g}}גרם)"
+    },
+    "calcSection": {
+      "title": "מחשבון",
+      "grams": "גרם",
+      "calories": "קק״ל",
+      "placeholder": "הכנס ערך",
+      "resultByGrams": "{{cal}} קק״ל · {{p}}ג׳ P · {{c}}ג׳ C · {{f}}ג׳ F",
+      "resultByCalories": "≈ {{grams}}ג׳ · {{cal}} קק״ל · {{p}}ג׳ P · {{c}}ג׳ C · {{f}}ג׳ F"
+    },
     "manualForm": {
       "title": "הוסף מוצר ידנית",
       "barcodeLabel": "ברקוד",
@@ -171,6 +213,7 @@
       "carbsLabel": "פחמימות (גרם) *",
       "fatLabel": "שומן (גרם) *",
       "fiberLabel": "סיבים (גרם)",
+      "servingSizeLabel": "גודל מנה (גרם, אופציונלי)",
       "saveButton": "שמור",
       "saving": "שומר...",
       "cancel": "ביטול"

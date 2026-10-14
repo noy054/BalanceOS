@@ -1,6 +1,6 @@
 import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { styles, getDirectionStyles } from './styles/SettingsSelectRow.styles';
+import { useStyles, getDirectionStyles } from './styles/SettingsSelectRow.styles';
 
 type Option<T extends string> = {
   value: T;
@@ -24,6 +24,7 @@ export function SettingsSelectRow<T extends string>({
   last = false,
 }: Props<T>) {
   const { i18n } = useTranslation();
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === 'rtl';
   const dir = getDirectionStyles(isRTL);
 

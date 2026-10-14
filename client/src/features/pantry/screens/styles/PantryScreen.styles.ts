@@ -1,8 +1,10 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing, radius } from '../../../../shared/theme';
+import { spacing, radius, useThemedStyles } from '../../../../shared/theme';
 
-export const styles = StyleSheet.create({
-  root: {
+export const useStyles = () =>
+  useThemedStyles((colors) =>
+    StyleSheet.create({
+      root: {
     flex: 1,
     backgroundColor: colors.background,
   },
@@ -44,7 +46,7 @@ export const styles = StyleSheet.create({
   },
   listContent: {
     paddingTop: spacing.xs,
-    paddingBottom: spacing.xl,
+    paddingBottom: 124,
   },
   centered: {
     flex: 1,
@@ -56,7 +58,8 @@ export const styles = StyleSheet.create({
     color: colors.textMuted,
     textAlign: 'center',
   },
-});
+    }),
+  );
 
 export function getDirectionStyles(isRTL: boolean) {
   return {

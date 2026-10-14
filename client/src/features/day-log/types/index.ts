@@ -34,6 +34,25 @@ export type DayLogResponse = {
   fiberTotal: number;
 };
 
+export type MealItemSummary = {
+  id: string;
+  name: string;
+  calories: number;
+  protein: number;
+};
+
+export type MealEntrySummary = {
+  id: string;
+  mealType: string;
+  calories: number;
+  protein: number;
+  items: MealItemSummary[];
+};
+
+export type DayLogMealsResponse = {
+  meals: MealEntrySummary[];
+};
+
 export type AddMealItemPayload = {
   mealType: string;
   pantryProductId?: string;
@@ -41,4 +60,9 @@ export type AddMealItemPayload = {
   pantryRecipeId?: string;
   servings?: number;
   savedMealId?: string;
+};
+
+export type CopyMealPayload = {
+  mealEntryId: string;
+  targetDates: string[];
 };

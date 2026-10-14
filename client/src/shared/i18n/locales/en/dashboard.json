@@ -29,6 +29,29 @@
     "statistics": "Stats",
     "settings": "Settings"
   },
+  "meals": {
+    "calUnit": "cal",
+    "proUnit": "g pro",
+    "andMore": "+{{count}} more",
+    "copyToMoreDays": "Add to more days"
+  },
+  "copyMeal": {
+    "title": "Add to more days",
+    "subtitle": "Select days to copy this meal to",
+    "confirm_one": "Copy to {{count}} day",
+    "confirm_other": "Copy to {{count}} days",
+    "cancel": "Cancel",
+    "today": "Today",
+    "weekdays": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
+    }
+  },
   "addItem": {
     "title": "Add to {{mealType}}",
     "titleGeneral": "Add Item",

@@ -1,44 +1,56 @@
 import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import {
-  View,
+  ActivityIndicator,
+  Alert,
   FlatList,
   Pressable,
   Text,
-  ActivityIndicator,
+  View,
 } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
 import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
-import { PantryHeader } from "../components/PantryHeader";
-import { PantrySearchBar } from "../components/PantrySearchBar";
-import { PantryTabBar } from "../components/PantryTabBar";
-import { ProductCard } from "../components/ProductCard";
-import { RecipeCard } from "../components/RecipeCard";
-import { SavedMealCard } from "../components/SavedMealCard";
-import { PantryEmptyState } from "../components/PantryEmptyState";
-import { usePantryProducts } from "../hooks/usePantry";
-import { useRecipes } from "../hooks/useRecipes";
-import { useSavedMeals } from "../hooks/useSavedMeals";
+import { useAppTheme } from "../../../shared/theme";
+import { PantryHeader } from "../components/shared/PantryHeader";
+import { PantrySearchBar } from "../components/shared/PantrySearchBar";
+import { PantryTabBar } from "../components/shared/PantryTabBar";
+import { PantryEmptyState } from "../components/shared/PantryEmptyState";
+import { SwipeDeleteRow } from "../components/shared/SwipeDeleteRow";
+import { ProductCard } from "../components/products/ProductCard";
+import { ProductCalculatorModal } from "../components/products/ProductCalculatorModal";
+import { RecipeCard } from "../components/recipes/RecipeCard";
+import { SavedMealCard } from "../components/saved-meals/SavedMealCard";
+import { usePantryProducts, useDeletePantryProduct } from "../hooks/usePantry";
+import { useRecipes, useDeleteRecipe } from "../hooks/useRecipes";
+import { useSavedMeals, useDeleteSavedMeal } from "../hooks/useSavedMeals";
 import { PantryProduct, PantryRecipe, PantryTab, SavedMeal } from "../types";
-import { colors } from "../../../shared/theme";
-import { styles, getDirectionStyles } from "./styles/PantryScreen.styles";
+import { getDirectionStyles, useStyles } from "./styles/PantryScreen.styles";
 
 export function PantryScreen() {
   const { t, i18n } = useTranslation("pantry");
+  const { colors } = useAppTheme();
+  const styles = useStyles();
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const dir = getDirectionStyles(isRTL);
 
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<PantryTab>("products");
+  const [calculatorProduct, setCalculatorProduct] =
+    useState<PantryProduct | null>(null);
+
+  const deleteProduct = useDeletePantryProduct();
+  const deleteRecipe = useDeleteRecipe();
+  const deleteSavedMeal = useDeleteSavedMeal();
 
   const {
     data: products = [],
     isLoading: loadingProducts,
     isError: errorProducts,
-  } = usePantryProducts();
+  } = usePantryProducts(search);
 
   const {
     data: recipes = [],
@@ -52,20 +64,10 @@ export function PantryScreen() {
     isError: errorSavedMeals,
   } = useSavedMeals();
 
-  const filteredProducts = useMemo(() => {
-    if (!search.trim()) return products;
-
-    const q = search.toLowerCase();
-
-    return products.filter(
-      (product) =>
-        product.name.toLowerCase().includes(q) ||
-        product.brand?.toLowerCase().includes(q),
-    );
-  }, [products, search]);
-
   const filteredRecipes = useMemo(() => {
-    if (!search.trim()) return recipes;
+    if (!search.trim()) {
+      return recipes;
+    }
 
     const q = search.toLowerCase();
 
@@ -73,12 +75,17 @@ export function PantryScreen() {
   }, [recipes, search]);
 
   const filteredMeals = useMemo(() => {
-    if (!search.trim()) return savedMeals;
+    if (!search.trim()) {
+      return savedMeals;
+    }
 
     const q = search.toLowerCase();
 
     return savedMeals.filter((meal) => meal.name.toLowerCase().includes(q));
   }, [savedMeals, search]);
+
+  const isDeletingRecipe = deleteRecipe.isPending;
+  const isDeletingSavedMeal = deleteSavedMeal.isPending;
 
   function handleAdd() {
     if (activeTab === "products") {
@@ -98,9 +105,114 @@ export function PantryScreen() {
     router.push("/(app)/pantry/barcode");
   }
 
+  function handleProductPress(product: PantryProduct) {
+    router.push(`/(app)/pantry/${product.id}`);
+  }
+
+  function handleQuickCalculate(product: PantryProduct) {
+    setCalculatorProduct(product);
+  }
+
+  function handleCloseCalculator() {
+    setCalculatorProduct(null);
+  }
+
+  function handleDeleteProduct(product: PantryProduct) {
+    Alert.alert(
+      t("productDetail.deleteConfirmTitle"),
+      t("productDetail.deleteConfirmMessage"),
+      [
+        {
+          text: t("productDetail.deleteConfirmNo"),
+          style: "cancel",
+        },
+        {
+          text: t("productDetail.deleteConfirmYes"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteProduct.mutateAsync(product.id);
+            } catch {
+              Alert.alert("", t("errors.deleteFailed"));
+            }
+          },
+        },
+      ],
+    );
+  }
+
+  function handleDeleteRecipe(recipe: PantryRecipe) {
+    Alert.alert(
+      t("recipe.deleteConfirmTitle", {
+        defaultValue: "למחוק מתכון?",
+      }),
+      t("recipe.deleteConfirmMessage", {
+        defaultValue: "המתכון יימחק מהרשימה שלך.",
+      }),
+      [
+        {
+          text: t("recipe.deleteConfirmNo", {
+            defaultValue: "ביטול",
+          }),
+          style: "cancel",
+        },
+        {
+          text: t("recipe.deleteConfirmYes", {
+            defaultValue: "מחיקה",
+          }),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteRecipe.mutateAsync(recipe.id);
+            } catch {
+              Alert.alert("", t("errors.deleteFailed"));
+            }
+          },
+        },
+      ],
+    );
+  }
+
+  function handleDeleteSavedMeal(meal: SavedMeal) {
+    Alert.alert(
+      t("savedMeal.deleteConfirmTitle", {
+        defaultValue: "למחוק ארוחה?",
+      }),
+      t("savedMeal.deleteConfirmMessage", {
+        defaultValue: "הארוחה השמורה תימחק מהרשימה שלך.",
+      }),
+      [
+        {
+          text: t("savedMeal.deleteConfirmNo", {
+            defaultValue: "ביטול",
+          }),
+          style: "cancel",
+        },
+        {
+          text: t("savedMeal.deleteConfirmYes", {
+            defaultValue: "מחיקה",
+          }),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteSavedMeal.mutateAsync(meal.id);
+            } catch {
+              Alert.alert("", t("errors.deleteFailed"));
+            }
+          },
+        },
+      ],
+    );
+  }
+
   function addLabel() {
-    if (activeTab === "products") return t("actions.addProduct");
-    if (activeTab === "recipes") return t("actions.addRecipe");
+    if (activeTab === "products") {
+      return t("actions.addProduct");
+    }
+
+    if (activeTab === "recipes") {
+      return t("actions.addRecipe");
+    }
 
     return t("actions.addSavedMeal");
   }
@@ -152,33 +264,33 @@ export function PantryScreen() {
         <PantryTabBar activeTab={activeTab} onTabPress={setActiveTab} />
 
         <View style={styles.content}>
-          {activeTab === "products" && (
+          {activeTab === "products" ? (
             <TabContent
               isLoading={loadingProducts}
               isError={errorProducts}
-              isEmpty={filteredProducts.length === 0}
+              isEmpty={products.length === 0}
               errorKey="errors.loadFailed"
               tab="products"
               isRTL={isRTL}
             >
               <FlatList
-                data={filteredProducts}
+                data={products}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                   <ProductCard
                     product={item}
-                    onPress={(product: PantryProduct) =>
-                      router.push(`/(app)/pantry/${product.id}`)
-                    }
+                    onPress={handleProductPress}
+                    onDelete={handleDeleteProduct}
+                    onQuickCalculate={handleQuickCalculate}
                   />
                 )}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
               />
             </TabContent>
-          )}
+          ) : null}
 
-          {activeTab === "recipes" && (
+          {activeTab === "recipes" ? (
             <TabContent
               isLoading={loadingRecipes}
               isError={errorRecipes}
@@ -191,20 +303,29 @@ export function PantryScreen() {
                 data={filteredRecipes}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                  <RecipeCard
-                    recipe={item}
-                    onPress={(recipe: PantryRecipe) =>
-                      router.push(`/(app)/pantry/recipes/${recipe.id}`)
-                    }
-                  />
+                  <SwipeDeleteRow
+                    isRTL={isRTL}
+                    label={t("actions.delete", {
+                      defaultValue: "מחיקה",
+                    })}
+                    disabled={isDeletingRecipe}
+                    onDelete={() => handleDeleteRecipe(item)}
+                  >
+                    <RecipeCard
+                      recipe={item}
+                      onPress={(recipe: PantryRecipe) =>
+                        router.push(`/(app)/pantry/recipes/${recipe.id}`)
+                      }
+                    />
+                  </SwipeDeleteRow>
                 )}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
               />
             </TabContent>
-          )}
+          ) : null}
 
-          {activeTab === "savedMeals" && (
+          {activeTab === "savedMeals" ? (
             <TabContent
               isLoading={loadingSavedMeals}
               isError={errorSavedMeals}
@@ -217,19 +338,34 @@ export function PantryScreen() {
                 data={filteredMeals}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                  <SavedMealCard
-                    meal={item}
-                    onPress={(meal: SavedMeal) =>
-                      router.push(`/(app)/pantry/saved-meals/${meal.id}`)
-                    }
-                  />
+                  <SwipeDeleteRow
+                    isRTL={isRTL}
+                    label={t("actions.delete", {
+                      defaultValue: "מחיקה",
+                    })}
+                    disabled={isDeletingSavedMeal}
+                    onDelete={() => handleDeleteSavedMeal(item)}
+                  >
+                    <SavedMealCard
+                      meal={item}
+                      onPress={(meal: SavedMeal) =>
+                        router.push(`/(app)/pantry/saved-meals/${meal.id}`)
+                      }
+                    />
+                  </SwipeDeleteRow>
                 )}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
               />
             </TabContent>
-          )}
+          ) : null}
         </View>
+
+        <ProductCalculatorModal
+          visible={Boolean(calculatorProduct)}
+          product={calculatorProduct}
+          onClose={handleCloseCalculator}
+        />
       </View>
     </TabScreenLayout>
   );
@@ -250,9 +386,11 @@ function TabContent({
   errorKey: string;
   tab: PantryTab;
   isRTL: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const { t } = useTranslation("pantry");
+  const { colors } = useAppTheme();
+  const styles = useStyles();
 
   if (isLoading) {
     return (
@@ -274,7 +412,9 @@ function TabContent({
     );
   }
 
-  if (isEmpty) return <PantryEmptyState tab={tab} />;
+  if (isEmpty) {
+    return <PantryEmptyState tab={tab} />;
+  }
 
   return <>{children}</>;
 }

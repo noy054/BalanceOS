@@ -1,10 +1,10 @@
 import { StyleSheet } from "react-native";
 
-import { homeDashboardSpacing } from "../../../day-log/constants/homeDashboardTheme";
+import { spacing } from "../../../../shared/theme";
 
 export const styles = StyleSheet.create({
   row: {
-    gap: homeDashboardSpacing.sm,
+    gap: spacing.sm2,
     alignItems: "stretch",
   },
 });

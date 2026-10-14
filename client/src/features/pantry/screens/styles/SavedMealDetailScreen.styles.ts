@@ -1,140 +1,265 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
-import { colors, spacing, radius, cardShadow } from "../../../../shared/theme";
+import { spacing, radius, useThemedStyles } from "../../../../shared/theme";
 
-export const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+export const useStyles = () =>
+  useThemedStyles((colors) =>
+    StyleSheet.create({
+      root: {
+        flex: 1,
+        backgroundColor: colors.background,
+      },
 
-  centered: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+      centered: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+      },
 
-  errorText: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: colors.textMuted,
-  },
+      errorText: {
+        fontSize: 14,
+        fontWeight: "700",
+        color: colors.textMuted,
+      },
 
-  deleteBtn: {
-    padding: spacing.xs,
-  },
+      scroll: {
+        flex: 1,
+      },
 
-  scroll: {
-    flex: 1,
-  },
+      content: {
+        paddingHorizontal: spacing.lg,
+        paddingTop: spacing.sm,
+        paddingBottom: spacing.xl,
+        gap: spacing.lg,
+      },
 
-  content: {
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xl,
-  },
+      actionsRow: {
+        gap: spacing.sm,
+      },
 
-  badgeRow: {
-    marginTop: spacing.xs,
-    marginBottom: spacing.lg,
-  },
+      actionBtn: {
+        flex: 1,
+        minHeight: 44,
+        borderRadius: radius.lg,
+        borderWidth: 1,
+        borderColor: colors.primaryGreenMid,
+        backgroundColor: colors.primaryGreenLight,
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "row",
+        gap: spacing.xs,
+      },
 
-  badge: {
-    alignSelf: "flex-start",
-    borderRadius: radius.full,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 7,
-    backgroundColor: colors.cardBackgroundStrong,
-    borderWidth: 1,
-    borderColor: colors.primaryGreenMid,
-  },
+      actionBtnDanger: {
+        flex: 1,
+        minHeight: 44,
+        borderRadius: radius.lg,
+        borderWidth: 1,
+        borderColor: colors.border,
+        backgroundColor: colors.cardBackgroundSoft,
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "row",
+        gap: spacing.xs,
+      },
 
-  badgeText: {
-    fontSize: 12,
-    fontWeight: "900",
-    color: colors.primaryGreen,
-  },
+      actionBtnPressed: {
+        opacity: 0.78,
+        transform: [{ scale: 0.985 }],
+      },
 
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: "900",
-    color: colors.textPrimary,
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-    paddingBottom: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
+      actionBtnText: {
+        fontSize: 13,
+        fontWeight: "900",
+        color: colors.primaryGreen,
+      },
 
-  card: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    ...cardShadow,
-    overflow: "hidden",
-  },
+      actionBtnDangerText: {
+        fontSize: 13,
+        fontWeight: "900",
+        color: colors.danger,
+      },
 
-  totalsCard: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    ...cardShadow,
-  },
+      badgeRow: {
+        marginTop: spacing.xs,
+      },
 
-  itemRow: {
-    minHeight: 64,
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    gap: spacing.md,
-  },
+      badge: {
+        borderRadius: radius.full,
+        paddingHorizontal: spacing.md,
+        paddingVertical: 7,
+        backgroundColor: colors.cardBackgroundStrong,
+        borderWidth: 1,
+        borderColor: colors.primaryGreenMid,
+      },
 
-  rowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
+      badgeText: {
+        fontSize: 12,
+        fontWeight: "900",
+        color: colors.primaryGreen,
+      },
 
-  itemInfo: {
-    flex: 1,
-    minWidth: 0,
-  },
+      section: {
+        gap: spacing.sm,
+      },
 
-  itemName: {
-    fontSize: 15,
-    fontWeight: "900",
-    color: colors.textPrimary,
-  },
+      sectionTitle: {
+        fontSize: 14,
+        fontWeight: "900",
+        color: colors.textPrimary,
+        paddingBottom: spacing.xs,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border,
+      },
 
-  itemDetail: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: colors.textMuted,
-    marginTop: 2,
-  },
+      totalsCard: {
+        borderRadius: radius.xl,
+        overflow: "hidden",
+      },
 
-  itemCals: {
-    fontSize: 14,
-    fontWeight: "900",
-    color: colors.primaryGreen,
-  },
-});
+      itemsCard: {
+        backgroundColor: colors.cardBackground,
+        borderRadius: radius.xl,
+        borderWidth: 1,
+        borderColor: colors.border,
+        overflow: "hidden",
+        ...Platform.select({
+          ios: {
+            shadowColor: colors.shadow,
+            shadowOpacity: 0.8,
+            shadowRadius: 16,
+            shadowOffset: { width: 0, height: 8 },
+          },
+          android: {
+            elevation: 4,
+          },
+        }),
+      },
+
+      itemRow: {
+        alignItems: "flex-start",
+        gap: spacing.md,
+        padding: spacing.md,
+      },
+
+      rowBorder: {
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border,
+      },
+
+      imageBox: {
+        width: 58,
+        height: 58,
+        borderRadius: radius.lg,
+        overflow: "hidden",
+        backgroundColor: colors.cardBackgroundSoft,
+        borderWidth: 1,
+        borderColor: colors.border,
+        flexShrink: 0,
+      },
+
+      productImage: {
+        width: "100%",
+        height: "100%",
+      },
+
+      imagePlaceholder: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+      },
+
+      itemInfo: {
+        flex: 1,
+        minWidth: 0,
+        gap: spacing.sm,
+      },
+
+      itemTopRow: {
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        gap: spacing.sm,
+      },
+
+      itemNameBox: {
+        flex: 1,
+        minWidth: 0,
+      },
+
+      itemName: {
+        fontSize: 15,
+        fontWeight: "900",
+        color: colors.textPrimary,
+      },
+
+      itemBrand: {
+        marginTop: 2,
+        fontSize: 12,
+        fontWeight: "700",
+        color: colors.textMuted,
+      },
+
+      quantityBadge: {
+        borderRadius: radius.full,
+        paddingHorizontal: spacing.sm,
+        paddingVertical: 5,
+        backgroundColor: colors.cardBackgroundSoft,
+        borderWidth: 1,
+        borderColor: colors.border,
+      },
+
+      quantityBadgeText: {
+        fontSize: 11,
+        fontWeight: "900",
+        color: colors.textSecondary,
+      },
+
+      valuesRow: {
+        flexWrap: "wrap",
+        gap: spacing.xs,
+      },
+
+      caloriePill: {
+        minHeight: 30,
+        borderRadius: radius.full,
+        paddingHorizontal: spacing.sm,
+        paddingVertical: 6,
+        backgroundColor: colors.primaryGreenLight,
+        borderWidth: 1,
+        borderColor: colors.primaryGreenMid,
+      },
+
+      calorieValue: {
+        fontSize: 12,
+        fontWeight: "900",
+        color: colors.primaryGreen,
+      },
+
+      valuePill: {
+        minHeight: 30,
+        borderRadius: radius.full,
+        paddingHorizontal: spacing.sm,
+        paddingVertical: 6,
+        backgroundColor: colors.cardBackgroundSoft,
+        borderWidth: 1,
+        borderColor: colors.border,
+      },
+
+      valuePillText: {
+        fontSize: 11,
+        fontWeight: "800",
+        color: colors.textMuted,
+      },
+    }),
+  );
 
 export function getDirectionStyles(isRTL: boolean) {
   return {
-    text: {
-      textAlign: isRTL ? ("right" as const) : ("left" as const),
-      writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),
-    },
-
     row: {
       flexDirection: isRTL ? ("row-reverse" as const) : ("row" as const),
     },
 
-    sectionTitle: {
+    text: {
       textAlign: isRTL ? ("right" as const) : ("left" as const),
       writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),
     },
@@ -149,11 +274,6 @@ export function getDirectionStyles(isRTL: boolean) {
 
     badgeText: {
       textAlign: isRTL ? ("right" as const) : ("left" as const),
-      writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),
-    },
-
-    calText: {
-      textAlign: isRTL ? ("left" as const) : ("right" as const),
       writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),
     },
   };

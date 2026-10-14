@@ -19,7 +19,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  refreshTokens     RefreshToken[]
+  refreshTokens      RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
   nutritionSettings UserNutritionSettings?
   pantryProducts    PantryProduct[]
   pantryRecipes     PantryRecipe[]
@@ -160,8 +161,16 @@ model ProductCatalogItem {
 enum ProductSource {
   INTERNAL
   OPEN_FOOD_FACTS
+  USDA_FDC
   MANUAL
   ADMIN
+}
+
+enum ProductCategory {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
 }
 
 enum ProductVerificationStatus {
@@ -185,6 +194,18 @@ model RefreshToken {
   @@index([tokenHash])
 }
 
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 model PantryProduct {
   id              String  @id @default(cuid())
   userId          String
@@ -192,11 +213,14 @@ model PantryProduct {
   brand           String?
   barcode         String?
   imageUrl String?
-  caloriesPer100g Float
-  proteinPer100g  Float
-  carbsPer100g    Float
-  fatPer100g      Float
-  fiberPer100g    Float?
+  caloriesPer100g  Float
+  proteinPer100g   Float
+  carbsPer100g     Float
+  fatPer100g       Float
+  fiberPer100g     Float?
+  servingSizeG     Float?
+  servingSizeText  String?
+  mealCategories   ProductCategory[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

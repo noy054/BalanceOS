@@ -5,9 +5,11 @@ import { authApi } from '../api/authApi';
 import { tokenStorage } from '../../../shared/api/tokenStorage';
 import { useAuthStore } from './useAuthStore';
 import {
+  ForgotPasswordPayload,
   GoogleLoginPayload,
   LoginPayload,
   RegisterPayload,
+  ResetPasswordPayload,
 } from '../types';
 
 export function useRegister() {
@@ -72,6 +74,21 @@ export function useCurrentUser() {
     queryFn: () => authApi.me(),
     retry: false,
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (payload: ForgotPasswordPayload) => authApi.forgotPassword(payload),
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: (payload: ResetPasswordPayload) => authApi.resetPassword(payload),
+    onSuccess: () => {
+      router.replace('/(auth)/login');
+    },
   });
 }
 

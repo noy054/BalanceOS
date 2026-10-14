@@ -1,148 +1,127 @@
-import { useMemo, useState } from "react";
-import { View, Text, ScrollView, Pressable, Alert } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
-import { useCreateSavedMeal } from "../hooks/useSavedMeals";
+import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { useAppTheme } from "../../../shared/theme";
+import {
+  useCreateSavedMeal,
+  useSavedMeal,
+  useUpdateSavedMeal,
+} from "../hooks/useSavedMeals";
 import { usePantryProducts } from "../hooks/usePantry";
 import { useRecipes } from "../hooks/useRecipes";
+import { useAddSavedMealForm } from "../hooks/useAddSavedMealForm";
 import {
   ProductPickerModal,
   RecipePickerModal,
-} from "../components/ProductPickerModal";
-import { NutritionTotals } from "../components/NutritionTotals";
-import { SavedMealBasicInfoCard } from "../components/SavedMealBasicInfoCard";
-import { SavedMealItemsCard } from "../components/SavedMealItemsCard";
-import { styles as formStyles } from "../components/styles/SavedMealForm.styles";
+} from "../components/products/ProductPickerModal";
+import { NutritionTotals } from "../components/nutrition/NutritionTotals";
+import { SavedMealBasicInfoCard } from "../components/saved-meals/SavedMealBasicInfoCard";
+import { SavedMealItemsCard } from "../components/saved-meals/SavedMealItemsCard";
+import { ImagePickerCard } from "../components/shared/ImagePickerCard";
 import {
-  buildSavedMealPayloadItems,
-  calculateSavedMealDraftTotals,
-  makeSavedMealDraftKey,
-  SavedMealDraftItem,
-} from "../helpers/savedMealDraft";
-import { MealType, PantryProduct, PantryRecipe } from "../types";
-import { ScreenHeader } from "../../../shared/components/ScreenHeader";
-import { styles } from "./styles/AddSavedMealScreen.styles";
+  getDirectionStyles,
+  useStyles,
+} from "./styles/AddSavedMealScreen.styles";
+
+type RouteParams = {
+  id?: string;
+  mode?: string;
+};
 
 export function AddSavedMealScreen() {
   const { t, i18n } = useTranslation("pantry");
-  const isRTL = i18n.dir(i18n.language) === "rtl";
+  const { colors } = useAppTheme();
+  const styles = useStyles();
 
-  const textDirection = {
-    textAlign: isRTL ? ("right" as const) : ("left" as const),
-    writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),
-  };
+  const params = useLocalSearchParams<RouteParams>();
+  const savedMealId = typeof params.id === "string" ? params.id : "";
+  const isEditMode = params.mode === "edit" && Boolean(savedMealId);
+
+  const isRTL = i18n.dir(i18n.language) === "rtl";
+  const dir = getDirectionStyles(isRTL);
 
   const createSavedMeal = useCreateSavedMeal();
+  const updateSavedMeal = useUpdateSavedMeal(savedMealId);
+  const { data: existingMeal, isLoading: isMealLoading } =
+    useSavedMeal(savedMealId);
+
   const { data: products = [] } = usePantryProducts();
   const { data: recipes = [] } = useRecipes();
 
-  const [name, setName] = useState("");
-  const [mealType, setMealType] = useState<MealType | null>(null);
-  const [items, setItems] = useState<SavedMealDraftItem[]>([]);
-  const [productPickerVisible, setProductPickerVisible] = useState(false);
-  const [recipePickerVisible, setRecipePickerVisible] = useState(false);
-  const [nameError, setNameError] = useState("");
+  const form = useAddSavedMealForm(existingMeal, isEditMode);
 
-  const liveTotals = useMemo(
-    () => calculateSavedMealDraftTotals(items),
-    [items],
-  );
-
-  const hasTotals = liveTotals.calories > 0;
-
-  const selectedProductIds = useMemo(
-    () => items.filter((i) => i.kind === "product").map((i) => i.product.id),
-    [items],
-  );
-
-  function addProduct(product: PantryProduct) {
-    setItems((prev) => [
-      ...prev,
-      {
-        kind: "product",
-        key: makeSavedMealDraftKey(),
-        product,
-        grams: "100",
-      },
-    ]);
-
-    // Picker stays open so the user can add more products in the same session.
-  }
-
-  function addRecipe(recipe: PantryRecipe) {
-    setItems((prev) => [
-      ...prev,
-      {
-        kind: "recipe",
-        key: makeSavedMealDraftKey(),
-        recipe,
-        servings: "1",
-      },
-    ]);
-
-    setRecipePickerVisible(false);
-  }
-
-  function updateAmount(key: string, value: string) {
-    setItems((prev) =>
-      prev.map((item) => {
-        if (item.key !== key) return item;
-
-        if (item.kind === "product") {
-          return {
-            ...item,
-            grams: value,
-          };
-        }
-
-        return {
-          ...item,
-          servings: value,
-        };
-      }),
-    );
-  }
-
-  function removeItem(key: string) {
-    setItems((prev) => prev.filter((item) => item.key !== key));
-  }
+  const isSaving = createSavedMeal.isPending || updateSavedMeal.isPending;
 
   async function handleSave() {
-    if (!name.trim()) {
-      setNameError(t("errors.requiredField"));
+    if (!form.name.trim()) {
+      form.setNameError(t("errors.requiredField"));
       return;
     }
 
-    if (items.length === 0) {
+    if (form.items.length === 0 || form.validItems.length === 0) {
       Alert.alert("", t("errors.noItems"));
       return;
     }
 
-    const validItems = buildSavedMealPayloadItems(items);
-
-    if (validItems.length === 0) {
-      Alert.alert("", t("errors.noItems"));
-      return;
-    }
+    const payload = {
+      name: form.name.trim(),
+      imageUrl: form.imageUrl.trim() || undefined,
+      mealType: form.mealType ?? undefined,
+      items: form.validItems,
+    };
 
     try {
-      await createSavedMeal.mutateAsync({
-        name: name.trim(),
-        mealType: mealType ?? undefined,
-        items: validItems,
-      });
+      if (isEditMode) {
+        await updateSavedMeal.mutateAsync(payload);
+      } else {
+        await createSavedMeal.mutateAsync(payload);
+      }
 
       router.back();
     } catch {
-      Alert.alert("", t("errors.saveSavedMealFailed"));
+      Alert.alert(
+        "",
+        isEditMode
+          ? t("errors.updateSavedMealFailed", {
+              defaultValue: "שמירת השינויים נכשלה",
+            })
+          : t("errors.saveSavedMealFailed"),
+      );
     }
+  }
+
+  if (isEditMode && isMealLoading) {
+    return (
+      <SafeAreaView style={styles.root} edges={["top"]}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primaryGreen} />
+          <Text style={styles.loadingText}>
+            {t("savedMeal.loading", { defaultValue: "טוען ארוחה..." })}
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
   }
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={t("addSavedMeal.title")} />
+      <ScreenHeader
+        title={
+          isEditMode
+            ? t("editSavedMeal.title", { defaultValue: "עריכת ארוחה שמורה" })
+            : t("addSavedMeal.title")
+        }
+      />
 
       <ScrollView
         style={styles.scroll}
@@ -150,43 +129,69 @@ export function AddSavedMealScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={formStyles.introCard}>
-          <Text style={[formStyles.subtitle, textDirection]}>
-            {t("addSavedMeal.subtitle")}
+        <View style={styles.introCard}>
+          <Text style={[styles.subtitle, dir.text]}>
+            {isEditMode
+              ? t("editSavedMeal.subtitle", {
+                  defaultValue: "עדכני את פרטי הארוחה והמצרכים.",
+                })
+              : t("addSavedMeal.subtitle")}
           </Text>
         </View>
 
-        <SavedMealBasicInfoCard
-          name={name}
-          nameError={nameError}
-          mealType={mealType}
+        <ImagePickerCard
+          imageUrl={form.imageUrl}
           isRTL={isRTL}
-          onChangeName={(value) => {
-            setName(value);
-            setNameError("");
-          }}
-          onChangeMealType={setMealType}
+          title={t("savedMeal.imageTitle", {
+            defaultValue: "תמונה לארוחה",
+          })}
+          subtitle={t("savedMeal.imageSubtitle", {
+            defaultValue: "אפשר להוסיף תמונה שתעזור לזהות מהר את הארוחה.",
+          })}
+          selectedSubtitle={t("savedMeal.imageSelected", {
+            defaultValue: "התמונה תופיע בכרטיס הארוחה.",
+          })}
+          addLabel={t("savedMeal.addImage", {
+            defaultValue: "הוספת תמונה",
+          })}
+          changeLabel={t("savedMeal.changeImage", {
+            defaultValue: "החלפת תמונה",
+          })}
+          removeLabel={t("savedMeal.removeImage", {
+            defaultValue: "הסרה",
+          })}
+          placeholderIcon="bookmark-outline"
+          onChangeImage={form.setImageUrl}
+          onRemoveImage={() => form.setImageUrl("")}
+        />
+
+        <SavedMealBasicInfoCard
+          name={form.name}
+          nameError={form.nameError}
+          mealType={form.mealType}
+          isRTL={isRTL}
+          onChangeName={form.handleNameChange}
+          onChangeMealType={form.setMealType}
         />
 
         <SavedMealItemsCard
-          items={items}
+          items={form.items}
           isRTL={isRTL}
-          onChangeAmount={updateAmount}
-          onRemoveItem={removeItem}
-          onAddProduct={() => setProductPickerVisible(true)}
-          onAddRecipe={() => setRecipePickerVisible(true)}
+          onChangeAmount={form.updateAmount}
+          onRemoveItem={form.removeItem}
+          onAddProduct={() => form.setProductPickerVisible(true)}
+          onAddRecipe={() => form.setRecipePickerVisible(true)}
         />
 
-        {hasTotals ? (
+        {form.hasTotals ? (
           <View style={styles.totalsContainer}>
             <NutritionTotals
-              totals={liveTotals}
+              totals={form.liveTotals}
               label={t("savedMeal.totalsSection")}
               variant="highlight"
             />
           </View>
         ) : null}
-
       </ScrollView>
 
       <View style={styles.footer}>
@@ -194,32 +199,34 @@ export function AddSavedMealScreen() {
           style={({ pressed }) => [
             styles.saveBtn,
             pressed && styles.saveBtnPressed,
-            createSavedMeal.isPending && styles.saveBtnDisabled,
+            isSaving && styles.saveBtnDisabled,
           ]}
           onPress={handleSave}
-          disabled={createSavedMeal.isPending}
+          disabled={isSaving}
         >
           <Text style={styles.saveBtnText}>
-            {createSavedMeal.isPending
+            {isSaving
               ? t("savedMeal.saving")
-              : t("savedMeal.saveButton")}
+              : isEditMode
+                ? t("savedMeal.updateButton", { defaultValue: "שמור שינויים" })
+                : t("savedMeal.saveButton")}
           </Text>
         </Pressable>
       </View>
 
       <ProductPickerModal
-        visible={productPickerVisible}
+        visible={form.productPickerVisible}
         products={products}
-        selectedIds={selectedProductIds}
-        onSelect={addProduct}
-        onClose={() => setProductPickerVisible(false)}
+        selectedIds={form.selectedProductIds}
+        onSelect={form.addProduct}
+        onClose={() => form.setProductPickerVisible(false)}
       />
 
       <RecipePickerModal
-        visible={recipePickerVisible}
+        visible={form.recipePickerVisible}
         recipes={recipes}
-        onSelect={addRecipe}
-        onClose={() => setRecipePickerVisible(false)}
+        onSelect={form.addRecipe}
+        onClose={() => form.setRecipePickerVisible(false)}
       />
     </SafeAreaView>
   );

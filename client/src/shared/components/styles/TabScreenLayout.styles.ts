@@ -1,36 +1,18 @@
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
-import { colors, spacing } from "../../theme";
+import { useThemedStyles } from "../../theme";
 
-export const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-
-  content: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-
-  bottomNavWrapper: {
-    position: "absolute",
-    left: spacing.lg,
-    right: spacing.lg,
-    bottom: Platform.OS === "ios" ? spacing.lg : spacing.md,
-    zIndex: 50,
-    borderRadius: 34,
-    overflow: "visible",
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.shadow,
-        shadowOpacity: 1,
-        shadowRadius: 26,
-        shadowOffset: { width: 0, height: 16 },
+export const useStyles = () =>
+  useThemedStyles((colors) =>
+    StyleSheet.create({
+      root: {
+        flex: 1,
+        backgroundColor: colors.background,
       },
-      android: {
-        elevation: 12,
+
+      content: {
+        flex: 1,
+        backgroundColor: colors.background,
       },
     }),
-  },
-});
+  );

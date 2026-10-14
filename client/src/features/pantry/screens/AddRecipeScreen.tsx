@@ -1,138 +1,144 @@
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  Pressable,
   Alert,
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
-import { useCreateRecipe } from "../hooks/useRecipes";
-import { usePantryProducts } from "../hooks/usePantry";
-import { ProductPickerModal } from "../components/ProductPickerModal";
-import { NutritionTotals } from "../components/NutritionTotals";
-import { SavedMealTypeSelector } from "../components/SavedMealTypeSelector";
-import { calcProductNutrition, sumNutrition } from "../helpers/nutrition";
-import { MealType, PantryProduct } from "../types";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
-import { colors } from "../../../shared/theme";
-import { styles, getDirectionStyles } from "./styles/AddRecipeScreen.styles";
+import { useAppTheme } from "../../../shared/theme";
+import {
+  useCreateRecipe,
+  useRecipe,
+  useUpdateRecipe,
+} from "../hooks/useRecipes";
+import { usePantryProducts } from "../hooks/usePantry";
+import { RecipeIngredientPickerModal } from "../components/recipes/RecipeIngredientPickerModal";
+import { NutritionTotals } from "../components/nutrition/NutritionTotals";
+import { RecipeBasicInfoCard } from "../components/recipes/RecipeBasicInfoCard";
+import { RecipeIngredientsCard } from "../components/recipes/RecipeIngredientsCard";
+import { ImagePickerCard } from "../components/shared/ImagePickerCard";
+import { useAddRecipeForm } from "../hooks/useAddRecipeForm";
+import { getDirectionStyles, useStyles } from "./styles/AddRecipeScreen.styles";
 
-type IngredientDraft = {
-  key: string;
-  product: PantryProduct;
-  grams: string;
+type RouteParams = {
+  id?: string;
+  mode?: string;
 };
 
-function makeKey() {
-  return Math.random().toString(36).slice(2);
-}
+type RecipeWithImage = {
+  imageUrl?: string | null;
+};
 
 export function AddRecipeScreen() {
   const { t, i18n } = useTranslation("pantry");
+  const { colors } = useAppTheme();
+  const styles = useStyles();
+
+  const params = useLocalSearchParams<RouteParams>();
+  const recipeId = typeof params.id === "string" ? params.id : "";
+  const isEditMode = params.mode === "edit" && Boolean(recipeId);
+
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const dir = getDirectionStyles(isRTL);
 
   const createRecipe = useCreateRecipe();
+  const updateRecipe = useUpdateRecipe(recipeId);
+  const { data: existingRecipe, isLoading: isRecipeLoading } =
+    useRecipe(recipeId);
+
   const { data: products = [] } = usePantryProducts();
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [mealType, setMealType] = useState<MealType | null>(null);
-  const [ingredients, setIngredients] = useState<IngredientDraft[]>([]);
-  const [pickerVisible, setPickerVisible] = useState(false);
-  const [nameError, setNameError] = useState("");
+  const form = useAddRecipeForm(existingRecipe, isEditMode);
+  const hydratedRecipeImageIdRef = useRef<string | null>(null);
 
-  const liveTotals = useMemo(() => {
-    const items = ingredients
-      .map((ing) => {
-        const grams = parseFloat(ing.grams.replace(",", "."));
+  const [imageUrl, setImageUrl] = useState("");
 
-        if (!Number.isNaN(grams) && grams > 0) {
-          return calcProductNutrition(ing.product, grams);
-        }
+  useEffect(() => {
+    if (!isEditMode || !existingRecipe) {
+      return;
+    }
 
-        return null;
-      })
-      .filter((item): item is NonNullable<typeof item> => item !== null);
+    if (hydratedRecipeImageIdRef.current === existingRecipe.id) {
+      return;
+    }
 
-    return sumNutrition(items);
-  }, [ingredients]);
+    hydratedRecipeImageIdRef.current = existingRecipe.id;
+    setImageUrl((existingRecipe as RecipeWithImage).imageUrl ?? "");
+  }, [existingRecipe, isEditMode]);
 
-  const selectedIngredientProductIds = ingredients.map((i) => i.product.id);
-
-  function addIngredient(product: PantryProduct) {
-    setIngredients((prev) => [
-      ...prev,
-      {
-        key: makeKey(),
-        product,
-        grams: "100",
-      },
-    ]);
-    // Picker stays open so multiple ingredients can be added in one session.
-  }
-
-  function updateGrams(key: string, grams: string) {
-    setIngredients((prev) =>
-      prev.map((ing) => (ing.key === key ? { ...ing, grams } : ing)),
-    );
-  }
-
-  function removeIngredient(key: string) {
-    setIngredients((prev) => prev.filter((ing) => ing.key !== key));
-  }
+  const isSaving = createRecipe.isPending || updateRecipe.isPending;
 
   async function handleSave() {
-    if (!name.trim()) {
-      setNameError(t("errors.requiredField"));
+    if (!form.name.trim()) {
+      form.setNameError(t("errors.requiredField"));
       return;
     }
 
-    if (ingredients.length === 0) {
+    if (form.ingredients.length === 0) {
       Alert.alert("", t("errors.noIngredients"));
       return;
     }
 
-    const validItems = ingredients
-      .map((ing) => ({
-        productId: ing.product.id,
-        grams: parseFloat(ing.grams.replace(",", ".")),
-      }))
-      .filter((item) => !Number.isNaN(item.grams) && item.grams > 0);
-
-    if (validItems.length === 0) {
+    if (form.validItems.length === 0) {
       Alert.alert("", t("errors.noIngredients"));
       return;
     }
+
+    const payload = {
+      name: form.name.trim(),
+      description: form.description.trim() || undefined,
+      imageUrl: imageUrl.trim() || undefined,
+      mealType: form.mealType ?? undefined,
+      items: form.validItems,
+    };
 
     try {
-      await createRecipe.mutateAsync({
-        name: name.trim(),
-        description: description.trim() || undefined,
-        mealType: mealType ?? undefined,
-        items: validItems,
-      });
+      if (isEditMode) {
+        await updateRecipe.mutateAsync(payload);
+      } else {
+        await createRecipe.mutateAsync(payload);
+      }
 
       router.back();
     } catch {
-      Alert.alert("", t("errors.saveRecipeFailed"));
+      Alert.alert(
+        "",
+        isEditMode
+          ? t("errors.updateRecipeFailed")
+          : t("errors.saveRecipeFailed"),
+      );
     }
   }
 
-  const hasTotals = ingredients.some((ing) => {
-    const grams = parseFloat(ing.grams.replace(",", "."));
-    return !Number.isNaN(grams) && grams > 0;
-  });
+  if (isEditMode && isRecipeLoading) {
+    return (
+      <SafeAreaView style={styles.root} edges={["top"]}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primaryGreen} />
+          <Text style={styles.loadingText}>
+            {t("recipe.loading", { defaultValue: "טוען מתכון..." })}
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={t("addRecipe.title")} />
+      <ScreenHeader
+        title={
+          isEditMode
+            ? t("editRecipe.title", { defaultValue: "עריכת מתכון" })
+            : t("addRecipe.title")
+        }
+      />
 
       <ScrollView
         style={styles.scroll}
@@ -142,146 +148,69 @@ export function AddRecipeScreen() {
       >
         <View style={styles.introCard}>
           <Text style={[styles.subtitle, dir.text]}>
-            {t("addRecipe.subtitle")}
+            {isEditMode
+              ? t("editRecipe.subtitle", {
+                  defaultValue: "עדכני את פרטי המתכון והמצרכים.",
+                })
+              : t("addRecipe.subtitle")}
           </Text>
         </View>
 
-        <View style={styles.formCard}>
-          <View style={styles.fieldGroup}>
-            <Text style={[styles.fieldLabel, dir.text]}>
-              {t("recipe.nameLabel")}
-            </Text>
+        <ImagePickerCard
+          imageUrl={imageUrl}
+          isRTL={isRTL}
+          title={t("recipe.imageTitle", {
+            defaultValue: "תמונה למתכון",
+          })}
+          subtitle={t("recipe.imageSubtitle", {
+            defaultValue: "אפשר להוסיף תמונה שתעזור לזהות מהר את המתכון.",
+          })}
+          selectedSubtitle={t("recipe.imageSelected", {
+            defaultValue: "התמונה תופיע בכרטיס המתכון.",
+          })}
+          addLabel={t("recipe.addImage", {
+            defaultValue: "הוספת תמונה",
+          })}
+          changeLabel={t("recipe.changeImage", {
+            defaultValue: "החלפת תמונה",
+          })}
+          removeLabel={t("recipe.removeImage", {
+            defaultValue: "הסרה",
+          })}
+          placeholderIcon="chef-hat"
+          onChangeImage={setImageUrl}
+          onRemoveImage={() => setImageUrl("")}
+        />
 
-            <TextInput
-              style={[
-                styles.input,
-                nameError ? styles.inputError : null,
-                dir.text,
-              ]}
-              value={name}
-              onChangeText={(value) => {
-                setName(value);
-                setNameError("");
-              }}
-              autoFocus
-            />
+        <RecipeBasicInfoCard
+          name={form.name}
+          description={form.description}
+          mealType={form.mealType}
+          nameError={form.nameError}
+          isRTL={isRTL}
+          onChangeName={form.setName}
+          onChangeDescription={form.setDescription}
+          onChangeMealType={form.setMealType}
+        />
 
-            {nameError ? (
-              <Text style={[styles.errorText, dir.text]}>{nameError}</Text>
-            ) : null}
-          </View>
+        <RecipeIngredientsCard
+          ingredients={form.ingredients}
+          isRTL={isRTL}
+          onChangeAmount={form.updateAmount}
+          onToggleUnit={form.toggleUnit}
+          onRemoveIngredient={form.removeIngredient}
+          onAddIngredient={() => form.setPickerVisible(true)}
+        />
 
-          <View style={styles.fieldGroup}>
-            <Text style={[styles.fieldLabel, dir.text]}>
-              {t("recipe.descriptionLabel")}
-            </Text>
-
-            <TextInput
-              style={[styles.input, styles.descriptionInput, dir.text]}
-              value={description}
-              onChangeText={setDescription}
-              multiline
-            />
-          </View>
-
-          <View style={styles.fieldGroup}>
-            <Text style={[styles.fieldLabel, dir.text]}>
-              {t("recipe.categoryLabel")}
-            </Text>
-
-            <SavedMealTypeSelector
-              selectedMealType={mealType}
-              isRTL={isRTL}
-              onSelect={setMealType}
-            />
-          </View>
-        </View>
-
-        <View style={styles.formCard}>
-          <Text style={[styles.sectionTitle, dir.text]}>
-            {t("recipe.ingredientsSection")}
-          </Text>
-
-          {ingredients.map((ing) => (
-            <View key={ing.key} style={[styles.ingredientRow, dir.row]}>
-              <View style={styles.ingredientInfo}>
-                <Text
-                  style={[styles.ingredientName, dir.text]}
-                  numberOfLines={1}
-                >
-                  {ing.product.name}
-                </Text>
-
-                {ing.product.brand ? (
-                  <Text
-                    style={[styles.ingredientBrand, dir.text]}
-                    numberOfLines={1}
-                  >
-                    {ing.product.brand}
-                  </Text>
-                ) : null}
-              </View>
-
-              <View style={[styles.gramsBox, dir.row]}>
-                <TextInput
-                  style={styles.gramsInput}
-                  value={ing.grams}
-                  onChangeText={(value) => updateGrams(ing.key, value)}
-                  keyboardType="decimal-pad"
-                  placeholder={t("recipe.gramsPlaceholder")}
-                  placeholderTextColor={colors.textMuted}
-                  textAlign="center"
-                />
-
-                <Text style={styles.gramsLabel}>{t("recipe.gramsLabel")}</Text>
-              </View>
-
-              <Pressable
-                onPress={() => removeIngredient(ing.key)}
-                hitSlop={8}
-                style={({ pressed }) => [
-                  styles.removeBtn,
-                  pressed && styles.removeBtnPressed,
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="close"
-                  size={18}
-                  color={colors.textMuted}
-                />
-              </Pressable>
-            </View>
-          ))}
-
-          <Pressable
-            style={({ pressed }) => [
-              styles.addIngredientBtn,
-              pressed && styles.addIngredientBtnPressed,
-            ]}
-            onPress={() => setPickerVisible(true)}
-          >
-            <MaterialCommunityIcons
-              name="plus"
-              size={18}
-              color={colors.primaryGreen}
-            />
-
-            <Text style={styles.addIngredientText}>
-              {t("recipe.addIngredient")}
-            </Text>
-          </Pressable>
-        </View>
-
-        {hasTotals ? (
+        {form.hasTotals ? (
           <View style={styles.totalsContainer}>
             <NutritionTotals
-              totals={liveTotals}
+              totals={form.liveTotals}
               label={t("recipe.totalsSection")}
               variant="highlight"
             />
           </View>
         ) : null}
-
       </ScrollView>
 
       <View style={styles.footer}>
@@ -289,25 +218,26 @@ export function AddRecipeScreen() {
           style={({ pressed }) => [
             styles.saveBtn,
             pressed && styles.saveBtnPressed,
-            createRecipe.isPending && styles.saveBtnDisabled,
+            isSaving && styles.saveBtnDisabled,
           ]}
           onPress={handleSave}
-          disabled={createRecipe.isPending}
+          disabled={isSaving}
         >
           <Text style={styles.saveBtnText}>
-            {createRecipe.isPending
+            {isSaving
               ? t("recipe.saving")
-              : t("recipe.saveButton")}
+              : isEditMode
+                ? t("recipe.updateButton", { defaultValue: "שמור שינויים" })
+                : t("recipe.saveButton")}
           </Text>
         </Pressable>
       </View>
 
-      <ProductPickerModal
-        visible={pickerVisible}
+      <RecipeIngredientPickerModal
+        visible={form.pickerVisible}
         products={products}
-        selectedIds={selectedIngredientProductIds}
-        onSelect={addIngredient}
-        onClose={() => setPickerVisible(false)}
+        onAdd={form.addIngredients}
+        onClose={() => form.setPickerVisible(false)}
       />
     </SafeAreaView>
   );

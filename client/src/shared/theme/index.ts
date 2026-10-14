@@ -3,6 +3,8 @@ import { ViewStyle } from "react-native";
 export { colors, darkColors, lightColors } from "./colors";
 export type { AppColors, AppThemeMode } from "./colors";
 export { AppThemeProvider, useAppTheme } from "./ThemeProvider";
+export { useThemedStyles } from "./useThemedStyles";
+export { loadSavedThemeMode, saveThemeMode } from "./themeStorage";
 
 export const spacing = {
   xs: 4,

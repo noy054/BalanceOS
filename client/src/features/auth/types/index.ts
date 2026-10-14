@@ -33,3 +33,12 @@ export type TokenPair = {
   accessToken: string;
   refreshToken: string;
 };
+
+export type ForgotPasswordPayload = {
+  email: string;
+};
+
+export type ResetPasswordPayload = {
+  token: string;
+  newPassword: string;
+};

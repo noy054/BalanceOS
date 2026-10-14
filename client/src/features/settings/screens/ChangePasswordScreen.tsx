@@ -1,21 +1,26 @@
 import { useState } from 'react';
-import { ScrollView, Alert, Pressable, Text } from 'react-native';
+import { ScrollView, Alert, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 import { ScreenHeader } from '../../../shared/components/ScreenHeader';
 import { FormInput } from '../../../shared/components/FormInput';
 import { useChangePassword } from '../hooks/useSettings';
-import { styles } from './styles/ChangePasswordScreen.styles';
+import { useAppTheme } from '../../../shared/theme';
+import { useStyles } from './styles/ChangePasswordScreen.styles';
 
 export function ChangePasswordScreen() {
   const { t } = useTranslation('settings');
+  const { colors } = useAppTheme();
+  const styles = useStyles();
   const changePassword = useChangePassword();
 
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [confirm, setConfirm] = useState('');
   const [errors, setErrors] = useState<{ current?: string; next?: string; confirm?: string }>({});
+  const [success, setSuccess] = useState(false);
 
   function validate(): boolean {
     const errs: typeof errors = {};
@@ -30,9 +35,11 @@ export function ChangePasswordScreen() {
     if (!validate()) return;
     try {
       await changePassword.mutateAsync({ currentPassword: current, newPassword: next });
-      Alert.alert('', t('changePassword.successMessage'), [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      setCurrent('');
+      setNext('');
+      setConfirm('');
+      setSuccess(true);
+      setTimeout(() => router.back(), 1500);
     } catch {
       Alert.alert('', t('errors.changePasswordFailed'));
     }
@@ -54,6 +61,7 @@ export function ChangePasswordScreen() {
           onChangeText={(v) => { setCurrent(v); setErrors((e) => ({ ...e, current: undefined })); }}
           error={errors.current}
           secureTextEntry
+          showPasswordToggle
           autoFocus
         />
         <FormInput
@@ -62,6 +70,7 @@ export function ChangePasswordScreen() {
           onChangeText={(v) => { setNext(v); setErrors((e) => ({ ...e, next: undefined })); }}
           error={errors.next}
           secureTextEntry
+          showPasswordToggle
         />
         <FormInput
           label={t('changePassword.confirmLabel')}
@@ -69,12 +78,24 @@ export function ChangePasswordScreen() {
           onChangeText={(v) => { setConfirm(v); setErrors((e) => ({ ...e, confirm: undefined })); }}
           error={errors.confirm}
           secureTextEntry
+          showPasswordToggle
         />
 
+        {success ? (
+          <View style={styles.successBanner}>
+            <MaterialCommunityIcons name="check-circle" size={22} color={colors.primaryGreen} />
+            <Text style={styles.successText}>{t('changePassword.successMessage')}</Text>
+          </View>
+        ) : null}
+
         <Pressable
-          style={({ pressed }) => [styles.saveBtn, pressed && styles.saveBtnPressed]}
+          style={({ pressed }) => [
+            styles.saveBtn,
+            success && styles.saveBtnDisabled,
+            pressed && !success && styles.saveBtnPressed,
+          ]}
           onPress={handleSave}
-          disabled={changePassword.isPending}
+          disabled={changePassword.isPending || success}
         >
           <Text style={styles.saveBtnText}>
             {changePassword.isPending ? t('changePassword.saving') : t('changePassword.saveButton')}

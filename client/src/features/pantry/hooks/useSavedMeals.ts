@@ -1,7 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { savedMealsApi } from '../api/savedMealsApi';
-import { SAVED_MEAL_QUERY_KEYS } from '../constants';
-import { CreateSavedMealPayload, UpdateSavedMealPayload } from '../types';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { savedMealsApi } from "../api/savedMealsApi";
+import { SAVED_MEAL_QUERY_KEYS } from "../constants";
+import { CreateSavedMealPayload, UpdateSavedMealPayload } from "../types";
 
 export function useSavedMeals() {
   return useQuery({
@@ -21,8 +22,10 @@ export function useSavedMeal(id: string) {
 
 export function useCreateSavedMeal() {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (payload: CreateSavedMealPayload) => savedMealsApi.create(payload),
+    mutationFn: (payload: CreateSavedMealPayload) =>
+      savedMealsApi.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SAVED_MEAL_QUERY_KEYS.list });
     },
@@ -31,8 +34,10 @@ export function useCreateSavedMeal() {
 
 export function useUpdateSavedMeal(id: string) {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (payload: UpdateSavedMealPayload) => savedMealsApi.update(id, payload),
+    mutationFn: (payload: UpdateSavedMealPayload) =>
+      savedMealsApi.update(id, payload),
     onSuccess: (updated) => {
       queryClient.setQueryData(SAVED_MEAL_QUERY_KEYS.detail(id), updated);
       queryClient.invalidateQueries({ queryKey: SAVED_MEAL_QUERY_KEYS.list });
@@ -42,6 +47,7 @@ export function useUpdateSavedMeal(id: string) {
 
 export function useDeleteSavedMeal() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (id: string) => savedMealsApi.delete(id),
     onSuccess: (_data, id) => {

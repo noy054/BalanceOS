@@ -1,7 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { recipesApi } from '../api/recipesApi';
-import { RECIPE_QUERY_KEYS } from '../constants';
-import { CreateRecipePayload, UpdateRecipePayload } from '../types';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { recipesApi } from "../api/recipesApi";
+import { RECIPE_QUERY_KEYS } from "../constants";
+import { CreateRecipePayload, UpdateRecipePayload } from "../types";
 
 export function useRecipes() {
   return useQuery({
@@ -21,6 +22,7 @@ export function useRecipe(id: string) {
 
 export function useCreateRecipe() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (payload: CreateRecipePayload) => recipesApi.create(payload),
     onSuccess: () => {
@@ -31,8 +33,10 @@ export function useCreateRecipe() {
 
 export function useUpdateRecipe(id: string) {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (payload: UpdateRecipePayload) => recipesApi.update(id, payload),
+    mutationFn: (payload: UpdateRecipePayload) =>
+      recipesApi.update(id, payload),
     onSuccess: (updated) => {
       queryClient.setQueryData(RECIPE_QUERY_KEYS.detail(id), updated);
       queryClient.invalidateQueries({ queryKey: RECIPE_QUERY_KEYS.list });
@@ -42,6 +46,7 @@ export function useUpdateRecipe(id: string) {
 
 export function useDeleteRecipe() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (id: string) => recipesApi.delete(id),
     onSuccess: (_data, id) => {

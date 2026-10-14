@@ -1,4 +1,4 @@
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { colors, spacing, radius } from '../../../src/shared/theme';
 
 export const styles = StyleSheet.create({
@@ -54,6 +54,23 @@ export const styles = StyleSheet.create({
   },
   footerText: { color: colors.textSecondary, fontSize: 14, fontWeight: '500' },
   link: { color: colors.primaryGreen, fontWeight: '800', fontSize: 14 },
+  forgotLink: { color: colors.textSecondary, fontSize: 12, fontWeight: '500', marginTop: 6 },
+  errorBox: {
+    backgroundColor: colors.dangerLight,
+    borderColor: colors.danger,
+    borderWidth: 1,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 10,
+    marginBottom: spacing.sm,
+    marginTop: 2,
+  },
+  errorText: {
+    color: colors.danger,
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: 20,
+  },
 });
 
 export function getDirectionStyles(isRTL: boolean) {

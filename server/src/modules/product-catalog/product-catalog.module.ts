@@ -3,6 +3,7 @@ import { ProductCatalogController } from './product-catalog.controller';
 import { ProductCatalogService } from './product-catalog.service';
 import { ProductCatalogRepository } from './product-catalog.repository';
 import { OpenFoodFactsClient } from './open-food-facts.client';
+import { UsdaFoodDataCentralClient } from './usda-food-data-central.client';
 import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
@@ -12,6 +13,7 @@ import { PrismaModule } from '../../prisma/prisma.module';
     ProductCatalogService,
     ProductCatalogRepository,
     OpenFoodFactsClient,
+    UsdaFoodDataCentralClient,
   ],
 })
 export class ProductCatalogModule {}

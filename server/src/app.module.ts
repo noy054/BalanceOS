@@ -7,6 +7,7 @@ import { NutritionSettingsModule } from './modules/nutrition-settings/nutrition-
 import { PantryModule } from './modules/pantry/pantry.module';
 import { DayLogsModule } from './modules/day-logs/day-logs.module';
 import { ProductCatalogModule } from './modules/product-catalog/product-catalog.module';
+import { StatisticsModule } from './modules/statistics/statistics.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ProductCatalogModule } from './modules/product-catalog/product-catalog.
     PantryModule,
     DayLogsModule,
     ProductCatalogModule,
+    StatisticsModule,
   ],
 })
 export class AppModule {}

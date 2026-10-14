@@ -2,20 +2,31 @@ import {
   NutritionTotals as NutritionTotalsType,
   PantryProduct,
   PantryRecipe,
+  RecipeItemProduct,
+  SavedMealItem,
+  SavedMealItemRecipe,
 } from "../types";
-import { calcProductNutrition, sumNutrition } from "./nutrition";
+import { sumNutrition } from "./nutrition";
+
+export type SavedMealDraftProduct = PantryProduct | RecipeItemProduct;
+
+export type SavedMealDraftRecipe =
+  | PantryRecipe
+  | (SavedMealItemRecipe & {
+      totals: NutritionTotalsType;
+    });
 
 export type ProductDraftItem = {
   kind: "product";
   key: string;
-  product: PantryProduct;
+  product: SavedMealDraftProduct;
   grams: string;
 };
 
 export type RecipeDraftItem = {
   kind: "recipe";
   key: string;
-  recipe: PantryRecipe;
+  recipe: SavedMealDraftRecipe;
   servings: string;
 };
 
@@ -40,17 +51,89 @@ export function parsePositiveNumber(value: string) {
   return !Number.isNaN(parsed) && parsed > 0 ? parsed : null;
 }
 
+function roundMacro(value: number) {
+  return Math.round(value * 10) / 10;
+}
+
+function calcProductDraftNutrition(
+  product: SavedMealDraftProduct,
+  grams: number,
+): NutritionTotalsType {
+  const factor = grams / 100;
+
+  return {
+    calories: Math.round(product.caloriesPer100g * factor),
+    protein: roundMacro(product.proteinPer100g * factor),
+    carbs: roundMacro(product.carbsPer100g * factor),
+    fat: roundMacro(product.fatPer100g * factor),
+    fiber: roundMacro((product.fiberPer100g ?? 0) * factor),
+  };
+}
+
 export function calcRecipeTotals(
-  recipe: PantryRecipe,
+  recipe: SavedMealDraftRecipe,
   servings: number,
 ): NutritionTotalsType {
   return {
     calories: Math.round(recipe.totals.calories * servings),
-    protein: Math.round(recipe.totals.protein * servings * 10) / 10,
-    carbs: Math.round(recipe.totals.carbs * servings * 10) / 10,
-    fat: Math.round(recipe.totals.fat * servings * 10) / 10,
-    fiber: Math.round(recipe.totals.fiber * servings * 10) / 10,
+    protein: roundMacro(recipe.totals.protein * servings),
+    carbs: roundMacro(recipe.totals.carbs * servings),
+    fat: roundMacro(recipe.totals.fat * servings),
+    fiber: roundMacro(recipe.totals.fiber * servings),
   };
+}
+
+
+export function createSavedMealDraftFromProduct(
+  product: PantryProduct,
+): ProductDraftItem {
+  return {
+    kind: "product",
+    key: makeSavedMealDraftKey(),
+    product,
+    grams: "100",
+  };
+}
+
+export function createSavedMealDraftFromRecipe(
+  recipe: PantryRecipe,
+): RecipeDraftItem {
+  return {
+    kind: "recipe",
+    key: makeSavedMealDraftKey(),
+    recipe,
+    servings: "1",
+  };
+}
+
+export function createSavedMealDraftFromSavedMealItem(
+  item: SavedMealItem,
+): SavedMealDraftItem | null {
+  if (item.product && item.grams != null) {
+    return {
+      kind: "product",
+      key: item.id,
+      product: item.product,
+      grams: String(item.grams),
+    };
+  }
+
+  if (item.recipe && item.servings != null) {
+    const liveTotals = sumNutrition(
+      item.recipe.items.map((ri) => calcProductDraftNutrition(ri.product, ri.grams)),
+    );
+    return {
+      kind: "recipe",
+      key: item.id,
+      recipe: {
+        ...item.recipe,
+        totals: liveTotals,
+      },
+      servings: String(item.servings),
+    };
+  }
+
+  return null;
 }
 
 export function calculateSavedMealDraftTotals(items: SavedMealDraftItem[]) {
@@ -60,7 +143,7 @@ export function calculateSavedMealDraftTotals(items: SavedMealDraftItem[]) {
         const grams = parsePositiveNumber(item.grams);
 
         if (grams) {
-          return calcProductNutrition(item.product, grams);
+          return calcProductDraftNutrition(item.product, grams);
         }
 
         return null;

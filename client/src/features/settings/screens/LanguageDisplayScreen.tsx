@@ -5,11 +5,11 @@ import { useTranslation } from "react-i18next";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { SettingsSection } from "../components/SettingsSection";
 import { useNutritionSettings, useUpdateSettings } from "../hooks/useSettings";
-import { saveLanguage, SupportedLanguage } from "../../../shared/i18n/i18n";
+import { saveLanguage, SupportedLanguage } from "../../../shared/i18n";
 import { ThemeMode } from "../types";
-import { useAppTheme } from "../../../shared/theme";
+import { saveThemeMode, useAppTheme } from "../../../shared/theme";
 import {
-  styles,
+  useStyles,
   getDirectionStyles,
 } from "./styles/LanguageDisplayScreen.styles";
 
@@ -26,6 +26,7 @@ function OptionChip({
   disabled = false,
   onPress,
 }: OptionChipProps) {
+  const styles = useStyles();
   return (
     <Pressable
       style={[
@@ -51,6 +52,7 @@ function OptionChip({
 
 export function LanguageDisplayScreen() {
   const { t, i18n } = useTranslation("settings");
+  const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const dir = getDirectionStyles(isRTL);
 
@@ -70,6 +72,7 @@ export function LanguageDisplayScreen() {
 
   function handleThemeChange(theme: ThemeMode) {
     setThemeMode(theme);
+    saveThemeMode(theme);
     updateSettings.mutate({ themeMode: theme });
   }
 

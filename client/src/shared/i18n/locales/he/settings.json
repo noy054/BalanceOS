@@ -78,8 +78,15 @@
   },
   "tracking": {
     "screenTitle": "העדפות מעקב",
+    "row": "העדפות מעקב",
+    "rowSubtitle": "יחידות, תצוגה",
+
+    "defaultUnitSection": "יחידת ברירת מחדל",
+    "defaultUnitTitle": "איך להוסיף אוכל ליומן",
+    "defaultUnitDescription": "בחרי אם ברירת המחדל בהוספת אוכל תהיה לפי גרמים, מנה או יחידה.",
+
     "homeDisplaySection": "תצוגת מסך הבית",
-    "guidedSection": "מצב מודרך",
+    "guidedSection": "מצב מונחה",
     "unitsSection": "יחידות מידה",
 
     "showFiber": "הצג סיבים",
@@ -102,6 +109,20 @@
 
     "defaultFoodUnit": "יחידת מידה ברירת מחדל",
 
+    "comingSoon": "בקרוב",
+
+    "foodUnitGrams": "גרמים",
+    "foodUnitServing": "מנה",
+    "foodUnitPiece": "יחידה",
+
+    "enabled": "פעיל",
+    "disabled": "כבוי",
+
+    "saveButton": "שמור העדפות",
+    "saving": "שומר...",
+    "saved": "נשמר בהצלחה",
+    "noChanges": "אין שינויים לשמירה",
+
     "units": {
       "GRAMS": "גרמים",
       "SERVING": "מנה",
@@ -113,20 +134,28 @@
     "row": "התראות",
     "rowSubtitle": "תזכורות ארוחות, סיכום יומי",
     "comingSoon": "תזמון התראות דורש התקנת expo-notifications",
+
     "mealRemindersSection": "תזכורות ארוחות",
     "breakfastReminder": "ארוחת בוקר",
     "lunchReminder": "ארוחת צהריים",
     "dinnerReminder": "ארוחת ערב",
+
     "summariesSection": "סיכומים",
     "waterSection": "שתייה",
     "waterReminder": "תזכורת שתייה",
-    "waterIntervalLabel": "תדירות (דקות)",
+    "waterIntervalLabel": "תדירות בדקות",
+
     "dailySummary": "סיכום יומי",
     "weeklySummary": "סיכום שבועי",
     "weeklySummaryDayLabel": "יום בשבוע",
+
     "timePlaceholder": "HH:MM",
+    "pickTime": "בחירת שעה",
+    "permissionDenied": "כדי להפעיל התראות צריך לאשר הרשאה בטלפון",
+
     "saveButton": "שמור",
     "saving": "שומר...",
+
     "days": {
       "0": "ראשון",
       "1": "שני",
@@ -176,9 +205,29 @@
     "rowSubtitlePrefix": "גרסה",
     "versionValue": "1.0.0",
     "versionLabel": "גרסת אפליקציה",
+
+    "tagline": "מעקב תזונה פשוט, מדויק ונקי למי שרוצה שליטה.",
+
+    "website": "אתר",
+    "websiteHint": "פתיחת האתר הרשמי",
+
+    "rateApp": "דרג את האפליקציה",
+    "rateAppHint": "פתיחת עמוד האפליקציה בחנות",
+
+    "shareApp": "שתף את האפליקציה",
+    "shareAppHint": "שליחת קישור לאפליקציה",
+
+    "legalSection": "מידע משפטי",
     "terms": "תנאי שימוש",
+    "termsHint": "קריאת תנאי השימוש",
+
     "privacy": "מדיניות פרטיות",
-    "contact": "צור קשר"
+    "privacyHint": "קריאת מדיניות הפרטיות",
+
+    "contact": "צור קשר",
+    "contactHint": "יצירת קשר עם התמיכה",
+
+    "storeNote": "קישורי החנויות יעודכנו לאחר פרסום האפליקציה."
   },
   "errors": {
     "loadFailed": "טעינת הגדרות נכשלה",

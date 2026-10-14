@@ -22,6 +22,12 @@ export const darkColors = {
   primaryGreenLight: "rgba(49, 216, 107, 0.13)",
   primaryGreenMid: "rgba(49, 216, 107, 0.42)",
 
+  buttonPrimaryBackground: "#31D86B",
+  buttonPrimaryText: "#0B0D0B",
+  buttonPrimaryDisabledBackground: "rgba(49, 216, 107, 0.13)",
+  buttonPrimaryDisabledText: "rgba(49, 216, 107, 0.58)",
+  buttonPrimaryDisabledBorder: "rgba(49, 216, 107, 0.24)",
+
   accentLime: "#B7F34A",
   accentLimeLight: "rgba(183, 243, 74, 0.12)",
 
@@ -64,6 +70,12 @@ export const lightColors = {
   primaryGreenLight: "rgba(31, 174, 91, 0.12)",
   primaryGreenMid: "rgba(31, 174, 91, 0.36)",
 
+  buttonPrimaryBackground: "#1FAE5B",
+  buttonPrimaryText: "#F6F8F4",
+  buttonPrimaryDisabledBackground: "rgba(31, 174, 91, 0.12)",
+  buttonPrimaryDisabledText: "rgba(31, 174, 91, 0.58)",
+  buttonPrimaryDisabledBorder: "rgba(31, 174, 91, 0.22)",
+
   accentLime: "#91D93C",
   accentLimeLight: "rgba(145, 217, 60, 0.12)",
 
@@ -86,5 +98,4 @@ export const lightColors = {
 
 export type AppColors = typeof darkColors;
 
-// Backward compatibility: old screens that import `colors` still get dark theme.
 export const colors = darkColors;

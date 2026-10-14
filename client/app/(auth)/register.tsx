@@ -22,11 +22,17 @@ export default function RegisterScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const register = useRegister();
-  const errorMessage = register.error ? extractErrorMessage(register.error) : null;
+  const errorMessage = register.error
+    ? extractErrorMessage(register.error)
+    : null;
 
   function handleRegister() {
     if (!fullName || !email || !password) return;
-    register.mutate({ fullName: fullName.trim(), email: email.trim(), password });
+    register.mutate({
+      fullName: fullName.trim(),
+      email: email.trim(),
+      password,
+    });
   }
 
   const passwordIcon = (
@@ -41,11 +47,15 @@ export default function RegisterScreen() {
       <View style={styles.header}>
         <Text style={[styles.brand, dir.text]}>BalanceOS</Text>
         <Text style={[styles.title, dir.text]}>{t("register.title")}</Text>
-        <Text style={[styles.subtitle, dir.text]}>{t("register.subtitle")}</Text>
+        <Text style={[styles.subtitle, dir.text]}>
+          {t("register.subtitle")}
+        </Text>
       </View>
 
       <View style={styles.field}>
-        <Text style={[styles.fieldLabel, dir.text]}>{t("register.fullNameLabel")}</Text>
+        <Text style={[styles.fieldLabel, dir.text]}>
+          {t("register.fullNameLabel")}
+        </Text>
         <TextInput
           key={`full-name-${i18n.language}`}
           value={fullName}
@@ -61,7 +71,9 @@ export default function RegisterScreen() {
       </View>
 
       <View style={styles.field}>
-        <Text style={[styles.fieldLabel, dir.text]}>{t("register.emailLabel")}</Text>
+        <Text style={[styles.fieldLabel, dir.text]}>
+          {t("register.emailLabel")}
+        </Text>
         <TextInput
           key={`email-${i18n.language}`}
           value={email}
@@ -78,7 +90,9 @@ export default function RegisterScreen() {
       </View>
 
       <View style={styles.field}>
-        <Text style={[styles.fieldLabel, dir.text]}>{t("register.passwordLabel")}</Text>
+        <Text style={[styles.fieldLabel, dir.text]}>
+          {t("register.passwordLabel")}
+        </Text>
         <TextInput
           key={`password-${i18n.language}`}
           value={password}
@@ -116,7 +130,9 @@ export default function RegisterScreen() {
       </Button>
 
       <View style={[styles.footer, dir.row]}>
-        <Text style={styles.footerText}>{t("register.alreadyHaveAccount")}</Text>
+        <Text style={styles.footerText}>
+          {t("register.alreadyHaveAccount")}
+        </Text>
         <Link href="/(auth)/login" style={styles.link}>
           {t("register.signIn")}
         </Link>

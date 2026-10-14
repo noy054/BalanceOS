@@ -1,0 +1,95 @@
+{
+  "title": "Statistics",
+  "subtitle": "Expert view of your nutrition data",
+
+  "ranges": {
+    "7D": "7D",
+    "14D": "14D",
+    "30D": "30D"
+  },
+
+  "summary": {
+    "title": "Range Summary",
+    "nutritionAccuracy": "Nutrition Accuracy",
+    "nutritionAccuracySub": "Calories, protein and logging consistency",
+    "avgCalories": "Avg Calories",
+    "avgProtein": "Avg Protein",
+    "calorieBalance": "Calorie Balance",
+    "avgDailyGap": "Daily Gap",
+    "avgDailyGapSub": "daily average vs target",
+    "proteinGap": "Protein Gap",
+    "proteinGapUnder": "protein missing per average day",
+    "proteinGapOver": "over protein target",
+    "proteinGapExact": "right on protein target",
+    "loggedDays": "Logged Days",
+    "loggedDaysSub": "days with nutrition data",
+    "onTarget": "On Target",
+    "target": "Target: {{value}}",
+    "balanceSub": "cumulative deficit / surplus",
+    "onTargetSub": "days within ±15% of target",
+
+    "onExactTarget": "On target",
+    "aboveDailyTarget": "Above daily target on average",
+    "belowDailyTarget": "Below daily target on average",
+    "aboveProteinTarget": "Above protein target",
+    "belowProteinTarget": "Below protein target",
+    "totalSurplus": "Total surplus in range",
+    "totalDeficit": "Total deficit in range"
+  },
+
+  "trend": {
+    "title": "Calorie Trend",
+    "onTarget": "On target",
+    "under": "Under",
+    "over": "Over",
+    "targetLabel": "target: {{value}}",
+    "summary": "{{on}} / {{total}} days on target"
+  },
+
+  "accuracy": {
+    "title": "Macro Accuracy",
+    "dailyAverage": "Daily average in selected range",
+    "loggedDays": "{{loggedDays}} of {{rangeDays}} days logged",
+    "exactTarget": "On target",
+    "overTarget": "{{value}}{{unit}} over target",
+    "underTarget": "{{value}}{{unit}} under target"
+  },
+
+  "macros": {
+    "calories": "Calories",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat"
+  },
+
+  "distribution": {
+    "title": "Meal Distribution"
+  },
+
+  "mealTypes": {
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "snack1": "Snack 1",
+    "snack2": "Snack 2"
+  },
+
+  "foodInsights": {
+    "title": "Food Insights",
+    "topCalories": "Top Calorie Sources",
+    "mostUsed": "Most Used Foods",
+    "usedTimes": "Logged ×{{count}}",
+    "avgCalories": "{{value}} kcal avg"
+  },
+
+  "empty": {
+    "title": "No data yet",
+    "subtitle": "Start logging meals to see your statistics here."
+  },
+
+  "errors": {
+    "loadFailed": "Failed to load statistics"
+  },
+
+  "noData": "No data for this range"
+}

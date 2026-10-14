@@ -1,12 +1,14 @@
 import { Platform, StyleSheet } from "react-native";
 
-import { colors, spacing, radius } from "../../../../shared/theme";
+import { spacing, radius, useThemedStyles } from "../../../../shared/theme";
 
 const CORNER_SIZE = 34;
 const CORNER_THICK = 3;
 
-export const styles = StyleSheet.create({
-  root: {
+export const useStyles = () =>
+  useThemedStyles((colors) =>
+    StyleSheet.create({
+      root: {
     flex: 1,
     backgroundColor: colors.background,
   },
@@ -305,4 +307,5 @@ export const styles = StyleSheet.create({
     fontWeight: "500",
     color: colors.textMuted,
   },
-});
+    }),
+  );

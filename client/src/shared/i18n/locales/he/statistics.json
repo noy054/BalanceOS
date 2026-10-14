@@ -1,0 +1,95 @@
+{
+  "title": "סטטיסטיקות",
+  "subtitle": "תצוגת מומחה של נתוני התזונה שלך",
+
+  "ranges": {
+    "7D": "7 ימים",
+    "14D": "14 ימים",
+    "30D": "30 ימים"
+  },
+
+  "summary": {
+    "title": "סיכום טווח",
+    "nutritionAccuracy": "דיוק תזונתי",
+    "nutritionAccuracySub": "קלוריות, חלבון ורצף תיעוד",
+    "avgCalories": "ממוצע קלוריות",
+    "avgProtein": "ממוצע חלבון",
+    "calorieBalance": "מאזן קלורי",
+    "avgDailyGap": "פער יומי",
+    "avgDailyGapSub": "ממוצע יומי מול היעד",
+    "proteinGap": "פער חלבון",
+    "proteinGapUnder": "חסר חלבון ביום ממוצע",
+    "proteinGapOver": "מעל יעד החלבון",
+    "proteinGapExact": "בול על יעד החלבון",
+    "loggedDays": "ימים שתועדו",
+    "loggedDaysSub": "ימים עם נתוני תזונה",
+    "onTarget": "ביעד",
+    "target": "יעד: {{value}}",
+    "balanceSub": "עודף / גירעון מצטבר",
+    "onTargetSub": "ימים בטווח ±15% מהיעד",
+
+    "onExactTarget": "בול על היעד",
+    "aboveDailyTarget": "מעל היעד היומי בממוצע",
+    "belowDailyTarget": "מתחת ליעד היומי בממוצע",
+    "aboveProteinTarget": "מעל יעד החלבון",
+    "belowProteinTarget": "חסר חלבון מול היעד",
+    "totalSurplus": "עודף מצטבר בטווח",
+    "totalDeficit": "גירעון מצטבר בטווח"
+  },
+
+  "trend": {
+    "title": "מגמת קלוריות",
+    "onTarget": "ביעד",
+    "under": "מתחת ליעד",
+    "over": "מעל היעד",
+    "targetLabel": "יעד: {{value}}",
+    "summary": "{{on}} / {{total}} ימים ביעד"
+  },
+
+  "accuracy": {
+    "title": "דיוק מאקרו",
+    "dailyAverage": "ממוצע יומי בטווח שנבחר",
+    "loggedDays": "הוזנו {{loggedDays}} מתוך {{rangeDays}} ימים",
+    "exactTarget": "בול על היעד",
+    "overTarget": "מעל היעד ב־{{value}}{{unit}}",
+    "underTarget": "חסר {{value}}{{unit}}"
+  },
+
+  "macros": {
+    "calories": "קלוריות",
+    "protein": "חלבון",
+    "carbs": "פחמימות",
+    "fat": "שומן"
+  },
+
+  "distribution": {
+    "title": "התפלגות ארוחות"
+  },
+
+  "mealTypes": {
+    "breakfast": "ארוחת בוקר",
+    "lunch": "ארוחת צהריים",
+    "dinner": "ארוחת ערב",
+    "snack1": "חטיף 1",
+    "snack2": "חטיף 2"
+  },
+
+  "foodInsights": {
+    "title": "תובנות אוכל",
+    "topCalories": "מקורות קלוריות מובילים",
+    "mostUsed": "מזונות בשימוש תכוף",
+    "usedTimes": "נרשם ×{{count}}",
+    "avgCalories": "{{value}} קל׳ בממוצע"
+  },
+
+  "empty": {
+    "title": "אין נתונים עדיין",
+    "subtitle": "התחל לתעד ארוחות כדי לראות את הסטטיסטיקות שלך כאן."
+  },
+
+  "errors": {
+    "loadFailed": "טעינת סטטיסטיקות נכשלה"
+  },
+
+  "noData": "אין נתונים לטווח זה"
+}

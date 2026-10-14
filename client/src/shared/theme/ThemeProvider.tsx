@@ -1,12 +1,20 @@
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import { ColorSchemeName, useColorScheme } from "react-native";
 
 import { AppColors, AppThemeMode, darkColors, lightColors } from "./colors";
 
+type ResolvedTheme = Exclude<ColorSchemeName, null | undefined>;
+
 type AppThemeContextValue = {
   colors: AppColors;
   themeMode: AppThemeMode;
-  resolvedTheme: Exclude<ColorSchemeName, null>;
+  resolvedTheme: ResolvedTheme;
   setThemeMode: (mode: AppThemeMode) => void;
 };
 
@@ -17,29 +25,42 @@ type Props = {
   initialThemeMode?: AppThemeMode;
 };
 
+function resolveThemeMode(
+  themeMode: AppThemeMode,
+  systemTheme: ColorSchemeName,
+): ResolvedTheme {
+  if (themeMode === "SYSTEM") {
+    return systemTheme === "dark" ? "dark" : "light";
+  }
+
+  return themeMode === "DARK" ? "dark" : "light";
+}
+
 export function AppThemeProvider({
   children,
-  initialThemeMode = "DARK",
+  initialThemeMode = "SYSTEM",
 }: Props) {
   const systemTheme = useColorScheme();
   const [themeMode, setThemeMode] = useState<AppThemeMode>(initialThemeMode);
 
-  const resolvedTheme = useMemo(() => {
-    if (themeMode === "SYSTEM") {
-      return systemTheme === "light" ? "light" : "dark";
-    }
+  const resolvedTheme = useMemo(
+    () => resolveThemeMode(themeMode, systemTheme),
+    [themeMode, systemTheme],
+  );
 
-    return themeMode === "LIGHT" ? "light" : "dark";
-  }, [systemTheme, themeMode]);
+  const colors = useMemo(
+    () => (resolvedTheme === "light" ? lightColors : darkColors),
+    [resolvedTheme],
+  );
 
   const value = useMemo<AppThemeContextValue>(
     () => ({
-      colors: resolvedTheme === "light" ? lightColors : darkColors,
+      colors,
       themeMode,
       resolvedTheme,
       setThemeMode,
     }),
-    [resolvedTheme, themeMode],
+    [colors, themeMode, resolvedTheme],
   );
 
   return (

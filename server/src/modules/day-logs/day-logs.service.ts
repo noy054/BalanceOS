@@ -9,6 +9,7 @@ import {
   MacrosSnapshot,
 } from '../nutrition-calculator/nutrition-calculator.service';
 import { AddMealItemDto } from './dto/add-meal-item.dto';
+import { CopyMealDto } from './dto/copy-meal.dto';
 
 function todayDate(): string {
   return new Date().toISOString().split('T')[0];
@@ -82,6 +83,77 @@ export class DayLogsService {
     await this.repo.recalculateAndSaveTotals(dayLog.id);
 
     return { id: item.id };
+  }
+
+  async getTodayMeals(userId: string) {
+    const date = todayDate();
+    const dayLog = await this.repo.findTodayMeals(userId, date);
+
+    if (!dayLog) return { meals: [] };
+
+    const MEAL_ORDER: Record<string, number> = {
+      BREAKFAST: 0,
+      LUNCH: 1,
+      DINNER: 2,
+      SNACK_1: 3,
+      SNACK_2: 4,
+    };
+
+    const meals = dayLog.mealEntries
+      .filter((entry) => entry.items.length > 0)
+      .sort(
+        (a, b) =>
+          (MEAL_ORDER[a.mealType] ?? 99) - (MEAL_ORDER[b.mealType] ?? 99),
+      )
+      .map((entry) => {
+        let calories = 0;
+        let protein = 0;
+        const items = entry.items.map((item) => {
+          const s = item.macrosSnapshot as MacrosSnapshot;
+          calories += s.calories;
+          protein += s.protein;
+          return { id: item.id, name: s.name, calories: s.calories, protein: s.protein };
+        });
+        return {
+          id: entry.id,
+          mealType: entry.mealType,
+          calories: Math.round(calories),
+          protein: Math.round(protein * 10) / 10,
+          items,
+        };
+      });
+
+    return { meals };
+  }
+
+  async copyMealEntry(userId: string, mealEntryId: string, dto: CopyMealDto): Promise<void> {
+    const entry = await this.repo.findMealEntryWithItems(mealEntryId);
+    if (!entry || entry.dayLog.userId !== userId) {
+      throw new NotFoundException('Meal entry not found');
+    }
+    if (entry.items.length === 0) {
+      throw new BadRequestException('Meal has no items to copy');
+    }
+
+    const targets = await this.repo.findUserTargets(userId);
+
+    for (const targetDate of dto.targetDates) {
+      const dayLog = await this.repo.findOrCreateToday(userId, targetDate, targets);
+      const mealEntry = await this.repo.findOrCreateMealEntry(dayLog.id, entry.mealType);
+
+      for (const item of entry.items) {
+        await this.repo.createMealItem(mealEntry.id, {
+          pantryProductId: item.pantryProductId ?? undefined,
+          pantryRecipeId: item.pantryRecipeId ?? undefined,
+          savedMealId: item.savedMealId ?? undefined,
+          grams: item.grams ?? undefined,
+          servings: item.servings ?? undefined,
+          macrosSnapshot: item.macrosSnapshot as MacrosSnapshot,
+        });
+      }
+
+      await this.repo.recalculateAndSaveTotals(dayLog.id);
+    }
   }
 
   async removeMealItem(userId: string, itemId: string): Promise<void> {
