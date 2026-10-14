@@ -59,7 +59,6 @@ export class PantryService {
     return product;
   }
 
-  /** Indexed (userId, normalizedBarcode) lookup; null when the user has no such product. */
   findByBarcode(
     userId: string,
     barcode: NormalizedBarcode,
@@ -80,7 +79,6 @@ export class PantryService {
     userId: string,
     dto: CreatePantryProductDto,
   ): Promise<PantryProductModel> {
-    // DTO validation guarantees a valid GTIN when a barcode is present
     const normalized = normalizeBarcode(dto.barcode);
     if (normalized) {
       const existing = await this.repo.findByNormalizedBarcode(
@@ -98,10 +96,6 @@ export class PantryService {
     }
   }
 
-  /**
-   * Copies a global catalog item into the user's pantry (snapshot of values + provenance link).
-   * Idempotent: if the user already has this product, the existing pantry product is returned.
-   */
   async addFromCatalog(
     userId: string,
     catalogItemId: string,
@@ -124,7 +118,6 @@ export class PantryService {
     const carbsPer100g = dto.carbsPer100g ?? item.carbsPer100g;
     const fatPer100g = dto.fatPer100g ?? item.fatPer100g;
 
-    // Never invent zeros: missing values must be supplied by the user
     if (
       caloriesPer100g == null ||
       proteinPer100g == null ||
@@ -155,13 +148,16 @@ export class PantryService {
         mealCategories: dto.mealCategories ?? [],
       });
     } catch (err: unknown) {
-      // Concurrent double-tap: the other request already created it
-      if (isUniqueViolation(err) && item.normalizedBarcode) {
-        const created = await this.repo.findByNormalizedBarcode(
-          userId,
-          item.normalizedBarcode,
-        );
-        if (created) return created;
+      if (isUniqueViolation(err)) {
+        const recovered =
+          (await this.repo.findByCatalogItemId(userId, item.id)) ??
+          (item.normalizedBarcode
+            ? await this.repo.findByNormalizedBarcode(
+                userId,
+                item.normalizedBarcode,
+              )
+            : null);
+        if (recovered) return recovered;
       }
       throw err;
     }
@@ -173,18 +169,22 @@ export class PantryService {
     dto: UpdatePantryProductDto,
   ): Promise<PantryProductModel> {
     await this.getById(userId, id);
-    const normalized = normalizeBarcode(dto.barcode);
-    if (normalized) {
-      const existing = await this.repo.findByNormalizedBarcode(
-        userId,
-        normalized.canonical,
-      );
-      if (existing && existing.id !== id) {
-        throw new ConflictException(DUPLICATE_BARCODE_MESSAGE);
+    let normalizedBarcodeUpdate: string | null | undefined = undefined;
+    if (dto.barcode !== undefined) {
+      const normalized = normalizeBarcode(dto.barcode);
+      if (normalized) {
+        const existing = await this.repo.findByNormalizedBarcode(
+          userId,
+          normalized.canonical,
+        );
+        if (existing && existing.id !== id) {
+          throw new ConflictException(DUPLICATE_BARCODE_MESSAGE);
+        }
       }
+      normalizedBarcodeUpdate = normalized?.canonical ?? null;
     }
     try {
-      return await this.repo.update(id, dto, normalized?.canonical);
+      return await this.repo.update(id, dto, normalizedBarcodeUpdate);
     } catch (err: unknown) {
       if (isUniqueViolation(err))
         throw new ConflictException(DUPLICATE_BARCODE_MESSAGE);

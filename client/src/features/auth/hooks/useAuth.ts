@@ -44,10 +44,12 @@ export function useLogin() {
 
 export function useGoogleLogin() {
   const setAuthenticated = useAuthStore((s) => s.setAuthenticated);
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: GoogleLoginPayload) => authApi.googleLogin(payload),
     onSuccess: async (data) => {
+      queryClient.removeQueries({ queryKey: ['nutrition-settings'] });
       await tokenStorage.saveTokens(data.accessToken, data.refreshToken);
       setAuthenticated(data.user);
       router.replace('/');

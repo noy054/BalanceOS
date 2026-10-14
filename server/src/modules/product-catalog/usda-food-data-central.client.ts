@@ -56,8 +56,7 @@ export class UsdaFoodDataCentralClient {
     barcode: NormalizedBarcode,
   ): Promise<ExternalLookupResult> {
     const apiKey = this.config.get<string>('USDA_API_KEY');
-    // Not configured: nothing to ask, which is a definitive miss for this provider
-    if (!apiKey) return { status: 'not_found' };
+    if (!apiKey) return { status: 'error' };
 
     try {
       const url =
@@ -99,8 +98,6 @@ export class UsdaFoodDataCentralClient {
       return gtin === barcode.trim() || gtin.replace(/^0+/, '') === stripped;
     });
 
-    // No fallback to un-barcoded results: the search is full-text, so a lone result without
-    // gtinUpc is not proof of a match and would be cached globally under this barcode.
     return match ?? null;
   }
 

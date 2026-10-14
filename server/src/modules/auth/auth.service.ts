@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   Logger,
   UnauthorizedException,
@@ -104,7 +105,7 @@ export class AuthService {
     if (!user) {
       user = await this.usersService.findByEmail(payload.email);
       if (user) {
-        throw new BadRequestException(
+        throw new ConflictException(
           'An account with this email already exists. Please log in with email and password.',
         );
       }

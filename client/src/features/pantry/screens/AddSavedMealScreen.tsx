@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -18,6 +19,7 @@ import {
   useUpdateSavedMeal,
 } from "../hooks/useSavedMeals";
 import { usePantryProducts } from "../hooks/usePantry";
+import type { ProductCategory } from "../types";
 import { useRecipes } from "../hooks/useRecipes";
 import { useAddSavedMealForm } from "../hooks/useAddSavedMealForm";
 import {
@@ -55,10 +57,18 @@ export function AddSavedMealScreen() {
   const { data: existingMeal, isLoading: isMealLoading } =
     useSavedMeal(savedMealId);
 
-  const { data: products = [], loadMore: loadMoreProducts } = usePantryProducts();
+  const [pickerSearch, setPickerSearch] = useState("");
+  const { data: products = [], loadMore: loadMoreProducts } = usePantryProducts(pickerSearch);
   const { data: recipes = [] } = useRecipes();
 
   const form = useAddSavedMealForm(existingMeal, isEditMode);
+
+  const mealCategory: ProductCategory | null =
+    !form.mealType
+      ? null
+      : form.mealType === "SNACK_1" || form.mealType === "SNACK_2"
+        ? "SNACK"
+        : (form.mealType as ProductCategory);
 
   const isSaving = createSavedMeal.isPending || updateSavedMeal.isPending;
 
@@ -218,7 +228,9 @@ export function AddSavedMealScreen() {
         visible={form.productPickerVisible}
         products={products}
         onEndReached={loadMoreProducts}
+        onSearchChange={setPickerSearch}
         selectedIds={form.selectedProductIds}
+        mealCategory={mealCategory}
         onSelect={form.addProduct}
         onClose={() => form.setProductPickerVisible(false)}
       />

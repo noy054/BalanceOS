@@ -72,6 +72,7 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
   const [servingSizeStr, setServingSizeStr] = useState(
     product.servingSizeGrams != null ? String(product.servingSizeGrams) : "",
   );
+  const [servingSizeError, setServingSizeError] = useState<string | null>(null);
   const [servingTextStr, setServingTextStr] = useState(
     product.servingSizeText ?? "",
   );
@@ -81,14 +82,13 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
     product.verificationStatus === "AUTO_IMPORTED";
 
   const missingKeys = getMissingMacroKeys(product);
-  // Previews use catalog values, falling back to what the user typed for missing ones
   const cal100 = getEffectiveMacro(product, "caloriesPer100g", missingValues) ?? 0;
   const protein100 = getEffectiveMacro(product, "proteinPer100g", missingValues) ?? 0;
   const carbs100 = getEffectiveMacro(product, "carbsPer100g", missingValues) ?? 0;
   const fat100 = getEffectiveMacro(product, "fatPer100g", missingValues) ?? 0;
 
   const servingG = parseFloat(servingSizeStr);
-  const hasServing = !isNaN(servingG) && servingG > 0;
+  const hasServing = !isNaN(servingG) && servingG >= 1;
 
   const perServingPreview = hasServing
     ? {
@@ -139,13 +139,17 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
   }
 
   async function handleAddToPantry() {
-    if (isAdding || !validateMissing()) return;
+    if (isAdding) return;
+    if (servingSizeStr.trim() && !hasServing) {
+      setServingSizeError(t("errors.invalidNumber"));
+      return;
+    }
+    if (!validateMissing()) return;
     const overrides: Partial<Record<RequiredMacroKey, number>> = {};
     for (const key of missingKeys) {
       overrides[key] = getEffectiveMacro(product, key, missingValues) ?? undefined;
     }
     try {
-      // Server copies catalog values and returns the existing product if already owned
       const created: PantryProduct = await addMutation.mutateAsync({
         catalogItemId: product.id,
         payload: {
@@ -326,13 +330,21 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
               ]}
               keyboardType="decimal-pad"
               value={servingSizeStr}
-              onChangeText={setServingSizeStr}
+              onChangeText={(text) => {
+                setServingSizeStr(text);
+                setServingSizeError(null);
+              }}
               placeholder="—"
               placeholderTextColor={colors.textMuted}
             />
             <Text style={styles.servingUnit}>g</Text>
           </View>
         </View>
+        {servingSizeError ? (
+          <Text style={{ color: colors.danger, fontSize: 12, textAlign: isRTL ? "right" : "left", marginTop: 2 }}>
+            {servingSizeError}
+          </Text>
+        ) : null}
 
         {/* Description / label */}
         <View

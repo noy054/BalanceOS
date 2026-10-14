@@ -55,6 +55,8 @@ export function PantryScreen() {
     isLoading: loadingProducts,
     isError: errorProducts,
     loadMore: loadMoreProducts,
+    hasNextPage: hasMoreProducts,
+    isFetchingNextPage: isLoadingMoreProducts,
   } = usePantryProducts(search);
 
   const {
@@ -88,6 +90,12 @@ export function PantryScreen() {
 
     return savedMeals.filter((meal) => meal.name.toLowerCase().includes(q));
   }, [savedMeals, search]);
+
+  useEffect(() => {
+    if (!highlightedProductId || !hasMoreProducts || isLoadingMoreProducts) return;
+    if (products.some((p) => p.id === highlightedProductId)) return;
+    loadMoreProducts();
+  }, [highlightedProductId, products, hasMoreProducts, isLoadingMoreProducts, loadMoreProducts]);
 
   // Scroll to and highlight a product navigated from the barcode "exists" flow
   useEffect(() => {

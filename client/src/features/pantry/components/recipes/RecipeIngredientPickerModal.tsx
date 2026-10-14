@@ -22,8 +22,8 @@ type Props = {
   products: PantryProduct[];
   onAdd: (items: RecipeIngredientSelection[]) => void;
   onClose: () => void;
-  /** Loads the next page of pantry products */
   onEndReached?: () => void;
+  onSearchChange?: (text: string) => void;
 };
 
 export function RecipeIngredientPickerModal({
@@ -32,6 +32,7 @@ export function RecipeIngredientPickerModal({
   onAdd,
   onClose,
   onEndReached,
+  onSearchChange,
 }: Props) {
   const { i18n } = useTranslation("pantry");
   const styles = useStyles();
@@ -41,8 +42,14 @@ export function RecipeIngredientPickerModal({
 
   const picker = useRecipeIngredientPicker(products);
 
+  function handleSearchChange(text: string) {
+    picker.setSearch(text);
+    onSearchChange?.(text);
+  }
+
   function handleClose() {
     picker.reset();
+    onSearchChange?.("");
     onClose();
   }
 
@@ -53,6 +60,7 @@ export function RecipeIngredientPickerModal({
 
     onAdd(picker.draftList);
     picker.reset();
+    onSearchChange?.("");
     onClose();
   }
 
@@ -79,7 +87,7 @@ export function RecipeIngredientPickerModal({
         <RecipeIngredientPickerSearchActions
           search={picker.search}
           dir={dir}
-          onChangeSearch={picker.setSearch}
+          onChangeSearch={handleSearchChange}
           onAddProduct={navigateToAddProduct}
           onScanBarcode={navigateToBarcode}
         />

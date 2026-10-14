@@ -53,7 +53,8 @@ export function AddRecipeScreen() {
   const { data: existingRecipe, isLoading: isRecipeLoading } =
     useRecipe(recipeId);
 
-  const { data: products = [], loadMore: loadMoreProducts } = usePantryProducts();
+  const [pickerSearch, setPickerSearch] = useState("");
+  const { data: products = [], loadMore: loadMoreProducts } = usePantryProducts(pickerSearch);
 
   const form = useAddRecipeForm(existingRecipe, isEditMode);
   const hydratedRecipeImageIdRef = useRef<string | null>(null);
@@ -237,6 +238,7 @@ export function AddRecipeScreen() {
         visible={form.pickerVisible}
         products={products}
         onEndReached={loadMoreProducts}
+        onSearchChange={setPickerSearch}
         onAdd={form.addIngredients}
         onClose={() => form.setPickerVisible(false)}
       />

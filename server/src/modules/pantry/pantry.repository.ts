@@ -9,7 +9,6 @@ import { Prisma } from '../../../generated/prisma/client';
 export class PantryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** Fetches `take` rows ordered by (name, id); uses the (userId, name, id) index. */
   findPageByUserId(
     userId: string,
     take: number,
@@ -78,11 +77,11 @@ export class PantryRepository {
   update(
     id: string,
     dto: UpdatePantryProductDto,
-    normalizedBarcode?: string,
+    normalizedBarcode: string | null | undefined,
   ): Promise<PantryProductModel> {
     return this.prisma.pantryProduct.update({
       where: { id },
-      data: { ...dto, ...(normalizedBarcode ? { normalizedBarcode } : {}) },
+      data: { ...dto, ...(normalizedBarcode !== undefined ? { normalizedBarcode } : {}) },
     });
   }
 

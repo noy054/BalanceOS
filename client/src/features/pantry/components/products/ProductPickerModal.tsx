@@ -24,8 +24,8 @@ type ProductPickerModalProps = {
   mealCategory?: ProductCategory | null;
   onSelect: (product: PantryProduct) => void;
   onClose: () => void;
-  /** Loads the next page of pantry products */
   onEndReached?: () => void;
+  onSearchChange?: (text: string) => void;
 };
 
 export function ProductPickerModal({
@@ -36,6 +36,7 @@ export function ProductPickerModal({
   onSelect,
   onClose,
   onEndReached,
+  onSearchChange,
 }: ProductPickerModalProps) {
   const { t, i18n } = useTranslation("pantry");
   const { colors } = useAppTheme();
@@ -45,24 +46,22 @@ export function ProductPickerModal({
 
   const [search, setSearch] = useState("");
 
-  const filtered = sortByMealCategory(
-    search.trim()
-      ? products.filter(
-          (p) =>
-            p.name.toLowerCase().includes(search.toLowerCase()) ||
-            p.brand?.toLowerCase().includes(search.toLowerCase()),
-        )
-      : products,
-    mealCategory,
-  );
+  const filtered = sortByMealCategory(products, mealCategory);
+
+  function handleSearchChange(text: string) {
+    setSearch(text);
+    onSearchChange?.(text);
+  }
 
   function handleSelect(product: PantryProduct) {
     setSearch("");
+    onSearchChange?.("");
     onSelect(product);
   }
 
   function handleClose() {
     setSearch("");
+    onSearchChange?.("");
     onClose();
   }
 
@@ -94,7 +93,7 @@ export function ProductPickerModal({
           <TextInput
             style={[styles.searchInput, dir.input]}
             value={search}
-            onChangeText={setSearch}
+            onChangeText={handleSearchChange}
             placeholder={t("picker.searchPlaceholder")}
             placeholderTextColor={colors.textMuted}
             autoFocus

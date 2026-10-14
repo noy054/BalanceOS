@@ -101,10 +101,8 @@ enum FoodUnit {
 model ProductCatalogItem {
   id String @id @default(cuid())
 
-  /// Raw barcode as received. Lookups and uniqueness use normalizedBarcode.
   barcode           String?
   gtin              String?
-  /// Canonical 13-digit GTIN (see common/barcode/barcode.utils.ts)
   normalizedBarcode String? @unique
 
   name         String
@@ -151,14 +149,12 @@ model ProductCatalogItem {
 
   pantryProducts PantryProduct[]
 
-  // Trigram GIN indexes make ILIKE '%q%' search index-backed (requires pg_trgm)
   @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "ProductCatalogItem_name_trgm_idx")
   @@index([brand(ops: raw("gin_trgm_ops"))], type: Gin, map: "ProductCatalogItem_brand_trgm_idx")
   @@index([createdByUserId])
   @@index([updatedByUserId])
 }
 
-/// Negative cache: barcodes that no provider knows, so repeated scans skip external APIs.
 model BarcodeLookupMiss {
   normalizedBarcode String   @id
   attempts          Int      @default(1)
@@ -219,9 +215,7 @@ model PantryProduct {
   name              String
   brand             String?
   barcode           String?
-  /// Canonical 13-digit GTIN (see common/barcode/barcode.utils.ts)
   normalizedBarcode String?
-  /// Catalog item this product was copied from. Values are copied (snapshot), this only keeps provenance.
   catalogItemId     String?
   imageUrl          String?
   caloriesPer100g   Float
@@ -243,6 +237,7 @@ model PantryProduct {
   mealItems      MealItem[]
 
   @@unique([userId, normalizedBarcode])
+  @@unique([userId, catalogItemId])
   @@index([userId, name, id])
   @@index([catalogItemId])
   @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "PantryProduct_name_trgm_idx")

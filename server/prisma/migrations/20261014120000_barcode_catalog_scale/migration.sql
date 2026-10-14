@@ -1,15 +1,7 @@
--- Barcode / product catalog scale-readiness
--- * Canonical 13-digit GTIN in "normalizedBarcode" (unique on catalog, unique per user on pantry)
--- * Pantry products keep provenance via "catalogItemId"
--- * Trigram indexes for ILIKE search, composite index for paginated pantry lists
--- * Negative cache table for barcodes unknown to every provider
--- Data steps are non-destructive: duplicates keep their row, only the newer duplicate's
--- "normalizedBarcode" is cleared so the unique indexes can be created.
-
--- Extension
+-- CreateExtension
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
--- DropIndex (replaced or unused)
+-- DropIndex
 DROP INDEX "ProductCatalogItem_barcode_key";
 DROP INDEX "ProductCatalogItem_barcode_idx";
 DROP INDEX "ProductCatalogItem_normalizedBarcode_idx";
@@ -36,8 +28,6 @@ CREATE TABLE "BarcodeLookupMiss" (
     CONSTRAINT "BarcodeLookupMiss_pkey" PRIMARY KEY ("normalizedBarcode")
 );
 
--- Backfill: canonical GTIN-13 (mirrors normalizeBarcode() in server/src/common/barcode/barcode.utils.ts,
--- without the check-digit test; non-GTIN values become NULL)
 UPDATE "ProductCatalogItem" SET "normalizedBarcode" = CASE
     WHEN btrim("barcode") ~ '^0[0-9]{13}$' THEN substr(btrim("barcode"), 2)
     WHEN btrim("barcode") ~ '^[0-9]{14}$' THEN btrim("barcode")
@@ -53,7 +43,82 @@ UPDATE "PantryProduct" SET "normalizedBarcode" = CASE
 END
 WHERE "barcode" IS NOT NULL;
 
--- De-duplicate (keep the oldest row's key)
+UPDATE "ProductCatalogItem" SET "normalizedBarcode" = NULL
+WHERE "normalizedBarcode" IS NOT NULL
+  AND (
+    CASE WHEN LENGTH("normalizedBarcode") = 13 THEN
+      MOD(10 - MOD(
+        CAST(SUBSTR("normalizedBarcode", 1, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 2, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 3, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 4, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 5, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 6, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 7, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 8, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 9, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 10, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 11, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 12, 1) AS INT) * 3,
+      10), 10) != CAST(SUBSTR("normalizedBarcode", 13, 1) AS INT)
+    WHEN LENGTH("normalizedBarcode") = 14 THEN
+      MOD(10 - MOD(
+        CAST(SUBSTR("normalizedBarcode", 1, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 2, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 3, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 4, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 5, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 6, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 7, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 8, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 9, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 10, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 11, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 12, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 13, 1) AS INT) * 3,
+      10), 10) != CAST(SUBSTR("normalizedBarcode", 14, 1) AS INT)
+    ELSE TRUE
+    END
+  );
+
+UPDATE "PantryProduct" SET "normalizedBarcode" = NULL
+WHERE "normalizedBarcode" IS NOT NULL
+  AND (
+    CASE WHEN LENGTH("normalizedBarcode") = 13 THEN
+      MOD(10 - MOD(
+        CAST(SUBSTR("normalizedBarcode", 1, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 2, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 3, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 4, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 5, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 6, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 7, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 8, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 9, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 10, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 11, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 12, 1) AS INT) * 3,
+      10), 10) != CAST(SUBSTR("normalizedBarcode", 13, 1) AS INT)
+    WHEN LENGTH("normalizedBarcode") = 14 THEN
+      MOD(10 - MOD(
+        CAST(SUBSTR("normalizedBarcode", 1, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 2, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 3, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 4, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 5, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 6, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 7, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 8, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 9, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 10, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 11, 1) AS INT) * 3 +
+        CAST(SUBSTR("normalizedBarcode", 12, 1) AS INT) * 1 +
+        CAST(SUBSTR("normalizedBarcode", 13, 1) AS INT) * 3,
+      10), 10) != CAST(SUBSTR("normalizedBarcode", 14, 1) AS INT)
+    ELSE TRUE
+    END
+  );
+
 UPDATE "ProductCatalogItem" c SET "normalizedBarcode" = NULL
 FROM (
     SELECT "id", row_number() OVER (PARTITION BY "normalizedBarcode" ORDER BY "createdAt", "id") AS rn
@@ -68,7 +133,6 @@ FROM (
 ) d
 WHERE p."id" = d."id" AND d.rn > 1;
 
--- Link existing pantry products to their catalog source
 UPDATE "PantryProduct" p SET "catalogItemId" = c."id"
 FROM "ProductCatalogItem" c
 WHERE p."normalizedBarcode" IS NOT NULL AND c."normalizedBarcode" = p."normalizedBarcode";
