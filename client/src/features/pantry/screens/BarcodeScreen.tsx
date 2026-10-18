@@ -11,7 +11,7 @@ import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { ProductCatalogCard } from "../components/products/ProductCatalogCard";
 import { BarcodeManualProductForm } from "../components/products/BarcodeManualProductForm";
 import { useBarcodeResolver } from "../hooks/useBarcodeResolver";
-import { getBarcodeLookupErrorKey } from "../helpers/barcode";
+import { getBarcodeLookupErrorKey, isScannableBarcode } from "../helpers/barcode";
 import { SCANNABLE_BARCODE_TYPES } from "../constants";
 import { PantryProduct, ProductCatalogProduct } from "../types";
 import { useRecipeReturn } from "../recipeReturnStore";
@@ -93,12 +93,14 @@ export function BarcodeScreen() {
 
   async function handleScan({ data }: BarcodeScanningResult) {
     if (scanLocked.current) return;
+    const barcode = data.trim();
+    if (!isScannableBarcode(barcode)) return;
     scanLocked.current = true;
-    setScannedBarcode(data);
+    setScannedBarcode(barcode);
     setPhase("loading");
 
     try {
-      const result = await resolveBarcode(data);
+      const result = await resolveBarcode(barcode);
 
       if (result.status === "IN_PANTRY") {
         if (fromRecipePicker || fromMealFlow) {
@@ -115,8 +117,10 @@ export function BarcodeScreen() {
         setPhase("not_found");
       }
     } catch (err: unknown) {
-      Alert.alert("", t(getBarcodeLookupErrorKey(err)));
-      handleReset();
+      Alert.alert("", t(getBarcodeLookupErrorKey(err)), [{ text: t("barcode.retry"), onPress: handleReset }], {
+        cancelable: true,
+        onDismiss: handleReset,
+      });
     }
   }
 
@@ -400,9 +404,9 @@ export function BarcodeScreen() {
             <CameraView
               style={styles.camera}
               facing="back"
-              autofocus="on"
+              autofocus="off"
               zoom={0}
-              onBarcodeScanned={phase === "loading" ? undefined : handleScan}
+              onBarcodeScanned={handleScan}
               barcodeScannerSettings={{
                 barcodeTypes: [...SCANNABLE_BARCODE_TYPES],
               }}

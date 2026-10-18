@@ -171,6 +171,7 @@
     "title": "Scan Barcode",
     "subtitle": "Point the camera at a barcode",
     "searching": "Looking up product...",
+    "retry": "Try again",
     "manualButton": "Enter Manually",
     "scanAnother": "Scan Another",
     "permissionTitle": "Camera Access Required",
