@@ -40,8 +40,8 @@ export const useStyles = () =>
       },
 
       imageBox: {
-        width: 74,
-        height: 74,
+        width: 60,
+        height: 60,
         borderRadius: radius.xl,
         overflow: "hidden",
         backgroundColor: colors.cardBackgroundSoft,
@@ -76,13 +76,13 @@ export const useStyles = () =>
       titleBox: {
         flex: 1,
         minWidth: 0,
-        gap: 5,
+        gap: spacing.xs + 2,
       },
 
       name: {
         fontSize: 16,
-        lineHeight: 21,
-        fontWeight: "900",
+        lineHeight: 22,
+        fontWeight: "800",
         color: colors.textPrimary,
       },
 
@@ -93,7 +93,7 @@ export const useStyles = () =>
       },
 
       categoryBadge: {
-        maxWidth: 96,
+        flexShrink: 1,
         borderRadius: radius.full,
         paddingHorizontal: spacing.sm,
         paddingVertical: 4,
@@ -127,11 +127,6 @@ export const useStyles = () =>
         borderWidth: 1,
         borderColor: colors.border,
         flexShrink: 0,
-      },
-
-      totalsBox: {
-        borderRadius: radius.lg,
-        overflow: "hidden",
       },
     }),
   );

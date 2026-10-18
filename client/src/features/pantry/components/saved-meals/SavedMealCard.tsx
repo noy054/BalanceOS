@@ -3,7 +3,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
 import { SavedMeal } from "../../types";
-import { NutritionTotals } from "../nutrition/NutritionTotals";
+import { NutritionSummaryPanel } from "../nutrition/NutritionSummaryPanel";
 import { useAppTheme } from "../../../../shared/theme";
 import { getDirectionStyles, useStyles } from "./styles/SavedMealCard.styles";
 
@@ -68,7 +68,7 @@ export function SavedMealCard({ meal, onPress }: Props) {
         <View style={styles.info}>
           <View style={[styles.titleRow, dir.row]}>
             <View style={styles.titleBox}>
-              <Text style={[styles.name, dir.text]} numberOfLines={1}>
+              <Text style={[styles.name, dir.text]} numberOfLines={3}>
                 {meal.name}
               </Text>
 
@@ -101,9 +101,7 @@ export function SavedMealCard({ meal, onPress }: Props) {
         </View>
       </View>
 
-      <View style={styles.totalsBox}>
-        <NutritionTotals totals={meal.totals} />
-      </View>
+      <NutritionSummaryPanel totals={meal.totals} />
     </Pressable>
   );
 }
