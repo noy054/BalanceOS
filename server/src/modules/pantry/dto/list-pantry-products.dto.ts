@@ -22,7 +22,6 @@ export class ListPantryProductsDto {
   @Type(() => Number)
   limit?: number;
 
-  /** id of the last item of the previous page */
   @IsOptional()
   @IsString()
   @MaxLength(50)

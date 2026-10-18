@@ -52,6 +52,10 @@ export class UsdaFoodDataCentralClient {
 
   constructor(private readonly config: ConfigService) {}
 
+  isConfigured(): boolean {
+    return Boolean(this.config.get<string>('USDA_API_KEY'));
+  }
+
   async fetchByBarcode(
     barcode: NormalizedBarcode,
   ): Promise<ExternalLookupResult> {

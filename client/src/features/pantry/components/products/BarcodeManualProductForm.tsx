@@ -3,11 +3,11 @@ import { View, Text, ScrollView, Pressable, Alert } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { FormInput } from "../../../../shared/components/FormInput";
-import { isAxiosError } from "axios";
 import { useCreatePantryProduct } from "../../hooks/usePantry";
 import { PantryProduct } from "../../types";
+import { getProductSaveErrorKey } from "../../helpers/barcode";
 import { useAppTheme } from "../../../../shared/theme";
-import { useStyles } from "./styles/ManualProductCatalogForm.styles";
+import { useStyles } from "./styles/BarcodeManualProductForm.styles";
 
 type Props = {
   barcode: string;
@@ -20,11 +20,7 @@ function parsePositive(val: string): number | undefined {
   return isNaN(n) || n < 0 ? undefined : n;
 }
 
-/**
- * Manual entry for a barcode no source knows. Saves to the user's own pantry only —
- * user-entered values never go into the shared global catalog.
- */
-export function ManualProductCatalogForm({
+export function BarcodeManualProductForm({
   barcode,
   onSuccess,
   onCancel,
@@ -70,7 +66,6 @@ export function ManualProductCatalogForm({
         barcode: barcode || undefined,
         name: name.trim(),
         brand: brand.trim() || undefined,
-        // validate() guarantees the four required macros parse
         caloriesPer100g: parsePositive(calories) ?? 0,
         proteinPer100g: parsePositive(protein) ?? 0,
         carbsPer100g: parsePositive(carbs) ?? 0,
@@ -80,8 +75,7 @@ export function ManualProductCatalogForm({
       });
       onSuccess(product);
     } catch (err: unknown) {
-      const alreadyExists = isAxiosError(err) && err.response?.status === 409;
-      Alert.alert("", t(alreadyExists ? "barcode.alreadyInPantry" : "errors.saveFailed"));
+      Alert.alert("", t(getProductSaveErrorKey(err)));
     }
   }
 

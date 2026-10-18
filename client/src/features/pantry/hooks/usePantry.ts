@@ -15,16 +15,11 @@ import {
   UpdatePantryProductPayload,
 } from '../types';
 
-/** Product lists and cached barcode resolutions both depend on pantry contents */
 function invalidatePantryProducts(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: PANTRY_QUERY_KEYS.list });
   queryClient.invalidateQueries({ queryKey: BARCODE_QUERY_KEYS.all });
 }
 
-/**
- * Cursor-paginated pantry products. `data` is the flattened list of loaded pages;
- * call `loadMore` from a list's onEndReached to fetch the next page.
- */
 export function usePantryProducts(search?: string) {
   const trimmed = (search ?? '').trim();
   const [debouncedSearch, setDebouncedSearch] = useState(trimmed);
@@ -79,7 +74,6 @@ export function useCreatePantryProduct() {
   });
 }
 
-/** Copies a global catalog item into the pantry (server copies the values; idempotent per user) */
 export function useAddPantryProductFromCatalog() {
   const queryClient = useQueryClient();
   return useMutation({

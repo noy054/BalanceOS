@@ -17,7 +17,6 @@ export type PantryProduct = {
   imageUrl?: string | null;
   barcode: string | null;
   normalizedBarcode: string | null;
-  /** Catalog item this product was copied from (provenance only; values are a snapshot) */
   catalogItemId: string | null;
   caloriesPer100g: number;
   proteinPer100g: number;
@@ -70,7 +69,6 @@ export type ProductCatalogVerificationStatus =
   | "ADMIN_VERIFIED"
   | "REJECTED";
 
-/** Global, read-only catalog item (server excludes raw provider data and user ids) */
 export type ProductCatalogProduct = {
   id: string;
   barcode: string | null;
@@ -92,7 +90,6 @@ export type ProductCatalogProduct = {
   updatedAt: string;
 };
 
-/** Copies a catalog item into the pantry; per-100g fields fill values the catalog lacks */
 export type AddFromCatalogPayload = {
   caloriesPer100g?: number;
   proteinPer100g?: number;
@@ -113,7 +110,6 @@ export type BarcodeResolveResult =
 
 // ── Shared ──────────────────────────────────────────────────────────────────
 
-/** Cursor page returned by list/search endpoints; nextCursor is null on the last page */
 export type Page<T> = {
   items: T[];
   nextCursor: string | null;

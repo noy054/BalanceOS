@@ -9,7 +9,7 @@ import { router, useLocalSearchParams, useNavigation } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { ProductCatalogCard } from "../components/products/ProductCatalogCard";
-import { ManualProductCatalogForm } from "../components/products/ManualProductCatalogForm";
+import { BarcodeManualProductForm } from "../components/products/BarcodeManualProductForm";
 import { useBarcodeResolver } from "../hooks/useBarcodeResolver";
 import { getBarcodeLookupErrorKey } from "../helpers/barcode";
 import { SCANNABLE_BARCODE_TYPES } from "../constants";
@@ -98,12 +98,10 @@ export function BarcodeScreen() {
     setPhase("loading");
 
     try {
-      // Server checks the user's pantry first, then the global catalog / external sources
       const result = await resolveBarcode(data);
 
       if (result.status === "IN_PANTRY") {
         if (fromRecipePicker || fromMealFlow) {
-          // Already owned: hand it straight back to the calling flow
           handleProductAdded(result.pantryProduct);
           router.back();
           return;
@@ -117,7 +115,6 @@ export function BarcodeScreen() {
         setPhase("not_found");
       }
     } catch (err: unknown) {
-      // Invalid barcode / rate limit / network: let the user rescan instead of forcing manual entry
       Alert.alert("", t(getBarcodeLookupErrorKey(err)));
       handleReset();
     }
@@ -373,7 +370,7 @@ export function BarcodeScreen() {
             </View>
           ) : null}
 
-          <ManualProductCatalogForm
+          <BarcodeManualProductForm
             barcode={scannedBarcode}
             onSuccess={handleManualSuccess}
             onCancel={handleReset}

@@ -3,11 +3,6 @@ import { Logger } from '@nestjs/common';
 const FAILURE_THRESHOLD = 5;
 const OPEN_DURATION_MS = 60_000;
 
-/**
- * Minimal in-process circuit breaker for an external provider.
- * After FAILURE_THRESHOLD consecutive failures, calls are skipped for OPEN_DURATION_MS
- * so a slow/down provider cannot stall every scan request.
- */
 export class ExternalCircuitBreaker {
   private readonly logger: Logger;
   private consecutiveFailures = 0;

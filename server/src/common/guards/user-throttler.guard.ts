@@ -6,10 +6,6 @@ interface TrackableRequest {
   ip?: string;
 }
 
-/**
- * Rate-limits per authenticated user rather than per IP, so users behind the same
- * carrier NAT do not share a quota. Must run after JwtGuard.
- */
 @Injectable()
 export class UserThrottlerGuard extends ThrottlerGuard {
   protected getTracker(req: TrackableRequest): Promise<string> {

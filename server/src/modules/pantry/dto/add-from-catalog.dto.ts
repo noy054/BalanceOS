@@ -10,10 +10,6 @@ import {
 import { Type } from 'class-transformer';
 import { ProductCategory } from '../../../../generated/prisma/enums';
 
-/**
- * Adds a global catalog item to the user's pantry. Nutrition values are copied server-side
- * from the catalog; the optional per-100g fields fill in (or correct) values the catalog lacks.
- */
 export class AddFromCatalogDto {
   @IsOptional()
   @IsNumber()

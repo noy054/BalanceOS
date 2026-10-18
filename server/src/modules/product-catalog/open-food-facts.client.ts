@@ -43,7 +43,6 @@ export class OpenFoodFactsClient {
     barcode: NormalizedBarcode,
   ): Promise<ExternalLookupResult> {
     try {
-      // Only digits reach this point (validated by normalizeBarcode), so the URL cannot be manipulated
       const response = await fetch(`${this.BASE_URL}/${barcode.digits}.json`, {
         signal: AbortSignal.timeout(8000),
         headers: { 'User-Agent': 'BalanceOS/1.0' },

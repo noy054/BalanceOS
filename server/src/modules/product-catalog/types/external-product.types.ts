@@ -14,9 +14,7 @@ export interface NormalizedProductData {
   carbsPer100g: number | null;
   fatPer100g: number | null;
   fiberPer100g: number | null;
-  /** Grams per serving when the external source provides it */
   servingSizeGrams?: number | null;
-  /** Human-readable serving description (e.g. "1 cup") */
   servingSizeText?: string | null;
   source: ProductSource;
   verificationStatus: ProductVerificationStatus;
@@ -25,10 +23,6 @@ export interface NormalizedProductData {
   externalRawData: Record<string, unknown>;
 }
 
-/**
- * Distinguishes a definitive "provider does not know this barcode" from a transient failure,
- * so only real misses are negatively cached and only failures trip the circuit breaker.
- */
 export type ExternalLookupResult =
   | { status: 'found'; data: NormalizedProductData }
   | { status: 'not_found' }

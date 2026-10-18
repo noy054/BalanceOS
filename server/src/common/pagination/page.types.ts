@@ -1,4 +1,3 @@
-/** Cursor page returned by list/search endpoints. `nextCursor` is null on the last page. */
 export interface Page<T> {
   items: T[];
   nextCursor: string | null;
@@ -7,7 +6,6 @@ export interface Page<T> {
 export const DEFAULT_PAGE_SIZE = 50;
 export const MAX_PAGE_SIZE = 100;
 
-/** Builds a page from a query that fetched `limit + 1` rows ordered by a stable key ending in `id`. */
 export function toPage<T extends { id: string }>(
   rows: T[],
   limit: number,

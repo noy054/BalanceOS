@@ -6,8 +6,6 @@ import { BarcodeController } from './barcode.controller';
 import { BarcodeService } from './barcode.service';
 
 @Module({
-  // Default throttle; the controller overrides it per route. In-memory storage is per instance —
-  // switch to a shared (Redis) storage when running more than one server instance.
   imports: [
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 60 }]),
     PantryModule,

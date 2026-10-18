@@ -15,7 +15,6 @@ type Props = {
   drafts: Map<string, PickerDraft>;
   dir: DirectionStyles;
   onToggleProduct: (product: PantryProduct) => void;
-  /** Loads the next page of pantry products */
   onEndReached?: () => void;
 };
 

@@ -20,7 +20,6 @@ type Props = {
   onChange: (key: RequiredMacroKey, value: string) => void;
 };
 
-/** Asks for per-100g values the catalog source did not provide, instead of silently using 0. */
 export function MissingNutritionFields({ missingKeys, values, errors, onChange }: Props) {
   const { t, i18n } = useTranslation("pantry");
   const { colors } = useAppTheme();

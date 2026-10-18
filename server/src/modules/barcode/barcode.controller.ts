@@ -16,7 +16,6 @@ const RESOLVE_LIMIT_PER_MINUTE = 30;
 export class BarcodeController {
   constructor(private readonly service: BarcodeService) {}
 
-  // Throttled: an unknown barcode can trigger external API calls (shared, rate-limited quota)
   @Throttle({ default: { limit: RESOLVE_LIMIT_PER_MINUTE, ttl: 60_000 } })
   @Get(':barcode/resolve')
   resolve(

@@ -19,7 +19,6 @@ export function parseNonNegative(value: string | undefined): number | undefined 
   return isNaN(n) || n < 0 ? undefined : n;
 }
 
-/** Catalog value, or the user-supplied value when the catalog has none. */
 export function getEffectiveMacro(
   product: ProductCatalogProduct,
   key: RequiredMacroKey,

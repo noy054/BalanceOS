@@ -1,9 +1,5 @@
 import { Prisma } from '../../../../generated/prisma/client';
 
-/**
- * Public shape of a catalog item. Deliberately excludes externalRawData (large provider JSON)
- * and createdBy/updatedBy user ids (other users' identities).
- */
 export const CATALOG_ITEM_PUBLIC_SELECT = {
   id: true,
   barcode: true,

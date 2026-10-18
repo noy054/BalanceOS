@@ -1,7 +1,6 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
 import { normalizeBarcode } from './barcode.utils';
 
-/** Validates that a string is a GTIN (EAN-8, UPC-A, EAN-13, GTIN-14) with a correct check digit. */
 export function IsBarcode(options?: ValidationOptions): PropertyDecorator {
   return (target: object, propertyName: string | symbol) => {
     registerDecorator({

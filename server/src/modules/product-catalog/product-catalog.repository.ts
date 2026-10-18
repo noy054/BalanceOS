@@ -26,7 +26,6 @@ export class ProductCatalogRepository {
     });
   }
 
-  /** Fetches `take` rows (caller asks for limit + 1 to detect the next page). */
   search(
     query: string,
     take: number,

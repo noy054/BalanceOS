@@ -12,19 +12,18 @@ import {
 } from './types/external-product.types';
 import { ProductCatalogItemDto } from './types/product-catalog.types';
 
-/** How long a barcode unknown to every provider is trusted as "not found" before re-asking them. */
 const MISS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const DEFAULT_SEARCH_LIMIT = 20;
 
 interface ExternalProvider {
   breaker: ExternalCircuitBreaker;
+  isEnabled: () => boolean;
   fetch: (barcode: NormalizedBarcode) => Promise<ExternalLookupResult>;
 }
 
 @Injectable()
 export class ProductCatalogService {
   private readonly providers: ExternalProvider[];
-  /** Concurrent lookups for the same barcode share one external round-trip */
   private readonly inFlight = new Map<
     string,
     Promise<ProductCatalogItemDto | null>
@@ -35,23 +34,20 @@ export class ProductCatalogService {
     offClient: OpenFoodFactsClient,
     usdaClient: UsdaFoodDataCentralClient,
   ) {
-    // Order matters: OFF covers Israeli/European products best, USDA is the US fallback
     this.providers = [
       {
         breaker: new ExternalCircuitBreaker('OpenFoodFacts'),
+        isEnabled: () => true,
         fetch: (b) => offClient.fetchByBarcode(b),
       },
       {
         breaker: new ExternalCircuitBreaker('USDA-FDC'),
+        isEnabled: () => usdaClient.isConfigured(),
         fetch: (b) => usdaClient.fetchByBarcode(b),
       },
     ];
   }
 
-  /**
-   * Global catalog lookup: internal DB first (indexed unique lookup), then external providers.
-   * External hits are persisted so every later scan of that barcode is served from our DB.
-   */
   async lookupByBarcode(
     userId: string,
     barcode: NormalizedBarcode,
@@ -95,6 +91,7 @@ export class ProductCatalogService {
     let hadError = false;
 
     for (const provider of this.providers) {
+      if (!provider.isEnabled()) continue;
       if (provider.breaker.isOpen()) {
         hadError = true;
         continue;
@@ -113,12 +110,10 @@ export class ProductCatalogService {
       }
     }
 
-    // Only cache definitive misses; a provider outage must not hide a product for a week
     if (!hadError) await this.repo.recordMiss(barcode.canonical);
     return null;
   }
 
-  /** Saves external product data, guarding against race conditions on simultaneous first-scans across instances. */
   private async saveExternal(
     data: NormalizedProductData,
     userId: string,

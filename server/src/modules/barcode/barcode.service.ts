@@ -11,7 +11,6 @@ export class BarcodeService {
     private readonly catalogService: ProductCatalogService,
   ) {}
 
-  /** User's pantry first (their own values win), then the global catalog / external providers. */
   async resolve(
     userId: string,
     barcode: NormalizedBarcode,
