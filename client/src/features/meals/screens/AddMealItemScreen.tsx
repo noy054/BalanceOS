@@ -15,7 +15,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { ScreenHeader } from '../../../shared/components/ScreenHeader';
-import { CategoryChips } from '../../../shared/components/CategoryChips';
 import { usePantryProducts } from '../../pantry/hooks/usePantry';
 import { useRecipes } from '../../pantry/hooks/useRecipes';
 import { useSavedMeals } from '../../pantry/hooks/useSavedMeals';
@@ -23,6 +22,7 @@ import { useAddMealItem } from '../../day-log/hooks/useDayLog';
 import { PantryProduct, PantryRecipe, ProductCategory, SavedMeal } from '../../pantry/types';
 import { AddMealItemPayload } from '../../day-log/types';
 import { MEAL_SHORTCUTS } from '../constants/mealShortcuts';
+import { MealPickerItem } from '../components/MealPickerItem';
 import { PANTRY_QUERY_KEYS } from '../../pantry/constants';
 import { useMealReturn } from '../../pantry/mealReturnStore';
 import { sortByMealCategory } from '../../pantry/helpers/sortByMealCategory';
@@ -275,63 +275,51 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
         : 'addItem.noSavedMeals';
 
   function renderItem({ item }: { item: PantryProduct | PantryRecipe | SavedMeal }) {
-    let isSelected = false;
-    let sub: string | null = null;
-    let macros = '';
-    let mealCategories: ProductCategory[] = [];
-
     if (activeTab === 'products') {
       const p = item as PantryProduct;
-      isSelected = selected?.kind === 'product' && selected.item.id === p.id;
-      sub = p.brand ?? null;
-      mealCategories = p.mealCategories;
       const hasServing = p.servingSizeG != null && p.servingSizeG > 0;
       const mul = hasServing ? p.servingSizeG! / 100 : 1;
-      const r1 = (n: number) => Math.round(n * mul * 10) / 10;
-      const basis = hasServing ? `/sv` : `/100g`;
-      macros = `${r1(p.caloriesPer100g)} kcal · ${r1(p.proteinPer100g)}g P · ${r1(p.carbsPer100g)}g C · ${r1(p.fatPer100g)}g F ${basis}`;
-    } else if (activeTab === 'recipes') {
-      const r = item as PantryRecipe;
-      isSelected = selected?.kind === 'recipe' && selected.item.id === r.id;
-      macros = `${r.totals.calories} kcal · ${r.totals.protein}g P · ${r.totals.carbs}g C · ${r.totals.fat}g F`;
-    } else {
-      const m = item as SavedMeal;
-      isSelected = selected?.kind === 'savedMeal' && selected.item.id === m.id;
-      macros = `${m.totals.calories} kcal · ${m.totals.protein}g P · ${m.totals.carbs}g C · ${m.totals.fat}g F`;
-    }
-
-    function onPress() {
-      if (activeTab === 'products') handleSelectProduct(item as PantryProduct);
-      else if (activeTab === 'recipes') handleSelectRecipe(item as PantryRecipe);
-      else handleSelectSavedMeal(item as SavedMeal);
-    }
-
-    return (
-      <Pressable
-        style={({ pressed }) => [
-          styles.itemCard,
-          isSelected && styles.itemCardSelected,
-          pressed && styles.itemCardPressed,
-        ]}
-        onPress={onPress}
-      >
-        <Text style={[styles.itemName, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
-          {item.name}
-        </Text>
-        {sub ? (
-          <Text style={[styles.itemSub, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
-            {sub}
-          </Text>
-        ) : null}
-        <CategoryChips
-          categories={mealCategories}
+      return (
+        <MealPickerItem
+          name={p.name}
+          subtitle={p.brand}
+          categories={p.mealCategories}
+          macros={{
+            calories: p.caloriesPer100g * mul,
+            protein: p.proteinPer100g * mul,
+            carbs: p.carbsPer100g * mul,
+            fat: p.fatPer100g * mul,
+          }}
+          basis={hasServing ? 'perServing' : 'per100g'}
+          isSelected={selected?.kind === 'product' && selected.item.id === p.id}
           isRTL={isRTL}
-          style={{ marginTop: 4, marginBottom: 4 }}
+          onPress={() => handleSelectProduct(p)}
         />
-        <Text style={[styles.itemMacros, { textAlign: isRTL ? 'right' : 'left' }]}>
-          {macros}
-        </Text>
-      </Pressable>
+      );
+    }
+
+    if (activeTab === 'recipes') {
+      const r = item as PantryRecipe;
+      return (
+        <MealPickerItem
+          name={r.name}
+          macros={r.totals}
+          isSelected={selected?.kind === 'recipe' && selected.item.id === r.id}
+          isRTL={isRTL}
+          onPress={() => handleSelectRecipe(r)}
+        />
+      );
+    }
+
+    const m = item as SavedMeal;
+    return (
+      <MealPickerItem
+        name={m.name}
+        macros={m.totals}
+        isSelected={selected?.kind === 'savedMeal' && selected.item.id === m.id}
+        isRTL={isRTL}
+        onPress={() => handleSelectSavedMeal(m)}
+      />
     );
   }
 

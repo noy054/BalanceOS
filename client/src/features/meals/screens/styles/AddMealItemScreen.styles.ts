@@ -103,44 +103,6 @@ export const useStyles = () =>
         textAlign: 'center',
       },
 
-      // ── Item card ─────────────────────────────────────────────────────────────
-      itemCard: {
-        borderRadius: radius.lg,
-        borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.cardBackground,
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.sm2,
-      },
-
-      itemCardSelected: {
-        borderColor: colors.primaryGreenMid,
-        backgroundColor: colors.primaryGreenLight,
-      },
-
-      itemCardPressed: {
-        opacity: 0.8,
-      },
-
-      itemName: {
-        fontSize: 14,
-        fontWeight: '700',
-        color: colors.textPrimary,
-      },
-
-      itemSub: {
-        fontSize: 12,
-        fontWeight: '500',
-        color: colors.textMuted,
-        marginTop: 2,
-      },
-
-      itemMacros: {
-        fontSize: 12,
-        color: colors.textSecondary,
-        marginTop: 4,
-      },
-
       // ── Log panel (shown when item is selected) ───────────────────────────────
       logPanel: {
         paddingHorizontal: spacing.lg,

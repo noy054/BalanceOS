@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { View, Text, Pressable } from "react-native";
+import type { LayoutChangeEvent } from "react-native";
 import type { ReactNode } from "react";
 import type { ComponentProps } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -6,7 +8,12 @@ import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
 import { useAppTheme } from "../theme";
-import { useStyles } from "./styles/ScreenHeader.styles";
+import {
+  MIN_SIDE_WIDTH,
+  SIDE_OFFSET,
+  TITLE_GAP,
+  useStyles,
+} from "./styles/ScreenHeader.styles";
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
@@ -50,9 +57,23 @@ export function ScreenHeader({
 
   const shouldRenderRightButton = Boolean(rightIconName && onRightPress);
 
+  const [startWidth, setStartWidth] = useState(0);
+  const [endWidth, setEndWidth] = useState(0);
+  const titleInset =
+    SIDE_OFFSET + Math.max(startWidth, endWidth, MIN_SIDE_WIDTH) + TITLE_GAP;
+
+  function handleStartLayout(event: LayoutChangeEvent) {
+    setStartWidth(Math.ceil(event.nativeEvent.layout.width));
+  }
+
+  function handleEndLayout(event: LayoutChangeEvent) {
+    setEndWidth(Math.ceil(event.nativeEvent.layout.width));
+  }
+
   return (
     <View style={styles.container}>
       <View
+        onLayout={handleStartLayout}
         style={[styles.sideSlot, isRTL ? styles.rightSlot : styles.leftSlot]}
       >
         <Pressable
@@ -71,7 +92,10 @@ export function ScreenHeader({
         </Pressable>
       </View>
 
-      <View pointerEvents="none" style={styles.titleSlot}>
+      <View
+        pointerEvents="none"
+        style={[styles.titleSlot, { paddingHorizontal: titleInset }]}
+      >
         <Text
           style={[
             styles.title,
@@ -80,13 +104,16 @@ export function ScreenHeader({
               textAlign: "center",
             },
           ]}
-          numberOfLines={1}
+          numberOfLines={2}
+          adjustsFontSizeToFit
+          minimumFontScale={0.85}
         >
           {title}
         </Text>
       </View>
 
       <View
+        onLayout={handleEndLayout}
         style={[styles.sideSlot, isRTL ? styles.leftSlot : styles.rightSlot]}
       >
         {shouldRenderRightButton ? (

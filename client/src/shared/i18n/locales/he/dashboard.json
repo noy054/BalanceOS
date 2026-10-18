@@ -76,6 +76,20 @@
     "addToList": "הוסף לרשימה",
     "saveButton": "שמור ל{{mealType}}",
     "saving": "שומר...",
-    "cartItems": "{{count}} פריטים להוספה"
+    "cartItems": "{{count}} פריטים להוספה",
+    "macros": {
+      "calories": "קלוריות",
+      "protein": "חלבון",
+      "carbs": "פחמימות",
+      "fat": "שומן"
+    },
+    "units": {
+      "kcal": "קק״ל",
+      "grams": "ג׳"
+    },
+    "basis": {
+      "per100g": "ל־100 גרם",
+      "perServing": "למנה"
+    }
   }
 }

@@ -76,6 +76,20 @@
     "addToList": "Add to List",
     "saveButton": "Save to {{mealType}}",
     "saving": "Saving...",
-    "cartItems": "{{count}} items to add"
+    "cartItems": "{{count}} items to add",
+    "macros": {
+      "calories": "Calories",
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fat"
+    },
+    "units": {
+      "kcal": "kcal",
+      "grams": "g"
+    },
+    "basis": {
+      "per100g": "per 100g",
+      "perServing": "per serving"
+    }
   }
 }

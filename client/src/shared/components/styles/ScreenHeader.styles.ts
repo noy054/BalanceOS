@@ -2,12 +2,16 @@ import { StyleSheet } from "react-native";
 
 import { spacing, radius, useThemedStyles } from "../../theme";
 
+export const SIDE_OFFSET = spacing.md;
+export const MIN_SIDE_WIDTH = 42;
+export const TITLE_GAP = spacing.sm;
+
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       container: {
-        height: 72,
-        paddingHorizontal: spacing.lg,
+        minHeight: 72,
+        paddingHorizontal: SIDE_OFFSET,
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: colors.background,
@@ -23,7 +27,7 @@ export const useStyles = () =>
         position: "absolute",
         top: 0,
         bottom: 0,
-        width: 96,
+        minWidth: MIN_SIDE_WIDTH,
         alignItems: "center",
         justifyContent: "center",
         zIndex: 1002,
@@ -31,24 +35,25 @@ export const useStyles = () =>
       },
 
       leftSlot: {
-        left: spacing.lg,
+        left: SIDE_OFFSET,
       },
 
       rightSlot: {
-        right: spacing.lg,
+        right: SIDE_OFFSET,
       },
 
       titleSlot: {
         alignItems: "center",
         justifyContent: "center",
-        paddingHorizontal: 112,
         width: "100%",
-        height: 72,
+        minHeight: 72,
+        paddingVertical: spacing.sm,
         zIndex: 1,
       },
 
       title: {
         fontSize: 18,
+        lineHeight: 23,
         fontWeight: "900",
         color: colors.textPrimary,
         textAlign: "center",

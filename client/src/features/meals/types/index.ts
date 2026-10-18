@@ -5,3 +5,12 @@ export type MealShortcut = {
   labelKey: string;
   icon: string;
 };
+
+export type MealPickerMacros = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+};
+
+export type MealPickerBasis = 'per100g' | 'perServing';
