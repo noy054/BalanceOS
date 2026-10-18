@@ -91,7 +91,10 @@ export function BarcodeScreen() {
     return () => loop.stop();
   }, [phase, scanLineAnim]);
 
-  async function handleScan({ data }: BarcodeScanningResult) {
+  async function handleScan({ data, type }: BarcodeScanningResult) {
+    if (__DEV__) {
+      console.log("[barcode]", { type, data, valid: isScannableBarcode(data), locked: scanLocked.current });
+    }
     if (scanLocked.current) return;
     const barcode = data.trim();
     if (!isScannableBarcode(barcode)) return;
