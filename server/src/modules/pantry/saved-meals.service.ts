@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { SavedMealsRepository, SavedMealRow } from './saved-meals.repository';
 import { CreateSavedMealDto } from './dto/create-saved-meal.dto';
 import { UpdateSavedMealDto } from './dto/update-saved-meal.dto';
@@ -20,12 +24,20 @@ function calcRecipeTotals(
     };
   }>,
 ): NutritionTotals {
-  return sumNutrition(recipeItems.map((ri) => calcProductNutrition(ri.product, ri.grams)));
+  return sumNutrition(
+    recipeItems.map((ri) => calcProductNutrition(ri.product, ri.grams)),
+  );
 }
 
 function enrichSavedMeal(meal: NonNullable<SavedMealRow>) {
   const enrichedItems = meal.items.map((item) => {
-    let nutrition: NutritionTotals = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+    let nutrition: NutritionTotals = {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+    };
 
     if (item.product && item.grams) {
       nutrition = calcProductNutrition(item.product, item.grams);
@@ -76,14 +88,10 @@ export class SavedMealsService {
         );
       }
       if (hasProduct && !item.grams) {
-        throw new BadRequestException(
-          'Product items require grams',
-        );
+        throw new BadRequestException('Product items require grams');
       }
       if (hasRecipe && !item.servings) {
-        throw new BadRequestException(
-          'Recipe items require servings',
-        );
+        throw new BadRequestException('Recipe items require servings');
       }
     }
     const meal = await this.repo.create(userId, dto);

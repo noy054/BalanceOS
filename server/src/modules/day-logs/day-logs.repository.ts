@@ -93,7 +93,11 @@ export class DayLogsRepository {
     });
   }
 
-  async findOrCreateToday(userId: string, date: string, targetsSnapshot: object) {
+  async findOrCreateToday(
+    userId: string,
+    date: string,
+    targetsSnapshot: object,
+  ) {
     return this.prisma.dayLog.upsert({
       where: { userId_date: { userId, date } },
       create: { userId, date, targetsSnapshot },
@@ -133,7 +137,10 @@ export class DayLogsRepository {
     });
   }
 
-  findPantryProductForUser(productId: string, userId: string): Promise<PantryProductRow | null> {
+  findPantryProductForUser(
+    productId: string,
+    userId: string,
+  ): Promise<PantryProductRow | null> {
     return this.prisma.pantryProduct.findFirst({
       where: { id: productId, userId },
       select: {
@@ -148,7 +155,10 @@ export class DayLogsRepository {
     });
   }
 
-  findPantryRecipeForUser(recipeId: string, userId: string): Promise<PantryRecipeRow | null> {
+  findPantryRecipeForUser(
+    recipeId: string,
+    userId: string,
+  ): Promise<PantryRecipeRow | null> {
     return this.prisma.pantryRecipe.findFirst({
       where: { id: recipeId, userId },
       select: {
@@ -172,7 +182,10 @@ export class DayLogsRepository {
     });
   }
 
-  findSavedMealForUser(savedMealId: string, userId: string): Promise<SavedMealRow | null> {
+  findSavedMealForUser(
+    savedMealId: string,
+    userId: string,
+  ): Promise<SavedMealRow | null> {
     return this.prisma.savedMeal.findFirst({
       where: { id: savedMealId, userId },
       select: {
@@ -278,7 +291,11 @@ export class DayLogsRepository {
       select: { macrosSnapshot: true },
     });
 
-    let calories = 0, protein = 0, carbs = 0, fat = 0, fiber = 0;
+    let calories = 0,
+      protein = 0,
+      carbs = 0,
+      fat = 0,
+      fiber = 0;
     for (const item of items) {
       const s = item.macrosSnapshot as MacrosSnapshot;
       calories += s.calories;

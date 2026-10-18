@@ -7,7 +7,9 @@ import { UserNutritionSettingsModel } from '../../../generated/prisma/models';
 export class NutritionSettingsService {
   constructor(private readonly repo: NutritionSettingsRepository) {}
 
-  async getSettings(userId: string): Promise<UserNutritionSettingsModel | null> {
+  async getSettings(
+    userId: string,
+  ): Promise<UserNutritionSettingsModel | null> {
     return this.repo.findByUserId(userId);
   }
 

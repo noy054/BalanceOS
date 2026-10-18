@@ -144,7 +144,10 @@ export class AuthService {
     await this.authRepository.deleteAllUserRefreshTokens(userId);
   }
 
-  async updateProfile(userId: string, dto: UpdateProfileDto): Promise<UserPublic> {
+  async updateProfile(
+    userId: string,
+    dto: UpdateProfileDto,
+  ): Promise<UserPublic> {
     if (!dto.fullName) {
       return this.usersService.getPublicUser(userId);
     }
@@ -155,7 +158,9 @@ export class AuthService {
     const user = await this.usersService.findById(userId);
     if (!user) throw new UnauthorizedException();
     if (!user.passwordHash) {
-      throw new BadRequestException('Password change is not available for this account type.');
+      throw new BadRequestException(
+        'Password change is not available for this account type.',
+      );
     }
     const valid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
     if (!valid) throw new BadRequestException('Current password is incorrect.');
@@ -174,7 +179,9 @@ export class AuthService {
     if (!user || !user.passwordHash) return;
 
     const rawToken = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + RESET_TOKEN_EXPIRES_MINUTES * 60 * 1000);
+    const expiresAt = new Date(
+      Date.now() + RESET_TOKEN_EXPIRES_MINUTES * 60 * 1000,
+    );
     await this.authRepository.saveResetToken(user.id, rawToken, expiresAt);
 
     // Fire-and-forget: email failures must not surface to the client
@@ -220,7 +227,9 @@ export class AuthService {
     );
 
     const refreshExpiresAt = new Date();
-    refreshExpiresAt.setDate(refreshExpiresAt.getDate() + REFRESH_TOKEN_EXPIRES_DAYS);
+    refreshExpiresAt.setDate(
+      refreshExpiresAt.getDate() + REFRESH_TOKEN_EXPIRES_DAYS,
+    );
 
     await this.authRepository.saveRefreshToken(
       userId,

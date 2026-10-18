@@ -10,7 +10,13 @@ import {
 import { Type } from 'class-transformer';
 import { SavedMealItemDto } from './create-saved-meal.dto';
 
-const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK_1', 'SNACK_2'] as const;
+const MEAL_TYPES = [
+  'BREAKFAST',
+  'LUNCH',
+  'DINNER',
+  'SNACK_1',
+  'SNACK_2',
+] as const;
 
 export class UpdateSavedMealDto {
   @IsOptional()

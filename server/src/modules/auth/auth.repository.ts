@@ -42,10 +42,16 @@ export class AuthRepository {
     });
   }
 
-  async saveResetToken(userId: string, token: string, expiresAt: Date): Promise<void> {
+  async saveResetToken(
+    userId: string,
+    token: string,
+    expiresAt: Date,
+  ): Promise<void> {
     const tokenHash = this.hashToken(token);
     await this.prisma.passwordResetToken.deleteMany({ where: { userId } });
-    await this.prisma.passwordResetToken.create({ data: { userId, tokenHash, expiresAt } });
+    await this.prisma.passwordResetToken.create({
+      data: { userId, tokenHash, expiresAt },
+    });
   }
 
   async findResetToken(token: string) {

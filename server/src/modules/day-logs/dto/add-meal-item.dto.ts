@@ -1,13 +1,13 @@
-import {
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
-const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK_1', 'SNACK_2'] as const;
+const MEAL_TYPES = [
+  'BREAKFAST',
+  'LUNCH',
+  'DINNER',
+  'SNACK_1',
+  'SNACK_2',
+] as const;
 
 export class AddMealItemDto {
   @IsEnum(MEAL_TYPES)

@@ -34,7 +34,8 @@ export class MailerService {
     });
 
     const from =
-      this.config.get<string>('SMTP_FROM') ?? 'BalanceOS <noreply@balanceos.com>';
+      this.config.get<string>('SMTP_FROM') ??
+      'BalanceOS <noreply@balanceos.com>';
 
     await transporter.sendMail({
       from,

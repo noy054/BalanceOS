@@ -30,7 +30,10 @@ export class UsersService {
     return this.toPublic(user);
   }
 
-  async updateProfile(id: string, data: { fullName?: string }): Promise<UserPublic> {
+  async updateProfile(
+    id: string,
+    data: { fullName?: string },
+  ): Promise<UserPublic> {
     const user = await this.usersRepository.updateProfile(id, data);
     return this.toPublic(user);
   }

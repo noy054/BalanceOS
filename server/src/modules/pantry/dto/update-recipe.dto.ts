@@ -8,7 +8,13 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK_1', 'SNACK_2'] as const;
+const MEAL_TYPES = [
+  'BREAKFAST',
+  'LUNCH',
+  'DINNER',
+  'SNACK_1',
+  'SNACK_2',
+] as const;
 import { Type } from 'class-transformer';
 import { RecipeItemDto } from './create-recipe.dto';
 

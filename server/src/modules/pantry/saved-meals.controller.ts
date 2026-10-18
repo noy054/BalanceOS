@@ -47,7 +47,10 @@ export class SavedMealsController {
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@CurrentUser() user: UserPublic, @Param('id') id: string): Promise<void> {
+  delete(
+    @CurrentUser() user: UserPublic,
+    @Param('id') id: string,
+  ): Promise<void> {
     return this.service.delete(user.id, id);
   }
 }

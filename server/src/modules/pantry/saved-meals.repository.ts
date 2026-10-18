@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateSavedMealDto, SavedMealItemDto } from './dto/create-saved-meal.dto';
+import {
+  CreateSavedMealDto,
+  SavedMealItemDto,
+} from './dto/create-saved-meal.dto';
 
 const SAVED_MEAL_INCLUDE = {
   items: {
@@ -81,7 +84,11 @@ export class SavedMealsRepository {
     });
   }
 
-  updateHeader(id: string, name: string | undefined, mealType: string | undefined) {
+  updateHeader(
+    id: string,
+    name: string | undefined,
+    mealType: string | undefined,
+  ) {
     return this.prisma.savedMeal.update({
       where: { id },
       data: {

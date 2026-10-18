@@ -32,10 +32,7 @@ export class DayLogsController {
 
   @Post('today/meal-items')
   @HttpCode(201)
-  addMealItem(
-    @CurrentUser() user: UserPublic,
-    @Body() dto: AddMealItemDto,
-  ) {
+  addMealItem(@CurrentUser() user: UserPublic, @Body() dto: AddMealItemDto) {
     return this.service.addMealItem(user.id, dto);
   }
 

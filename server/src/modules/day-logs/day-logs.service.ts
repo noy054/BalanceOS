@@ -31,9 +31,11 @@ export class DayLogsService {
   }
 
   async addMealItem(userId: string, dto: AddMealItemDto) {
-    const sourceCount = [dto.pantryProductId, dto.pantryRecipeId, dto.savedMealId].filter(
-      Boolean,
-    ).length;
+    const sourceCount = [
+      dto.pantryProductId,
+      dto.pantryRecipeId,
+      dto.savedMealId,
+    ].filter(Boolean).length;
     if (sourceCount !== 1) {
       throw new BadRequestException(
         'Exactly one of pantryProductId, pantryRecipeId, or savedMealId is required',
@@ -43,33 +45,60 @@ export class DayLogsService {
     let snapshot: MacrosSnapshot;
 
     if (dto.pantryProductId) {
-      if (!dto.grams) throw new BadRequestException('grams is required for products');
-      const product = await this.repo.findPantryProductForUser(dto.pantryProductId, userId);
+      if (!dto.grams)
+        throw new BadRequestException('grams is required for products');
+      const product = await this.repo.findPantryProductForUser(
+        dto.pantryProductId,
+        userId,
+      );
       if (!product) throw new NotFoundException('Product not found');
       snapshot = this.calculator.productSnapshot(product, dto.grams);
     } else if (dto.pantryRecipeId) {
-      if (!dto.servings) throw new BadRequestException('servings is required for recipes');
-      const recipe = await this.repo.findPantryRecipeForUser(dto.pantryRecipeId, userId);
+      if (!dto.servings)
+        throw new BadRequestException('servings is required for recipes');
+      const recipe = await this.repo.findPantryRecipeForUser(
+        dto.pantryRecipeId,
+        userId,
+      );
       if (!recipe) throw new NotFoundException('Recipe not found');
       snapshot = this.calculator.recipeSnapshot(recipe, dto.servings);
     } else {
-      const meal = await this.repo.findSavedMealForUser(dto.savedMealId!, userId);
+      const meal = await this.repo.findSavedMealForUser(
+        dto.savedMealId!,
+        userId,
+      );
       if (!meal) throw new NotFoundException('Saved meal not found');
       const itemTotals = meal.items.map((item) => {
         if (item.product && item.grams) {
-          return this.calculator.productSnapshot({ ...item.product, name: '' }, item.grams);
+          return this.calculator.productSnapshot(
+            { ...item.product, name: '' },
+            item.grams,
+          );
         }
         if (item.recipe && item.servings) {
-          return this.calculator.recipeSnapshot({ name: '', items: item.recipe.items }, item.servings);
+          return this.calculator.recipeSnapshot(
+            { name: '', items: item.recipe.items },
+            item.servings,
+          );
         }
-        return { name: '', calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+        return {
+          name: '',
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+          fiber: 0,
+        };
       });
       const totals = this.calculator.sumTotals(itemTotals);
       snapshot = this.calculator.savedMealSnapshot(meal, totals);
     }
 
     const dayLog = await this.getOrCreateToday(userId);
-    const mealEntry = await this.repo.findOrCreateMealEntry(dayLog.id, dto.mealType);
+    const mealEntry = await this.repo.findOrCreateMealEntry(
+      dayLog.id,
+      dto.mealType,
+    );
 
     const item = await this.repo.createMealItem(mealEntry.id, {
       pantryProductId: dto.pantryProductId,
@@ -112,7 +141,12 @@ export class DayLogsService {
           const s = item.macrosSnapshot as MacrosSnapshot;
           calories += s.calories;
           protein += s.protein;
-          return { id: item.id, name: s.name, calories: s.calories, protein: s.protein };
+          return {
+            id: item.id,
+            name: s.name,
+            calories: s.calories,
+            protein: s.protein,
+          };
         });
         return {
           id: entry.id,
@@ -126,7 +160,11 @@ export class DayLogsService {
     return { meals };
   }
 
-  async copyMealEntry(userId: string, mealEntryId: string, dto: CopyMealDto): Promise<void> {
+  async copyMealEntry(
+    userId: string,
+    mealEntryId: string,
+    dto: CopyMealDto,
+  ): Promise<void> {
     const entry = await this.repo.findMealEntryWithItems(mealEntryId);
     if (!entry || entry.dayLog.userId !== userId) {
       throw new NotFoundException('Meal entry not found');
@@ -138,8 +176,15 @@ export class DayLogsService {
     const targets = await this.repo.findUserTargets(userId);
 
     for (const targetDate of dto.targetDates) {
-      const dayLog = await this.repo.findOrCreateToday(userId, targetDate, targets);
-      const mealEntry = await this.repo.findOrCreateMealEntry(dayLog.id, entry.mealType);
+      const dayLog = await this.repo.findOrCreateToday(
+        userId,
+        targetDate,
+        targets,
+      );
+      const mealEntry = await this.repo.findOrCreateMealEntry(
+        dayLog.id,
+        entry.mealType,
+      );
 
       for (const item of entry.items) {
         await this.repo.createMealItem(mealEntry.id, {

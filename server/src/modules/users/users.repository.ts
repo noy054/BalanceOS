@@ -31,7 +31,10 @@ export class UsersRepository {
     return this.prisma.user.findUnique({ where: { googleId } });
   }
 
-  async updateProfile(id: string, data: { fullName?: string }): Promise<UserModel> {
+  async updateProfile(
+    id: string,
+    data: { fullName?: string },
+  ): Promise<UserModel> {
     return this.prisma.user.update({ where: { id }, data });
   }
 

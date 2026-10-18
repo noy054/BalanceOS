@@ -12,7 +12,13 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK_1', 'SNACK_2'] as const;
+const MEAL_TYPES = [
+  'BREAKFAST',
+  'LUNCH',
+  'DINNER',
+  'SNACK_1',
+  'SNACK_2',
+] as const;
 
 export class RecipeItemDto {
   @IsString()

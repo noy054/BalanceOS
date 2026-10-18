@@ -64,7 +64,11 @@ export class RecipesRepository {
     });
   }
 
-  updateHeader(id: string, name: string | undefined, description: string | undefined) {
+  updateHeader(
+    id: string,
+    name: string | undefined,
+    description: string | undefined,
+  ) {
     return this.prisma.pantryRecipe.update({
       where: { id },
       data: {

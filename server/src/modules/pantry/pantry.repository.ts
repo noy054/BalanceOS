@@ -81,7 +81,10 @@ export class PantryRepository {
   ): Promise<PantryProductModel> {
     return this.prisma.pantryProduct.update({
       where: { id },
-      data: { ...dto, ...(normalizedBarcode !== undefined ? { normalizedBarcode } : {}) },
+      data: {
+        ...dto,
+        ...(normalizedBarcode !== undefined ? { normalizedBarcode } : {}),
+      },
     });
   }
 

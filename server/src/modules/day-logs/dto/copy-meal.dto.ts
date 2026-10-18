@@ -1,4 +1,9 @@
-import { IsArray, IsDateString, ArrayMinSize, ArrayMaxSize } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  ArrayMinSize,
+  ArrayMaxSize,
+} from 'class-validator';
 
 export class CopyMealDto {
   @IsArray()

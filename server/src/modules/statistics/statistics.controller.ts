@@ -11,10 +11,7 @@ export class StatisticsController {
   constructor(private readonly service: StatisticsService) {}
 
   @Get()
-  get(
-    @CurrentUser() user: UserPublic,
-    @Query() query: StatisticsQueryDto,
-  ) {
+  get(@CurrentUser() user: UserPublic, @Query() query: StatisticsQueryDto) {
     return this.service.getStatistics(user.id, query.range ?? '7D');
   }
 }
