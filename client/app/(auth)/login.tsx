@@ -5,7 +5,8 @@ import { Link } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
 
-import { useLogin, useGoogleLogin } from "../../src/features/auth/hooks/useAuth";
+import { useLogin } from "../../src/features/auth/hooks/useAuth";
+import { useGoogleSignIn } from "../../src/features/auth/hooks/useGoogleSignIn";
 import { ScreenShell } from "../../src/shared/components/ScreenShell";
 import { colors } from "../../src/shared/theme";
 import { styles, getDirectionStyles } from "./styles/login.styles";
@@ -21,25 +22,38 @@ export default function LoginScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const login = useLogin();
-  const googleLogin = useGoogleLogin();
-  const isLoading = login.isPending || googleLogin.isPending;
+  const googleSignIn = useGoogleSignIn();
+
+  const isLoading = login.isPending || googleSignIn.isPending;
 
   function getLoginError(error: unknown): string {
     if (isAxiosError(error) && error.response?.status === 401) {
       return t("login.errors.invalidCredentials");
     }
+
     return t("login.errors.generic");
   }
 
-  const errorMessage = login.error
-    ? getLoginError(login.error)
-    : googleLogin.error
-      ? getLoginError(googleLogin.error)
+  const errorMessage = googleSignIn.errorKey
+    ? t(googleSignIn.errorKey)
+    : login.error
+      ? getLoginError(login.error)
       : null;
 
   function handleLogin() {
-    if (!email || !password) return;
-    login.mutate({ email: email.trim(), password });
+    if (!email.trim() || !password) return;
+
+    googleSignIn.clearError();
+
+    login.mutate({
+      email: email.trim(),
+      password,
+    });
+  }
+
+  function handleGoogleLogin() {
+    login.reset();
+    void googleSignIn.signIn();
   }
 
   const passwordIcon = (
@@ -58,7 +72,9 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.field}>
-        <Text style={[styles.fieldLabel, dir.text]}>{t("login.emailLabel")}</Text>
+        <Text style={[styles.fieldLabel, dir.text]}>
+          {t("login.emailLabel")}
+        </Text>
         <TextInput
           key={`email-${i18n.language}`}
           value={email}
@@ -75,7 +91,9 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.field}>
-        <Text style={[styles.fieldLabel, dir.text]}>{t("login.passwordLabel")}</Text>
+        <Text style={[styles.fieldLabel, dir.text]}>
+          {t("login.passwordLabel")}
+        </Text>
         <TextInput
           key={`password-${i18n.language}`}
           value={password}
@@ -90,7 +108,11 @@ export default function LoginScreen() {
           left={isRTL ? passwordIcon : undefined}
           right={!isRTL ? passwordIcon : undefined}
         />
-        <Link href="/(auth)/forgot-password" style={[styles.forgotLink, dir.text]}>
+
+        <Link
+          href="/(auth)/forgot-password"
+          style={[styles.forgotLink, dir.text]}
+        >
           {t("login.forgotPassword")}
         </Link>
       </View>
@@ -123,7 +145,8 @@ export default function LoginScreen() {
 
       <Button
         mode="outlined"
-        onPress={() => {}}
+        onPress={handleGoogleLogin}
+        loading={googleSignIn.isPending}
         disabled={isLoading}
         icon="google"
         textColor={colors.textPrimary}
