@@ -1,49 +1,52 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, radius, useThemedStyles } from "../../../../../shared/theme";
+import {
+  radius,
+  spacing,
+  typography,
+  useThemedStyles,
+} from "../../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       mealTypeScroll: {
-        width: "100%",
+        flexGrow: 0,
       },
 
       mealTypeRow: {
-        flexGrow: 1,
         gap: spacing.sm,
-        paddingVertical: spacing.xs,
-        alignItems: "center",
+        paddingVertical: 2,
       },
 
       mealTypeChip: {
+        minHeight: 38,
+        paddingHorizontal: spacing.ms,
+        borderRadius: radius.md,
         borderWidth: 1,
         borderColor: colors.border,
-        borderRadius: radius.full,
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.sm,
-        backgroundColor: colors.inputBackground,
+        backgroundColor: colors.surface,
+        alignItems: "center",
+        justifyContent: "center",
       },
 
       mealTypeChipActive: {
-        borderColor: colors.primaryGreenMid,
-        backgroundColor: colors.primaryGreenLight,
+        borderColor: colors.accent,
+        backgroundColor: colors.accentSoft,
       },
 
       chipPressed: {
-        opacity: 0.78,
-        transform: [{ scale: 0.97 }],
+        opacity: 0.7,
       },
 
       mealTypeText: {
-        fontSize: 12,
-        fontWeight: "800",
-        color: colors.textMuted,
+        ...typography.callout,
+        color: colors.textSecondary,
       },
 
       mealTypeTextActive: {
-        color: colors.primaryGreen,
-        fontWeight: "900",
+        fontWeight: "600",
+        color: colors.accent,
       },
     }),
   );

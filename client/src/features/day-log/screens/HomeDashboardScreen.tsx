@@ -1,20 +1,25 @@
-import { useMemo, useState } from "react";
-import { ScrollView, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useCallback, useMemo, useState } from "react";
+import type { ComponentProps } from "react";
+import { RefreshControl, ScrollView, View } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
 import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
-import { HomeHeader } from "../components/HomeHeader";
-import { CalorieSummaryCard } from "../components/CalorieSummaryCard";
-import { MacroSummaryCard } from "../components/MacroSummaryCard";
-import { MealLogCard } from "../components/MealLogCard";
+import { TabHeader } from "../../../shared/components/TabHeader";
+import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
+import { StateView } from "../../../shared/components/ui/StateView";
+import { DailySummaryCard } from "../components/DailySummaryCard";
+import { MealSectionCard } from "../components/MealSectionCard";
 import { CopyMealModal } from "../components/CopyMealModal";
-import { MealShortcutList } from "../../meals/components/MealShortcutList";
+import { MEAL_SHORTCUTS } from "../../meals/constants/mealShortcuts";
 import { useTodayDayLog, useTodayMeals } from "../hooks/useDayLog";
 import { DayLogSummary, MealEntrySummary } from "../types";
 import { useNutritionSettings } from "../../settings/hooks/useSettings";
+import { useAppTheme } from "../../../shared/theme";
 import { useStyles } from "./styles/HomeDashboardScreen.styles";
+
+type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
 const EMPTY_SUMMARY: DayLogSummary = {
   date: "",
@@ -28,19 +33,54 @@ const EMPTY_SUMMARY: DayLogSummary = {
   ],
 };
 
-// Tab bar height + wrapper offset — gives content room to scroll clear of the pill.
-const TAB_BAR_CLEARANCE = 100;
+const MEAL_ICONS: Record<string, IconName> = {
+  BREAKFAST: "coffee-outline",
+  LUNCH: "silverware-fork-knife",
+  DINNER: "food-outline",
+};
+
+type MealSection = {
+  key: string;
+  mealType: string;
+  labelKey: string;
+  meal: MealEntrySummary | null;
+};
+
+function formatToday(dateString: string, language: string) {
+  const date = dateString ? new Date(`${dateString}T12:00:00`) : new Date();
+  const validDate = Number.isNaN(date.getTime()) ? new Date() : date;
+
+  try {
+    return validDate.toLocaleDateString(language === "he" ? "he-IL" : "en-US", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    });
+  } catch {
+    return validDate.toDateString();
+  }
+}
 
 export function HomeDashboardScreen() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation("dashboard");
   const styles = useStyles();
-  const insets = useSafeAreaInsets();
+  const { colors } = useAppTheme();
 
-  const { data: summary = EMPTY_SUMMARY } = useTodayDayLog();
-  const { data: mealsData } = useTodayMeals();
+  const {
+    data: summary = EMPTY_SUMMARY,
+    isLoading: isSummaryLoading,
+    isError: isSummaryError,
+    refetch: refetchSummary,
+  } = useTodayDayLog();
+  const {
+    data: mealsData,
+    isLoading: isMealsLoading,
+    isError: isMealsError,
+    refetch: refetchMeals,
+  } = useTodayMeals();
   const { data: settings } = useNutritionSettings();
 
-  const meals = mealsData?.meals ?? [];
+  const meals = useMemo(() => mealsData?.meals ?? [], [mealsData]);
 
   const visibleMacros = useMemo(() => {
     return summary.macros.filter((macro) => {
@@ -69,7 +109,44 @@ export function HomeDashboardScreen() {
     settings?.showFiberOnHome,
   ]);
 
+  const sections = useMemo<MealSection[]>(() => {
+    const usedIds = new Set<string>();
+
+    const base = MEAL_SHORTCUTS.map((shortcut) => {
+      const meal = meals.find((m) => m.mealType === shortcut.type) ?? null;
+      if (meal) usedIds.add(meal.id);
+
+      return {
+        key: shortcut.type,
+        mealType: shortcut.type,
+        labelKey: shortcut.labelKey,
+        meal,
+      };
+    });
+
+    const extras = meals
+      .filter((meal) => !usedIds.has(meal.id))
+      .map((meal) => ({
+        key: meal.id,
+        mealType: meal.mealType,
+        labelKey: meal.mealType === "SNACK_2" ? "snack2" : "snack",
+        meal,
+      }));
+
+    return [...base, ...extras];
+  }, [meals]);
+
   const [copyingMeal, setCopyingMeal] = useState<MealEntrySummary | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      await Promise.all([refetchSummary(), refetchMeals()]);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [refetchSummary, refetchMeals]);
 
   function handleMealTypeSelect(type: string) {
     router.push(`/(app)/meal/add-item?mealType=${type}`);
@@ -78,62 +155,77 @@ export function HomeDashboardScreen() {
   return (
     <TabScreenLayout activeTab="home">
       <View key={i18n.language} style={styles.root}>
-        <View pointerEvents="none" style={styles.backgroundLayer}>
-          <View style={styles.glowTop} />
-          <View style={styles.glowLeft} />
-          <View style={styles.glowBottom} />
-        </View>
-
-        <View style={styles.headerWrapper}>
-          <HomeHeader />
-        </View>
-
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingBottom: insets.bottom + TAB_BAR_CLEARANCE },
-          ]}
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
-          bounces
-        >
-          <View style={styles.heroSection}>
-            <CalorieSummaryCard
-              eaten={summary.caloriesEaten}
-              target={summary.caloriesTarget}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor={colors.textMuted}
+              colors={[colors.accent]}
+              progressBackgroundColor={colors.surface}
             />
-          </View>
+          }
+        >
+          <TabHeader
+            overline={formatToday(summary.date, i18n.language)}
+            title={t("header.today")}
+          />
 
-          {visibleMacros.length > 0 && (
-            <View style={styles.section}>
-              <MacroSummaryCard
-                macros={visibleMacros}
-                showProgressPercentages={
-                  settings?.showProgressPercentages ?? true
-                }
+          <View style={styles.body}>
+            {isSummaryLoading ? (
+              <StateView variant="loading" compact style={styles.stateCard} />
+            ) : isSummaryError ? (
+              <StateView
+                variant="error"
+                compact
+                style={styles.stateCard}
+                message={t("errors.loadFailed")}
+                actionLabel={t("errors.retry")}
+                onAction={() => refetchSummary()}
               />
-            </View>
-          )}
+            ) : (
+              <DailySummaryCard
+                eaten={summary.caloriesEaten}
+                target={summary.caloriesTarget}
+                macros={visibleMacros}
+                showPercentages={settings?.showProgressPercentages ?? true}
+              />
+            )}
 
-          <View style={styles.shortcutsSection}>
-            <MealShortcutList onSelect={handleMealTypeSelect} />
-          </View>
+            <View>
+              <SectionHeader title={t("meals.sectionTitle")} />
 
-          {meals.length > 0 && (
-            <View style={styles.mealsSection}>
-              {meals.map((meal) => (
-                <MealLogCard
-                  key={meal.id}
-                  meal={meal}
-                  isRTL={i18n.dir(i18n.language) === "rtl"}
-                  onPress={handleMealTypeSelect}
-                  onCopy={setCopyingMeal}
+              {isMealsLoading ? (
+                <StateView variant="loading" compact style={styles.stateCard} />
+              ) : isMealsError ? (
+                <StateView
+                  variant="error"
+                  compact
+                style={styles.stateCard}
+                  message={t("errors.mealsLoadFailed")}
+                  actionLabel={t("errors.retry")}
+                  onAction={() => refetchMeals()}
                 />
-              ))}
+              ) : (
+                <View style={styles.mealsList}>
+                  {sections.map((section) => (
+                    <MealSectionCard
+                      key={section.key}
+                      mealType={section.mealType}
+                      labelKey={section.labelKey}
+                      icon={MEAL_ICONS[section.mealType] ?? "food-apple-outline"}
+                      meal={section.meal}
+                      onAdd={handleMealTypeSelect}
+                      onCopy={setCopyingMeal}
+                    />
+                  ))}
+                </View>
+              )}
             </View>
-          )}
-
-          <View style={styles.bottomSpacer} />
+          </View>
         </ScrollView>
       </View>
 

@@ -1,6 +1,7 @@
 import { View, Text } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
+
 import { FormInput } from "../../../../shared/components/FormInput";
 import { useAppTheme } from "../../../../shared/theme";
 import { RequiredMacroKey } from "../../helpers/catalogNutrition";
@@ -32,7 +33,7 @@ export function MissingNutritionFields({ missingKeys, values, errors, onChange }
   return (
     <View style={styles.section}>
       <View style={[styles.header, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
-        <MaterialCommunityIcons name="alert-circle-outline" size={16} color={colors.danger} />
+        <MaterialCommunityIcons name="alert-circle-outline" size={18} color={colors.warning} />
         <View style={styles.headerText}>
           <Text style={[styles.title, { textAlign }]}>{t("barcode.missingNutrition.title")}</Text>
           <Text style={[styles.hint, { textAlign }]}>{t("barcode.missingNutrition.hint")}</Text>

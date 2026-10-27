@@ -1,13 +1,12 @@
 import { StyleSheet } from "react-native";
 
-import { radius, spacing, useThemedStyles } from "../../../../../shared/theme";
+import { radius, spacing, typography, useThemedStyles } from "../../../../../shared/theme";
 
 export const useStyles = () =>
-  useThemedStyles(() =>
+  useThemedStyles((colors) =>
     StyleSheet.create({
       root: {
         position: "relative",
-        overflow: "hidden",
       },
 
       content: {
@@ -17,8 +16,8 @@ export const useStyles = () =>
       actionContainer: {
         position: "absolute",
         top: 0,
-        bottom: spacing.md,
-        width: 92,
+        bottom: 0,
+        width: 80,
         zIndex: 1,
       },
 
@@ -32,8 +31,8 @@ export const useStyles = () =>
 
       deleteAction: {
         flex: 1,
-        borderRadius: radius.xl,
-        backgroundColor: "#EF4444",
+        borderRadius: radius.lg,
+        backgroundColor: colors.danger,
         alignItems: "center",
         justifyContent: "center",
         gap: spacing.xs,
@@ -48,9 +47,9 @@ export const useStyles = () =>
       },
 
       deleteText: {
-        color: "#FFFFFF",
-        fontSize: 12,
-        fontWeight: "900",
+        ...typography.caption,
+        fontWeight: "600",
+        color: colors.surface,
         textAlign: "center",
       },
     }),

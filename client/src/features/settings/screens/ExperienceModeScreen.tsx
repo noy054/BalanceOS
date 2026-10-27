@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,6 @@ import { useAppTheme } from '../../../shared/theme';
 import { useStyles, getDirectionStyles } from './styles/ExperienceModeScreen.styles';
 
 type ModeCardProps = {
-  mode: ExperienceMode;
   title: string;
   description: string;
   icon: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
@@ -18,10 +17,11 @@ type ModeCardProps = {
   onPress: () => void;
 };
 
-function ModeCard({ mode: _mode, title, description, icon, active, isRTL, onPress }: ModeCardProps) {
+function ModeCard({ title, description, icon, active, isRTL, onPress }: ModeCardProps) {
   const { colors } = useAppTheme();
   const styles = useStyles();
   const dir = getDirectionStyles(isRTL);
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -30,25 +30,27 @@ function ModeCard({ mode: _mode, title, description, icon, active, isRTL, onPres
         pressed && styles.cardPressed,
       ]}
       onPress={onPress}
+      accessibilityRole="radio"
+      accessibilityState={{ selected: active }}
+      accessibilityLabel={`${title}. ${description}`}
     >
       <View style={[styles.cardHeader, dir.row]}>
         <View style={[styles.iconCircle, active && styles.iconCircleActive]}>
           <MaterialCommunityIcons
             name={icon}
             size={22}
-            color={active ? '#081008' : colors.textSecondary}
+            color={active ? colors.accent : colors.textSecondary}
           />
         </View>
-        <Text style={[styles.cardTitle, active && styles.cardTitleActive, dir.text]}>{title}</Text>
+
+        <Text style={[styles.cardTitle, dir.text]}>{title}</Text>
+
         <View style={[styles.radio, active && styles.radioActive]}>
-          {active ? (
-            <MaterialCommunityIcons name="check" size={14} color="#081008" />
-          ) : null}
+          {active ? <View style={styles.radioDot} /> : null}
         </View>
       </View>
-      <Text style={[styles.cardDescription, active && styles.cardDescriptionActive, dir.text]}>
-        {description}
-      </Text>
+
+      <Text style={[styles.cardDescription, dir.text]}>{description}</Text>
     </Pressable>
   );
 }
@@ -75,14 +77,13 @@ export function ExperienceModeScreen() {
         title={t('experience.screenTitle')}
         rightElement={
           updateSettings.isPending ? (
-            <ActivityIndicator size="small" color={colors.primaryGreen} />
+            <ActivityIndicator size="small" color={colors.accent} />
           ) : undefined
         }
       />
 
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <ModeCard
-          mode="EXPERT"
           title={t('experience.expert')}
           description={t('experience.expertDescription')}
           icon="chart-timeline-variant"
@@ -91,7 +92,6 @@ export function ExperienceModeScreen() {
           onPress={() => handleSelect('EXPERT')}
         />
         <ModeCard
-          mode="GUIDED"
           title={t('experience.guided')}
           description={t('experience.guidedDescription')}
           icon="lightbulb-outline"
@@ -99,7 +99,7 @@ export function ExperienceModeScreen() {
           isRTL={isRTL}
           onPress={() => handleSelect('GUIDED')}
         />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

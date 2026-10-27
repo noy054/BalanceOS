@@ -1,22 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Alert, FlatList, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
 import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
-import { useAppTheme } from "../../../shared/theme";
-import { PantryHeader } from "../components/shared/PantryHeader";
-import { PantrySearchBar } from "../components/shared/PantrySearchBar";
-import { PantryTabBar } from "../components/shared/PantryTabBar";
+import { TabHeader } from "../../../shared/components/TabHeader";
+import { Button } from "../../../shared/components/ui/Button";
+import { IconButton } from "../../../shared/components/ui/IconButton";
+import { SearchField } from "../../../shared/components/ui/SearchField";
+import { SegmentedControl } from "../../../shared/components/ui/SegmentedControl";
+import { StateView } from "../../../shared/components/ui/StateView";
+import { ActionSheet, SheetAction } from "../../../shared/components/ui/ActionSheet";
 import { PantryEmptyState } from "../components/shared/PantryEmptyState";
 import { SwipeDeleteRow } from "../components/shared/SwipeDeleteRow";
 import { ProductCard } from "../components/products/ProductCard";
@@ -28,20 +23,25 @@ import { usePantryHighlight } from "../pantryHighlightStore";
 import { useRecipes, useDeleteRecipe } from "../hooks/useRecipes";
 import { useSavedMeals, useDeleteSavedMeal } from "../hooks/useSavedMeals";
 import { PantryProduct, PantryRecipe, PantryTab, SavedMeal } from "../types";
-import { getDirectionStyles, useStyles } from "./styles/PantryScreen.styles";
+import { useStyles } from "./styles/PantryScreen.styles";
+import { ListGap } from "../../../shared/components/ui/ListGap";
+
+type MenuTarget =
+  | { kind: "product"; item: PantryProduct }
+  | { kind: "recipe"; item: PantryRecipe }
+  | { kind: "savedMeal"; item: SavedMeal };
 
 export function PantryScreen() {
   const { t, i18n } = useTranslation("pantry");
-  const { colors } = useAppTheme();
   const styles = useStyles();
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
-  const dir = getDirectionStyles(isRTL);
 
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<PantryTab>("products");
   const [calculatorProduct, setCalculatorProduct] =
     useState<PantryProduct | null>(null);
+  const [menuTarget, setMenuTarget] = useState<MenuTarget | null>(null);
 
   const productListRef = useRef<FlatList>(null);
   const { highlightedProductId, clearHighlight } = usePantryHighlight();
@@ -152,14 +152,6 @@ export function PantryScreen() {
     router.push(`/(app)/pantry/${product.id}`);
   }
 
-  function handleQuickCalculate(product: PantryProduct) {
-    setCalculatorProduct(product);
-  }
-
-  function handleCloseCalculator() {
-    setCalculatorProduct(null);
-  }
-
   function handleDeleteProduct(product: PantryProduct) {
     Alert.alert(
       t("productDetail.deleteConfirmTitle"),
@@ -186,23 +178,15 @@ export function PantryScreen() {
 
   function handleDeleteRecipe(recipe: PantryRecipe) {
     Alert.alert(
-      t("recipe.deleteConfirmTitle", {
-        defaultValue: "למחוק מתכון?",
-      }),
-      t("recipe.deleteConfirmMessage", {
-        defaultValue: "המתכון יימחק מהרשימה שלך.",
-      }),
+      t("recipe.deleteConfirmTitle"),
+      t("recipe.deleteConfirmMessage"),
       [
         {
-          text: t("recipe.deleteConfirmNo", {
-            defaultValue: "ביטול",
-          }),
+          text: t("recipe.deleteConfirmNo"),
           style: "cancel",
         },
         {
-          text: t("recipe.deleteConfirmYes", {
-            defaultValue: "מחיקה",
-          }),
+          text: t("recipe.deleteConfirmYes"),
           style: "destructive",
           onPress: async () => {
             try {
@@ -218,23 +202,15 @@ export function PantryScreen() {
 
   function handleDeleteSavedMeal(meal: SavedMeal) {
     Alert.alert(
-      t("savedMeal.deleteConfirmTitle", {
-        defaultValue: "למחוק ארוחה?",
-      }),
-      t("savedMeal.deleteConfirmMessage", {
-        defaultValue: "הארוחה השמורה תימחק מהרשימה שלך.",
-      }),
+      t("savedMeal.deleteConfirmTitle"),
+      t("savedMeal.deleteConfirmMessage"),
       [
         {
-          text: t("savedMeal.deleteConfirmNo", {
-            defaultValue: "ביטול",
-          }),
+          text: t("savedMeal.deleteConfirmNo"),
           style: "cancel",
         },
         {
-          text: t("savedMeal.deleteConfirmYes", {
-            defaultValue: "מחיקה",
-          }),
+          text: t("savedMeal.deleteConfirmYes"),
           style: "destructive",
           onPress: async () => {
             try {
@@ -260,51 +236,113 @@ export function PantryScreen() {
     return t("actions.addSavedMeal");
   }
 
+  function searchPlaceholder() {
+    if (activeTab === "products") {
+      return t("search.placeholder");
+    }
+
+    if (activeTab === "recipes") {
+      return t("search.placeholderRecipes");
+    }
+
+    return t("search.placeholderSavedMeals");
+  }
+
+  function getMenuActions(target: MenuTarget): SheetAction[] {
+    const editAction: SheetAction = {
+      key: "edit",
+      label: t("common.edit"),
+      icon: "pencil-outline",
+      onPress: () => {
+        const pathname =
+          target.kind === "product"
+            ? "/(app)/pantry/add-product"
+            : target.kind === "recipe"
+              ? "/(app)/pantry/add-recipe"
+              : "/(app)/pantry/add-saved-meal";
+
+        router.push({ pathname, params: { id: target.item.id, mode: "edit" } });
+      },
+    };
+
+    const deleteAction: SheetAction = {
+      key: "delete",
+      label: t("common.delete"),
+      icon: "trash-can-outline",
+      destructive: true,
+      onPress: () => {
+        if (target.kind === "product") {
+          handleDeleteProduct(target.item);
+        } else if (target.kind === "recipe") {
+          handleDeleteRecipe(target.item);
+        } else {
+          handleDeleteSavedMeal(target.item);
+        }
+      },
+    };
+
+    if (target.kind === "product") {
+      return [
+        {
+          key: "calculate",
+          label: t("productCalculator.quickTitle"),
+          icon: "calculator-variant-outline",
+          onPress: () => setCalculatorProduct(target.item),
+        },
+        editAction,
+        deleteAction,
+      ];
+    }
+
+    return [editAction, deleteAction];
+  }
+
+  const tabOptions = [
+    { value: "products" as PantryTab, label: t("tabs.products") },
+    { value: "recipes" as PantryTab, label: t("tabs.recipes") },
+    { value: "savedMeals" as PantryTab, label: t("tabs.savedMeals") },
+  ];
+
   return (
     <TabScreenLayout activeTab="pantry">
       <View key={i18n.language} style={styles.root}>
-        <PantryHeader />
+        <TabHeader
+          title={t("title")}
+          trailing={
+            <>
+              {activeTab === "products" ? (
+                <IconButton
+                  icon="barcode-scan"
+                  variant="tonal"
+                  accessibilityLabel={t("actions.scanBarcode")}
+                  onPress={handleScanBarcode}
+                />
+              ) : null}
 
-        <View style={styles.searchRow}>
-          <PantrySearchBar value={search} onChangeText={setSearch} />
-        </View>
-
-        <View style={[styles.actionsRow, dir.row]}>
-          <Pressable style={[styles.actionBtn, dir.row]} onPress={handleAdd}>
-            <MaterialCommunityIcons
-              name="plus"
-              size={16}
-              color={colors.background}
-            />
-
-            <Text style={[styles.actionBtnText, dir.text]}>{addLabel()}</Text>
-          </Pressable>
-
-          {activeTab === "products" ? (
-            <Pressable
-              style={[styles.actionBtn, dir.row, styles.actionBtnOutline]}
-              onPress={handleScanBarcode}
-            >
-              <MaterialCommunityIcons
-                name="barcode-scan"
-                size={16}
-                color={colors.primaryGreen}
+              <Button
+                label={t("actions.new")}
+                icon="plus"
+                size="sm"
+                onPress={handleAdd}
+                accessibilityLabel={addLabel()}
               />
+            </>
+          }
+        />
 
-              <Text
-                style={[
-                  styles.actionBtnText,
-                  styles.actionBtnTextOutline,
-                  dir.text,
-                ]}
-              >
-                {t("actions.scanBarcode")}
-              </Text>
-            </Pressable>
-          ) : null}
+        <View style={styles.controls}>
+          <SegmentedControl
+            options={tabOptions}
+            value={activeTab}
+            onChange={setActiveTab}
+          />
+
+          <SearchField
+            value={search}
+            onChangeText={setSearch}
+            placeholder={searchPlaceholder()}
+          />
         </View>
-
-        <PantryTabBar activeTab={activeTab} onTabPress={setActiveTab} />
 
         <View style={styles.content}>
           {activeTab === "products" ? (
@@ -312,9 +350,9 @@ export function PantryScreen() {
               isLoading={loadingProducts}
               isError={errorProducts}
               isEmpty={products.length === 0}
+              isSearching={search.trim().length > 0}
               errorKey="errors.loadFailed"
               tab="products"
-              isRTL={isRTL}
             >
               <FlatList
                 ref={productListRef}
@@ -324,12 +362,14 @@ export function PantryScreen() {
                   <ProductCard
                     product={item}
                     onPress={handleProductPress}
-                    onDelete={handleDeleteProduct}
-                    onQuickCalculate={handleQuickCalculate}
+                    onMore={(product) => setMenuTarget({ kind: "product", item: product })}
                     isHighlighted={item.id === highlightedProductId}
                   />
                 )}
+                ItemSeparatorComponent={ListGap}
                 contentContainerStyle={styles.listContent}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
                 showsVerticalScrollIndicator={false}
                 onScrollToIndexFailed={({ index, averageItemLength }) => {
                   // Immediately jump to an estimated position, then retry the precise scroll
@@ -356,9 +396,9 @@ export function PantryScreen() {
               isLoading={loadingRecipes}
               isError={errorRecipes}
               isEmpty={filteredRecipes.length === 0}
+              isSearching={search.trim().length > 0}
               errorKey="errors.loadRecipesFailed"
               tab="recipes"
-              isRTL={isRTL}
             >
               <FlatList
                 data={filteredRecipes}
@@ -366,9 +406,7 @@ export function PantryScreen() {
                 renderItem={({ item }) => (
                   <SwipeDeleteRow
                     isRTL={isRTL}
-                    label={t("actions.delete", {
-                      defaultValue: "מחיקה",
-                    })}
+                    label={t("common.delete")}
                     disabled={isDeletingRecipe}
                     onDelete={() => handleDeleteRecipe(item)}
                   >
@@ -377,10 +415,14 @@ export function PantryScreen() {
                       onPress={(recipe: PantryRecipe) =>
                         router.push(`/(app)/pantry/recipes/${recipe.id}`)
                       }
+                      onMore={(recipe) => setMenuTarget({ kind: "recipe", item: recipe })}
                     />
                   </SwipeDeleteRow>
                 )}
+                ItemSeparatorComponent={ListGap}
                 contentContainerStyle={styles.listContent}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
                 showsVerticalScrollIndicator={false}
               />
             </TabContent>
@@ -391,9 +433,9 @@ export function PantryScreen() {
               isLoading={loadingSavedMeals}
               isError={errorSavedMeals}
               isEmpty={filteredMeals.length === 0}
+              isSearching={search.trim().length > 0}
               errorKey="errors.loadSavedMealsFailed"
               tab="savedMeals"
-              isRTL={isRTL}
             >
               <FlatList
                 data={filteredMeals}
@@ -401,9 +443,7 @@ export function PantryScreen() {
                 renderItem={({ item }) => (
                   <SwipeDeleteRow
                     isRTL={isRTL}
-                    label={t("actions.delete", {
-                      defaultValue: "מחיקה",
-                    })}
+                    label={t("common.delete")}
                     disabled={isDeletingSavedMeal}
                     onDelete={() => handleDeleteSavedMeal(item)}
                   >
@@ -412,10 +452,14 @@ export function PantryScreen() {
                       onPress={(meal: SavedMeal) =>
                         router.push(`/(app)/pantry/saved-meals/${meal.id}`)
                       }
+                      onMore={(meal) => setMenuTarget({ kind: "savedMeal", item: meal })}
                     />
                   </SwipeDeleteRow>
                 )}
+                ItemSeparatorComponent={ListGap}
                 contentContainerStyle={styles.listContent}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
                 showsVerticalScrollIndicator={false}
               />
             </TabContent>
@@ -425,7 +469,14 @@ export function PantryScreen() {
         <ProductCalculatorModal
           visible={Boolean(calculatorProduct)}
           product={calculatorProduct}
-          onClose={handleCloseCalculator}
+          onClose={() => setCalculatorProduct(null)}
+        />
+
+        <ActionSheet
+          visible={menuTarget !== null}
+          title={menuTarget?.item.name}
+          actions={menuTarget ? getMenuActions(menuTarget) : []}
+          onClose={() => setMenuTarget(null)}
         />
       </View>
     </TabScreenLayout>
@@ -436,44 +487,45 @@ function TabContent({
   isLoading,
   isError,
   isEmpty,
+  isSearching,
   errorKey,
   tab,
-  isRTL,
   children,
 }: {
   isLoading: boolean;
   isError: boolean;
   isEmpty: boolean;
+  isSearching: boolean;
   errorKey: string;
   tab: PantryTab;
-  isRTL: boolean;
   children: ReactNode;
 }) {
   const { t } = useTranslation("pantry");
-  const { colors } = useAppTheme();
-  const styles = useStyles();
 
   if (isLoading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={colors.primaryGreen} />
-      </View>
-    );
+    return <StateView variant="loading" />;
   }
 
   if (isError) {
     return (
-      <View style={styles.centered}>
-        <Text
-          style={[styles.errorText, { textAlign: isRTL ? "right" : "left" }]}
-        >
-          {t(errorKey as Parameters<typeof t>[0])}
-        </Text>
-      </View>
+      <StateView
+        variant="error"
+        message={t(errorKey as Parameters<typeof t>[0])}
+      />
     );
   }
 
   if (isEmpty) {
+    if (isSearching) {
+      return (
+        <StateView
+          variant="empty"
+          icon="magnify"
+          title={t("picker.noResults")}
+        />
+      );
+    }
+
     return <PantryEmptyState tab={tab} />;
   }
 

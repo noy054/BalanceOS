@@ -1,101 +1,83 @@
 export type AppThemeMode = "LIGHT" | "DARK" | "SYSTEM";
 
-export const darkColors = {
-  background: "#0B0D0B",
-  backgroundSoft: "#121612",
-
-  cardBackground: "rgba(18, 22, 19, 0.96)",
-  cardBackgroundSoft: "rgba(255, 255, 255, 0.07)",
-  cardBackgroundStrong: "rgba(10, 13, 11, 0.98)",
-
-  inputBackground: "rgba(255, 255, 255, 0.06)",
-
-  textPrimary: "#FFFFFF",
-  textSecondary: "rgba(255, 255, 255, 0.68)",
-  textMuted: "rgba(255, 255, 255, 0.42)",
-
-  border: "rgba(255, 255, 255, 0.10)",
-  borderStrong: "rgba(255, 255, 255, 0.16)",
-
-  primaryGreen: "#31D86B",
-  primaryGreenDark: "#1E9B4A",
-  primaryGreenLight: "rgba(49, 216, 107, 0.13)",
-  primaryGreenMid: "rgba(49, 216, 107, 0.42)",
-
-  buttonPrimaryBackground: "#31D86B",
-  buttonPrimaryText: "#0B0D0B",
-  buttonPrimaryDisabledBackground: "rgba(49, 216, 107, 0.13)",
-  buttonPrimaryDisabledText: "rgba(49, 216, 107, 0.58)",
-  buttonPrimaryDisabledBorder: "rgba(49, 216, 107, 0.24)",
-
-  accentLime: "#B7F34A",
-  accentLimeLight: "rgba(183, 243, 74, 0.12)",
-
-  macroProtein: "#31D86B",
-  macroCarbs: "#2FB7A3",
-  macroFat: "#F2A33A",
-  macroFiber: "#8AD66D",
-
-  accentBerry: "#B02A63",
-  accentBerryLight: "rgba(176, 42, 99, 0.14)",
-
-  danger: "#F84B6A",
-  dangerLight: "rgba(248, 75, 106, 0.13)",
-  success: "#31D86B",
-  successLight: "rgba(49, 216, 107, 0.14)",
-
-  progressTrack: "rgba(255, 255, 255, 0.12)",
-  shadow: "rgba(0, 0, 0, 0.56)",
-};
-
 export const lightColors = {
-  background: "#F6F8F4",
-  backgroundSoft: "#EEF3EA",
+  background: "#F6F5F2",
+  surface: "#FFFFFF",
+  surfaceMuted: "#F1F0EC",
+  surfaceElevated: "#FFFFFF",
+  inputBackground: "#F7F6F3",
 
-  cardBackground: "#FFFFFF",
-  cardBackgroundSoft: "rgba(11, 13, 11, 0.05)",
-  cardBackgroundStrong: "#F1F5EF",
+  textPrimary: "#1F2328",
+  textSecondary: "#575E66",
+  textMuted: "#686E76",
 
-  inputBackground: "rgba(11, 13, 11, 0.05)",
+  border: "#E7E4DE",
+  borderStrong: "#D3CFC7",
 
-  textPrimary: "#101510",
-  textSecondary: "rgba(16, 21, 16, 0.68)",
-  textMuted: "rgba(16, 21, 16, 0.42)",
+  accent: "#1F4E9C",
+  accentStrong: "#173E7E",
+  accentSoft: "#EAF0F9",
+  accentBorder: "#B9CBEA",
+  onAccent: "#FFFFFF",
 
-  border: "rgba(16, 21, 16, 0.10)",
-  borderStrong: "rgba(16, 21, 16, 0.16)",
+  disabledBackground: "#E6E4DF",
+  disabledText: "#9A9FA5",
 
-  primaryGreen: "#1FAE5B",
-  primaryGreenDark: "#147A3E",
-  primaryGreenLight: "rgba(31, 174, 91, 0.12)",
-  primaryGreenMid: "rgba(31, 174, 91, 0.36)",
+  macroProtein: "#2F5FAE",
+  macroCarbs: "#1D7A82",
+  macroFat: "#8A5A9E",
+  macroFiber: "#3E8565",
 
-  buttonPrimaryBackground: "#1FAE5B",
-  buttonPrimaryText: "#F6F8F4",
-  buttonPrimaryDisabledBackground: "rgba(31, 174, 91, 0.12)",
-  buttonPrimaryDisabledText: "rgba(31, 174, 91, 0.58)",
-  buttonPrimaryDisabledBorder: "rgba(31, 174, 91, 0.22)",
+  danger: "#B93A32",
+  dangerSoft: "#FBEDEB",
+  success: "#2F7A52",
+  successSoft: "#E8F3EC",
+  warning: "#9A6312",
+  warningSoft: "#FBF1E1",
 
-  accentLime: "#91D93C",
-  accentLimeLight: "rgba(145, 217, 60, 0.12)",
-
-  macroProtein: "#1FAE5B",
-  macroCarbs: "#229C8E",
-  macroFat: "#D88A1F",
-  macroFiber: "#6DBF55",
-
-  accentBerry: "#A7265C",
-  accentBerryLight: "rgba(167, 38, 92, 0.12)",
-
-  danger: "#E03D5C",
-  dangerLight: "rgba(224, 61, 92, 0.12)",
-  success: "#1FAE5B",
-  successLight: "rgba(31, 174, 91, 0.12)",
-
-  progressTrack: "rgba(16, 21, 16, 0.10)",
-  shadow: "rgba(16, 21, 16, 0.14)",
+  progressTrack: "#ECE9E3",
+  overlay: "rgba(24, 26, 30, 0.42)",
+  shadow: "#1F2328",
 };
 
-export type AppColors = typeof darkColors;
+export type AppColors = typeof lightColors;
 
-export const colors = darkColors;
+export const darkColors: AppColors = {
+  background: "#141413",
+  surface: "#1D1D1C",
+  surfaceMuted: "#272725",
+  surfaceElevated: "#353533",
+  inputBackground: "#272725",
+
+  textPrimary: "#EDECE8",
+  textSecondary: "#B5B3AD",
+  textMuted: "#8F8D87",
+
+  border: "#2D2D2B",
+  borderStrong: "#41403D",
+
+  accent: "#84A5DF",
+  accentStrong: "#AFC6EE",
+  accentSoft: "rgba(132, 165, 223, 0.15)",
+  accentBorder: "rgba(132, 165, 223, 0.38)",
+  onAccent: "#0E1830",
+
+  disabledBackground: "#2A2A28",
+  disabledText: "#74726D",
+
+  macroProtein: "#84A5DF",
+  macroCarbs: "#6FC0C3",
+  macroFat: "#B798C6",
+  macroFiber: "#7FBE9D",
+
+  danger: "#E98A80",
+  dangerSoft: "rgba(233, 138, 128, 0.14)",
+  success: "#82C3A0",
+  successSoft: "rgba(130, 195, 160, 0.14)",
+  warning: "#DDB06A",
+  warningSoft: "rgba(221, 176, 106, 0.14)",
+
+  progressTrack: "#2E2E2C",
+  overlay: "rgba(0, 0, 0, 0.62)",
+  shadow: "#000000",
+};

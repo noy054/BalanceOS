@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, useThemedStyles } from "../../../../../shared/theme";
+import { spacing, typography, useThemedStyles } from "../../../../../shared/theme";
 
 export const useRowStyles = () =>
   useThemedStyles((colors) =>
@@ -8,50 +8,47 @@ export const useRowStyles = () =>
       row: {
         alignItems: "center",
         justifyContent: "space-between",
-        minHeight: 48,
-        paddingHorizontal: spacing.md,
+        minHeight: 44,
         paddingVertical: spacing.sm,
         gap: spacing.md,
       },
 
       rowBorder: {
-        borderBottomWidth: 1,
+        borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: colors.border,
       },
 
       label: {
         flex: 1,
-        fontSize: 13,
-        fontWeight: "800",
+        ...typography.callout,
         color: colors.textSecondary,
       },
 
       labelHighlight: {
+        ...typography.bodyStrong,
         color: colors.textPrimary,
       },
 
       valueRow: {
         alignItems: "baseline",
-        justifyContent: "center",
-        gap: 4,
-        minWidth: 88,
+        gap: spacing.xs,
       },
 
       value: {
-        fontSize: 14,
-        fontWeight: "900",
+        ...typography.bodyStrong,
+        ...typography.number,
         color: colors.textPrimary,
         writingDirection: "ltr",
       },
 
       valueHighlight: {
-        color: colors.primaryGreen,
-        fontSize: 16,
+        ...typography.headline,
+        ...typography.number,
       },
 
       unit: {
-        fontSize: 11,
-        fontWeight: "700",
+        ...typography.caption,
+        fontWeight: "400",
         color: colors.textMuted,
       },
     }),

@@ -3,7 +3,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   Text,
   View,
@@ -18,11 +17,10 @@ import { SettingsSection } from "../components/SettingsSection";
 import { SettingsSelectRow } from "../components/SettingsSelectRow";
 import { useNutritionSettings, useUpdateSettings } from "../hooks/useSettings";
 import { TargetMode } from "../types";
-import { useAppTheme } from "../../../shared/theme";
-import {
-  getDirectionStyles,
-  useStyles,
-} from "./styles/NutritionTargetsScreen.styles";
+import { Button } from "../../../shared/components/ui/Button";
+import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
+import { useStyles } from "./styles/NutritionTargetsScreen.styles";
+import { useDirection } from "../../../shared/hooks/useDirection";
 
 type FormValues = {
   targetMode: TargetMode;
@@ -59,11 +57,9 @@ function toFormValues(
 }
 
 export function NutritionTargetsScreen() {
-  const { t, i18n } = useTranslation("settings");
-  const { colors } = useAppTheme();
+  const { t } = useTranslation("settings");
   const styles = useStyles();
-  const isRTL = i18n.dir(i18n.language) === "rtl";
-  const dir = getDirectionStyles(isRTL);
+  const dir = useDirection();
 
   const { data: settings } = useNutritionSettings();
   const updateSettings = useUpdateSettings();
@@ -163,15 +159,14 @@ export function NutritionTargetsScreen() {
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
-      <KeyboardAvoidingView
-        style={styles.keyboardView}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
-      >
-        <ScreenHeader title={t("nutritionTargets.screenTitle")} />
+      <ScreenHeader title={t("nutritionTargets.screenTitle")} />
 
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
         <ScrollView
-          style={styles.scroll}
+          style={styles.flex}
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
@@ -199,89 +194,78 @@ export function NutritionTargetsScreen() {
           )}
 
           {!shouldShowManualTargets ? (
-            <View style={styles.autoNote}>
-              <Text
-                style={[
-                  styles.autoNoteText,
-                  { color: colors.primaryGreen },
-                  dir.text,
-                ]}
-              >
+            <View style={styles.infoBanner}>
+              <Text style={[styles.infoBannerText, dir.text]}>
                 {t("nutritionTargets.targetModeAutoHint")}
               </Text>
             </View>
           ) : (
             <SettingsSection title={t("nutritionTargets.targetsSection")}>
               <View style={styles.formCard}>
-                <View style={styles.inputGroup}>
-                  <FormInput
-                    label={t("nutritionTargets.caloriesLabel")}
-                    value={calories}
-                    onChangeText={setCalories}
-                    keyboardType="number-pad"
-                  />
+                <FormInput
+                  label={t("nutritionTargets.caloriesLabel")}
+                  value={calories}
+                  onChangeText={setCalories}
+                  keyboardType="number-pad"
+                />
+
+                <View style={[styles.grid, dir.row]}>
+                  <View style={styles.gridCell}>
+                    <FormInput
+                      label={t("nutritionTargets.proteinLabel")}
+                      value={protein}
+                      onChangeText={setProtein}
+                      keyboardType="number-pad"
+                    />
+                  </View>
+
+                  <View style={styles.gridCell}>
+                    <FormInput
+                      label={t("nutritionTargets.carbsLabel")}
+                      value={carbs}
+                      onChangeText={setCarbs}
+                      keyboardType="number-pad"
+                    />
+                  </View>
                 </View>
 
-                <View style={styles.inputGroup}>
-                  <FormInput
-                    label={t("nutritionTargets.proteinLabel")}
-                    value={protein}
-                    onChangeText={setProtein}
-                    keyboardType="number-pad"
-                  />
-                </View>
+                <View style={[styles.grid, dir.row]}>
+                  <View style={styles.gridCell}>
+                    <FormInput
+                      label={t("nutritionTargets.fatLabel")}
+                      value={fat}
+                      onChangeText={setFat}
+                      keyboardType="number-pad"
+                    />
+                  </View>
 
-                <View style={styles.inputGroup}>
-                  <FormInput
-                    label={t("nutritionTargets.carbsLabel")}
-                    value={carbs}
-                    onChangeText={setCarbs}
-                    keyboardType="number-pad"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <FormInput
-                    label={t("nutritionTargets.fatLabel")}
-                    value={fat}
-                    onChangeText={setFat}
-                    keyboardType="number-pad"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <FormInput
-                    label={t("nutritionTargets.fiberLabel")}
-                    value={fiber}
-                    onChangeText={setFiber}
-                    keyboardType="number-pad"
-                  />
+                  <View style={styles.gridCell}>
+                    <FormInput
+                      label={t("nutritionTargets.fiberLabel")}
+                      value={fiber}
+                      onChangeText={setFiber}
+                      keyboardType="number-pad"
+                    />
+                  </View>
                 </View>
               </View>
             </SettingsSection>
           )}
-
-          <Pressable
-            style={({ pressed }) => [
-              styles.saveBtn,
-              pressed && !isSaveDisabled && styles.saveBtnPressed,
-              isSaveDisabled && styles.saveBtnDisabled,
-            ]}
-            onPress={handleSave}
-            disabled={isSaveDisabled}
-          >
-            <Text
-              style={[
-                styles.saveBtnText,
-                isSaveDisabled && styles.saveBtnTextDisabled,
-              ]}
-            >
-              {isSaving
-                ? t("nutritionTargets.saving")
-                : t("nutritionTargets.saveButton")}
-            </Text>
-          </Pressable>
         </ScrollView>
+
+        <StickyFooter>
+          <Button
+            label={
+              isSaving
+                ? t("nutritionTargets.saving")
+                : t("nutritionTargets.saveButton")
+            }
+            onPress={handleSave}
+            loading={isSaving}
+            disabled={!hasChanges}
+            fullWidth
+          />
+        </StickyFooter>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

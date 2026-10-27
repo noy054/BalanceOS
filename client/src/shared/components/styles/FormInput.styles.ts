@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, radius, useThemedStyles } from "../../theme";
+import { radius, spacing, states, typography, useThemedStyles } from "../../theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -10,78 +10,73 @@ export const useStyles = () =>
       },
 
       label: {
-        fontSize: 13,
-        fontWeight: "700",
+        ...typography.label,
+        fontWeight: "500",
         color: colors.textSecondary,
-        marginBottom: spacing.xs,
-        letterSpacing: 0.1,
+        marginBottom: spacing.xs + 2,
+      },
+
+      frame: {
+        alignItems: "center",
+        minHeight: 48,
+        backgroundColor: colors.inputBackground,
+        borderWidth: 1,
+        borderColor: colors.border,
+        borderRadius: radius.md,
+      },
+
+      frameFocused: {
+        borderColor: colors.accent,
+        backgroundColor: colors.surface,
+      },
+
+      frameError: {
+        borderColor: colors.danger,
+      },
+
+      frameDisabled: {
+        opacity: states.disabledOpacity,
       },
 
       input: {
-        backgroundColor: colors.inputBackground,
-        borderWidth: 1,
-        borderColor: colors.border,
-        borderRadius: radius.sm,
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.sm2,
-        fontSize: 15,
-        color: colors.textPrimary,
-        minHeight: 52,
-      },
-
-      inputError: {
-        borderColor: colors.danger,
-        borderWidth: 1.5,
-      },
-
-      inputDisabled: {
-        opacity: 0.45,
-      },
-
-      inputRow: {
-        alignItems: "center",
-        backgroundColor: colors.inputBackground,
-        borderWidth: 1,
-        borderColor: colors.border,
-        borderRadius: radius.sm,
-        minHeight: 52,
-      },
-
-      inputRowError: {
-        borderColor: colors.danger,
-        borderWidth: 1.5,
-      },
-
-      inputRowDisabled: {
-        opacity: 0.45,
-      },
-
-      inputInner: {
         flex: 1,
-        paddingHorizontal: spacing.md,
+        alignSelf: "stretch",
+        paddingHorizontal: spacing.ms,
         paddingVertical: spacing.sm2,
-        fontSize: 15,
+        ...typography.body,
         color: colors.textPrimary,
+      },
+
+      inputMultiline: {
+        minHeight: 88,
+        paddingTop: spacing.sm2,
+        textAlignVertical: "top",
       },
 
       toggleBtn: {
-        paddingHorizontal: spacing.sm,
+        paddingHorizontal: spacing.ms,
         alignSelf: "stretch",
         alignItems: "center",
         justifyContent: "center",
       },
 
-      inputMultiline: {
-        minHeight: 84,
-        paddingTop: spacing.sm,
-        textAlignVertical: "top",
+      messageRow: {
+        alignItems: "center",
+        gap: spacing.xs,
+        marginTop: spacing.xs + 2,
       },
 
       error: {
-        fontSize: 12,
+        flexShrink: 1,
+        ...typography.caption,
         color: colors.danger,
-        marginTop: spacing.xs,
-        fontWeight: "600",
+      },
+
+      hint: {
+        ...typography.caption,
+        fontWeight: "400",
+        color: colors.textMuted,
+        marginTop: spacing.xs + 2,
       },
     }),
   );

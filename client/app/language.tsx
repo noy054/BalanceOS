@@ -1,14 +1,23 @@
 import { Platform, Text, Pressable, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as Updates from "expo-updates";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 import { useAuthStore } from "../src/features/auth/hooks/useAuthStore";
 import { saveLanguage } from "../src/shared/i18n";
 import type { SupportedLanguage } from "../src/shared/i18n";
-import { styles } from "./styles/language.styles";
+import { BrandMark } from "../src/shared/components/BrandMark";
+import { useStyles } from "./styles/language.styles";
 
 export default function LanguageScreen() {
   const setLanguageReady = useAuthStore((state) => state.setLanguageReady);
+  const styles = useStyles();
+  const { t } = useTranslation("common");
+  const inHebrew = (key: string) => t(key, { lng: "he" });
+  const inEnglish = (key: string) => t(key, { lng: "en" });
+  const hebrewName = inHebrew("languagePicker.languages.he");
+  const englishName = inEnglish("languagePicker.languages.en");
 
   async function handleSelect(lang: SupportedLanguage) {
     await saveLanguage(lang);
@@ -27,31 +36,44 @@ export default function LanguageScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logoRow}>
-        <Text style={styles.logoBalance}>Balance</Text>
-        <Text style={styles.logoOS}>OS</Text>
+    <SafeAreaView style={styles.root}>
+      <View style={styles.container}>
+        <BrandMark size={30} style={styles.logo} />
+
+        <Text style={styles.title}>
+          {`${inHebrew("languagePicker.title")}
+${inEnglish("languagePicker.title")}`}
+        </Text>
+
+        <Pressable
+          style={({ pressed }) => [styles.card, styles.cardActive, pressed && styles.cardPressed]}
+          onPress={() => handleSelect("he")}
+          accessibilityRole="button"
+          accessibilityLabel={hebrewName}
+        >
+          <Text style={styles.cardTitle}>{hebrewName}</Text>
+          <Text style={styles.cardSub}>
+            {`${inEnglish("languagePicker.languages.he")} · ${inEnglish("languagePicker.rtl")}`}
+          </Text>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>
+              {`${inHebrew("languagePicker.recommended")} · ${inEnglish("languagePicker.recommended")}`}
+            </Text>
+          </View>
+        </Pressable>
+
+        <Pressable
+          style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+          onPress={() => handleSelect("en")}
+          accessibilityRole="button"
+          accessibilityLabel={englishName}
+        >
+          <Text style={styles.cardTitle}>{englishName}</Text>
+          <Text style={styles.cardSub}>
+            {`${inHebrew("languagePicker.languages.en")} · ${inHebrew("languagePicker.ltr")}`}
+          </Text>
+        </Pressable>
       </View>
-      <Text style={styles.title}>{"בחר שפה\nChoose your language"}</Text>
-
-      <Pressable
-        style={({ pressed }) => [styles.card, styles.cardActive, pressed && styles.cardPressed]}
-        onPress={() => handleSelect("he")}
-      >
-        <Text style={styles.cardTitle}>עברית</Text>
-        <Text style={styles.cardSub}>Hebrew · RTL</Text>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>מומלץ · Recommended</Text>
-        </View>
-      </Pressable>
-
-      <Pressable
-        style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-        onPress={() => handleSelect("en")}
-      >
-        <Text style={styles.cardTitle}>English</Text>
-        <Text style={styles.cardSub}>אנגלית · LTR</Text>
-      </Pressable>
-    </View>
+    </SafeAreaView>
   );
 }

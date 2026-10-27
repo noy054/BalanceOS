@@ -2,5 +2,22 @@
   "errors": {
     "generic": "משהו השתבש"
   },
-  "brand": "BalanceOS"
+  "brand": "BalanceOS",
+  "actions": {
+    "back": "חזרה",
+    "close": "סגירה",
+    "clearSearch": "ניקוי חיפוש",
+    "showPassword": "הצגת סיסמה",
+    "hidePassword": "הסתרת סיסמה"
+  },
+  "languagePicker": {
+    "title": "בחר שפה",
+    "recommended": "מומלץ",
+    "rtl": "RTL",
+    "ltr": "LTR",
+    "languages": {
+      "he": "עברית",
+      "en": "אנגלית"
+    }
+  }
 }

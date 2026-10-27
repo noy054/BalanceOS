@@ -1,9 +1,8 @@
-import { View } from "react-native";
 import { TFunction } from "i18next";
 
 import { FormInput } from "../../../../shared/components/FormInput";
+import { FormSection } from "../../../../shared/components/ui/FormSection";
 import { ProductFormErrors, ProductFormState } from "../../helpers/productForm";
-import { useStyles } from "./styles/ProductBasicInfoForm.styles";
 
 type Props = {
   t: TFunction<"pantry">;
@@ -23,10 +22,8 @@ export function ProductBasicInfoForm({
   autoFocus,
   field,
 }: Props) {
-  const styles = useStyles();
-
   return (
-    <View style={styles.formCard}>
+    <FormSection title={t("addProduct.detailsSection")}>
       <FormInput
         key={`name-${language}`}
         label={t("product.nameLabel")}
@@ -41,6 +38,6 @@ export function ProductBasicInfoForm({
         error={errors.brand}
         {...field("brand")}
       />
-    </View>
+    </FormSection>
   );
 }

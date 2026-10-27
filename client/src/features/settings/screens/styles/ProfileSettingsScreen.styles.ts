@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, radius, useThemedStyles } from "../../../../shared/theme";
+import { spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -10,120 +10,63 @@ export const useStyles = () =>
         backgroundColor: colors.background,
       },
 
-      backgroundLayer: {
-        position: "absolute",
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        overflow: "hidden",
-        backgroundColor: colors.background,
-      },
-
-      dateInputPressed: {
-        opacity: 0.82,
-      },
-
-      glowTop: {
-        position: "absolute",
-        top: -70,
-        left: -40,
-        right: -40,
-        height: 230,
-        borderBottomLeftRadius: 90,
-        borderBottomRightRadius: 90,
-        backgroundColor: "rgba(255,255,255,0.035)",
-      },
-
-      glowSide: {
-        position: "absolute",
-        top: 260,
-        right: -120,
-        width: 260,
-        height: 480,
-        borderRadius: 160,
-        backgroundColor: "rgba(49, 216, 107, 0.055)",
-        transform: [{ rotate: "12deg" }],
-      },
-
-      scroll: {
+      flex: {
         flex: 1,
       },
 
       content: {
-        paddingHorizontal: spacing.lg,
-        paddingTop: spacing.sm,
-        paddingBottom: spacing.xl,
-        gap: spacing.lg,
+        paddingHorizontal: spacing.md,
+        paddingTop: spacing.xs,
+        paddingBottom: spacing.lg,
       },
 
       formCard: {
-        padding: spacing.md,
-        gap: spacing.md,
-      },
-
-      selectCard: {
-        paddingVertical: spacing.xs,
-        overflow: "hidden",
+        paddingHorizontal: spacing.md,
+        paddingTop: spacing.md,
       },
 
       readonlyGroup: {
-        borderRadius: radius.lg,
-        backgroundColor: colors.cardBackgroundStrong,
-        borderWidth: 1,
-        borderColor: colors.border,
-        padding: spacing.md,
+        marginBottom: spacing.md,
+        gap: 2,
       },
 
       readonlyLabel: {
-        fontSize: 13,
-        fontWeight: "800",
+        ...typography.label,
+        fontWeight: "500",
         color: colors.textSecondary,
         marginBottom: spacing.xs,
       },
 
       emailValue: {
-        fontSize: 15,
-        fontWeight: "800",
+        ...typography.body,
         color: colors.textPrimary,
       },
 
       emailNote: {
-        fontSize: 12,
-        fontWeight: "600",
+        ...typography.caption,
+        fontWeight: "400",
         color: colors.textMuted,
-        marginTop: spacing.xs,
       },
 
-      saveBtn: {
-        backgroundColor: colors.primaryGreen,
-        borderRadius: radius.xl,
-        minHeight: 58,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: spacing.xs,
+      dateInputPressed: {
+        opacity: 0.7,
       },
 
-      saveBtnPressed: {
-        opacity: 0.84,
-        transform: [{ scale: 0.985 }],
+      grid: {
+        gap: spacing.ms,
       },
 
-      saveBtnDisabled: {
-        opacity: 0.55,
-      },
-
-      saveBtnText: {
-        fontSize: 15,
-        fontWeight: "900",
-        color: colors.background,
-        letterSpacing: 0.2,
+      gridCell: {
+        flex: 1,
       },
     }),
   );
 
 export function getDirectionStyles(isRTL: boolean) {
   return {
+    row: {
+      flexDirection: isRTL ? ("row-reverse" as const) : ("row" as const),
+    },
     text: {
       textAlign: isRTL ? ("right" as const) : ("left" as const),
       writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),

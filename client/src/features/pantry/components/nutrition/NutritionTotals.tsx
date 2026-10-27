@@ -1,141 +1,61 @@
-import { View, Text } from "react-native";
+import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { NutritionTotals as NutritionTotalsType } from "../../types";
-import { useNutritionSettings } from "../../../settings/hooks/useSettings";
-import {
-  useStyles,
-  useChipStyles,
-  getDirectionStyles,
-} from "./styles/NutritionTotals.styles";
+import { formatCalories, formatGrams } from "../../../../shared/helpers/formatNumber";
+import { useMacroVisibility } from "../../hooks/useMacroVisibility";
+import { useStyles, getDirectionStyles } from "./styles/NutritionTotals.styles";
 
 type Props = {
   totals: NutritionTotalsType;
   label?: string;
-  variant?: "default" | "highlight";
 };
 
-type MacroChipProps = {
-  label?: string;
+type MacroCell = {
+  key: string;
+  label: string;
   value: number;
-  unit: string;
-  bold?: boolean;
-  isRTL: boolean;
 };
 
-function formatNumber(value: number) {
-  return Math.round(value || 0);
-}
-
-function buildChipText({
-  label,
-  value,
-  unit,
-  isRTL,
-}: {
-  label?: string;
-  value: number;
-  unit: string;
-  isRTL: boolean;
-}) {
-  const formattedValue = formatNumber(value);
-
-  const text = label
-    ? `${formattedValue} ${unit} ${label}`
-    : `${formattedValue} ${unit}`;
-
-  return isRTL ? `\u200F${text}\u200F` : text;
-}
-
-export function NutritionTotals({ totals, label, variant = "default" }: Props) {
+export function NutritionTotals({ totals, label }: Props) {
   const { t, i18n } = useTranslation("pantry");
-  const { data: settings } = useNutritionSettings();
-
+  const { showCarbs, showFat, showFiber } = useMacroVisibility();
   const styles = useStyles();
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const dir = getDirectionStyles(isRTL);
-  const isHighlight = variant === "highlight";
 
-  const showCarbs = settings?.showCarbsOnHome ?? true;
-  const showFat = settings?.showFatOnHome ?? true;
-  const showFiber = settings?.showFiberOnHome ?? true;
+  const macros: MacroCell[] = [
+    { key: "protein", label: t("macros.protein"), value: totals.protein },
+    ...(showCarbs ? [{ key: "carbs", label: t("macros.carbs"), value: totals.carbs }] : []),
+    ...(showFat ? [{ key: "fat", label: t("macros.fat"), value: totals.fat }] : []),
+    ...(showFiber && totals.fiber > 0
+      ? [{ key: "fiber", label: t("macros.fiber"), value: totals.fiber }]
+      : []),
+  ];
 
   return (
-    <View style={[styles.container, isHighlight && styles.containerHighlight]}>
-      {label ? (
-        <Text
-          style={[
-            styles.label,
-            isHighlight && styles.labelHighlight,
-            dir.label,
-          ]}
-        >
-          {label}
-        </Text>
-      ) : null}
+    <View style={styles.container}>
+      {label ? <Text style={[styles.label, dir.text]}>{label}</Text> : null}
 
-      <View style={[styles.row, dir.row]}>
-        <MacroChip
-          value={totals.calories}
-          unit={t("product.calUnit")}
-          bold
-          isRTL={isRTL}
-        />
-
-        <MacroChip
-          label={t("macros.protein")}
-          value={totals.protein}
-          unit={t("product.gramsUnit")}
-          isRTL={isRTL}
-        />
-
-        {showCarbs ? (
-          <MacroChip
-            label={t("macros.carbs")}
-            value={totals.carbs}
-            unit={t("product.gramsUnit")}
-            isRTL={isRTL}
-          />
-        ) : null}
-
-        {showFat ? (
-          <MacroChip
-            label={t("macros.fat")}
-            value={totals.fat}
-            unit={t("product.gramsUnit")}
-            isRTL={isRTL}
-          />
-        ) : null}
-
-        {showFiber && totals.fiber > 0 ? (
-          <MacroChip
-            label={t("macros.fiber")}
-            value={totals.fiber}
-            unit={t("product.gramsUnit")}
-            isRTL={isRTL}
-          />
-        ) : null}
+      <View style={[styles.caloriesRow, dir.row]}>
+        <Text style={styles.caloriesValue}>{formatCalories(totals.calories)}</Text>
+        <Text style={styles.caloriesUnit}>{t("product.calUnit")}</Text>
       </View>
-    </View>
-  );
-}
 
-function MacroChip({ label, value, unit, bold, isRTL }: MacroChipProps) {
-  const chipStyles = useChipStyles();
-
-  return (
-    <View style={chipStyles.chip}>
-      <Text
-        style={[
-          chipStyles.text,
-          bold && chipStyles.textBold,
-          isRTL && chipStyles.textRtl,
-        ]}
-        numberOfLines={1}
-      >
-        {buildChipText({ label, value, unit, isRTL })}
-      </Text>
+      <View style={[styles.macrosRow, dir.row]}>
+        {macros.map((macro) => (
+          <View key={macro.key} style={styles.macroCell}>
+            <Text style={styles.macroValue} numberOfLines={1}>
+              {formatGrams(macro.value)}
+              <Text style={styles.macroUnit}> {t("product.gramsUnit")}</Text>
+            </Text>
+            <Text style={styles.macroLabel} numberOfLines={1}>
+              {macro.label}
+            </Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 }

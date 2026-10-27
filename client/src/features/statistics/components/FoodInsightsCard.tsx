@@ -87,7 +87,7 @@ export function FoodInsightsCard({
                     key={`${food.name}-${index}-calories`}
                     index={index}
                     name={food.name}
-                    mainValue={`${food.totalCalories} kcal`}
+                    mainValue={`${food.totalCalories} ${t("units.kcal")}`}
                     metaValue={t("foodInsights.usedTimes", {
                       count: food.count,
                     })}

@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { View, Text, ScrollView, Pressable, Alert } from "react-native";
+import { View, Text, ScrollView, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
+
 import { FormInput } from "../../../../shared/components/FormInput";
+import { FormSection } from "../../../../shared/components/ui/FormSection";
+import { Button } from "../../../../shared/components/ui/Button";
 import { useCreatePantryProduct } from "../../hooks/usePantry";
 import { PantryProduct } from "../../types";
 import { getProductSaveErrorKey } from "../../helpers/barcode";
@@ -30,6 +33,7 @@ export function BarcodeManualProductForm({
   const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const textAlign = isRTL ? "right" : "left";
+  const rowDirection = isRTL ? "row-reverse" : "row";
 
   const createMutation = useCreatePantryProduct();
 
@@ -80,149 +84,144 @@ export function BarcodeManualProductForm({
   }
 
   return (
-    <View style={styles.root}>
-      <View
-        style={[
-          styles.header,
-          { flexDirection: isRTL ? "row-reverse" : "row" },
-        ]}
-      >
-        <View style={styles.headerIcon}>
-          <MaterialCommunityIcons
-            name="pencil-plus-outline"
-            size={20}
-            color={colors.primaryGreen}
-          />
-        </View>
-        <Text style={[styles.headerTitle, { textAlign }]}>
-          {t("barcode.manualForm.title")}
-        </Text>
-      </View>
-
-      {barcode ? (
-        <View
-          style={[
-            styles.barcodeChip,
-            { flexDirection: isRTL ? "row-reverse" : "row" },
-          ]}
-        >
-          <MaterialCommunityIcons
-            name="barcode"
-            size={14}
-            color={colors.textMuted}
-          />
-          <Text style={styles.barcodeText}>{barcode}</Text>
-        </View>
-      ) : null}
-
+    <KeyboardAvoidingView
+      style={styles.root}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+    >
       <ScrollView
+        style={styles.root}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         contentContainerStyle={styles.form}
       >
-        <FormInput
-          label={t("barcode.manualForm.nameLabel")}
-          value={name}
-          onChangeText={(v) => {
-            setName(v);
-            setErrors((e) => ({ ...e, name: "" }));
-          }}
-          error={errors.name}
-          autoFocus
-        />
-        <FormInput
-          label={t("barcode.manualForm.brandLabel")}
-          value={brand}
-          onChangeText={setBrand}
-        />
+        <View style={styles.header}>
+          <Text style={[styles.headerTitle, { textAlign }]}>
+            {t("barcode.manualForm.title")}
+          </Text>
 
-        <Text style={[styles.sectionLabel, { textAlign }]}>
-          {t("barcode.manualForm.nutritionSection")}
-        </Text>
+          {barcode ? (
+            <View
+              style={[
+                styles.barcodeChip,
+                { flexDirection: rowDirection, alignSelf: isRTL ? "flex-end" : "flex-start" },
+              ]}
+            >
+              <MaterialCommunityIcons name="barcode" size={16} color={colors.textMuted} />
+              <Text style={styles.barcodeText}>{barcode}</Text>
+            </View>
+          ) : null}
+        </View>
 
-        <FormInput
-          label={t("barcode.manualForm.caloriesLabel")}
-          value={calories}
-          onChangeText={(v) => {
-            setCalories(v);
-            setErrors((e) => ({ ...e, calories: "" }));
-          }}
-          error={errors.calories}
-          keyboardType="decimal-pad"
-        />
-        <FormInput
-          label={t("barcode.manualForm.proteinLabel")}
-          value={protein}
-          onChangeText={(v) => {
-            setProtein(v);
-            setErrors((e) => ({ ...e, protein: "" }));
-          }}
-          error={errors.protein}
-          keyboardType="decimal-pad"
-        />
-        <FormInput
-          label={t("barcode.manualForm.carbsLabel")}
-          value={carbs}
-          onChangeText={(v) => {
-            setCarbs(v);
-            setErrors((e) => ({ ...e, carbs: "" }));
-          }}
-          error={errors.carbs}
-          keyboardType="decimal-pad"
-        />
-        <FormInput
-          label={t("barcode.manualForm.fatLabel")}
-          value={fat}
-          onChangeText={(v) => {
-            setFat(v);
-            setErrors((e) => ({ ...e, fat: "" }));
-          }}
-          error={errors.fat}
-          keyboardType="decimal-pad"
-        />
-        <FormInput
-          label={t("barcode.manualForm.fiberLabel")}
-          value={fiber}
-          onChangeText={setFiber}
-          keyboardType="decimal-pad"
-        />
-        <FormInput
-          label={t("barcode.manualForm.servingSizeLabel")}
-          value={servingSizeG}
-          onChangeText={setServingSizeG}
-          keyboardType="decimal-pad"
-        />
+        <FormSection title={t("addProduct.detailsSection")}>
+          <FormInput
+            label={t("barcode.manualForm.nameLabel")}
+            value={name}
+            onChangeText={(v) => {
+              setName(v);
+              setErrors((e) => ({ ...e, name: "" }));
+            }}
+            error={errors.name}
+            autoFocus
+          />
+          <FormInput
+            label={t("barcode.manualForm.brandLabel")}
+            value={brand}
+            onChangeText={setBrand}
+          />
+        </FormSection>
+
+        <FormSection title={t("barcode.manualForm.nutritionSection")}>
+          <FormInput
+            label={t("barcode.manualForm.caloriesLabel")}
+            value={calories}
+            onChangeText={(v) => {
+              setCalories(v);
+              setErrors((e) => ({ ...e, calories: "" }));
+            }}
+            error={errors.calories}
+            keyboardType="decimal-pad"
+          />
+
+          <View style={[styles.grid, { flexDirection: rowDirection }]}>
+            <View style={styles.gridCell}>
+              <FormInput
+                label={t("barcode.manualForm.proteinLabel")}
+                value={protein}
+                onChangeText={(v) => {
+                  setProtein(v);
+                  setErrors((e) => ({ ...e, protein: "" }));
+                }}
+                error={errors.protein}
+                keyboardType="decimal-pad"
+              />
+            </View>
+            <View style={styles.gridCell}>
+              <FormInput
+                label={t("barcode.manualForm.carbsLabel")}
+                value={carbs}
+                onChangeText={(v) => {
+                  setCarbs(v);
+                  setErrors((e) => ({ ...e, carbs: "" }));
+                }}
+                error={errors.carbs}
+                keyboardType="decimal-pad"
+              />
+            </View>
+          </View>
+
+          <View style={[styles.grid, { flexDirection: rowDirection }]}>
+            <View style={styles.gridCell}>
+              <FormInput
+                label={t("barcode.manualForm.fatLabel")}
+                value={fat}
+                onChangeText={(v) => {
+                  setFat(v);
+                  setErrors((e) => ({ ...e, fat: "" }));
+                }}
+                error={errors.fat}
+                keyboardType="decimal-pad"
+              />
+            </View>
+            <View style={styles.gridCell}>
+              <FormInput
+                label={t("barcode.manualForm.fiberLabel")}
+                value={fiber}
+                onChangeText={setFiber}
+                keyboardType="decimal-pad"
+              />
+            </View>
+          </View>
+
+          <FormInput
+            label={t("barcode.manualForm.servingSizeLabel")}
+            value={servingSizeG}
+            onChangeText={setServingSizeG}
+            keyboardType="decimal-pad"
+          />
+        </FormSection>
       </ScrollView>
 
       <View style={styles.actions}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.submitBtn,
-            pressed && styles.submitBtnPressed,
-            createMutation.isPending && styles.submitBtnDisabled,
-          ]}
-          onPress={handleSubmit}
-          disabled={createMutation.isPending}
-        >
-          <Text style={styles.submitBtnText}>
-            {createMutation.isPending
+        <Button
+          label={
+            createMutation.isPending
               ? t("barcode.manualForm.saving")
-              : t("barcode.manualForm.saveButton")}
-          </Text>
-        </Pressable>
+              : t("barcode.manualForm.saveButton")
+          }
+          onPress={handleSubmit}
+          loading={createMutation.isPending}
+          fullWidth
+        />
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.cancelBtn,
-            pressed && styles.cancelBtnPressed,
-          ]}
+        <Button
+          label={t("barcode.manualForm.cancel")}
+          variant="ghost"
           onPress={onCancel}
-        >
-          <Text style={styles.cancelBtnText}>
-            {t("barcode.manualForm.cancel")}
-          </Text>
-        </Pressable>
+          fullWidth
+        />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

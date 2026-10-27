@@ -1,49 +1,42 @@
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
-import { radius, spacing, useThemedStyles } from "../../../../../shared/theme";
+import {
+  radius,
+  spacing,
+  typography,
+  useThemedStyles,
+} from "../../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       card: {
-        borderRadius: radius.xl,
-        padding: spacing.md,
-        backgroundColor: colors.cardBackground,
-        borderWidth: 1,
-        borderColor: colors.border,
-        ...Platform.select({
-          ios: {
-            shadowColor: colors.shadow,
-            shadowOpacity: 0.45,
-            shadowRadius: 14,
-            shadowOffset: { width: 0, height: 8 },
-          },
-          android: {
-            elevation: 3,
-          },
-        }),
-      },
-
-      row: {
         alignItems: "center",
         gap: spacing.md,
+        backgroundColor: colors.surface,
+        borderRadius: radius.lg,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: colors.border,
+        padding: spacing.md,
       },
 
       imageButton: {
-        width: 86,
-        height: 86,
-        borderRadius: radius.lg,
-        overflow: "hidden",
+        width: 72,
+        height: 72,
+        borderRadius: radius.md,
+        backgroundColor: colors.surfaceMuted,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.background,
-        borderWidth: 1,
-        borderColor: colors.border,
+        overflow: "hidden",
       },
 
       image: {
         width: "100%",
         height: "100%",
+      },
+
+      pressed: {
+        opacity: 0.7,
       },
 
       textWrap: {
@@ -52,56 +45,20 @@ export const useStyles = () =>
       },
 
       title: {
-        fontSize: 15,
-        fontWeight: "900",
-        color: colors.textSecondary,
+        ...typography.callout,
+        fontWeight: "600",
+        color: colors.textPrimary,
       },
 
       subtitle: {
-        fontSize: 13,
-        fontWeight: "700",
-        color: colors.textMuted,
-        lineHeight: 19,
+        ...typography.footnote,
+        color: colors.textSecondary,
       },
 
       actionsRow: {
-        alignItems: "center",
+        flexWrap: "wrap",
         gap: spacing.sm,
         marginTop: spacing.xs,
-      },
-
-      primaryAction: {
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.sm,
-        borderRadius: radius.full,
-        backgroundColor: colors.cardBackgroundSoft,
-      },
-
-      primaryActionText: {
-        fontSize: 13,
-        fontWeight: "900",
-        color: colors.primaryGreen,
-        textAlign: "center",
-      },
-
-      secondaryAction: {
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.sm,
-        borderRadius: radius.full,
-        backgroundColor: colors.background,
-        borderWidth: 1,
-        borderColor: colors.border,
-      },
-
-      secondaryActionText: {
-        fontSize: 13,
-        fontWeight: "900",
-        color: colors.textMuted,
-        textAlign: "center",
-      },
-
-      pressed: {
-        opacity: 0.78,
       },
     }),
   );

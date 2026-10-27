@@ -1,66 +1,28 @@
 import { StyleSheet } from 'react-native';
-import { spacing, radius, useThemedStyles } from '../../../../shared/theme';
+
+import { spacing, typography, useThemedStyles } from '../../../../shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       row: {
-        alignItems: 'center',
         paddingHorizontal: spacing.md,
-        paddingVertical: spacing.sm2,
-        minHeight: 52,
+        paddingVertical: spacing.ms,
+        gap: spacing.sm,
       },
       rowBorder: {
-        borderBottomWidth: 1,
+        borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: colors.border,
       },
       label: {
-        flex: 1,
-        fontSize: 15,
+        ...typography.body,
         color: colors.textPrimary,
-      },
-      chips: {
-        gap: spacing.xs,
-        marginStart: spacing.sm,
-      },
-      chip: {
-        borderWidth: 1,
-        borderColor: colors.border,
-        borderRadius: radius.xs,
-        paddingHorizontal: spacing.sm,
-        paddingVertical: 4,
-        backgroundColor: colors.cardBackground,
-      },
-      chipActive: {
-        borderColor: colors.primaryGreen,
-        backgroundColor: colors.primaryGreenLight,
-      },
-      chipDisabled: {
-        opacity: 0.4,
-      },
-      chipText: {
-        fontSize: 13,
-        color: colors.textSecondary,
-        fontWeight: '500',
-      },
-      chipTextActive: {
-        color: colors.primaryGreen,
-        fontWeight: '700',
-      },
-      chipTextDisabled: {
-        color: colors.textMuted,
       },
     }),
   );
 
 export function getDirectionStyles(isRTL: boolean) {
   return {
-    row: {
-      flexDirection: isRTL ? 'row-reverse' as const : 'row' as const,
-    },
-    chipsRow: {
-      flexDirection: isRTL ? 'row-reverse' as const : 'row' as const,
-    },
     text: {
       textAlign: isRTL ? 'right' as const : 'left' as const,
       writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,

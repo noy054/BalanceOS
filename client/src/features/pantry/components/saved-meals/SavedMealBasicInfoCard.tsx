@@ -1,12 +1,14 @@
-import { Text, TextInput, View } from "react-native";
+import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
+import { FormInput } from "../../../../shared/components/FormInput";
+import { FormSection } from "../../../../shared/components/ui/FormSection";
 import { MealType } from "../../types";
 import { SavedMealTypeSelector } from "./SavedMealTypeSelector";
 import {
   getDirectionStyles,
   useStyles,
-} from "./styles/SavedMealBasicInfoCard.styles";
+} from "../recipes/styles/RecipeBasicInfoCard.styles";
 
 type Props = {
   name: string;
@@ -30,28 +32,15 @@ export function SavedMealBasicInfoCard({
   const dir = getDirectionStyles(isRTL);
 
   return (
-    <View style={styles.formCard}>
-      <View style={styles.fieldGroup}>
-        <Text style={[styles.fieldLabel, dir.text]}>
-          {t("savedMeal.nameLabel")}
-        </Text>
-
-        <TextInput
-          style={[styles.input, nameError ? styles.inputError : null, dir.text]}
-          value={name}
-          onChangeText={onChangeName}
-          placeholder={t("savedMeal.namePlaceholder", {
-            defaultValue: "שם הארוחה",
-          })}
-          placeholderTextColor={styles.placeholder.color}
-          autoFocus={false}
-          returnKeyType="done"
-        />
-
-        {nameError ? (
-          <Text style={[styles.errorText, dir.text]}>{nameError}</Text>
-        ) : null}
-      </View>
+    <FormSection title={t("addProduct.detailsSection")}>
+      <FormInput
+        label={t("savedMeal.nameLabel")}
+        value={name}
+        onChangeText={onChangeName}
+        error={nameError || undefined}
+        placeholder={t("savedMeal.namePlaceholder")}
+        returnKeyType="done"
+      />
 
       <View style={styles.fieldGroup}>
         <Text style={[styles.fieldLabel, dir.text]}>
@@ -64,6 +53,6 @@ export function SavedMealBasicInfoCard({
           onSelect={onChangeMealType}
         />
       </View>
-    </View>
+    </FormSection>
   );
 }

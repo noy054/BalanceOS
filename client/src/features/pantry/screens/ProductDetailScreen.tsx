@@ -1,13 +1,14 @@
-import { View, Text, ScrollView, Alert, ActivityIndicator } from "react-native";
+import { useState } from "react";
+import { ScrollView, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
-import { useAppTheme } from "../../../shared/theme";
+import { StateView } from "../../../shared/components/ui/StateView";
+import { ActionSheet } from "../../../shared/components/ui/ActionSheet";
 import { usePantryProduct, useDeletePantryProduct } from "../hooks/usePantry";
 import { useProductCalculator } from "../hooks/useProductCalculator";
-import { ProductHeaderActions } from "../components/products/ProductHeaderActions";
 import { NutritionFactsCard } from "../components/nutrition/NutritionFactsCard";
 import { ProductCalculatorCard } from "../components/products/ProductCalculatorCard";
 import { useStyles } from "./styles/ProductDetailScreen.styles";
@@ -18,9 +19,10 @@ type Props = {
 
 export function ProductDetailScreen({ id }: Props) {
   const { t, i18n } = useTranslation("pantry");
-  const { colors } = useAppTheme();
   const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === "rtl";
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { data: product, isLoading } = usePantryProduct(id);
   const deleteProduct = useDeletePantryProduct();
@@ -75,9 +77,8 @@ export function ProductDetailScreen({ id }: Props) {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" color={colors.primaryGreen} />
-        </View>
+        <ScreenHeader title={t("productDetail.title")} fallbackRoute="/(app)/pantry" />
+        <StateView variant="loading" />
       </SafeAreaView>
     );
   }
@@ -85,52 +86,70 @@ export function ProductDetailScreen({ id }: Props) {
   if (!product) {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <View style={styles.centered}>
-          <Text style={styles.errorText}>{t("errors.loadFailed")}</Text>
-        </View>
+        <ScreenHeader title={t("productDetail.title")} fallbackRoute="/(app)/pantry" />
+        <StateView variant="error" message={t("errors.loadFailed")} />
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
-      <View pointerEvents="none" style={styles.backgroundLayer}>
-        <View style={styles.glowTop} />
-        <View style={styles.glowSide} />
-      </View>
-
       <ScreenHeader
-        title={product.name}
+        title={t("productDetail.title")}
         fallbackRoute="/(app)/pantry"
-        rightElement={
-          <ProductHeaderActions
-            isRTL={isRTL}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        }
+        rightIconName="dots-vertical"
+        rightAccessibilityLabel={t("common.moreOptionsFor", { name: product.name })}
+        onRightPress={() => setIsMenuOpen(true)}
       />
 
-      <ScrollView
+      <KeyboardAvoidingView
         style={styles.scroll}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <NutritionFactsCard product={product} t={t} isRTL={isRTL} />
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <NutritionFactsCard product={product} t={t} isRTL={isRTL} />
 
-        <ProductCalculatorCard
-          quantity={quantity}
-          unit={unit}
-          servingSizeG={product?.servingSizeG}
-          calcResult={calcResult}
-          isRTL={isRTL}
-          t={t}
-          gramsResult={gramsResult}
-          onChangeQuantity={updateQuantity}
-          onSelectUnit={selectUnit}
-          onCalculate={calculate}
-        />
-      </ScrollView>
+          <ProductCalculatorCard
+            quantity={quantity}
+            unit={unit}
+            servingSizeG={product?.servingSizeG}
+            calcResult={calcResult}
+            isRTL={isRTL}
+            t={t}
+            gramsResult={gramsResult}
+            onChangeQuantity={updateQuantity}
+            onSelectUnit={selectUnit}
+            onCalculate={calculate}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
+
+      <ActionSheet
+        visible={isMenuOpen}
+        title={product.name}
+        onClose={() => setIsMenuOpen(false)}
+        actions={[
+          {
+            key: "edit",
+            label: t("common.edit"),
+            icon: "pencil-outline",
+            onPress: handleEdit,
+          },
+          {
+            key: "delete",
+            label: t("common.delete"),
+            icon: "trash-can-outline",
+            destructive: true,
+            disabled: deleteProduct.isPending,
+            onPress: handleDelete,
+          },
+        ]}
+      />
     </SafeAreaView>
   );
 }

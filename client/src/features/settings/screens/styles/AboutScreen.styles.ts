@@ -1,11 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import {
-  spacing,
-  radius,
-  cardShadow,
-  useThemedStyles,
-} from "../../../../shared/theme";
+import { radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -16,75 +11,66 @@ export const useStyles = () =>
       },
 
       content: {
-        flex: 1,
         paddingHorizontal: spacing.md,
-        paddingTop: spacing.md,
+        paddingTop: spacing.xs,
         paddingBottom: spacing.xl,
-        gap: spacing.lg,
       },
 
       appCard: {
-        backgroundColor: colors.cardBackground,
-        borderRadius: radius.xl,
+        backgroundColor: colors.surface,
+        borderRadius: radius.lg,
         paddingHorizontal: spacing.lg,
-        paddingVertical: spacing.xl,
+        paddingVertical: spacing.lg,
         alignItems: "center",
-        borderWidth: 1,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: colors.border,
-        ...cardShadow,
+        marginBottom: spacing.lg,
+        gap: spacing.sm,
       },
 
       logoMark: {
         alignItems: "baseline",
         justifyContent: "center",
-        marginBottom: spacing.sm,
       },
 
       logoBalance: {
-        fontSize: 30,
-        fontWeight: "900",
+        fontSize: 26,
+        fontWeight: "700",
         color: colors.textPrimary,
-        letterSpacing: -0.7,
+        letterSpacing: -0.5,
       },
 
       logoOS: {
-        fontSize: 30,
-        fontWeight: "900",
-        color: colors.primaryGreen,
-        letterSpacing: -0.7,
+        fontSize: 26,
+        fontWeight: "700",
+        color: colors.accent,
+        letterSpacing: -0.5,
       },
 
       tagline: {
-        fontSize: 13,
-        lineHeight: 20,
-        fontWeight: "700",
+        ...typography.callout,
         color: colors.textSecondary,
         textAlign: "center",
-        marginBottom: spacing.md,
       },
 
       versionBadge: {
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.xs,
-        borderRadius: 999,
-        backgroundColor: colors.primaryGreenLight,
-        borderWidth: 1,
-        borderColor: colors.primaryGreenMid,
+        paddingHorizontal: spacing.sm,
+        paddingVertical: 2,
+        borderRadius: radius.xs,
+        backgroundColor: colors.surfaceMuted,
       },
 
       versionText: {
-        fontSize: 12,
-        fontWeight: "900",
-        color: colors.primaryGreen,
+        ...typography.caption,
+        ...typography.number,
+        color: colors.textSecondary,
       },
 
       footerText: {
-        fontSize: 12,
-        lineHeight: 18,
-        fontWeight: "600",
+        ...typography.caption,
+        fontWeight: "400",
         color: colors.textMuted,
-        textAlign: "center",
-        paddingHorizontal: spacing.md,
+        paddingHorizontal: spacing.xs,
       },
     }),
   );
@@ -97,7 +83,7 @@ export function getDirectionStyles(isRTL: boolean) {
     },
 
     logoRow: {
-      flexDirection: isRTL ? ("row-reverse" as const) : ("row" as const),
+      flexDirection: "row" as const,
     },
   };
 }

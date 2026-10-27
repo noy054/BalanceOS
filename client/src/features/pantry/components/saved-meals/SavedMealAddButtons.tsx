@@ -1,12 +1,8 @@
-import { Pressable, Text, View } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { useAppTheme } from "../../../../shared/theme";
-import {
-  getDirectionStyles,
-  useStyles,
-} from "./styles/SavedMealAddButtons.styles";
+import { spacing } from "../../../../shared/theme";
+import { Button } from "../../../../shared/components/ui/Button";
 
 type Props = {
   isRTL: boolean;
@@ -20,43 +16,34 @@ export function SavedMealAddButtons({
   onAddRecipe,
 }: Props) {
   const { t } = useTranslation("pantry");
-  const { colors } = useAppTheme();
-  const styles = useStyles();
-  const dir = getDirectionStyles(isRTL);
 
   return (
-    <View style={[styles.addButtonsRow, dir.row]}>
-      <Pressable
-        style={({ pressed }) => [
-          styles.addItemBtn,
-          pressed && styles.addItemBtnPressed,
-        ]}
+    <View style={[styles.row, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
+      <Button
+        label={t("savedMeal.addProductItem")}
+        icon="food-apple-outline"
+        variant="tonal"
         onPress={onAddProduct}
-      >
-        <MaterialCommunityIcons
-          name="plus"
-          size={17}
-          color={colors.primaryGreen}
-        />
+        style={styles.button}
+      />
 
-        <Text style={styles.addItemText}>{t("savedMeal.addProductItem")}</Text>
-      </Pressable>
-
-      <Pressable
-        style={({ pressed }) => [
-          styles.addItemBtn,
-          pressed && styles.addItemBtnPressed,
-        ]}
+      <Button
+        label={t("savedMeal.addRecipeItem")}
+        icon="chef-hat"
+        variant="tonal"
         onPress={onAddRecipe}
-      >
-        <MaterialCommunityIcons
-          name="plus"
-          size={17}
-          color={colors.primaryGreen}
-        />
-
-        <Text style={styles.addItemText}>{t("savedMeal.addRecipeItem")}</Text>
-      </Pressable>
+        style={styles.button}
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    gap: spacing.sm,
+    paddingTop: spacing.ms,
+  },
+  button: {
+    flex: 1,
+  },
+});

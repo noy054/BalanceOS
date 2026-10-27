@@ -1,74 +1,29 @@
-import { StyleSheet } from 'react-native';
-import { spacing, radius, useThemedStyles } from '../../../../shared/theme';
+import { StyleSheet } from "react-native";
+
+import { spacing, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       root: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  searchRow: {
-    marginBottom: spacing.sm,
-  },
-  actionsRow: {
-    marginHorizontal: spacing.md,
-    marginBottom: spacing.md,
-    gap: spacing.sm,
-  },
-  actionBtn: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primaryGreen,
-    borderRadius: radius.md,
-    paddingVertical: spacing.sm2,
-    gap: spacing.xs,
-    minHeight: 44,
-  },
-  actionBtnOutline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: colors.primaryGreen,
-  },
-  actionBtnText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#081008',
-    letterSpacing: 0.1,
-  },
-  actionBtnTextOutline: {
-    color: colors.primaryGreen,
-  },
-  content: {
-    flex: 1,
-    marginTop: spacing.sm,
-  },
-  listContent: {
-    paddingTop: spacing.xs,
-    paddingBottom: 124,
-  },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  errorText: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
+        flex: 1,
+        backgroundColor: colors.background,
+      },
+
+      controls: {
+        paddingHorizontal: spacing.md,
+        gap: spacing.ms,
+        paddingBottom: spacing.ms,
+      },
+
+      content: {
+        flex: 1,
+      },
+
+      listContent: {
+        paddingHorizontal: spacing.md,
+        paddingTop: spacing.xs,
+        paddingBottom: spacing.lg,
+      },
     }),
   );
-
-export function getDirectionStyles(isRTL: boolean) {
-  return {
-    text: {
-      textAlign: isRTL ? 'right' as const : 'left' as const,
-      writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,
-    },
-    row: {
-      flexDirection: isRTL ? 'row-reverse' as const : 'row' as const,
-    },
-  };
-}

@@ -1,13 +1,10 @@
-import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
+import { FormSection } from "../../../../shared/components/ui/FormSection";
 import { SavedMealDraftItem } from "../../helpers/savedMealDraft";
 import { SavedMealAddButtons } from "./SavedMealAddButtons";
 import { SavedMealDraftItemRow } from "./SavedMealDraftItemRow";
-import {
-  getDirectionStyles,
-  useStyles,
-} from "./styles/SavedMealItemsCard.styles";
+import { useStyles } from "../recipes/styles/RecipeIngredientsCard.styles";
 
 type Props = {
   items: SavedMealDraftItem[];
@@ -28,14 +25,9 @@ export function SavedMealItemsCard({
 }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
-  const dir = getDirectionStyles(isRTL);
 
   return (
-    <View style={styles.formCard}>
-      <Text style={[styles.sectionTitle, dir.text]}>
-        {t("savedMeal.itemsSection")}
-      </Text>
-
+    <FormSection title={t("savedMeal.itemsSection")} contentStyle={styles.card}>
       {items.map((item) => (
         <SavedMealDraftItemRow
           key={item.key}
@@ -51,6 +43,6 @@ export function SavedMealItemsCard({
         onAddProduct={onAddProduct}
         onAddRecipe={onAddRecipe}
       />
-    </View>
+    </FormSection>
   );
 }

@@ -1,5 +1,12 @@
-import { Platform, StyleSheet } from 'react-native';
-import { spacing, radius, useThemedStyles } from '../../../../shared/theme';
+import { StyleSheet } from 'react-native';
+
+import {
+  radius,
+  shadows,
+  spacing,
+  typography,
+  useThemedStyles,
+} from '../../../../shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -9,308 +16,142 @@ export const useStyles = () =>
         backgroundColor: colors.background,
       },
 
-      // ── Tab bar ───────────────────────────────────────────────────────────────
-      tabRow: {
-        flexDirection: 'row',
-        paddingHorizontal: spacing.lg,
-        paddingTop: spacing.sm,
-        paddingBottom: spacing.xs,
-        gap: spacing.sm,
-      },
-
-      tab: {
+      flex: {
         flex: 1,
-        paddingVertical: spacing.sm,
-        alignItems: 'center',
-        borderRadius: radius.sm,
-        borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.cardBackground,
       },
 
-      tabActive: {
-        borderColor: colors.primaryGreenMid,
-        backgroundColor: colors.primaryGreenLight,
-      },
-
-      tabLabel: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: colors.textMuted,
-      },
-
-      tabLabelActive: {
-        color: colors.primaryGreen,
-        fontWeight: '800',
-      },
-
-      // ── Search ────────────────────────────────────────────────────────────────
-      searchWrapper: {
-        paddingHorizontal: spacing.lg,
-        paddingVertical: spacing.sm,
-      },
-
-      searchRow: {
-        alignItems: 'center',
-        gap: spacing.sm,
-      },
-
-      searchInput: {
-        flex: 1,
-        height: 44,
-        borderRadius: radius.md,
-        borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.cardBackground,
+      controls: {
         paddingHorizontal: spacing.md,
-        fontSize: 14,
-        color: colors.textPrimary,
+        paddingBottom: spacing.ms,
+        gap: spacing.ms,
       },
 
-      barcodeBtn: {
-        width: 44,
-        height: 44,
-        borderRadius: radius.md,
-        borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.cardBackground,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
+      controlGroup: {
+        gap: spacing.xs + 2,
       },
 
-      barcodeBtnPressed: {
-        opacity: 0.7,
-      },
-
-      // ── List ──────────────────────────────────────────────────────────────────
-      listContent: {
-        paddingHorizontal: spacing.lg,
-        paddingBottom: spacing.md,
-        gap: spacing.sm,
-      },
-
-      centered: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: spacing.xl,
-      },
-
-      emptyText: {
-        fontSize: 14,
-        color: colors.textMuted,
-        textAlign: 'center',
-      },
-
-      // ── Log panel (shown when item is selected) ───────────────────────────────
-      logPanel: {
-        paddingHorizontal: spacing.lg,
-        paddingTop: spacing.md,
-        paddingBottom: spacing.lg,
-        borderTopWidth: 1,
-        borderTopColor: colors.border,
-        backgroundColor: colors.cardBackground,
-        gap: spacing.sm,
-        ...Platform.select({
-          ios: {
-            shadowColor: colors.shadow,
-            shadowOpacity: 1,
-            shadowRadius: 16,
-            shadowOffset: { width: 0, height: -6 },
-          },
-          android: { elevation: 8 },
-        }),
-      },
-
-      logPanelTitle: {
-        fontSize: 13,
-        fontWeight: '700',
-        color: colors.textPrimary,
-      },
-
-      logPanelSub: {
-        fontSize: 12,
-        color: colors.textMuted,
-      },
-
-      quantityRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: spacing.sm,
-      },
-
-      quantityLabel: {
-        fontSize: 13,
-        fontWeight: '600',
+      controlLabel: {
+        ...typography.caption,
         color: colors.textSecondary,
-        minWidth: 52,
-      },
-
-      quantityInput: {
-        flex: 1,
-        height: 44,
-        borderRadius: radius.md,
-        borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.inputBackground,
-        paddingHorizontal: spacing.md,
-        fontSize: 16,
-        fontWeight: '700',
-        color: colors.textPrimary,
-      },
-
-      logBtn: {
-        height: 50,
-        borderRadius: radius.xl,
-        backgroundColor: colors.primaryGreen,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: spacing.xs,
-      },
-
-      logBtnDisabled: {
-        opacity: 0.5,
-      },
-
-      logBtnPressed: {
-        opacity: 0.85,
-        transform: [{ scale: 0.985 }],
-      },
-
-      logBtnText: {
-        fontSize: 15,
-        fontWeight: '900',
-        color: '#000',
-        letterSpacing: 0.2,
-      },
-
-      // ── Done button (header right element) ────────────────────────────────────
-      doneBtn: {
-        fontSize: 15,
-        fontWeight: '700',
-        color: colors.primaryGreen,
         paddingHorizontal: spacing.xs,
       },
 
-      // ── Meal type picker (general mode) ───────────────────────────────────────
-      mealTypeRow: {
-        flexDirection: 'row',
-        paddingHorizontal: spacing.lg,
+      listContent: {
+        paddingHorizontal: spacing.md,
         paddingTop: spacing.xs,
-        paddingBottom: spacing.sm,
-        gap: spacing.sm,
+        paddingBottom: spacing.lg,
+        flexGrow: 1,
       },
 
-      mealTypeBtn: {
-        flex: 1,
-        paddingVertical: spacing.sm,
+      radio: {
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        borderWidth: 1.5,
+        borderColor: colors.borderStrong,
         alignItems: 'center',
-        borderRadius: radius.sm,
-        borderWidth: 1,
+        justifyContent: 'center',
+        marginHorizontal: spacing.xs,
+      },
+
+      radioActive: {
+        backgroundColor: colors.accent,
+        borderColor: colors.accent,
+      },
+
+      dock: {
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: radius.xl,
+        borderTopRightRadius: radius.xl,
+        borderTopWidth: StyleSheet.hairlineWidth,
         borderColor: colors.border,
-        backgroundColor: colors.cardBackground,
+        paddingHorizontal: spacing.md,
+        paddingTop: spacing.md,
+        gap: spacing.ms,
+        ...shadows.lg,
       },
 
-      mealTypeBtnActive: {
-        borderColor: colors.primaryGreenMid,
-        backgroundColor: colors.primaryGreenLight,
+      dockLabel: {
+        ...typography.label,
+        color: colors.textSecondary,
       },
 
-      mealTypeBtnLabel: {
-        fontSize: 11,
-        fontWeight: '700',
-        color: colors.textMuted,
-        textAlign: 'center',
-      },
-
-      mealTypeBtnLabelActive: {
-        color: colors.primaryGreen,
-      },
-
-      // ── Cart section ───────────────────────────────────────────────────────────
       cartSection: {
-        borderTopWidth: 1,
-        borderTopColor: colors.border,
-        backgroundColor: colors.cardBackground,
-        paddingHorizontal: spacing.lg,
-        paddingTop: spacing.sm,
-        paddingBottom: spacing.xs,
         gap: spacing.xs,
       },
 
-      cartHeader: {
-        fontSize: 11,
-        fontWeight: '800',
-        color: colors.textMuted,
-        textTransform: 'uppercase',
-        letterSpacing: 0.6,
+      cartScroll: {
+        maxHeight: 128,
       },
 
       cartRow: {
-        flexDirection: 'row',
         alignItems: 'center',
         gap: spacing.sm,
+        minHeight: 40,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: colors.border,
       },
 
       cartItemName: {
         flex: 1,
-        fontSize: 13,
-        fontWeight: '700',
+        ...typography.callout,
         color: colors.textPrimary,
       },
 
       cartItemQty: {
-        fontSize: 12,
+        ...typography.footnote,
+        ...typography.number,
         fontWeight: '600',
-        color: colors.textMuted,
+        color: colors.textSecondary,
       },
 
-      cartRemoveBtn: {
-        width: 24,
-        height: 24,
-        borderRadius: radius.full,
+      selectionSection: {
+        gap: spacing.sm,
+      },
+
+      selectionName: {
+        ...typography.bodyStrong,
+        color: colors.textPrimary,
+      },
+
+      selectionRow: {
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: colors.cardBackgroundSoft,
+        gap: spacing.sm,
       },
 
-      // ── Save footer ────────────────────────────────────────────────────────────
-      saveFooter: {
-        paddingHorizontal: spacing.lg,
-        paddingTop: spacing.md,
-        paddingBottom: spacing.lg,
-        borderTopWidth: 1,
-        borderTopColor: colors.border,
-        backgroundColor: colors.background,
-      },
-
-      saveBtn: {
-        height: 54,
-        borderRadius: radius.xl,
-        backgroundColor: colors.primaryGreen,
+      quantityField: {
+        flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
-        ...Platform.select({
-          ios: {
-            shadowColor: colors.primaryGreen,
-            shadowOpacity: 0.22,
-            shadowRadius: 14,
-            shadowOffset: { width: 0, height: 8 },
-          },
-          android: { elevation: 6 },
-        }),
+        gap: spacing.sm,
       },
 
-      saveBtnDisabled: { opacity: 0.5 },
+      quantityInput: {
+        width: 88,
+        minHeight: 48,
+        borderRadius: radius.md,
+        borderWidth: 1,
+        borderColor: colors.accent,
+        backgroundColor: colors.surface,
+        ...typography.headline,
+        ...typography.number,
+        color: colors.textPrimary,
+        textAlign: 'center',
+      },
 
-      saveBtnPressed: { opacity: 0.85, transform: [{ scale: 0.985 }] },
+      quantityUnit: {
+        flexShrink: 1,
+        ...typography.callout,
+        color: colors.textSecondary,
+      },
 
-      saveBtnText: {
-        fontSize: 15,
-        fontWeight: '900',
-        color: '#000',
-        letterSpacing: 0.2,
+      wholeMeal: {
+        flex: 1,
+        ...typography.callout,
+        color: colors.textSecondary,
+      },
+
+      addToListButton: {
+        minWidth: 132,
       },
     }),
   );

@@ -1,10 +1,12 @@
-import { FlatList, Text, View } from "react-native";
+import { FlatList } from "react-native";
 import { useTranslation } from "react-i18next";
 
+import { StateView } from "../../../../shared/components/ui/StateView";
 import { PantryProduct } from "../../types";
 import { PickerDraft } from "../../helpers/recipeIngredientPickerDraft";
 import { RecipeIngredientPickerProductRow } from "./RecipeIngredientPickerProductRow";
 import { useStyles } from "./styles/RecipeIngredientPickerProductList.styles";
+import { ListGap } from "../../../../shared/components/ui/ListGap";
 
 type DirectionStyles = ReturnType<
   typeof import("./styles/RecipeIngredientPickerModal.styles").getDirectionStyles
@@ -29,13 +31,7 @@ export function RecipeIngredientPickerProductList({
   const styles = useStyles();
 
   if (products.length === 0) {
-    return (
-      <View style={styles.empty}>
-        <Text style={[styles.emptyText, dir.text]}>
-          {t("picker.noResults")}
-        </Text>
-      </View>
-    );
+    return <StateView variant="empty" icon="magnify" title={t("picker.noResults")} />;
   }
 
   return (
@@ -55,7 +51,7 @@ export function RecipeIngredientPickerProductList({
           onPress={() => onToggleProduct(item)}
         />
       )}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      ItemSeparatorComponent={ListGap}
     />
   );
 }

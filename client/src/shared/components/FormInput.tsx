@@ -17,6 +17,7 @@ type Props = {
   value: string;
   onChangeText: (text: string) => void;
   error?: string;
+  hint?: string;
   keyboardType?: KeyboardTypeOptions;
   autoFocus?: boolean;
   secureTextEntry?: boolean;
@@ -24,6 +25,7 @@ type Props = {
   multiline?: boolean;
   placeholder?: string;
   editable?: boolean;
+  readOnlyAppearance?: "disabled" | "field";
   returnKeyType?: "next" | "done" | "go" | "search" | "send";
 };
 
@@ -32,6 +34,7 @@ export function FormInput({
   value,
   onChangeText,
   error,
+  hint,
   keyboardType = "default",
   autoFocus,
   secureTextEntry,
@@ -39,9 +42,10 @@ export function FormInput({
   multiline,
   placeholder,
   editable = true,
+  readOnlyAppearance = "disabled",
   returnKeyType = "next",
 }: Props) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation("common");
   const { colors } = useAppTheme();
   const styles = useStyles();
 
@@ -49,75 +53,65 @@ export function FormInput({
   const dir = getDirectionStyles(isRTL);
 
   const [visible, setVisible] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+
+  const frameStyles = [
+    styles.frame,
+    dir.row,
+    isFocused && styles.frameFocused,
+    error ? styles.frameError : null,
+    !editable && readOnlyAppearance === "disabled" && styles.frameDisabled,
+  ];
 
   return (
     <View style={styles.group}>
       <Text style={[styles.label, dir.text]}>{label}</Text>
 
-      {showPasswordToggle ? (
-        <View
-          style={[
-            styles.inputRow,
-            dir.row,
-            error ? styles.inputRowError : null,
-            !editable && styles.inputRowDisabled,
-          ]}
-        >
-          <TextInput
-            style={[
-              styles.inputInner,
-              dir.input,
-              multiline && styles.inputMultiline,
-            ]}
-            value={value}
-            onChangeText={onChangeText}
-            keyboardType={keyboardType}
-            autoFocus={autoFocus}
-            secureTextEntry={secureTextEntry && !visible}
-            multiline={multiline}
-            placeholder={placeholder}
-            placeholderTextColor={colors.textMuted}
-            editable={editable}
-            returnKeyType={returnKeyType}
-            textAlign={dir.input.textAlign}
-          />
-
-          <Pressable
-            style={styles.toggleBtn}
-            onPress={() => setVisible((v) => !v)}
-            hitSlop={8}
-          >
-            <MaterialCommunityIcons
-              name={visible ? "eye-off" : "eye"}
-              size={20}
-              color={colors.textMuted}
-            />
-          </Pressable>
-        </View>
-      ) : (
+      <View style={frameStyles}>
         <TextInput
-          style={[
-            styles.input,
-            dir.input,
-            error ? styles.inputError : null,
-            !editable && styles.inputDisabled,
-            multiline && styles.inputMultiline,
-          ]}
+          style={[styles.input, dir.input, multiline && styles.inputMultiline]}
           value={value}
           onChangeText={onChangeText}
           keyboardType={keyboardType}
           autoFocus={autoFocus}
-          secureTextEntry={secureTextEntry}
+          secureTextEntry={showPasswordToggle ? secureTextEntry && !visible : secureTextEntry}
           multiline={multiline}
           placeholder={placeholder}
           placeholderTextColor={colors.textMuted}
           editable={editable}
           returnKeyType={returnKeyType}
           textAlign={dir.input.textAlign}
+          accessibilityLabel={label}
+          accessibilityHint={error ?? hint}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
         />
-      )}
 
-      {error ? <Text style={[styles.error, dir.text]}>{error}</Text> : null}
+        {showPasswordToggle ? (
+          <Pressable
+            style={styles.toggleBtn}
+            onPress={() => setVisible((v) => !v)}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={visible ? t("actions.hidePassword") : t("actions.showPassword")}
+          >
+            <MaterialCommunityIcons
+              name={visible ? "eye-off-outline" : "eye-outline"}
+              size={20}
+              color={colors.textMuted}
+            />
+          </Pressable>
+        ) : null}
+      </View>
+
+      {error ? (
+        <View style={[styles.messageRow, dir.row]}>
+          <MaterialCommunityIcons name="alert-circle-outline" size={14} color={colors.danger} />
+          <Text style={[styles.error, dir.text]}>{error}</Text>
+        </View>
+      ) : hint ? (
+        <Text style={[styles.hint, dir.text]}>{hint}</Text>
+      ) : null}
     </View>
   );
 }

@@ -1,16 +1,15 @@
-import { Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 import { TFunction } from "i18next";
 
 import { FormInput } from "../../../../shared/components/FormInput";
+import { FormSection } from "../../../../shared/components/ui/FormSection";
+import { SegmentedControl } from "../../../../shared/components/ui/SegmentedControl";
 import {
   NutritionMode,
   ProductFormErrors,
   ProductFormState,
 } from "../../helpers/productForm";
-import {
-  getDirectionStyles,
-  useStyles,
-} from "./styles/ProductNutritionForm.styles";
+import { useStyles } from "./styles/ProductNutritionForm.styles";
 
 type Props = {
   t: TFunction<"pantry">;
@@ -41,49 +40,22 @@ export function ProductNutritionForm({
   field,
 }: Props) {
   const styles = useStyles();
-  const dir = getDirectionStyles(isRTL);
 
   return (
-    <View style={styles.formCard}>
-      <View style={[styles.sectionHeaderRow, dir.row]}>
-        <Text style={[styles.sectionTitle, dir.text]}>
-          {t("addProduct.nutritionSection")}
-        </Text>
-
-        <View style={styles.modeToggleRow}>
-          <Pressable
-            style={[styles.modeBtn, !isPerServing && styles.modeBtnActive]}
-            onPress={() => onSwitchMode("per100g")}
-          >
-            <Text
-              style={[
-                styles.modeBtnText,
-                !isPerServing && styles.modeBtnTextActive,
-              ]}
-            >
-              {t("addProduct.per100g")}
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={[styles.modeBtn, isPerServing && styles.modeBtnActive]}
-            onPress={() => onSwitchMode("perServing")}
-          >
-            <Text
-              style={[
-                styles.modeBtnText,
-                isPerServing && styles.modeBtnTextActive,
-              ]}
-            >
-              {t("addProduct.perServing")}
-            </Text>
-          </Pressable>
-        </View>
+    <FormSection
+      title={t("addProduct.nutritionSection")}
+      hint={t("addProduct.emptyValuesBecomeZero")}
+    >
+      <View style={styles.modeRow}>
+        <SegmentedControl
+          options={[
+            { value: "per100g" as NutritionMode, label: t("addProduct.per100g") },
+            { value: "perServing" as NutritionMode, label: t("addProduct.perServing") },
+          ]}
+          value={isPerServing ? "perServing" : "per100g"}
+          onChange={onSwitchMode}
+        />
       </View>
-
-      <Text style={[styles.sectionHint, dir.text]}>
-        {t("addProduct.emptyValuesBecomeZero")}
-      </Text>
 
       {isPerServing ? (
         <FormInput
@@ -98,43 +70,59 @@ export function ProductNutritionForm({
 
       <FormInput
         key={`calories-${language}-${nutritionMode}`}
-        label={t("product.caloriesLabel")}
+        label={
+          isPerServing
+            ? t("addProduct.caloriesPerServingLabel")
+            : t("product.caloriesLabel")
+        }
         error={errors.caloriesPer100g}
         keyboardType="decimal-pad"
         {...field("caloriesPer100g")}
       />
 
-      <FormInput
-        key={`protein-${language}-${nutritionMode}`}
-        label={t("product.proteinLabel")}
-        error={errors.proteinPer100g}
-        keyboardType="decimal-pad"
-        {...field("proteinPer100g")}
-      />
+      <View style={[styles.grid, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
+        <View style={styles.gridCell}>
+          <FormInput
+            key={`protein-${language}-${nutritionMode}`}
+            label={t("product.proteinLabel")}
+            error={errors.proteinPer100g}
+            keyboardType="decimal-pad"
+            {...field("proteinPer100g")}
+          />
+        </View>
 
-      <FormInput
-        key={`carbs-${language}-${nutritionMode}`}
-        label={t("product.carbsLabel")}
-        error={errors.carbsPer100g}
-        keyboardType="decimal-pad"
-        {...field("carbsPer100g")}
-      />
+        <View style={styles.gridCell}>
+          <FormInput
+            key={`carbs-${language}-${nutritionMode}`}
+            label={t("product.carbsLabel")}
+            error={errors.carbsPer100g}
+            keyboardType="decimal-pad"
+            {...field("carbsPer100g")}
+          />
+        </View>
+      </View>
 
-      <FormInput
-        key={`fat-${language}-${nutritionMode}`}
-        label={t("product.fatLabel")}
-        error={errors.fatPer100g}
-        keyboardType="decimal-pad"
-        {...field("fatPer100g")}
-      />
+      <View style={[styles.grid, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
+        <View style={styles.gridCell}>
+          <FormInput
+            key={`fat-${language}-${nutritionMode}`}
+            label={t("product.fatLabel")}
+            error={errors.fatPer100g}
+            keyboardType="decimal-pad"
+            {...field("fatPer100g")}
+          />
+        </View>
 
-      <FormInput
-        key={`fiber-${language}-${nutritionMode}`}
-        label={t("product.fiberLabel")}
-        error={errors.fiberPer100g}
-        keyboardType="decimal-pad"
-        {...field("fiberPer100g")}
-      />
-    </View>
+        <View style={styles.gridCell}>
+          <FormInput
+            key={`fiber-${language}-${nutritionMode}`}
+            label={t("product.fiberLabel")}
+            error={errors.fiberPer100g}
+            keyboardType="decimal-pad"
+            {...field("fiberPer100g")}
+          />
+        </View>
+      </View>
+    </FormSection>
   );
 }

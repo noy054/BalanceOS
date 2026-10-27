@@ -1,37 +1,35 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, radius, useThemedStyles } from "../../../../shared/theme";
+import { radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useReminderTimeRowStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       reminderRow: {
-        paddingBottom: spacing.xs,
+        paddingBottom: 0,
       },
 
       reminderRowBorder: {
-        borderBottomWidth: 1,
+        borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: colors.border,
-        marginBottom: spacing.xs,
       },
 
       timeInputButton: {
-        minHeight: 48,
-        borderRadius: radius.lg,
+        minHeight: 44,
+        marginHorizontal: spacing.md,
+        marginBottom: spacing.ms,
+        borderRadius: radius.md,
         borderWidth: 1,
         borderColor: colors.border,
         backgroundColor: colors.inputBackground,
+        paddingHorizontal: spacing.ms,
         justifyContent: "center",
-        paddingHorizontal: spacing.md,
-        marginHorizontal: spacing.md,
-        marginBottom: spacing.md,
       },
 
       timeInputText: {
-        fontSize: 15,
-        fontWeight: "900",
+        ...typography.body,
+        ...typography.number,
         color: colors.textPrimary,
-        writingDirection: "ltr",
       },
 
       timeInputPlaceholder: {

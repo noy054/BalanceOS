@@ -1,12 +1,20 @@
 import { useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
 import { useCopyMealEntry } from "../hooks/useDayLog";
 import { MealEntrySummary } from "../types";
-import { useAppTheme } from "../../../shared/theme";
-import { colors as staticColors, spacing, radius } from "../../../shared/theme";
+import {
+  radius,
+  spacing,
+  typography,
+  useAppTheme,
+  useThemedStyles,
+} from "../../../shared/theme";
+import { useDirection } from "../../../shared/hooks/useDirection";
+import { BottomSheet } from "../../../shared/components/ui/BottomSheet";
+import { Button } from "../../../shared/components/ui/Button";
 
 type DayOption = {
   date: string;
@@ -36,6 +44,8 @@ type Props = {
 export function CopyMealModal({ meal, onClose }: Props) {
   const { t } = useTranslation("dashboard");
   const { colors } = useAppTheme();
+  const styles = useStyles();
+  const dir = useDirection();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const copyMeal = useCopyMealEntry();
 
@@ -68,172 +78,121 @@ export function CopyMealModal({ meal, onClose }: Props) {
 
   const confirmLabel = t(`copyMeal.confirm_${selected.size === 1 ? "one" : "other"}`, {
     count: selected.size,
-    defaultValue: `Copy to ${selected.size} day(s)`,
   });
 
   return (
-    <Modal visible transparent animationType="slide" onRequestClose={handleClose}>
-      <Pressable style={styles.overlay} onPress={handleClose}>
-        <Pressable style={[styles.sheet, { backgroundColor: colors.cardBackground, borderColor: colors.border }]} onPress={() => {}}>
-          <View style={[styles.handle, { backgroundColor: colors.border }]} />
+    <BottomSheet
+      visible
+      onClose={handleClose}
+      title={t("copyMeal.title")}
+      subtitle={t("copyMeal.subtitle")}
+      footer={
+        <View style={[styles.actions, dir.row]}>
+          <Button
+            label={t("copyMeal.cancel")}
+            variant="secondary"
+            onPress={handleClose}
+            style={styles.cancelButton}
+          />
+          <Button
+            label={selected.size > 0 ? confirmLabel : t("copyMeal.title")}
+            onPress={handleConfirm}
+            disabled={selected.size === 0}
+            loading={copyMeal.isPending}
+            style={styles.confirmButton}
+          />
+        </View>
+      }
+    >
+      <ScrollView style={styles.dayList} showsVerticalScrollIndicator={false}>
+        {days.map((day) => {
+          const isSelected = selected.has(day.date);
+          const dayName = t(`copyMeal.weekdays.${day.dayIndex}`);
 
-          <Text style={[styles.title, { color: colors.textPrimary }]}>
-            {t("copyMeal.title", { defaultValue: "Add to more days" })}
-          </Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            {t("copyMeal.subtitle", { defaultValue: "Select days to copy this meal to" })}
-          </Text>
-
-          <ScrollView style={styles.dayList} showsVerticalScrollIndicator={false}>
-            {days.map((day) => {
-              const isSelected = selected.has(day.date);
-              const dayName = t(`copyMeal.weekdays.${day.dayIndex}`, { defaultValue: String(day.dayIndex) });
-              return (
-                <Pressable
-                  key={day.date}
-                  style={[
-                    styles.dayRow,
-                    { borderColor: colors.border, backgroundColor: colors.cardBackgroundSoft },
-                    isSelected && { borderColor: staticColors.primaryGreen, backgroundColor: staticColors.primaryGreenLight },
-                  ]}
-                  onPress={() => toggleDay(day.date)}
-                >
-                  <View style={[styles.checkbox, { borderColor: isSelected ? staticColors.primaryGreen : colors.border }]}>
-                    {isSelected && (
-                      <MaterialCommunityIcons name="check" size={14} color={staticColors.primaryGreen} />
-                    )}
-                  </View>
-
-                  <Text style={[styles.dayName, { color: colors.textPrimary }]}>{dayName}</Text>
-                  <Text style={[styles.dayDate, { color: colors.textSecondary }]}>{day.date}</Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-
-          <View style={styles.actions}>
+          return (
             <Pressable
-              style={[styles.cancelBtn, { borderColor: colors.border }]}
-              onPress={handleClose}
-            >
-              <Text style={[styles.cancelText, { color: colors.textSecondary }]}>
-                {t("copyMeal.cancel", { defaultValue: "Cancel" })}
-              </Text>
-            </Pressable>
-
-            <Pressable
-              style={[
-                styles.confirmBtn,
-                { backgroundColor: staticColors.primaryGreen },
-                (selected.size === 0 || copyMeal.isPending) && styles.confirmBtnDisabled,
+              key={day.date}
+              onPress={() => toggleDay(day.date)}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: isSelected }}
+              accessibilityLabel={`${dayName} ${day.date}`}
+              style={({ pressed }) => [
+                styles.dayRow,
+                dir.row,
+                isSelected && styles.dayRowSelected,
+                pressed && styles.dayRowPressed,
               ]}
-              onPress={handleConfirm}
-              disabled={selected.size === 0 || copyMeal.isPending}
             >
-              <Text style={styles.confirmText}>
-                {copyMeal.isPending ? "..." : selected.size > 0 ? confirmLabel : t("copyMeal.title", { defaultValue: "Add to more days" })}
-              </Text>
+              <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
+                {isSelected ? (
+                  <MaterialCommunityIcons name="check" size={14} color={colors.onAccent} />
+                ) : null}
+              </View>
+
+              <Text style={[styles.dayName, dir.text]}>{dayName}</Text>
+              <Text style={styles.dayDate}>{day.date}</Text>
             </Pressable>
-          </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+          );
+        })}
+      </ScrollView>
+    </BottomSheet>
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    justifyContent: "flex-end",
-  },
-  sheet: {
-    borderTopLeftRadius: radius.xl,
-    borderTopRightRadius: radius.xl,
-    borderWidth: 1,
-    borderBottomWidth: 0,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.sm,
-    paddingBottom: 36,
-    maxHeight: "75%",
-  },
-  handle: {
-    width: 36,
-    height: 4,
-    borderRadius: radius.full,
-    alignSelf: "center",
-    marginBottom: spacing.md,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "900",
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 13,
-    fontWeight: "500",
-    marginBottom: spacing.md,
-  },
-  dayList: {
-    flexGrow: 0,
-  },
-  dayRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 14,
-    marginBottom: spacing.xs,
-  },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 1.5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  dayName: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  dayDate: {
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  actions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    marginTop: spacing.md,
-  },
-  cancelBtn: {
-    flex: 1,
-    height: 50,
-    borderRadius: radius.md,
-    borderWidth: 1.5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cancelText: {
-    fontSize: 14,
-    fontWeight: "700",
-  },
-  confirmBtn: {
-    flex: 2,
-    height: 50,
-    borderRadius: radius.md,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  confirmBtnDisabled: {
-    opacity: 0.45,
-  },
-  confirmText: {
-    fontSize: 14,
-    fontWeight: "800",
-    color: "#081008",
-  },
-});
+const useStyles = () =>
+  useThemedStyles((colors) =>
+    StyleSheet.create({
+      dayList: {
+        flexGrow: 0,
+      },
+      dayRow: {
+        alignItems: "center",
+        gap: spacing.ms,
+        minHeight: 52,
+        paddingHorizontal: spacing.ms,
+        borderRadius: radius.md,
+        borderWidth: 1,
+        borderColor: colors.border,
+        marginBottom: spacing.sm,
+      },
+      dayRowSelected: {
+        borderColor: colors.accent,
+        backgroundColor: colors.accentSoft,
+      },
+      dayRowPressed: {
+        opacity: 0.75,
+      },
+      checkbox: {
+        width: 22,
+        height: 22,
+        borderRadius: radius.xs,
+        borderWidth: 1.5,
+        borderColor: colors.borderStrong,
+        alignItems: "center",
+        justifyContent: "center",
+      },
+      checkboxSelected: {
+        backgroundColor: colors.accent,
+        borderColor: colors.accent,
+      },
+      dayName: {
+        flex: 1,
+        ...typography.bodyStrong,
+        color: colors.textPrimary,
+      },
+      dayDate: {
+        ...typography.footnote,
+        ...typography.number,
+        color: colors.textSecondary,
+      },
+      actions: {
+        gap: spacing.sm,
+      },
+      cancelButton: {
+        flex: 1,
+      },
+      confirmButton: {
+        flex: 2,
+      },
+    }),
+  );

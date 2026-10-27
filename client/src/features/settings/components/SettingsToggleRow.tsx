@@ -1,6 +1,7 @@
-import { View, Text, Switch } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useAppTheme } from '../../../shared/theme';
+
+import { Toggle } from '../../../shared/components/ui/Toggle';
 import { useStyles, getDirectionStyles } from './styles/SettingsToggleRow.styles';
 
 type Props = {
@@ -14,24 +15,30 @@ type Props = {
 
 export function SettingsToggleRow({ label, hint, value, onValueChange, last = false, disabled = false }: Props) {
   const { i18n } = useTranslation();
-  const { colors } = useAppTheme();
   const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === 'rtl';
   const dir = getDirectionStyles(isRTL);
 
   return (
-    <View style={[styles.row, !last && styles.rowBorder, dir.row]}>
+    <Pressable
+      onPress={() => onValueChange(!value)}
+      disabled={disabled}
+      accessibilityRole="switch"
+      accessibilityState={{ checked: value, disabled }}
+      accessibilityLabel={label}
+      accessibilityHint={hint}
+      style={({ pressed }) => [
+        styles.row,
+        !last && styles.rowBorder,
+        dir.row,
+        pressed && styles.pressed,
+      ]}
+    >
       <View style={styles.left}>
         <Text style={[styles.label, disabled && styles.labelDisabled, dir.text]}>{label}</Text>
         {hint ? <Text style={[styles.hint, dir.text]}>{hint}</Text> : null}
       </View>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ false: colors.border, true: colors.primaryGreenMid }}
-        thumbColor={value ? colors.primaryGreen : colors.textMuted}
-        disabled={disabled}
-      />
-    </View>
+      <Toggle value={value} onValueChange={onValueChange} disabled={disabled} accessibilityLabel={label} />
+    </Pressable>
   );
 }

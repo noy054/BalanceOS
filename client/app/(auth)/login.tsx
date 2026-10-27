@@ -8,14 +8,17 @@ import { isAxiosError } from "axios";
 import { useLogin } from "../../src/features/auth/hooks/useAuth";
 import { useGoogleSignIn } from "../../src/features/auth/hooks/useGoogleSignIn";
 import { ScreenShell } from "../../src/shared/components/ScreenShell";
-import { colors } from "../../src/shared/theme";
-import { styles, getDirectionStyles } from "./styles/login.styles";
+import { useAppTheme } from "../../src/shared/theme";
+import { BrandMark } from "../../src/shared/components/BrandMark";
+import { useStyles, getDirectionStyles } from "./styles/login.styles";
 
 export default function LoginScreen() {
   const { t, i18n } = useTranslation("auth");
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const dir = getDirectionStyles(isRTL);
+  const styles = useStyles();
+  const { colors } = useAppTheme();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -66,7 +69,7 @@ export default function LoginScreen() {
   return (
     <ScreenShell>
       <View style={styles.header}>
-        <Text style={[styles.brand, dir.text]}>BalanceOS</Text>
+        <BrandMark style={[styles.brand, dir.alignStart]} />
         <Text style={[styles.title, dir.text]}>{t("login.title")}</Text>
         <Text style={[styles.subtitle, dir.text]}>{t("login.subtitle")}</Text>
       </View>
@@ -128,8 +131,8 @@ export default function LoginScreen() {
         onPress={handleLogin}
         loading={login.isPending}
         disabled={isLoading || !email || !password}
-        buttonColor={colors.primaryGreen}
-        textColor="#081008"
+        buttonColor={colors.accent}
+        textColor={colors.onAccent}
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}
         style={styles.primaryBtn}

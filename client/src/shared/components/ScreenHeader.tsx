@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text } from "react-native";
 import type { LayoutChangeEvent } from "react-native";
 import type { ReactNode } from "react";
 import type { ComponentProps } from "react";
@@ -7,7 +7,8 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
-import { useAppTheme } from "../theme";
+import { useDirection } from "../hooks/useDirection";
+import { IconButton } from "./ui/IconButton";
 import {
   MIN_SIDE_WIDTH,
   SIDE_OFFSET,
@@ -24,6 +25,7 @@ type Props = {
   rightIconName?: IconName;
   onRightPress?: () => void;
   rightIconColor?: string;
+  rightAccessibilityLabel?: string;
   fallbackRoute?: Parameters<typeof router.replace>[0];
 };
 
@@ -34,12 +36,12 @@ export function ScreenHeader({
   rightIconName,
   onRightPress,
   rightIconColor,
+  rightAccessibilityLabel,
   fallbackRoute = "/(app)/dashboard",
 }: Props) {
-  const { i18n } = useTranslation();
-  const { colors } = useAppTheme();
+  const { t } = useTranslation("common");
   const styles = useStyles();
-  const isRTL = i18n.dir(i18n.language) === "rtl";
+  const dir = useDirection();
 
   function handleBack() {
     if (onBack) {
@@ -54,8 +56,6 @@ export function ScreenHeader({
 
     router.replace(fallbackRoute);
   }
-
-  const shouldRenderRightButton = Boolean(rightIconName && onRightPress);
 
   const [startWidth, setStartWidth] = useState(0);
   const [endWidth, setEndWidth] = useState(0);
@@ -74,22 +74,15 @@ export function ScreenHeader({
     <View style={styles.container}>
       <View
         onLayout={handleStartLayout}
-        style={[styles.sideSlot, isRTL ? styles.rightSlot : styles.leftSlot]}
+        style={[styles.sideSlot, dir.isRTL ? styles.rightSlot : styles.leftSlot]}
       >
-        <Pressable
+        <IconButton
+          icon={dir.backIcon}
+          iconSize={26}
+          accessibilityLabel={t("actions.back")}
           onPress={handleBack}
-          hitSlop={14}
-          style={({ pressed }) => [
-            styles.iconButton,
-            pressed && styles.pressed,
-          ]}
-        >
-          <MaterialCommunityIcons
-            name={isRTL ? "chevron-right" : "chevron-left"}
-            size={28}
-            color={colors.textPrimary}
-          />
-        </Pressable>
+          color={styles.title.color}
+        />
       </View>
 
       <View
@@ -99,14 +92,12 @@ export function ScreenHeader({
         <Text
           style={[
             styles.title,
-            {
-              writingDirection: isRTL ? "rtl" : "ltr",
-              textAlign: "center",
-            },
+            { writingDirection: dir.isRTL ? "rtl" : "ltr", textAlign: "center" },
           ]}
           numberOfLines={2}
           adjustsFontSizeToFit
           minimumFontScale={0.85}
+          accessibilityRole="header"
         >
           {title}
         </Text>
@@ -114,23 +105,15 @@ export function ScreenHeader({
 
       <View
         onLayout={handleEndLayout}
-        style={[styles.sideSlot, isRTL ? styles.leftSlot : styles.rightSlot]}
+        style={[styles.sideSlot, dir.isRTL ? styles.leftSlot : styles.rightSlot]}
       >
-        {shouldRenderRightButton ? (
-          <Pressable
+        {rightIconName && onRightPress ? (
+          <IconButton
+            icon={rightIconName}
+            accessibilityLabel={rightAccessibilityLabel ?? title}
             onPress={onRightPress}
-            hitSlop={14}
-            style={({ pressed }) => [
-              styles.iconButton,
-              pressed && styles.pressed,
-            ]}
-          >
-            <MaterialCommunityIcons
-              name={rightIconName}
-              size={22}
-              color={rightIconColor ?? colors.textPrimary}
-            />
-          </Pressable>
+            color={rightIconColor}
+          />
         ) : (
           (rightElement ?? null)
         )}

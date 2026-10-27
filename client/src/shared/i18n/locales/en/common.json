@@ -2,5 +2,22 @@
   "errors": {
     "generic": "Something went wrong"
   },
-  "brand": "BalanceOS"
+  "brand": "BalanceOS",
+  "actions": {
+    "back": "Back",
+    "close": "Close",
+    "clearSearch": "Clear search",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+  "languagePicker": {
+    "title": "Choose your language",
+    "recommended": "Recommended",
+    "rtl": "RTL",
+    "ltr": "LTR",
+    "languages": {
+      "he": "Hebrew",
+      "en": "English"
+    }
+  }
 }

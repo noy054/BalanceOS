@@ -1,58 +1,40 @@
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
-import { radius, spacing, useThemedStyles } from "../../../../../shared/theme";
+import {
+  radius,
+  spacing,
+  typography,
+  useThemedStyles,
+} from "../../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       calculatorCard: {
-        borderRadius: radius.xxl,
-        backgroundColor: colors.cardBackground,
-        borderWidth: 1,
+        backgroundColor: colors.surface,
+        borderRadius: radius.lg,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: colors.border,
-        padding: spacing.lg,
-        gap: spacing.md,
-        ...Platform.select({
-          ios: {
-            shadowColor: colors.shadow,
-            shadowOpacity: 1,
-            shadowRadius: 22,
-            shadowOffset: { width: 0, height: 12 },
-          },
-          android: {
-            elevation: 7,
-          },
-        }),
+        padding: spacing.md,
+        gap: spacing.ms,
       },
 
-      sectionHeaderRow: {
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: spacing.md,
+      plain: {
+        gap: spacing.ms,
+      },
+
+      headerBlock: {
+        gap: spacing.xxs,
       },
 
       sectionTitle: {
-        fontSize: 15,
-        fontWeight: "900",
+        ...typography.headline,
         color: colors.textPrimary,
-        marginBottom: 4,
       },
 
       sectionHint: {
-        fontSize: 12,
-        fontWeight: "600",
-        color: colors.textMuted,
-      },
-
-      calculatorIconBubble: {
-        width: 44,
-        height: 44,
-        borderRadius: radius.lg,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.primaryGreenLight,
-        borderWidth: 1,
-        borderColor: colors.primaryGreenMid,
+        ...typography.footnote,
+        color: colors.textSecondary,
       },
 
       calcRow: {
@@ -63,89 +45,27 @@ export const useStyles = () =>
       calcInput: {
         flex: 1,
         minHeight: 48,
-        borderRadius: radius.lg,
-        paddingHorizontal: spacing.md,
-        color: colors.textPrimary,
         backgroundColor: colors.inputBackground,
         borderWidth: 1,
         borderColor: colors.border,
-        fontSize: 14,
-        fontWeight: "700",
-      },
-
-      calcBtn: {
-        width: 52,
-        height: 48,
-        borderRadius: radius.lg,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.primaryGreen,
-        ...Platform.select({
-          ios: {
-            shadowColor: colors.primaryGreen,
-            shadowOpacity: 0.24,
-            shadowRadius: 14,
-            shadowOffset: { width: 0, height: 8 },
-          },
-          android: {
-            elevation: 6,
-          },
-        }),
-      },
-
-      calcBtnPressed: {
-        opacity: 0.86,
-        transform: [{ scale: 0.97 }],
-      },
-
-      unitToggleRow: {
-        flexDirection: "row" as const,
-        gap: 6,
-      },
-
-      unitBtn: {
-        paddingHorizontal: spacing.sm,
-        paddingVertical: 4,
-        borderRadius: radius.full,
-        borderWidth: 1,
-        borderColor: colors.border,
-      },
-
-      unitBtnActive: {
-        borderColor: colors.primaryGreenMid,
-        backgroundColor: colors.primaryGreenLight,
-      },
-
-      unitBtnText: {
-        fontSize: 11,
-        fontWeight: "900" as const,
-        color: colors.textMuted,
-      },
-
-      unitBtnTextActive: {
-        color: colors.primaryGreen,
-      },
-
-      headerBlock: {
-        gap: 4,
+        borderRadius: radius.md,
+        paddingHorizontal: spacing.ms,
+        ...typography.body,
+        color: colors.textPrimary,
       },
 
       calcResultCard: {
-        marginTop: spacing.sm,
-        borderRadius: radius.xl,
-        overflow: "hidden",
-        backgroundColor: colors.cardBackgroundStrong,
-        borderWidth: 1,
-        borderColor: colors.border,
+        borderRadius: radius.md,
+        backgroundColor: colors.surfaceMuted,
+        paddingHorizontal: spacing.ms,
+        paddingTop: spacing.ms,
+        paddingBottom: spacing.xs,
       },
 
       calcResultTitle: {
-        paddingHorizontal: spacing.md,
-        paddingTop: spacing.md,
-        paddingBottom: spacing.sm,
-        fontSize: 14,
-        fontWeight: "900",
-        color: colors.primaryGreen,
+        ...typography.caption,
+        color: colors.textSecondary,
+        marginBottom: spacing.xs,
       },
     }),
   );

@@ -27,7 +27,7 @@ type Props = {
 
 function resolveThemeMode(
   themeMode: AppThemeMode,
-  systemTheme: ColorSchemeName,
+  systemTheme: ColorSchemeName | null,
 ): ResolvedTheme {
   if (themeMode === "SYSTEM") {
     return systemTheme === "dark" ? "dark" : "light";

@@ -1,41 +1,31 @@
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useState } from "react";
+import { Alert, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
 import { useDeleteSavedMeal, useSavedMeal } from "../hooks/useSavedMeals";
+import { useFoodCardModels, FOOD_ICONS } from "../hooks/useFoodCardModels";
 import { NutritionTotals } from "../components/nutrition/NutritionTotals";
+import { DetailHero } from "../components/food/DetailHero";
+import { FoodLineItem } from "../components/food/FoodLineItem";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
-import { useAppTheme } from "../../../shared/theme";
-import {
-  useStyles,
-  getDirectionStyles,
-} from "./styles/SavedMealDetailScreen.styles";
+import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
+import { StateView } from "../../../shared/components/ui/StateView";
+import { ActionSheet } from "../../../shared/components/ui/ActionSheet";
+import { formatGrams } from "../../../shared/helpers/formatNumber";
+import { useStyles } from "./styles/ItemDetailScreen.styles";
 
 type Props = {
   id: string;
 };
 
-function roundValue(value: number | null | undefined) {
-  return Math.round(Number(value || 0) * 10) / 10;
-}
-
 export function SavedMealDetailScreen({ id }: Props) {
-  const { t, i18n } = useTranslation("pantry");
-  const { colors } = useAppTheme();
+  const { t } = useTranslation("pantry");
   const styles = useStyles();
+  const models = useFoodCardModels();
 
-  const isRTL = i18n.dir(i18n.language) === "rtl";
-  const dir = getDirectionStyles(isRTL);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { data: meal, isLoading } = useSavedMeal(id);
   const deleteMeal = useDeleteSavedMeal();
@@ -61,17 +51,15 @@ export function SavedMealDetailScreen({ id }: Props) {
 
   function confirmDelete() {
     Alert.alert(
-      t("savedMeal.deleteTitle", { defaultValue: "מחיקת ארוחה" }),
-      t("savedMeal.deleteMessage", {
-        defaultValue: "האם למחוק את הארוחה השמורה?",
-      }),
+      t("savedMeal.deleteTitle"),
+      t("savedMeal.deleteMessage"),
       [
         {
-          text: t("common.cancel", { defaultValue: "ביטול" }),
+          text: t("common.cancel"),
           style: "cancel",
         },
         {
-          text: t("common.delete", { defaultValue: "מחק" }),
+          text: t("common.delete"),
           style: "destructive",
           onPress: handleDelete,
         },
@@ -82,9 +70,8 @@ export function SavedMealDetailScreen({ id }: Props) {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" color={colors.primaryGreen} />
-        </View>
+        <ScreenHeader title={t("savedMealDetail.title")} />
+        <StateView variant="loading" />
       </SafeAreaView>
     );
   }
@@ -92,89 +79,42 @@ export function SavedMealDetailScreen({ id }: Props) {
   if (!meal) {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <View style={styles.centered}>
-          <Text style={styles.errorText}>
-            {t("errors.loadSavedMealsFailed")}
-          </Text>
-        </View>
+        <ScreenHeader title={t("savedMealDetail.title")} />
+        <StateView variant="error" message={t("errors.loadSavedMealsFailed")} />
       </SafeAreaView>
     );
   }
 
-  const mealTypeLabel = meal.mealType
-    ? t(`mealTypes.${meal.mealType}` as Parameters<typeof t>[0])
-    : null;
+  const model = models.savedMeal(meal);
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={meal.name} />
+      <ScreenHeader
+        title={t("savedMealDetail.title")}
+        rightIconName="dots-vertical"
+        rightAccessibilityLabel={t("common.moreOptionsFor", { name: meal.name })}
+        onRightPress={() => setIsMenuOpen(true)}
+      />
 
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.actionsRow, dir.row]}>
-          <Pressable
-            style={({ pressed }) => [
-              styles.actionBtn,
-              pressed && styles.actionBtnPressed,
-            ]}
-            onPress={handleEdit}
-          >
-            <MaterialCommunityIcons
-              name="pencil-outline"
-              size={18}
-              color={colors.primaryGreen}
-            />
+        <DetailHero
+          title={meal.name}
+          meta={model.meta}
+          imageUrl={model.imageUrl}
+          fallbackIcon={FOOD_ICONS.savedMeal}
+        />
 
-            <Text style={styles.actionBtnText}>
-              {t("common.edit", { defaultValue: "עריכה" })}
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={({ pressed }) => [
-              styles.actionBtnDanger,
-              pressed && styles.actionBtnPressed,
-            ]}
-            onPress={confirmDelete}
-            disabled={deleteMeal.isPending}
-          >
-            <MaterialCommunityIcons
-              name="trash-can-outline"
-              size={18}
-              color={colors.danger}
-            />
-
-            <Text style={styles.actionBtnDangerText}>
-              {t("common.delete", { defaultValue: "מחיקה" })}
-            </Text>
-          </Pressable>
+        <View>
+          <SectionHeader title={t("savedMealDetail.totalsSection")} />
+          <NutritionTotals totals={meal.totals} label={t("foodCard.mealTotal")} />
         </View>
 
-        {mealTypeLabel ? (
-          <View style={[styles.badgeRow, dir.badgeRow]}>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{mealTypeLabel}</Text>
-            </View>
-          </View>
-        ) : null}
-
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, dir.text]}>
-            {t("savedMealDetail.totalsSection")}
-          </Text>
-
-          <View style={styles.totalsCard}>
-            <NutritionTotals totals={meal.totals} variant="highlight" />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, dir.text]}>
-            {t("savedMealDetail.itemsSection")}
-          </Text>
+        <View>
+          <SectionHeader title={t("savedMealDetail.itemsSection")} />
 
           <View style={styles.itemsCard}>
             {meal.items.map((item, index) => {
@@ -183,112 +123,49 @@ export function SavedMealDetailScreen({ id }: Props) {
               const recipe = item.recipe;
 
               const name = product?.name ?? recipe?.name ?? "—";
-              const brand = product?.brand ?? null;
-              const imageUrl = product?.imageUrl ?? null;
 
               const detail = isProduct
-                ? `${item.grams} ${t("recipe.gramsLabel")}`
-                : `${item.servings} ${t("savedMeal.servingsLabel")}`;
-
-              const calories = roundValue(item.nutrition.calories);
-              const protein = roundValue(item.nutrition.protein);
-              const carbs = roundValue(item.nutrition.carbs);
-              const fat = roundValue(item.nutrition.fat);
-              const fiber = roundValue(item.nutrition.fiber);
+                ? t("foodCard.gramsQuantity", { grams: formatGrams(item.grams) })
+                : t("foodCard.recipeServings", { count: item.servings ?? 0 });
 
               return (
-                <View
+                <FoodLineItem
                   key={item.id}
-                  style={[
-                    styles.itemRow,
-                    dir.row,
-                    index < meal.items.length - 1 && styles.rowBorder,
-                  ]}
-                >
-                  <View style={styles.imageBox}>
-                    {imageUrl ? (
-                      <Image
-                        source={{ uri: imageUrl }}
-                        style={styles.productImage}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <View style={styles.imagePlaceholder}>
-                        <MaterialCommunityIcons
-                          name={isProduct ? "food-apple-outline" : "chef-hat"}
-                          size={24}
-                          color={colors.primaryGreen}
-                        />
-                      </View>
-                    )}
-                  </View>
-
-                  <View style={styles.itemInfo}>
-                    <View style={[styles.itemTopRow, dir.row]}>
-                      <View style={styles.itemNameBox}>
-                        <Text
-                          style={[styles.itemName, dir.text]}
-                          numberOfLines={1}
-                        >
-                          {name}
-                        </Text>
-
-                        {brand ? (
-                          <Text
-                            style={[styles.itemBrand, dir.text]}
-                            numberOfLines={1}
-                          >
-                            {brand}
-                          </Text>
-                        ) : null}
-                      </View>
-
-                      <View style={styles.quantityBadge}>
-                        <Text style={styles.quantityBadgeText}>{detail}</Text>
-                      </View>
-                    </View>
-
-                    <View style={[styles.valuesRow, dir.row]}>
-                      <View style={styles.caloriePill}>
-                        <Text style={styles.calorieValue}>
-                          {calories} {t("product.calUnit")}
-                        </Text>
-                      </View>
-
-                      <View style={styles.valuePill}>
-                        <Text style={styles.valuePillText}>
-                          {protein} {t("product.gramsUnit")}{" "}
-                          {t("macros.protein")}
-                        </Text>
-                      </View>
-
-                      <View style={styles.valuePill}>
-                        <Text style={styles.valuePillText}>
-                          {carbs} {t("product.gramsUnit")} {t("macros.carbs")}
-                        </Text>
-                      </View>
-
-                      <View style={styles.valuePill}>
-                        <Text style={styles.valuePillText}>
-                          {fat} {t("product.gramsUnit")} {t("macros.fat")}
-                        </Text>
-                      </View>
-
-                      {fiber > 0 ? (
-                        <View style={styles.valuePill}>
-                          <Text style={styles.valuePillText}>
-                            {fiber} {t("product.gramsUnit")} {t("macros.fiber")}
-                          </Text>
-                        </View>
-                      ) : null}
-                    </View>
-                  </View>
-                </View>
+                  title={name}
+                  meta={[detail, product?.brand].filter(Boolean).join(" · ")}
+                  imageUrl={product?.imageUrl ?? null}
+                  fallbackIcon={isProduct ? FOOD_ICONS.product : FOOD_ICONS.recipe}
+                  calories={item.nutrition.calories}
+                  macros={item.nutrition}
+                  last={index === meal.items.length - 1}
+                />
               );
             })}
           </View>
         </View>
       </ScrollView>
+
+      <ActionSheet
+        visible={isMenuOpen}
+        title={meal.name}
+        onClose={() => setIsMenuOpen(false)}
+        actions={[
+          {
+            key: "edit",
+            label: t("common.edit"),
+            icon: "pencil-outline",
+            onPress: handleEdit,
+          },
+          {
+            key: "delete",
+            label: t("common.delete"),
+            icon: "trash-can-outline",
+            destructive: true,
+            disabled: deleteMeal.isPending,
+            onPress: confirmDelete,
+          },
+        ]}
+      />
     </SafeAreaView>
   );
 }

@@ -1,22 +1,28 @@
 import { StyleSheet } from "react-native";
-import { spacing, radius, useThemedStyles } from "../../../../../shared/theme";
+
+import {
+  radius,
+  spacing,
+  typography,
+  useThemedStyles,
+} from "../../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       section: {
-        borderWidth: 1,
-        borderColor: colors.danger,
+        backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        backgroundColor: colors.dangerLight,
+        borderWidth: 1,
+        borderColor: colors.warning,
         paddingHorizontal: spacing.md,
-        paddingVertical: spacing.sm,
-        gap: spacing.xs,
+        paddingTop: spacing.md,
       },
 
       header: {
         alignItems: "flex-start",
-        gap: spacing.xs,
+        gap: spacing.sm,
+        marginBottom: spacing.md,
       },
 
       headerText: {
@@ -25,17 +31,14 @@ export const useStyles = () =>
       },
 
       title: {
-        fontSize: 13,
-        fontWeight: "800",
-        color: colors.danger,
-        letterSpacing: 0.2,
+        ...typography.callout,
+        fontWeight: "600",
+        color: colors.textPrimary,
       },
 
       hint: {
-        fontSize: 11,
-        fontWeight: "500",
-        color: colors.textPrimary,
-        opacity: 0.8,
+        ...typography.footnote,
+        color: colors.textSecondary,
       },
-    })
+    }),
   );

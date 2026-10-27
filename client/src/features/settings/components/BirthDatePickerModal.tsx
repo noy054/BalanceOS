@@ -4,6 +4,8 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
 
+import { useAppTheme } from "../../../shared/theme";
+
 import {
   getBirthDatePickerDirectionStyles,
   useBirthDatePickerModalStyles,
@@ -25,6 +27,7 @@ export function BirthDatePickerModal({
   onConfirm,
 }: Props) {
   const { t, i18n } = useTranslation("settings");
+  const { colors, resolvedTheme } = useAppTheme();
   const styles = useBirthDatePickerModalStyles();
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const dir = getBirthDatePickerDirectionStyles(isRTL);
@@ -45,7 +48,7 @@ export function BirthDatePickerModal({
           <View style={[styles.header, dir.row]}>
             <Pressable onPress={onClose} hitSlop={12} style={styles.action}>
               <Text style={styles.cancelText}>
-                {t("common.cancel", { defaultValue: "ביטול" })}
+                {t("common.cancel")}
               </Text>
             </Pressable>
 
@@ -53,7 +56,7 @@ export function BirthDatePickerModal({
 
             <Pressable onPress={onConfirm} hitSlop={12} style={styles.action}>
               <Text style={styles.doneText}>
-                {t("common.done", { defaultValue: "אישור" })}
+                {t("common.done")}
               </Text>
             </Pressable>
           </View>
@@ -65,8 +68,8 @@ export function BirthDatePickerModal({
             maximumDate={new Date()}
             onChange={onChange}
             locale={i18n.language === "he" ? "he-IL" : "en-US"}
-            textColor="#F8FAFC"
-            themeVariant="dark"
+            textColor={colors.textPrimary}
+            themeVariant={resolvedTheme === "dark" ? "dark" : "light"}
           />
         </Pressable>
       </Pressable>

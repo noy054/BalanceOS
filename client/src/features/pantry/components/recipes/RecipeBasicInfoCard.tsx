@@ -1,6 +1,8 @@
-import { Text, TextInput, View } from "react-native";
+import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
+import { FormInput } from "../../../../shared/components/FormInput";
+import { FormSection } from "../../../../shared/components/ui/FormSection";
 import { SavedMealTypeSelector } from "../saved-meals/SavedMealTypeSelector";
 import { MealType } from "../../types";
 import {
@@ -34,36 +36,21 @@ export function RecipeBasicInfoCard({
   const dir = getDirectionStyles(isRTL);
 
   return (
-    <View style={styles.formCard}>
-      <View style={styles.fieldGroup}>
-        <Text style={[styles.fieldLabel, dir.text]}>
-          {t("recipe.nameLabel")}
-        </Text>
+    <FormSection title={t("addProduct.detailsSection")}>
+      <FormInput
+        label={t("recipe.nameLabel")}
+        value={name}
+        onChangeText={onChangeName}
+        error={nameError || undefined}
+        autoFocus
+      />
 
-        <TextInput
-          style={[styles.input, nameError ? styles.inputError : null, dir.text]}
-          value={name}
-          onChangeText={onChangeName}
-          autoFocus
-        />
-
-        {nameError ? (
-          <Text style={[styles.errorText, dir.text]}>{nameError}</Text>
-        ) : null}
-      </View>
-
-      <View style={styles.fieldGroup}>
-        <Text style={[styles.fieldLabel, dir.text]}>
-          {t("recipe.descriptionLabel")}
-        </Text>
-
-        <TextInput
-          style={[styles.input, styles.descriptionInput, dir.text]}
-          value={description}
-          onChangeText={onChangeDescription}
-          multiline
-        />
-      </View>
+      <FormInput
+        label={t("recipe.descriptionLabel")}
+        value={description}
+        onChangeText={onChangeDescription}
+        multiline
+      />
 
       <View style={styles.fieldGroup}>
         <Text style={[styles.fieldLabel, dir.text]}>
@@ -76,6 +63,6 @@ export function RecipeBasicInfoCard({
           onSelect={onChangeMealType}
         />
       </View>
-    </View>
+    </FormSection>
   );
 }

@@ -1,59 +1,52 @@
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
-import { spacing, radius, useThemedStyles } from "../../../../../shared/theme";
+import {
+  radius,
+  spacing,
+  typography,
+  useThemedStyles,
+} from "../../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       card: {
-        borderRadius: radius.xl,
-        backgroundColor: colors.cardBackground,
-        borderWidth: 1,
-        borderColor: colors.border,
-        padding: spacing.lg,
-        gap: spacing.md,
-        ...Platform.select({
-          ios: {
-            shadowColor: colors.shadow,
-            shadowOpacity: 1,
-            shadowRadius: 18,
-            shadowOffset: { width: 0, height: 10 },
-          },
-          android: { elevation: 6 },
-        }),
+        paddingBottom: spacing.md,
       },
-      label: {
-        fontSize: 13,
-        fontWeight: "600",
-        color: colors.textSecondary,
-        textTransform: "uppercase",
-        letterSpacing: 0.6,
-      },
+
       chipsRow: {
-        flexDirection: "row",
         flexWrap: "wrap",
         gap: spacing.sm,
       },
+
       chip: {
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.xs,
-        borderRadius: radius.full,
+        minHeight: 40,
+        alignItems: "center",
+        gap: spacing.xs,
+        paddingHorizontal: spacing.ms,
+        borderRadius: radius.md,
         borderWidth: 1,
         borderColor: colors.border,
-        backgroundColor: colors.inputBackground,
+        backgroundColor: colors.surface,
       },
+
       chipActive: {
-        borderColor: colors.primaryGreen,
-        backgroundColor: colors.primaryGreenLight,
+        borderColor: colors.accent,
+        backgroundColor: colors.accentSoft,
       },
+
+      chipPressed: {
+        opacity: 0.7,
+      },
+
       chipText: {
-        fontSize: 14,
-        fontWeight: "500",
+        ...typography.callout,
         color: colors.textSecondary,
       },
+
       chipTextActive: {
-        color: colors.primaryGreen,
         fontWeight: "600",
+        color: colors.accent,
       },
     }),
   );

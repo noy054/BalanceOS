@@ -1,36 +1,22 @@
 import { StyleSheet } from 'react-native';
-import { spacing, radius, cardShadow, useThemedStyles } from '../../../../shared/theme';
+
+import { radius, spacing, useThemedStyles } from '../../../../shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      wrapper: { marginBottom: spacing.md + spacing.xs },
-      title: {
-        fontSize: 11,
-        fontWeight: '700',
-        color: colors.textMuted,
-        textTransform: 'uppercase',
-        letterSpacing: 1,
-        marginBottom: spacing.sm,
-        paddingHorizontal: spacing.sm,
+      wrapper: {
+        marginBottom: spacing.lg,
       },
-      titleDanger: { color: colors.danger },
       card: {
-        backgroundColor: colors.cardBackground,
-        borderRadius: radius.md,
+        backgroundColor: colors.surface,
+        borderRadius: radius.lg,
         overflow: 'hidden',
-        borderWidth: 1,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: colors.border,
-        ...cardShadow,
+      },
+      cardDanger: {
+        borderColor: colors.dangerSoft,
       },
     }),
   );
-
-export function getDirectionStyles(isRTL: boolean) {
-  return {
-    title: {
-      textAlign: isRTL ? 'right' as const : 'left' as const,
-      writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,
-    },
-  };
-}

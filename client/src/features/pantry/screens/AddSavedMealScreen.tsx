@@ -1,18 +1,14 @@
 import { useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
-import { useAppTheme } from "../../../shared/theme";
+import { Button } from "../../../shared/components/ui/Button";
+import { StateView } from "../../../shared/components/ui/StateView";
+import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
+import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
 import {
   useCreateSavedMeal,
   useSavedMeal,
@@ -30,10 +26,7 @@ import { NutritionTotals } from "../components/nutrition/NutritionTotals";
 import { SavedMealBasicInfoCard } from "../components/saved-meals/SavedMealBasicInfoCard";
 import { SavedMealItemsCard } from "../components/saved-meals/SavedMealItemsCard";
 import { ImagePickerCard } from "../components/shared/ImagePickerCard";
-import {
-  getDirectionStyles,
-  useStyles,
-} from "./styles/AddSavedMealScreen.styles";
+import { getDirectionStyles, useStyles } from "./styles/FormScreen.styles";
 
 type RouteParams = {
   id?: string;
@@ -42,7 +35,6 @@ type RouteParams = {
 
 export function AddSavedMealScreen() {
   const { t, i18n } = useTranslation("pantry");
-  const { colors } = useAppTheme();
   const styles = useStyles();
 
   const params = useLocalSearchParams<RouteParams>();
@@ -102,127 +94,97 @@ export function AddSavedMealScreen() {
       Alert.alert(
         "",
         isEditMode
-          ? t("errors.updateSavedMealFailed", {
-              defaultValue: "שמירת השינויים נכשלה",
-            })
+          ? t("errors.updateSavedMealFailed")
           : t("errors.saveSavedMealFailed"),
       );
     }
   }
 
+  const title = isEditMode ? t("editSavedMeal.title") : t("addSavedMeal.title");
+
   if (isEditMode && isMealLoading) {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primaryGreen} />
-          <Text style={styles.loadingText}>
-            {t("savedMeal.loading", { defaultValue: "טוען ארוחה..." })}
-          </Text>
-        </View>
+        <ScreenHeader title={title} />
+        <StateView variant="loading" message={t("savedMeal.loading")} />
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader
-        title={
-          isEditMode
-            ? t("editSavedMeal.title", { defaultValue: "עריכת ארוחה שמורה" })
-            : t("addSavedMeal.title")
-        }
-      />
+      <ScreenHeader title={title} />
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={styles.introCard}>
-          <Text style={[styles.subtitle, dir.text]}>
-            {isEditMode
-              ? t("editSavedMeal.subtitle", {
-                  defaultValue: "עדכני את פרטי הארוחה והמצרכים.",
-                })
-              : t("addSavedMeal.subtitle")}
-          </Text>
-        </View>
-
-        <ImagePickerCard
-          imageUrl={form.imageUrl}
-          isRTL={isRTL}
-          title={t("savedMeal.imageTitle", {
-            defaultValue: "תמונה לארוחה",
-          })}
-          subtitle={t("savedMeal.imageSubtitle", {
-            defaultValue: "אפשר להוסיף תמונה שתעזור לזהות מהר את הארוחה.",
-          })}
-          selectedSubtitle={t("savedMeal.imageSelected", {
-            defaultValue: "התמונה תופיע בכרטיס הארוחה.",
-          })}
-          addLabel={t("savedMeal.addImage", {
-            defaultValue: "הוספת תמונה",
-          })}
-          changeLabel={t("savedMeal.changeImage", {
-            defaultValue: "החלפת תמונה",
-          })}
-          removeLabel={t("savedMeal.removeImage", {
-            defaultValue: "הסרה",
-          })}
-          placeholderIcon="bookmark-outline"
-          onChangeImage={form.setImageUrl}
-          onRemoveImage={() => form.setImageUrl("")}
-        />
-
-        <SavedMealBasicInfoCard
-          name={form.name}
-          nameError={form.nameError}
-          mealType={form.mealType}
-          isRTL={isRTL}
-          onChangeName={form.handleNameChange}
-          onChangeMealType={form.setMealType}
-        />
-
-        <SavedMealItemsCard
-          items={form.items}
-          isRTL={isRTL}
-          onChangeAmount={form.updateAmount}
-          onRemoveItem={form.removeItem}
-          onAddProduct={() => form.setProductPickerVisible(true)}
-          onAddRecipe={() => form.setRecipePickerVisible(true)}
-        />
-
-        {form.hasTotals ? (
-          <View style={styles.totalsContainer}>
-            <NutritionTotals
-              totals={form.liveTotals}
-              label={t("savedMeal.totalsSection")}
-              variant="highlight"
-            />
-          </View>
-        ) : null}
-      </ScrollView>
-
-      <View style={styles.footer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.saveBtn,
-            pressed && styles.saveBtnPressed,
-            isSaving && styles.saveBtnDisabled,
-          ]}
-          onPress={handleSave}
-          disabled={isSaving}
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.saveBtnText}>
-            {isSaving
-              ? t("savedMeal.saving")
-              : isEditMode
-                ? t("savedMeal.updateButton", { defaultValue: "שמור שינויים" })
-                : t("savedMeal.saveButton")}
+          <Text style={[styles.intro, dir.text]}>
+            {isEditMode ? t("editSavedMeal.subtitle") : t("addSavedMeal.subtitle")}
           </Text>
-        </Pressable>
-      </View>
+
+          <ImagePickerCard
+            imageUrl={form.imageUrl}
+            isRTL={isRTL}
+            title={t("savedMeal.imageTitle")}
+            subtitle={t("savedMeal.imageSubtitle")}
+            selectedSubtitle={t("savedMeal.imageSelected")}
+            addLabel={t("savedMeal.addImage")}
+            changeLabel={t("savedMeal.changeImage")}
+            removeLabel={t("savedMeal.removeImage")}
+            placeholderIcon="silverware-fork-knife"
+            onChangeImage={form.setImageUrl}
+            onRemoveImage={() => form.setImageUrl("")}
+          />
+
+          <SavedMealBasicInfoCard
+            name={form.name}
+            nameError={form.nameError}
+            mealType={form.mealType}
+            isRTL={isRTL}
+            onChangeName={form.handleNameChange}
+            onChangeMealType={form.setMealType}
+          />
+
+          <SavedMealItemsCard
+            items={form.items}
+            isRTL={isRTL}
+            onChangeAmount={form.updateAmount}
+            onRemoveItem={form.removeItem}
+            onAddProduct={() => form.setProductPickerVisible(true)}
+            onAddRecipe={() => form.setRecipePickerVisible(true)}
+          />
+
+          {form.hasTotals ? (
+            <View>
+              <SectionHeader title={t("savedMeal.totalsSection")} />
+              <NutritionTotals totals={form.liveTotals} label={t("foodCard.mealTotal")} />
+            </View>
+          ) : null}
+        </ScrollView>
+
+        <StickyFooter>
+          <Button
+            label={
+              isSaving
+                ? t("savedMeal.saving")
+                : isEditMode
+                  ? t("savedMeal.updateButton")
+                  : t("savedMeal.saveButton")
+            }
+            onPress={handleSave}
+            loading={isSaving}
+            fullWidth
+          />
+        </StickyFooter>
+      </KeyboardAvoidingView>
 
       <ProductPickerModal
         visible={form.productPickerVisible}

@@ -1,12 +1,11 @@
-import { Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
+import { FormSection } from "../../../../shared/components/ui/FormSection";
+import { Button } from "../../../../shared/components/ui/Button";
 import { RecipeIngredientDraft } from "../../helpers/recipeDraft";
 import { RecipeIngredientDraftRow } from "./RecipeIngredientDraftRow";
-import {
-  getDirectionStyles,
-  useStyles,
-} from "./styles/RecipeIngredientsCard.styles";
+import { useStyles } from "./styles/RecipeIngredientsCard.styles";
 
 type Props = {
   ingredients: RecipeIngredientDraft[];
@@ -27,14 +26,9 @@ export function RecipeIngredientsCard({
 }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
-  const dir = getDirectionStyles(isRTL);
 
   return (
-    <View style={styles.formCard}>
-      <Text style={[styles.sectionTitle, dir.text]}>
-        {t("recipe.ingredientsSection")}
-      </Text>
-
+    <FormSection title={t("recipe.ingredientsSection")} contentStyle={styles.card}>
       {ingredients.map((ingredient) => (
         <RecipeIngredientDraftRow
           key={ingredient.key}
@@ -46,17 +40,15 @@ export function RecipeIngredientsCard({
         />
       ))}
 
-      <Pressable
-        style={({ pressed }) => [
-          styles.addIngredientBtn,
-          pressed && styles.addIngredientBtnPressed,
-        ]}
-        onPress={onAddIngredient}
-      >
-        <Text style={[styles.addIngredientText, dir.text]}>
-          {t("recipe.addIngredient")}
-        </Text>
-      </Pressable>
-    </View>
+      <View style={styles.addRow}>
+        <Button
+          label={t("recipe.addIngredient")}
+          icon="plus"
+          variant="tonal"
+          onPress={onAddIngredient}
+          fullWidth
+        />
+      </View>
+    </FormSection>
   );
 }

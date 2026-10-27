@@ -4,14 +4,20 @@
     "unit": "קלוריות",
     "eaten": "אכלת",
     "target": "יעד",
-    "summary": "{{eaten}} / {{target}} קלוריות"
+    "summary": "{{eaten}} / {{target}} קלוריות",
+    "remainingLabel": "נשאר להיום",
+    "overTargetLabel": "מעל היעד",
+    "targetReachedLabel": "היעד הושג",
+    "unitShort": "קק״ל",
+    "progressA11y": "נאכלו {{eaten}} מתוך {{target}} קלוריות"
   },
   "macros": {
     "protein": "חלבון",
     "carbs": "פחמימות",
     "fat": "שומן",
     "fiber": "סיבים",
-    "gramsUnit": "גרם"
+    "gramsUnit": "גרם",
+    "ofTarget": "מתוך {{target}} ג׳"
   },
   "actions": {
     "addMeal": "הוסף ארוחה"
@@ -20,20 +26,33 @@
     "breakfast": "בוקר",
     "lunch": "צהריים",
     "dinner": "ערב",
-    "snack": "נשנוש"
+    "snack": "נשנוש",
+    "snack2": "נשנוש 2"
   },
   "nav": {
     "home": "בית",
     "pantry": "מזווה",
     "add": "הוסף",
-    "statistics": "סטטיסטיקות",
+    "statistics": "סטטיסטיקה",
     "settings": "הגדרות"
   },
   "meals": {
     "calUnit": "קל'",
     "proUnit": "גר' חלב'",
     "andMore": "+{{count}} עוד",
-    "copyToMoreDays": "הוסף לימים נוספים"
+    "copyToMoreDays": "הוסף לימים נוספים",
+    "sectionTitle": "ארוחות",
+    "summary": "{{calories}} קק״ל · {{protein}} ג׳ חלבון",
+    "emptyMeal": "עדיין לא נרשם דבר",
+    "addToMeal": "הוספה ל{{meal}}",
+    "itemCalories": "{{calories}} קק״ל",
+    "itemProtein": "{{protein}} ג׳ חלבון",
+    "itemsCount_one": "פריט אחד",
+    "itemsCount_two": "{{count}} פריטים",
+    "itemsCount_many": "{{count}} פריטים",
+    "itemsCount_other": "{{count}} פריטים",
+    "addFood": "הוספת מזון",
+    "add": "הוספה"
   },
   "copyMeal": {
     "title": "הוסף לימים נוספים",
@@ -90,6 +109,20 @@
     "basis": {
       "per100g": "ל־100 גרם",
       "perServing": "למנה"
-    }
+    },
+    "mealLabel": "ארוחה",
+    "removeFromList": "הסרת {{name}} מהרשימה",
+    "scanBarcode": "סריקת ברקוד",
+    "searchProducts": "חיפוש מוצרים",
+    "searchRecipes": "חיפוש מתכונים",
+    "searchSavedMeals": "חיפוש ארוחות שמורות"
+  },
+  "header": {
+    "today": "היום"
+  },
+  "errors": {
+    "loadFailed": "לא ניתן לטעון את סיכום היום",
+    "retry": "ניסיון נוסף",
+    "mealsLoadFailed": "לא ניתן לטעון את הארוחות של היום"
   }
 }

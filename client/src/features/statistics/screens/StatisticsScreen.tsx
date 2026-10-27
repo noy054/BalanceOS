@@ -1,18 +1,13 @@
 import { useCallback, useState } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
-import { useAppTheme } from "../../../shared/theme";
+import { TabHeader } from "../../../shared/components/TabHeader";
+import { SegmentedControl } from "../../../shared/components/ui/SegmentedControl";
+import { StateView } from "../../../shared/components/ui/StateView";
 import { STAT_RANGES } from "../constants";
 import { useStatistics } from "../hooks/useStatistics";
 import { StatRange } from "../types";
@@ -21,19 +16,14 @@ import { FoodInsightsCard } from "../components/FoodInsightsCard";
 import { MacroAccuracyCard } from "../components/MacroAccuracyCard";
 import { MealDistributionCard } from "../components/MealDistributionCard";
 import { RangeSummaryCard } from "../components/RangeSummaryCard";
-import { getRangeStyles, useStyles } from "./styles/StatisticsScreen.styles";
-
-const TAB_BAR_CLEARANCE = 100;
+import { useStyles } from "./styles/StatisticsScreen.styles";
 
 export function StatisticsScreen() {
   const { t, i18n } = useTranslation("statistics");
-  const { colors } = useAppTheme();
   const styles = useStyles();
-  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
-  const dir = getRangeStyles(isRTL);
 
   const [range, setRange] = useState<StatRange>("7D");
 
@@ -51,64 +41,40 @@ export function StatisticsScreen() {
   const shouldShowLoading = isLoading || isFetching;
   const hasNoData = isSuccess && !!data && data.summary.loggedDays === 0;
 
+  const rangeOptions = STAT_RANGES.map((item) => ({
+    value: item,
+    label: t(`ranges.${item}`),
+  }));
+
   return (
     <TabScreenLayout activeTab="statistics">
       <View style={styles.root}>
-        <View style={styles.header}>
-          <Text style={[styles.title, dir.text]}>{t("title")}</Text>
-          <Text style={[styles.subtitle, dir.text]}>{t("subtitle")}</Text>
+        <TabHeader title={t("title")} subtitle={t("subtitle")} />
 
-          <View style={[styles.rangeRow, isRTL && dir.row]}>
-            {STAT_RANGES.map((item) => {
-              const isActive = item === range;
-
-              return (
-                <Pressable
-                  key={item}
-                  style={[styles.rangeChip, isActive && styles.rangeChipActive]}
-                  onPress={() => setRange(item)}
-                >
-                  <Text
-                    style={[
-                      styles.rangeChipText,
-                      isActive && styles.rangeChipTextActive,
-                    ]}
-                  >
-                    {t(`ranges.${item}`)}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
+        <View style={styles.rangeWrap}>
+          <SegmentedControl options={rangeOptions} value={range} onChange={setRange} />
         </View>
 
         {shouldShowLoading ? (
-          <View style={styles.centered}>
-            <ActivityIndicator size="large" color={colors.primaryGreen} />
-          </View>
+          <StateView variant="loading" />
         ) : isError ? (
-          <View style={styles.centered}>
-            <Text style={styles.errorText}>{t("errors.loadFailed")}</Text>
-          </View>
-        ) : hasNoData ? (
-          <View style={styles.centered}>
-            <Text style={[styles.emptyTitle, dir.text]}>
-              {t("empty.title")}
-            </Text>
-            <Text style={[styles.emptyText, dir.text]}>
-              {t("empty.subtitle")}
-            </Text>
-          </View>
-        ) : data ? (
+          <StateView variant="error" message={t("errors.loadFailed")} />
+        ) : hasNoData || !data ? (
+          <StateView
+            variant="empty"
+            icon="chart-bar"
+            title={t("empty.title")}
+            message={t("empty.subtitle")}
+          />
+        ) : (
           <ScrollView
             style={styles.scroll}
-            contentContainerStyle={[
-              styles.scrollContent,
-              { paddingBottom: insets.bottom + TAB_BAR_CLEARANCE },
-            ]}
+            contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
             <RangeSummaryCard summary={data.summary} isRTL={isRTL} />
+
+            <CaloriesTrendCard trend={data.dailyTrend} isRTL={isRTL} />
 
             <MacroAccuracyCard
               accuracy={data.macroAccuracy}
@@ -116,8 +82,6 @@ export function StatisticsScreen() {
               loggedDays={data.summary.loggedDays}
               rangeDays={data.summary.rangeDays}
             />
-
-            <CaloriesTrendCard trend={data.dailyTrend} isRTL={isRTL} />
 
             <MealDistributionCard
               distribution={data.mealDistribution}
@@ -130,15 +94,6 @@ export function StatisticsScreen() {
               isRTL={isRTL}
             />
           </ScrollView>
-        ) : (
-          <View style={styles.centered}>
-            <Text style={[styles.emptyTitle, dir.text]}>
-              {t("empty.title")}
-            </Text>
-            <Text style={[styles.emptyText, dir.text]}>
-              {t("empty.subtitle")}
-            </Text>
-          </View>
         )}
       </View>
     </TabScreenLayout>

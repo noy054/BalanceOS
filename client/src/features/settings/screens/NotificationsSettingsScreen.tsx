@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Platform, Pressable, ScrollView, Text } from "react-native";
+import { Platform, ScrollView } from "react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -7,6 +7,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { Button } from "../../../shared/components/ui/Button";
+import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
 import { NotificationDailySummarySection } from "../components/NotificationDailySummarySection";
 import { NotificationMealRemindersSection } from "../components/NotificationMealRemindersSection";
 import { NotificationWaterSection } from "../components/NotificationWaterSection";
@@ -100,23 +102,20 @@ export function NotificationsSettingsScreen() {
           timePlaceholder={timePlaceholder}
           isRTL={isRTL}
         />
-
-        <Pressable
-          style={({ pressed }) => [
-            styles.saveBtn,
-            pressed && !isSaving && styles.saveBtnPressed,
-            isSaving && styles.saveBtnDisabled,
-          ]}
-          onPress={handleSave}
-          disabled={isSaving}
-        >
-          <Text style={styles.saveBtnText}>
-            {isSaving
-              ? t("notifications.saving")
-              : t("notifications.saveButton")}
-          </Text>
-        </Pressable>
       </ScrollView>
+
+      <StickyFooter>
+        <Button
+          label={
+            isSaving
+              ? t("notifications.saving")
+              : t("notifications.saveButton")
+          }
+          onPress={handleSave}
+          loading={isSaving}
+          fullWidth
+        />
+      </StickyFooter>
 
       {Platform.OS === "android" && form.activeTimeField ? (
         <DateTimePicker

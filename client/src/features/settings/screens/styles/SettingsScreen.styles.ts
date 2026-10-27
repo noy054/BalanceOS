@@ -1,49 +1,45 @@
 import { StyleSheet } from 'react-native';
-import { spacing, radius, useThemedStyles } from '../../../../shared/theme';
+
+import { radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       root: { flex: 1, backgroundColor: colors.background },
       scroll: { flex: 1 },
-      content: { paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.xl },
+      content: { paddingBottom: spacing.md },
+      body: { paddingHorizontal: spacing.md },
       userCard: {
         alignItems: 'center',
-        backgroundColor: colors.cardBackground,
-        borderRadius: radius.md,
-        borderWidth: 1,
+        backgroundColor: colors.surface,
+        borderRadius: radius.lg,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: colors.border,
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.md,
+        padding: spacing.md,
         marginBottom: spacing.lg,
-        gap: spacing.md,
+        gap: spacing.ms,
       },
       avatar: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: colors.primaryGreen,
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: colors.accentSoft,
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 0,
       },
       avatarInitials: {
-        fontSize: 20,
-        fontWeight: '800',
-        color: '#081008',
-        letterSpacing: 0.5,
+        ...typography.headline,
+        color: colors.accent,
       },
-      userInfo: { flex: 1 },
+      userInfo: { flex: 1, gap: 2 },
       userName: {
-        fontSize: 16,
-        fontWeight: '700',
+        ...typography.bodyStrong,
         color: colors.textPrimary,
-        letterSpacing: -0.2,
       },
       userEmail: {
-        fontSize: 13,
-        color: colors.textMuted,
-        marginTop: 2,
+        ...typography.footnote,
+        color: colors.textSecondary,
       },
     }),
   );

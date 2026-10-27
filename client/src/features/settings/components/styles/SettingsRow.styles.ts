@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { spacing, useThemedStyles } from '../../../../shared/theme';
+
+import { radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -7,32 +8,52 @@ export const useStyles = () =>
       row: {
         alignItems: 'center',
         paddingHorizontal: spacing.md,
-        paddingVertical: spacing.md - 2,
-        minHeight: 58,
+        gap: spacing.ms,
+      },
+      pressed: {
+        backgroundColor: colors.surfaceMuted,
+      },
+      iconWrap: {
+        width: 32,
+        height: 32,
+        borderRadius: radius.sm,
+        backgroundColor: colors.surfaceMuted,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      iconWrapDestructive: {
+        backgroundColor: colors.dangerSoft,
+      },
+      body: {
+        flex: 1,
+        alignItems: 'center',
+        minHeight: 56,
+        paddingVertical: spacing.sm2,
+        gap: spacing.sm,
       },
       rowBorder: {
-        borderBottomWidth: 1,
+        borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: colors.border,
       },
-      left: { flex: 1 },
-      label: {
-        fontSize: 15,
-        color: colors.textPrimary,
-        letterSpacing: -0.1,
+      left: {
+        flex: 1,
+        gap: 2,
       },
-      labelDestructive: { color: colors.danger },
+      label: {
+        ...typography.body,
+        color: colors.textPrimary,
+      },
+      labelDestructive: {
+        color: colors.danger,
+      },
       hint: {
-        fontSize: 12,
-        color: colors.textMuted,
-        marginTop: 2,
-        lineHeight: 17,
+        ...typography.footnote,
+        color: colors.textSecondary,
       },
       right: {
         alignItems: 'center',
         gap: spacing.xs,
-        marginStart: spacing.sm,
       },
-      pressed: { opacity: 0.65 },
     }),
   );
 

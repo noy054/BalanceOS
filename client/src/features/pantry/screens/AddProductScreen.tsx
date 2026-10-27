@@ -1,10 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 
@@ -15,23 +11,20 @@ import {
 } from "../hooks/usePantry";
 import { useRecipeReturn } from "../recipeReturnStore";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
-import { useAppTheme } from "../../../shared/theme";
+import { Button } from "../../../shared/components/ui/Button";
+import { StateView } from "../../../shared/components/ui/StateView";
+import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
 import { ProductBasicInfoForm } from "../components/products/ProductBasicInfoForm";
 import { ProductCategoryPicker } from "../components/products/ProductCategoryPicker";
 import { ProductImagePicker } from "../components/products/ProductImagePicker";
 import { ProductNutritionForm } from "../components/products/ProductNutritionForm";
 import { useAddProductForm } from "../hooks/useAddProductForm";
 import { useProductImagePicker } from "../hooks/useProductImagePicker";
-import {
-  getDirectionStyles,
-  useStyles,
-} from "./styles/AddProductScreen.styles";
+import { getDirectionStyles, useStyles } from "./styles/FormScreen.styles";
 
 export function AddProductScreen() {
   const { t, i18n } = useTranslation("pantry");
-  const { colors } = useAppTheme();
   const styles = useStyles();
-  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
   const params = useLocalSearchParams<{
@@ -67,9 +60,7 @@ export function AddProductScreen() {
 
   const imagePicker = useProductImagePicker({
     onPick: form.updateImage,
-    permissionDeniedMessage: t("errors.galleryPermissionDenied", {
-      defaultValue: "צריך לאשר גישה לגלריה כדי לבחור תמונה",
-    }),
+    permissionDeniedMessage: t("errors.galleryPermissionDenied"),
   });
 
   useEffect(() => {
@@ -77,7 +68,7 @@ export function AddProductScreen() {
       return;
     }
 
-    return navigation.addListener("beforeRemove", () => {
+    const unsubscribe = navigation.addListener("removed", () => {
       if (isSavingRef.current) {
         isSavingRef.current = false;
         return;
@@ -85,6 +76,8 @@ export function AddProductScreen() {
 
       setReopenPicker(true);
     });
+
+    return () => queueMicrotask(unsubscribe);
   }, [navigation, fromRecipePicker, setReopenPicker]);
 
   function handleBackFromRecipe() {
@@ -141,17 +134,7 @@ export function AddProductScreen() {
           fallbackRoute="/(app)/pantry"
         />
 
-        <View style={styles.loadingContainer}>
-          <MaterialCommunityIcons
-            name="loading"
-            size={28}
-            color={colors.primaryGreen}
-          />
-
-          <Text style={[styles.loadingText, directionStyles.text]}>
-            {t("addProduct.loadingProduct")}
-          </Text>
-        </View>
+        <StateView variant="loading" message={t("addProduct.loadingProduct")} />
       </SafeAreaView>
     );
   }
@@ -164,88 +147,76 @@ export function AddProductScreen() {
         onBack={fromRecipePicker ? handleBackFromRecipe : undefined}
       />
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={styles.introCard}>
-          <Text style={[styles.subtitle, directionStyles.text]}>
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={[styles.intro, directionStyles.text]}>
             {isEditMode
               ? t("addProduct.editSubtitle")
               : t("addProduct.subtitle")}
           </Text>
 
-          <Text style={[styles.optionalHint, directionStyles.text]}>
-            {t("addProduct.optionalNutritionHint")}
-          </Text>
-        </View>
+          <ProductImagePicker
+            imageUrl={form.form.imageUrl}
+            hasImagePreview={form.hasImagePreview}
+            isRTL={isRTL}
+            t={t}
+            onPickImage={imagePicker.pickImage}
+            onRemoveImage={form.removeImage}
+          />
 
-        <ProductImagePicker
-          imageUrl={form.form.imageUrl}
-          hasImagePreview={form.hasImagePreview}
-          isRTL={isRTL}
-          t={t}
-          onPickImage={imagePicker.pickImage}
-          onRemoveImage={form.removeImage}
-        />
+          <ProductBasicInfoForm
+            t={t}
+            language={i18n.language}
+            errors={form.errors}
+            autoFocus={!isEditMode && !fromRecipePicker}
+            field={form.field}
+          />
 
-        <ProductBasicInfoForm
-          t={t}
-          language={i18n.language}
-          errors={form.errors}
-          autoFocus={!isEditMode && !fromRecipePicker}
-          field={form.field}
-        />
+          <ProductCategoryPicker
+            t={t}
+            isRTL={isRTL}
+            selectedCategories={form.mealCategories}
+            onToggle={form.toggleCategory}
+          />
 
-        <ProductCategoryPicker
-          t={t}
-          isRTL={isRTL}
-          selectedCategories={form.mealCategories}
-          onToggle={form.toggleCategory}
-        />
+          <ProductNutritionForm
+            t={t}
+            language={i18n.language}
+            isRTL={isRTL}
+            errors={form.errors}
+            nutritionMode={form.nutritionMode}
+            isPerServing={form.isPerServing}
+            servingSizeG={form.servingSizeG}
+            onSwitchMode={form.switchMode}
+            onChangeServingSize={form.updateServingSize}
+            field={form.field}
+          />
+        </ScrollView>
 
-        <ProductNutritionForm
-          t={t}
-          language={i18n.language}
-          isRTL={isRTL}
-          errors={form.errors}
-          nutritionMode={form.nutritionMode}
-          isPerServing={form.isPerServing}
-          servingSizeG={form.servingSizeG}
-          onSwitchMode={form.switchMode}
-          onChangeServingSize={form.updateServingSize}
-          field={form.field}
-        />
-
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
-
-      <View
-        style={[
-          styles.stickyFooter,
-          { paddingBottom: Math.max(insets.bottom, 16) },
-        ]}
-      >
-        <Pressable
-          style={({ pressed }) => [
-            styles.saveBtn,
-            pressed && styles.saveBtnPressed,
-            isSaving && styles.saveBtnDisabled,
-          ]}
-          onPress={handleSave}
-          disabled={isSaving}
-        >
-          <Text style={[styles.saveBtnText, directionStyles.centeredText]}>
-            {isSaving
-              ? t("addProduct.saving")
-              : isEditMode
-                ? t("addProduct.updateButton")
-                : t("addProduct.saveButton")}
-          </Text>
-        </Pressable>
-      </View>
+        <StickyFooter>
+          <Button
+            label={
+              isSaving
+                ? t("addProduct.saving")
+                : isEditMode
+                  ? t("addProduct.updateButton")
+                  : t("addProduct.saveButton")
+            }
+            onPress={handleSave}
+            loading={isSaving}
+            fullWidth
+          />
+        </StickyFooter>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

@@ -1,5 +1,6 @@
 import { Text, View } from "react-native";
 
+import { formatGrams } from "../../../../shared/helpers/formatNumber";
 import { useRowStyles } from "./styles/NutritionRow.styles";
 
 type Props = {
@@ -20,6 +21,7 @@ export function NutritionRow({
   isRTL,
 }: Props) {
   const rowStyles = useRowStyles();
+  const formatted = formatGrams(value);
 
   return (
     <View
@@ -28,6 +30,8 @@ export function NutritionRow({
         !last && rowStyles.rowBorder,
         { flexDirection: isRTL ? "row-reverse" : "row" },
       ]}
+      accessible
+      accessibilityLabel={`${label}: ${formatted} ${unit}`}
     >
       <Text
         style={[
@@ -52,7 +56,7 @@ export function NutritionRow({
           style={[rowStyles.value, highlight && rowStyles.valueHighlight]}
           numberOfLines={1}
         >
-          {value}
+          {formatted}
         </Text>
 
         <Text

@@ -1,85 +1,90 @@
 import { StyleSheet } from "react-native";
-import { spacing, radius, useThemedStyles } from "../../../../shared/theme";
+
+import { radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       content: {
-        marginTop: spacing.sm,
         gap: spacing.md,
       },
+
       section: {
         gap: spacing.sm,
       },
+
       subTitle: {
-        fontSize: 13,
-        fontWeight: "800",
-        color: colors.textMuted,
+        ...typography.label,
+        color: colors.textSecondary,
       },
+
       list: {
-        gap: spacing.sm,
+        gap: 0,
       },
+
       foodRow: {
         flexDirection: "row",
         alignItems: "center",
-        gap: spacing.sm,
-        paddingVertical: spacing.sm,
-        paddingHorizontal: spacing.sm,
-        borderRadius: radius.lg,
-        backgroundColor: "rgba(255,255,255,0.035)",
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.055)",
+        gap: spacing.ms,
+        minHeight: 48,
+        paddingVertical: spacing.xs + 2,
       },
+
       foodRowRtl: {
         flexDirection: "row-reverse",
       },
+
       rankBadge: {
-        width: 28,
-        height: 28,
-        borderRadius: radius.full,
+        width: 26,
+        height: 26,
+        borderRadius: radius.sm,
+        backgroundColor: colors.surfaceMuted,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "rgba(255,255,255,0.07)",
       },
+
       rankText: {
-        fontSize: 12,
-        fontWeight: "800",
-        color: colors.textPrimary,
+        ...typography.caption,
+        ...typography.number,
+        fontWeight: "600",
+        color: colors.textSecondary,
       },
+
       foodTextBlock: {
         flex: 1,
         minWidth: 0,
+        gap: 1,
       },
+
       foodName: {
-        fontSize: 13,
-        fontWeight: "800",
+        ...typography.callout,
         color: colors.textPrimary,
       },
+
       foodMeta: {
-        marginTop: 2,
-        fontSize: 11,
-        fontWeight: "700",
+        ...typography.caption,
+        fontWeight: "400",
         color: colors.textMuted,
       },
+
       foodStat: {
-        fontSize: 12,
-        fontWeight: "800",
-        color: colors.primaryGreen,
-      },
-      divider: {
-        height: 1,
-        backgroundColor: "rgba(255,255,255,0.07)",
-      },
-      emptyBox: {
-        marginTop: spacing.sm,
-        paddingVertical: spacing.md,
-        paddingHorizontal: spacing.sm,
-        borderRadius: radius.lg,
-        backgroundColor: "rgba(255,255,255,0.035)",
-      },
-      emptyText: {
-        fontSize: 13,
+        ...typography.callout,
+        ...typography.number,
         fontWeight: "600",
+        color: colors.textPrimary,
+      },
+
+      divider: {
+        height: StyleSheet.hairlineWidth,
+        backgroundColor: colors.border,
+      },
+
+      emptyBox: {
+        paddingVertical: spacing.sm,
+      },
+
+      emptyText: {
+        ...typography.footnote,
         color: colors.textMuted,
       },
     }),

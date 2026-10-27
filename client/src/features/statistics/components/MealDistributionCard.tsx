@@ -64,7 +64,7 @@ export function MealDistributionCard({ distribution, isRTL }: Props) {
                     </Text>
 
                     <Text style={[styles.mealSubText, { textAlign }]}>
-                      {item.avgCalories} kcal
+                      {item.avgCalories} {t("units.kcal")}
                     </Text>
                   </View>
                 </View>

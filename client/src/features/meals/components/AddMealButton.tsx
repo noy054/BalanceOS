@@ -30,7 +30,7 @@ export function AddMealButton({ onPress }: Props) {
         <MaterialCommunityIcons
           name="plus"
           size={22}
-          color={colors.primaryGreen}
+          color={colors.accent}
         />
       </View>
 

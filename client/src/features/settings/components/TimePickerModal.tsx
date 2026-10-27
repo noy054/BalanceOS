@@ -26,7 +26,7 @@ export function TimePickerModal({
   onConfirm,
 }: Props) {
   const { t, i18n } = useTranslation("settings");
-  const { colors } = useAppTheme();
+  const { colors, resolvedTheme } = useAppTheme();
   const styles = useTimePickerModalStyles();
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
@@ -48,17 +48,17 @@ export function TimePickerModal({
           <View style={[styles.pickerHeader, dir.row]}>
             <Pressable onPress={onClose} hitSlop={12}>
               <Text style={styles.pickerCancelText}>
-                {t("common.cancel", { defaultValue: "ביטול" })}
+                {t("common.cancel")}
               </Text>
             </Pressable>
 
             <Text style={styles.pickerTitle}>
-              {t("notifications.pickTime", { defaultValue: "בחירת שעה" })}
+              {t("notifications.pickTime")}
             </Text>
 
             <Pressable onPress={onConfirm} hitSlop={12}>
               <Text style={styles.pickerDoneText}>
-                {t("common.done", { defaultValue: "אישור" })}
+                {t("common.done")}
               </Text>
             </Pressable>
           </View>
@@ -70,7 +70,7 @@ export function TimePickerModal({
             is24Hour
             locale={i18n.language === "he" ? "he-IL" : "en-US"}
             textColor={colors.textPrimary}
-            themeVariant={colors.background === "#0B0D0B" ? "dark" : "light"}
+            themeVariant={resolvedTheme === "dark" ? "dark" : "light"}
             onChange={onChange}
           />
         </Pressable>

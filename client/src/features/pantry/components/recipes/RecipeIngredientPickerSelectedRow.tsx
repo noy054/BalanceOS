@@ -1,10 +1,10 @@
 import { Pressable, Text, TextInput, View } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
 import { useAppTheme } from "../../../../shared/theme";
+import { IconButton } from "../../../../shared/components/ui/IconButton";
 import { PickerDraft } from "../../helpers/recipeIngredientPickerDraft";
-import { useStyles } from "./styles/RecipeIngredientPickerSelectedRow.styles";
+import { useDraftRowStyles } from "../shared/styles/DraftItemRow.styles";
 
 type DirectionStyles = ReturnType<
   typeof import("./styles/RecipeIngredientPickerModal.styles").getDirectionStyles
@@ -27,41 +27,45 @@ export function RecipeIngredientPickerSelectedRow({
 }: Props) {
   const { t } = useTranslation("pantry");
   const { colors } = useAppTheme();
-  const styles = useStyles();
+  const styles = useDraftRowStyles();
+
+  const placeholder =
+    draft.unit === "servings"
+      ? t("savedMeal.servingsPlaceholder")
+      : t("recipe.gramsPlaceholder");
 
   return (
-    <View style={[styles.selectedRow, dir.row]}>
-      <View style={styles.selectedInfo}>
-        <Text style={[styles.selectedName, dir.text]} numberOfLines={1}>
+    <View style={[styles.row, dir.row]}>
+      <View style={styles.info}>
+        <Text style={[styles.name, dir.text]} numberOfLines={1}>
           {draft.product.name}
         </Text>
 
         {draft.product.servingSizeG ? (
-          <Text style={[styles.selectedServing, dir.text]}>
-            {t("addProduct.perServing")} · {draft.product.servingSizeG}
-            {t("product.gramsUnit")}
+          <Text style={[styles.meta, dir.text]}>
+            {t("addProduct.perServing")} · {draft.product.servingSizeG} {t("product.gramsUnit")}
           </Text>
         ) : null}
       </View>
 
-      <View style={[styles.qtyBox, dir.row]}>
+      <View style={[styles.amountBox, dir.row]}>
         <TextInput
-          style={[styles.qtyInput, dir.input]}
+          style={styles.amountInput}
           value={draft.quantity}
           onChangeText={onChangeQuantity}
           keyboardType="decimal-pad"
-          placeholder={
-            draft.unit === "servings"
-              ? t("savedMeal.servingsPlaceholder")
-              : t("recipe.gramsPlaceholder")
-          }
+          placeholder={placeholder}
           placeholderTextColor={colors.textMuted}
+          textAlign="center"
+          accessibilityLabel={`${draft.product.name}, ${placeholder}`}
         />
 
         {draft.product.servingSizeG ? (
           <Pressable
             onPress={onToggleUnit}
             hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t("recipe.toggleUnit")}
             style={({ pressed }) => [
               styles.unitToggle,
               draft.unit === "servings" && styles.unitToggleActive,
@@ -84,20 +88,13 @@ export function RecipeIngredientPickerSelectedRow({
         )}
       </View>
 
-      <Pressable
+      <IconButton
+        icon="close"
+        size={32}
+        iconSize={18}
+        accessibilityLabel={t("recipe.removeItemNamed", { name: draft.product.name })}
         onPress={onRemove}
-        hitSlop={8}
-        style={({ pressed }) => [
-          styles.removeBtn,
-          pressed && styles.removeBtnPressed,
-        ]}
-      >
-        <MaterialCommunityIcons
-          name="close"
-          size={14}
-          color={colors.textMuted}
-        />
-      </Pressable>
+      />
     </View>
   );
 }

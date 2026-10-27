@@ -1,30 +1,34 @@
 import { StyleSheet } from 'react-native';
-import { spacing, radius, useThemedStyles } from '../../../../shared/theme';
+
+import { radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      // Header
       headerRow: {
         alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: spacing.sm,
+        gap: spacing.sm,
       },
       titleInline: {
         marginBottom: 0,
       },
       targetBadge: {
-        fontSize: 11,
-        color: colors.textMuted,
-        fontVariant: ['tabular-nums'],
+        ...typography.caption,
+        ...typography.number,
+        color: colors.textSecondary,
+        backgroundColor: colors.surfaceMuted,
+        borderRadius: radius.xs,
+        paddingHorizontal: spacing.sm,
+        paddingVertical: 2,
+        overflow: 'hidden',
       },
 
-      // Chart wrapper
       chartWrapper: {
         marginTop: spacing.xs,
       },
 
-      // Calorie values row (7D only)
       valuesRow: {
         flexDirection: 'row',
         marginBottom: 4,
@@ -34,17 +38,16 @@ export const useStyles = () =>
         alignItems: 'center',
       },
       barValue: {
-        fontSize: 9,
+        fontSize: 10,
         fontWeight: '600',
         fontVariant: ['tabular-nums'],
       },
 
-      // Bars
       barsRow: {
         flexDirection: 'row',
         alignItems: 'flex-end',
         height: 130,
-        gap: 3,
+        gap: 4,
       },
       barWrapper: {
         flex: 1,
@@ -53,12 +56,14 @@ export const useStyles = () =>
         height: 130,
       },
       bar: {
-        width: '80%',
-        maxWidth: 40,
-        borderRadius: radius.sm,
+        width: '72%',
+        maxWidth: 32,
+        borderTopLeftRadius: radius.xs,
+        borderTopRightRadius: radius.xs,
+        borderBottomLeftRadius: 2,
+        borderBottomRightRadius: 2,
       },
 
-      // Target line
       targetLine: {
         position: 'absolute',
         left: 0,
@@ -66,14 +71,14 @@ export const useStyles = () =>
         height: 1,
         borderStyle: 'dashed',
         borderTopWidth: 1,
-        borderColor: colors.borderStrong,
+        borderColor: colors.textMuted,
+        zIndex: 2,
       },
 
-      // X-axis
       xAxis: {
         flexDirection: 'row',
-        gap: 3,
-        marginTop: spacing.xs,
+        gap: 4,
+        marginTop: spacing.xs + 2,
       },
       xCell: {
         flex: 1,
@@ -81,20 +86,45 @@ export const useStyles = () =>
         gap: 1,
       },
       dayInitial: {
-        fontSize: 10,
+        fontSize: 11,
         fontWeight: '600',
         color: colors.textSecondary,
       },
       dateNum: {
-        fontSize: 8,
+        fontSize: 10,
         color: colors.textMuted,
+        fontVariant: ['tabular-nums'],
       },
 
-      // Summary
+      footerRow: {
+        marginTop: spacing.ms,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: spacing.sm,
+      },
+      legend: {
+        flexWrap: 'wrap',
+        gap: spacing.ms,
+      },
+      legendItem: {
+        alignItems: 'center',
+        gap: spacing.xs + 1,
+      },
+      legendSwatch: {
+        width: 10,
+        height: 10,
+        borderRadius: 3,
+      },
+      legendText: {
+        ...typography.caption,
+        fontWeight: '400',
+        color: colors.textSecondary,
+      },
       summary: {
-        marginTop: spacing.sm,
-        fontSize: 11,
-        color: colors.textMuted,
+        ...typography.caption,
+        ...typography.number,
+        color: colors.textSecondary,
       },
     }),
   );

@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { View, Text, Pressable, Alert, TextInput } from "react-native";
+import { View, Text, Alert, TextInput } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
+
 import { PantryProduct, ProductCatalogProduct } from "../../types";
 import { useAddPantryProductFromCatalog } from "../../hooks/usePantry";
 import {
@@ -12,7 +13,14 @@ import {
 } from "../../helpers/catalogNutrition";
 import { MissingNutritionFields } from "./MissingNutritionFields";
 import { useAppTheme } from "../../../../shared/theme";
+import { Button } from "../../../../shared/components/ui/Button";
+import { FormSection } from "../../../../shared/components/ui/FormSection";
+import { SegmentedControl } from "../../../../shared/components/ui/SegmentedControl";
+import { FoodThumb } from "../food/FoodThumb";
+import { FOOD_ICONS } from "../../hooks/useFoodCardModels";
+import { formatGrams } from "../../../../shared/helpers/formatNumber";
 import { useStyles } from "./styles/ProductCatalogCard.styles";
+import { useDirection } from "../../../../shared/hooks/useDirection";
 
 type Props = {
   product: ProductCatalogProduct;
@@ -20,45 +28,45 @@ type Props = {
   onAdded?: (product: PantryProduct) => void;
 };
 
-function NutritionRow({
+function CatalogNutritionRow({
   label,
   value,
   unit,
-  isRTL,
+  last,
 }: {
   label: string;
   value: number | null;
   unit: string;
-  isRTL: boolean;
+  last?: boolean;
 }) {
   const styles = useStyles();
+  const dir = useDirection();
 
   return (
     <View
       style={[
         styles.nutritionRow,
-        { flexDirection: isRTL ? "row-reverse" : "row" },
+        !last && styles.nutritionRowBorder,
+        dir.row,
       ]}
     >
       <Text
-        style={[styles.nutritionLabel, { textAlign: isRTL ? "right" : "left" }]}
+        style={[styles.nutritionLabel, dir.text]}
       >
         {label}
       </Text>
       <Text style={styles.nutritionValue}>
-        {value != null
-          ? `${value % 1 === 0 ? value : value.toFixed(1)} ${unit}`
-          : "—"}
+        {value != null ? `${formatGrams(value)} ${unit}` : "—"}
       </Text>
     </View>
   );
 }
 
 export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
-  const { t, i18n } = useTranslation("pantry");
+  const { t } = useTranslation("pantry");
   const { colors } = useAppTheme();
   const styles = useStyles();
-  const isRTL = i18n.dir(i18n.language) === "rtl";
+  const dir = useDirection();
   const addMutation = useAddPantryProductFromCatalog();
   const isAdding = addMutation.isPending;
   const [missingValues, setMissingValues] = useState<
@@ -165,102 +173,70 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
     }
   }
 
+  const gramsUnit = t("product.gramsUnit");
+  const calUnit = t("product.calUnit");
+
   return (
-    <View style={styles.card}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerIcon}>
-          <MaterialCommunityIcons
-            name="check-circle"
-            size={22}
-            color={colors.primaryGreen}
-          />
-        </View>
-        <View style={styles.headerText}>
-          <Text
-            style={[
-              styles.productName,
-              { textAlign: isRTL ? "right" : "left" },
-            ]}
-            numberOfLines={2}
-          >
+    <View style={styles.container}>
+      <View style={[styles.identityRow, dir.row]}>
+        <FoodThumb imageUrl={product.imageUrl} fallbackIcon={FOOD_ICONS.product} size={64} />
+
+        <View style={styles.identityText}>
+          <Text style={[styles.productName, dir.text]} numberOfLines={3}>
             {product.name}
           </Text>
           {product.brand ? (
-            <Text
-              style={[
-                styles.productBrand,
-                { textAlign: isRTL ? "right" : "left" },
-              ]}
-            >
+            <Text style={[styles.productBrand, dir.text]} numberOfLines={1}>
               {product.brand}
             </Text>
           ) : null}
         </View>
       </View>
 
-      {/* Source banner */}
       {isFromOFF ? (
-        <View
-          style={[
-            styles.offBanner,
-            { flexDirection: isRTL ? "row-reverse" : "row" },
-          ]}
-        >
+        <View style={[styles.offBanner, dir.row]}>
           <MaterialCommunityIcons
             name="information-outline"
-            size={14}
-            color={colors.textMuted}
+            size={18}
+            color={colors.textSecondary}
           />
-          <Text style={styles.offBannerText}>
+          <Text style={[styles.offBannerText, dir.text]}>
             {t("barcode.fromOpenFoodFacts")}
           </Text>
         </View>
       ) : null}
 
-      {/* Nutrition per 100g */}
-      <View style={styles.nutritionSection}>
-        <Text
-          style={[
-            styles.nutritionTitle,
-            { textAlign: isRTL ? "right" : "left" },
-          ]}
-        >
-          {t("product.per100g")}
-        </Text>
-        <NutritionRow
+      <FormSection title={t("product.per100g")} contentStyle={styles.nutritionCard}>
+        <CatalogNutritionRow
           label={t("macros.calories")}
           value={product.caloriesPer100g}
-          unit={t("product.calUnit")}
-          isRTL={isRTL}
+          unit={calUnit}
         />
-        <NutritionRow
+        <CatalogNutritionRow
           label={t("macros.protein")}
           value={product.proteinPer100g}
-          unit={t("product.gramsUnit")}
-          isRTL={isRTL}
+          unit={gramsUnit}
         />
-        <NutritionRow
+        <CatalogNutritionRow
           label={t("macros.carbs")}
           value={product.carbsPer100g}
-          unit={t("product.gramsUnit")}
-          isRTL={isRTL}
+          unit={gramsUnit}
         />
-        <NutritionRow
+        <CatalogNutritionRow
           label={t("macros.fat")}
           value={product.fatPer100g}
-          unit={t("product.gramsUnit")}
-          isRTL={isRTL}
+          unit={gramsUnit}
+          last={product.fiberPer100g == null}
         />
         {product.fiberPer100g != null ? (
-          <NutritionRow
+          <CatalogNutritionRow
             label={t("macros.fiber")}
             value={product.fiberPer100g}
-            unit={t("product.gramsUnit")}
-            isRTL={isRTL}
+            unit={gramsUnit}
+            last
           />
         ) : null}
-      </View>
+      </FormSection>
 
       <MissingNutritionFields
         missingKeys={missingKeys}
@@ -269,224 +245,110 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
         onChange={handleMissingChange}
       />
 
-      {/* Serving size section */}
-      <View style={styles.servingSection}>
-        <View
-          style={[
-            styles.servingSectionHeader,
-            { flexDirection: isRTL ? "row-reverse" : "row" },
-          ]}
-        >
-          <MaterialCommunityIcons
-            name="scale"
-            size={16}
-            color={colors.primaryGreen}
-          />
-          <View style={styles.servingSectionHeaderText}>
-            <Text
+      <FormSection
+        title={t("barcode.servingSection.title")}
+        hint={t("barcode.servingSection.hint")}
+        contentStyle={styles.sectionCard}
+      >
+        <View style={[styles.servingInputs, dir.row]}>
+          <View style={styles.servingSizeField}>
+            <Text style={[styles.fieldLabel, dir.text]}>
+              {t("barcode.servingSection.sizeLabel")}
+            </Text>
+            <View
               style={[
-                styles.servingSectionTitle,
-                { textAlign: isRTL ? "right" : "left" },
+                styles.inputFrame,
+                servingSizeError ? styles.inputFrameError : null,
+                dir.row,
               ]}
             >
-              {t("barcode.servingSection.title")}
+              <TextInput
+                style={[styles.input, dir.text]}
+                keyboardType="decimal-pad"
+                value={servingSizeStr}
+                onChangeText={(text) => {
+                  setServingSizeStr(text);
+                  setServingSizeError(null);
+                }}
+                placeholder="—"
+                placeholderTextColor={colors.textMuted}
+                accessibilityLabel={t("barcode.servingSection.sizeLabel")}
+              />
+              <Text style={styles.inputUnit}>{gramsUnit}</Text>
+            </View>
+          </View>
+
+          <View style={styles.servingLabelField}>
+            <Text style={[styles.fieldLabel, dir.text]}>
+              {t("barcode.servingSection.labelField")}
             </Text>
-            <Text
-              style={[
-                styles.servingSectionHint,
-                { textAlign: isRTL ? "right" : "left" },
-              ]}
-            >
-              {t("barcode.servingSection.hint")}
-            </Text>
+            <View style={styles.inputFrame}>
+              <TextInput
+                style={[styles.input, dir.text]}
+                value={servingTextStr}
+                onChangeText={setServingTextStr}
+                placeholder={t("barcode.servingSection.labelPlaceholder")}
+                placeholderTextColor={colors.textMuted}
+                maxLength={60}
+                accessibilityLabel={t("barcode.servingSection.labelField")}
+              />
+            </View>
           </View>
         </View>
 
-        {/* Size (g) + unit */}
-        <View
-          style={[
-            styles.servingInputRow,
-            { flexDirection: isRTL ? "row-reverse" : "row" },
-          ]}
-        >
-          <Text
-            style={[
-              styles.servingFieldLabel,
-              { textAlign: isRTL ? "right" : "left" },
-            ]}
-          >
-            {t("barcode.servingSection.sizeLabel")}
-          </Text>
-          <View
-            style={[
-              styles.servingInputGroup,
-              { flexDirection: isRTL ? "row-reverse" : "row" },
-            ]}
-          >
-            <TextInput
-              style={[
-                styles.servingSizeInput,
-                { color: colors.textPrimary, textAlign: isRTL ? "right" : "left" },
-              ]}
-              keyboardType="decimal-pad"
-              value={servingSizeStr}
-              onChangeText={(text) => {
-                setServingSizeStr(text);
-                setServingSizeError(null);
-              }}
-              placeholder="—"
-              placeholderTextColor={colors.textMuted}
-            />
-            <Text style={styles.servingUnit}>g</Text>
-          </View>
-        </View>
         {servingSizeError ? (
-          <Text style={{ color: colors.danger, fontSize: 12, textAlign: isRTL ? "right" : "left", marginTop: 2 }}>
-            {servingSizeError}
-          </Text>
+          <Text style={[styles.errorText, dir.text]}>{servingSizeError}</Text>
         ) : null}
 
-        {/* Description / label */}
-        <View
-          style={[
-            styles.servingInputRow,
-            { flexDirection: isRTL ? "row-reverse" : "row" },
-          ]}
-        >
-          <Text
-            style={[
-              styles.servingFieldLabel,
-              { textAlign: isRTL ? "right" : "left" },
-            ]}
-          >
-            {t("barcode.servingSection.labelField")}
-          </Text>
-          <TextInput
-            style={[
-              styles.servingLabelInput,
-              { color: colors.textPrimary, textAlign: isRTL ? "right" : "left" },
-            ]}
-            value={servingTextStr}
-            onChangeText={setServingTextStr}
-            placeholder={t("barcode.servingSection.labelPlaceholder")}
-            placeholderTextColor={colors.textMuted}
-            maxLength={60}
-          />
-        </View>
-
-        {/* Per-serving preview */}
         {perServingPreview ? (
-          <View
-            style={[
-              styles.servingPreview,
-              { flexDirection: isRTL ? "row-reverse" : "row" },
-            ]}
-          >
-            <MaterialCommunityIcons
-              name="calculator-variant-outline"
-              size={13}
-              color={colors.primaryGreen}
-            />
-            <Text style={styles.servingPreviewText} numberOfLines={1}>
-              {`${t("barcode.servingSection.preview", { g: Math.round(servingG) })}: `}
-              {`${perServingPreview.cal} kcal · `}
-              {`${perServingPreview.p}g P · `}
-              {`${perServingPreview.c}g C · `}
-              {`${perServingPreview.f}g F`}
+          <View style={styles.previewBox}>
+            <Text style={[styles.previewLabel, dir.text]}>
+              {t("barcode.servingSection.preview", { g: Math.round(servingG) })}
+            </Text>
+            <Text style={[styles.previewText, dir.text]}>
+              {t("barcode.calcSection.resultByGrams", {
+                cal: perServingPreview.cal,
+                p: perServingPreview.p,
+                c: perServingPreview.c,
+                f: perServingPreview.f,
+              })}
             </Text>
           </View>
         ) : null}
-      </View>
+      </FormSection>
 
-      {/* Calculator */}
-      <View style={styles.calcSection}>
-        <Text
-          style={[
-            styles.calcSectionTitle,
-            { textAlign: isRTL ? "right" : "left" },
-          ]}
-        >
-          {t("barcode.calcSection.title")}
-        </Text>
-        <View
-          style={[
-            styles.calcRow,
-            { flexDirection: isRTL ? "row-reverse" : "row" },
-          ]}
-        >
-          <View
-            style={[
-              styles.calcToggleGroup,
-              { flexDirection: isRTL ? "row-reverse" : "row" },
+      <FormSection title={t("barcode.calcSection.title")} contentStyle={styles.sectionCard}>
+        <View style={[styles.calcRow, dir.row]}>
+          <SegmentedControl
+            options={[
+              { value: "grams" as const, label: t("barcode.calcSection.grams") },
+              { value: "calories" as const, label: t("barcode.calcSection.calories") },
             ]}
-          >
-            <Pressable
-              style={[
-                styles.calcPill,
-                calcMode === "grams" && styles.calcPillActive,
-              ]}
-              onPress={() => {
-                setCalcMode("grams");
-                setCalcInput("");
-              }}
-            >
-              <Text
-                style={[
-                  styles.calcPillText,
-                  calcMode === "grams" && styles.calcPillTextActive,
-                ]}
-              >
-                {t("barcode.calcSection.grams")}
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[
-                styles.calcPill,
-                calcMode === "calories" && styles.calcPillActive,
-              ]}
-              onPress={() => {
-                setCalcMode("calories");
-                setCalcInput("");
-              }}
-            >
-              <Text
-                style={[
-                  styles.calcPillText,
-                  calcMode === "calories" && styles.calcPillTextActive,
-                ]}
-              >
-                {t("barcode.calcSection.calories")}
-              </Text>
-            </Pressable>
-          </View>
-          <TextInput
-            style={[
-              styles.calcValueInput,
-              {
-                color: colors.textPrimary,
-                textAlign: isRTL ? "right" : "left",
-              },
-            ]}
-            keyboardType="decimal-pad"
-            value={calcInput}
-            onChangeText={setCalcInput}
-            placeholder={t("barcode.calcSection.placeholder")}
-            placeholderTextColor={colors.textMuted}
+            value={calcMode}
+            size="sm"
+            onChange={(mode) => {
+              setCalcMode(mode);
+              setCalcInput("");
+            }}
+            style={styles.calcToggle}
           />
-        </View>
-        {calcResult ? (
-          <View
-            style={[
-              styles.calcResultRow,
-              { flexDirection: isRTL ? "row-reverse" : "row" },
-            ]}
-          >
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={14}
-              color={colors.textMuted}
+
+          <View style={[styles.inputFrame, styles.calcInputFrame]}>
+            <TextInput
+              style={[styles.input, dir.text]}
+              keyboardType="decimal-pad"
+              value={calcInput}
+              onChangeText={setCalcInput}
+              placeholder={t("barcode.calcSection.placeholder")}
+              placeholderTextColor={colors.textMuted}
+              accessibilityLabel={t("barcode.calcSection.title")}
             />
-            <Text style={styles.calcResultText} numberOfLines={1}>
+          </View>
+        </View>
+
+        {calcResult ? (
+          <View style={styles.previewBox}>
+            <Text style={[styles.previewText, dir.text]}>
               {calcMode === "grams"
                 ? t("barcode.calcSection.resultByGrams", {
                     cal: calcResult.cal,
@@ -504,40 +366,24 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded }: Props) {
             </Text>
           </View>
         ) : null}
-      </View>
+      </FormSection>
 
-      {/* Actions */}
       <View style={styles.actions}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.addBtn,
-            pressed && styles.addBtnPressed,
-            isAdding && styles.addBtnDisabled,
-          ]}
+        <Button
+          label={t("barcode.addToPantry")}
+          icon="plus"
           onPress={handleAddToPantry}
-          disabled={isAdding}
-        >
-          <Text style={styles.addBtnText}>
-            {isAdding ? "..." : t("barcode.addToPantry")}
-          </Text>
-        </Pressable>
+          loading={isAdding}
+          fullWidth
+        />
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.scanAnotherBtn,
-            pressed && styles.scanAnotherBtnPressed,
-          ]}
+        <Button
+          label={t("barcode.scanAnother")}
+          icon="barcode-scan"
+          variant="secondary"
           onPress={onScanAnother}
-        >
-          <MaterialCommunityIcons
-            name="barcode-scan"
-            size={16}
-            color={colors.textMuted}
-          />
-          <Text style={styles.scanAnotherBtnText}>
-            {t("barcode.scanAnother")}
-          </Text>
-        </Pressable>
+          fullWidth
+        />
       </View>
     </View>
   );

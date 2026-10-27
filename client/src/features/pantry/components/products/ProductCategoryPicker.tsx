@@ -1,6 +1,9 @@
 import { Pressable, Text, View } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TFunction } from "i18next";
 
+import { useAppTheme } from "../../../../shared/theme";
+import { FormSection } from "../../../../shared/components/ui/FormSection";
 import { ALL_PRODUCT_CATEGORIES, ProductCategory } from "../../types";
 import { useStyles } from "./styles/ProductCategoryPicker.styles";
 
@@ -17,14 +20,15 @@ export function ProductCategoryPicker({
   selectedCategories,
   onToggle,
 }: Props) {
+  const { colors } = useAppTheme();
   const styles = useStyles();
 
   return (
-    <View style={styles.card}>
-      <Text style={[styles.label, { textAlign: isRTL ? "right" : "left" }]}>
-        {t("addProduct.categoriesLabel")}
-      </Text>
-
+    <FormSection
+      title={t("addProduct.categoriesLabel")}
+      hint={t("addProduct.categoriesHint")}
+      contentStyle={styles.card}
+    >
       <View
         style={[
           styles.chipsRow,
@@ -33,20 +37,32 @@ export function ProductCategoryPicker({
       >
         {ALL_PRODUCT_CATEGORIES.map((cat) => {
           const active = selectedCategories.includes(cat);
+          const label = t(`categories.${cat}` as Parameters<typeof t>[0]);
+
           return (
             <Pressable
               key={cat}
-              style={[styles.chip, active && styles.chipActive]}
+              style={({ pressed }) => [
+                styles.chip,
+                { flexDirection: isRTL ? "row-reverse" : "row" },
+                active && styles.chipActive,
+                pressed && styles.chipPressed,
+              ]}
               onPress={() => onToggle(cat)}
-              hitSlop={6}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: active }}
+              accessibilityLabel={label}
             >
+              {active ? (
+                <MaterialCommunityIcons name="check" size={16} color={colors.accent} />
+              ) : null}
               <Text style={[styles.chipText, active && styles.chipTextActive]}>
-                {t(`categories.${cat}` as Parameters<typeof t>[0])}
+                {label}
               </Text>
             </Pressable>
           );
         })}
       </View>
-    </View>
+    </FormSection>
   );
 }

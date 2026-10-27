@@ -1,54 +1,130 @@
 import { StyleSheet } from "react-native";
-import { spacing, radius, useThemedStyles } from "../../../../shared/theme";
+
+import { radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      grid: {
-        marginTop: spacing.sm,
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: spacing.sm,
+      heroRow: {
+        alignItems: "stretch",
+        gap: spacing.md,
       },
-      item: {
-        width: "48%",
-        minHeight: 92,
-        paddingVertical: spacing.sm,
-        paddingHorizontal: spacing.sm,
-        borderRadius: radius.lg,
-        backgroundColor: "rgba(255,255,255,0.035)",
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.055)",
-        justifyContent: "space-between",
+
+      heroCell: {
+        flex: 1,
+        gap: 2,
       },
-      label: {
-        fontSize: 11,
-        fontWeight: "700",
-        color: colors.textMuted,
+
+      heroDivider: {
+        width: StyleSheet.hairlineWidth,
+        backgroundColor: colors.border,
       },
-      value: {
-        marginTop: 6,
-        fontSize: 19,
-        fontWeight: "900",
+
+      heroLabel: {
+        ...typography.footnote,
+        color: colors.textSecondary,
       },
-      valueDefault: {
+
+      heroValueRow: {
+        alignItems: "baseline",
+        gap: spacing.xs,
+      },
+
+      heroValue: {
+        ...typography.display,
+        fontSize: 30,
+        lineHeight: 36,
         color: colors.textPrimary,
       },
-      valueGood: {
-        color: colors.primaryGreen,
+
+      heroUnit: {
+        ...typography.callout,
+        color: colors.textSecondary,
       },
-      valueDanger: {
-        color: colors.danger,
-      },
-      valueMuted: {
+
+      heroSub: {
+        ...typography.caption,
+        fontWeight: "400",
         color: colors.textMuted,
       },
-      sub: {
-        marginTop: 5,
-        fontSize: 10,
-        fontWeight: "600",
+
+      statsRow: {
+        marginTop: spacing.md,
+        gap: spacing.sm,
+      },
+
+      statCell: {
+        flex: 1,
+        minWidth: 0,
+        backgroundColor: colors.surfaceMuted,
+        borderRadius: radius.md,
+        paddingHorizontal: spacing.sm2,
+        paddingVertical: spacing.sm2,
+        gap: 2,
+      },
+
+      statValue: {
+        ...typography.bodyStrong,
+        ...typography.number,
+        color: colors.textPrimary,
+      },
+
+      statLabel: {
+        ...typography.caption,
+        color: colors.textSecondary,
+      },
+
+      statSub: {
+        ...typography.caption,
+        fontSize: 11,
         lineHeight: 14,
+        fontWeight: "400",
         color: colors.textMuted,
+      },
+
+      gapList: {
+        marginTop: spacing.ms,
+      },
+
+      gapRow: {
+        alignItems: "center",
+        gap: spacing.md,
+        paddingVertical: spacing.sm2,
+      },
+
+      gapRowBorder: {
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: colors.border,
+      },
+
+      gapText: {
+        flex: 1,
+        gap: 1,
+      },
+
+      gapLabel: {
+        ...typography.callout,
+        color: colors.textPrimary,
+      },
+
+      gapSub: {
+        ...typography.caption,
+        fontWeight: "400",
+        color: colors.textMuted,
+      },
+
+      gapValue: {
+        ...typography.bodyStrong,
+        ...typography.number,
+        color: colors.textPrimary,
+      },
+
+      valueGood: {
+        color: colors.success,
+      },
+
+      valueAttention: {
+        color: colors.warning,
       },
     }),
   );

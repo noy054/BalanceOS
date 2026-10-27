@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { spacing, radius, cardShadow, useThemedStyles } from '../../../../shared/theme';
+
+import { radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -7,66 +8,67 @@ export const useStyles = () =>
       root: { flex: 1, backgroundColor: colors.background },
       content: {
         paddingHorizontal: spacing.md,
-        paddingTop: spacing.lg,
-        gap: spacing.md,
+        paddingTop: spacing.xs,
+        paddingBottom: spacing.xl,
+        gap: spacing.ms,
       },
       card: {
-        backgroundColor: colors.cardBackground,
-        borderRadius: radius.md,
-        padding: spacing.md,
-        borderWidth: 2,
+        backgroundColor: colors.surface,
+        borderRadius: radius.lg,
+        borderWidth: 1,
         borderColor: colors.border,
-        ...cardShadow,
+        padding: spacing.md,
+        gap: spacing.sm,
       },
       cardActive: {
-        borderColor: colors.primaryGreen,
-        backgroundColor: colors.primaryGreenLight,
+        borderColor: colors.accent,
+        borderWidth: 1.5,
       },
-      cardPressed: { opacity: 0.88 },
+      cardPressed: {
+        opacity: 0.8,
+      },
       cardHeader: {
         alignItems: 'center',
-        marginBottom: spacing.sm,
-        gap: spacing.sm,
+        gap: spacing.ms,
       },
       iconCircle: {
         width: 40,
         height: 40,
-        borderRadius: 20,
-        backgroundColor: colors.background,
+        borderRadius: radius.md,
+        backgroundColor: colors.surfaceMuted,
         alignItems: 'center',
         justifyContent: 'center',
-        flexShrink: 0,
       },
       iconCircleActive: {
-        backgroundColor: colors.primaryGreen,
+        backgroundColor: colors.accentSoft,
       },
       cardTitle: {
         flex: 1,
-        fontSize: 16,
-        fontWeight: '700',
+        ...typography.headline,
         color: colors.textPrimary,
       },
-      cardTitleActive: { color: colors.primaryGreen },
       radio: {
         width: 22,
         height: 22,
         borderRadius: 11,
-        borderWidth: 2,
-        borderColor: colors.border,
+        borderWidth: 1.5,
+        borderColor: colors.borderStrong,
         alignItems: 'center',
         justifyContent: 'center',
-        flexShrink: 0,
       },
       radioActive: {
-        borderColor: colors.primaryGreen,
-        backgroundColor: colors.primaryGreen,
+        borderColor: colors.accent,
+      },
+      radioDot: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: colors.accent,
       },
       cardDescription: {
-        fontSize: 13,
+        ...typography.callout,
         color: colors.textSecondary,
-        lineHeight: 18,
       },
-      cardDescriptionActive: { color: colors.textSecondary },
     }),
   );
 

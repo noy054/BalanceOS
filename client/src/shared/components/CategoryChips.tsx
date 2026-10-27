@@ -2,7 +2,7 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { ProductCategory } from "../../features/pantry/types";
-import { radius, spacing, useThemedStyles } from "../theme";
+import { radius, spacing, typography, useThemedStyles } from "../theme";
 
 type Props = {
   categories: ProductCategory[];
@@ -43,17 +43,16 @@ const useStyles = () =>
         gap: spacing.xs,
       },
       chip: {
-        paddingHorizontal: spacing.sm,
-        paddingVertical: 3,
-        borderRadius: radius.full,
-        backgroundColor: colors.primaryGreenLight,
-        borderWidth: 1,
-        borderColor: colors.primaryGreenMid,
+        paddingHorizontal: spacing.sm - 2,
+        paddingVertical: 2,
+        borderRadius: radius.xs,
+        backgroundColor: colors.surfaceMuted,
       },
       chipText: {
+        ...typography.caption,
         fontSize: 11,
-        fontWeight: "700",
-        color: colors.primaryGreen,
+        lineHeight: 14,
+        color: colors.textSecondary,
       },
     }),
   );

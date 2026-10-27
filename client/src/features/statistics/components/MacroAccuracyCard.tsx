@@ -51,25 +51,25 @@ export function MacroAccuracyCard({
     {
       key: "calories",
       labelKey: "macros.calories",
-      unit: "kcal",
-      color: colors.accentLime,
+      unit: t("units.kcal"),
+      color: colors.accent,
     },
     {
       key: "protein",
       labelKey: "macros.protein",
-      unit: "g",
+      unit: t("units.g"),
       color: colors.macroProtein,
     },
     {
       key: "carbs",
       labelKey: "macros.carbs",
-      unit: "g",
+      unit: t("units.g"),
       color: colors.macroCarbs,
     },
     {
       key: "fat",
       labelKey: "macros.fat",
-      unit: "g",
+      unit: t("units.g"),
       color: colors.macroFat,
     },
   ];
@@ -97,9 +97,9 @@ export function MacroAccuracyCard({
 
         const pctColor =
           stat.pct >= 85 && stat.pct <= 115
-            ? colors.primaryGreen
+            ? colors.success
             : stat.pct > 115
-              ? colors.danger
+              ? colors.warning
               : colors.textMuted;
 
         const diffText =
@@ -124,8 +124,9 @@ export function MacroAccuracyCard({
 
               <Text style={styles.macroNumbers}>
                 {formatValue(stat.avg)}
-                {row.unit} / {formatValue(stat.target)}
-                {row.unit}
+                <Text style={styles.macroTarget}>
+                  {" "}/ {formatValue(stat.target)} {row.unit}
+                </Text>
               </Text>
             </View>
 

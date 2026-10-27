@@ -227,7 +227,8 @@
     "contact": "צור קשר",
     "contactHint": "יצירת קשר עם התמיכה",
 
-    "storeNote": "קישורי החנויות יעודכנו לאחר פרסום האפליקציה."
+    "storeNote": "קישורי החנויות יעודכנו לאחר פרסום האפליקציה.",
+    "openLinkFailed": "לא ניתן לפתוח את הקישור"
   },
   "errors": {
     "loadFailed": "טעינת הגדרות נכשלה",
@@ -236,5 +237,10 @@
     "deleteAccountFailed": "מחיקת החשבון נכשלה",
     "profileSaveFailed": "שמירת הפרופיל נכשלה",
     "fullNameRequired": "צריך להזין שם מלא"
+  },
+
+  "common": {
+    "cancel": "ביטול",
+    "done": "אישור"
   }
 }

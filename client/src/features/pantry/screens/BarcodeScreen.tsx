@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Animated, View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
+import { Alert, Animated, View, Text, ActivityIndicator, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import type { BarcodeScanningResult } from "expo-camera";
@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { Button } from "../../../shared/components/ui/Button";
+import { StateView } from "../../../shared/components/ui/StateView";
 import { ProductCatalogCard } from "../components/products/ProductCatalogCard";
 import { BarcodeManualProductForm } from "../components/products/BarcodeManualProductForm";
 import { useBarcodeResolver } from "../hooks/useBarcodeResolver";
@@ -17,16 +19,17 @@ import { PantryProduct, ProductCatalogProduct } from "../types";
 import { useRecipeReturn } from "../recipeReturnStore";
 import { useMealReturn } from "../mealReturnStore";
 import { usePantryHighlight } from "../pantryHighlightStore";
-import { useAppTheme } from "../../../shared/theme";
+import { cameraColors, useAppTheme } from "../../../shared/theme";
 import { useStyles } from "./styles/BarcodeScreen.styles";
+import { useDirection } from "../../../shared/hooks/useDirection";
 
 type Phase = "scanning" | "loading" | "found" | "not_found" | "manual" | "exists";
 
 export function BarcodeScreen() {
-  const { t, i18n } = useTranslation("pantry");
+  const { t } = useTranslation("pantry");
   const { colors } = useAppTheme();
   const styles = useStyles();
-  const isRTL = i18n.dir(i18n.language) === "rtl";
+  const dir = useDirection();
 
   const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
   const setPending = useRecipeReturn((s) => s.setPending);
@@ -44,13 +47,15 @@ export function BarcodeScreen() {
   useEffect(() => {
     if (!fromRecipePicker) return;
 
-    return navigation.addListener("beforeRemove", () => {
+    const unsubscribe = navigation.addListener("removed", () => {
       if (productWasSavedRef.current) {
         productWasSavedRef.current = false;
         return;
       }
       setReopenPicker(true);
     });
+
+    return () => queueMicrotask(unsubscribe);
   }, [navigation, fromRecipePicker, setReopenPicker]);
 
   function handleProductAdded(product: PantryProduct) {
@@ -150,71 +155,47 @@ export function BarcodeScreen() {
     setPhase("manual");
   }
 
+  const header = (
+    <ScreenHeader
+      title={t("barcode.title")}
+      onBack={fromRecipePicker ? handleBackFromRecipe : undefined}
+    />
+  );
+
   // ── Permission states ──────────────────────────────────────────────────────
 
   if (!permission) {
     return (
-      <SafeAreaView style={styles.root} edges={["top"]}>
-        <ScreenHeader
-          title={t("barcode.title")}
-          onBack={fromRecipePicker ? handleBackFromRecipe : undefined}
-        />
-        <View style={styles.body}>
-          <ActivityIndicator color={colors.primaryGreen} />
-        </View>
+      <SafeAreaView style={styles.root} edges={["top", "bottom"]}>
+        {header}
+        <StateView variant="loading" />
       </SafeAreaView>
     );
   }
 
   if (!permission.granted) {
     return (
-      <SafeAreaView style={styles.root} edges={["top"]}>
-        <ScreenHeader
-          title={t("barcode.title")}
-          onBack={fromRecipePicker ? handleBackFromRecipe : undefined}
+      <SafeAreaView style={styles.root} edges={["top", "bottom"]}>
+        {header}
+        <StateView
+          variant="empty"
+          icon="camera-off-outline"
+          title={t("barcode.permissionTitle")}
+          message={
+            permission.canAskAgain
+              ? t("barcode.permissionMessage")
+              : t("barcode.permissionDenied")
+          }
         />
-        <View style={styles.body}>
-          <View style={styles.permissionCard}>
-            <View style={styles.iconBubble}>
-              <MaterialCommunityIcons
-                name="camera-off"
-                size={40}
-                color={colors.primaryGreen}
-              />
-            </View>
-            <Text
-              style={[
-                styles.permissionTitle,
-                { textAlign: isRTL ? "right" : "left" },
-              ]}
-            >
-              {t("barcode.permissionTitle")}
-            </Text>
-            <Text
-              style={[
-                styles.permissionMessage,
-                { textAlign: isRTL ? "right" : "left" },
-              ]}
-            >
-              {permission.canAskAgain
-                ? t("barcode.permissionMessage")
-                : t("barcode.permissionDenied")}
-            </Text>
-            {permission.canAskAgain ? (
-              <Pressable
-                style={({ pressed }) => [
-                  styles.permissionBtn,
-                  pressed && styles.permissionBtnPressed,
-                ]}
-                onPress={requestPermission}
-              >
-                <Text style={styles.permissionBtnText}>
-                  {t("barcode.permissionButton")}
-                </Text>
-              </Pressable>
-            ) : null}
+        {permission.canAskAgain ? (
+          <View style={styles.bottomActions}>
+            <Button
+              label={t("barcode.permissionButton")}
+              onPress={requestPermission}
+              fullWidth
+            />
           </View>
-        </View>
+        ) : null}
       </SafeAreaView>
     );
   }
@@ -223,79 +204,45 @@ export function BarcodeScreen() {
 
   if (phase === "exists" && existingPantryProduct) {
     return (
-      <SafeAreaView style={styles.root} edges={["top"]}>
-        <View pointerEvents="none" style={styles.backgroundLayer}>
-          <View style={styles.glowTop} />
-          <View style={styles.glowSide} />
-        </View>
-        <ScreenHeader
-          title={t("barcode.title")}
-          onBack={fromRecipePicker ? handleBackFromRecipe : undefined}
-        />
+      <SafeAreaView style={styles.root} edges={["top", "bottom"]}>
+        {header}
         <View style={styles.body}>
-          <View style={styles.existsCard}>
-            <View style={styles.existsIconRow}>
-              <MaterialCommunityIcons
-                name="check-circle"
-                size={36}
-                color={colors.primaryGreen}
-              />
-              <Text style={styles.existsTitle}>{t("barcode.existsTitle")}</Text>
+          <View style={styles.resultCard}>
+            <View style={styles.resultIcon}>
+              <MaterialCommunityIcons name="check" size={26} color={colors.success} />
             </View>
-            <Text
-              style={[styles.existsName, { textAlign: isRTL ? "right" : "left" }]}
-              numberOfLines={2}
-            >
+
+            <Text style={styles.resultTitle}>{t("barcode.existsTitle")}</Text>
+
+            <Text style={styles.resultName} numberOfLines={2}>
               {existingPantryProduct.name}
             </Text>
+
             {existingPantryProduct.brand ? (
-              <Text
-                style={[styles.existsBrand, { textAlign: isRTL ? "right" : "left" }]}
-                numberOfLines={1}
-              >
+              <Text style={styles.resultMeta} numberOfLines={1}>
                 {existingPantryProduct.brand}
               </Text>
             ) : null}
-            <Text
-              style={[styles.existsHint, { textAlign: isRTL ? "right" : "left" }]}
-            >
-              {t("barcode.existsProductIn")}
-            </Text>
+
+            <Text style={styles.resultHint}>{t("barcode.existsProductIn")}</Text>
           </View>
 
-          <Pressable
-            style={({ pressed }) => [
-              styles.viewPantryBtn,
-              { flexDirection: isRTL ? "row-reverse" : "row" },
-              pressed && styles.viewPantryBtnPressed,
-            ]}
-            onPress={handleViewInPantry}
-          >
-            <MaterialCommunityIcons
-              name="package-variant"
-              size={17}
-              color="#000"
+          <View style={styles.actionsStack}>
+            <Button
+              label={t("barcode.viewInPantry")}
+              icon="package-variant"
+              onPress={handleViewInPantry}
+              fullWidth
             />
-            <Text style={styles.viewPantryBtnText}>{t("barcode.viewInPantry")}</Text>
-          </Pressable>
 
-          <Pressable
-            style={({ pressed }) => [
-              styles.manualBtn,
-              { flexDirection: isRTL ? "row-reverse" : "row" },
-              pressed && styles.manualBtnPressed,
-            ]}
-            onPress={handleReset}
-          >
-            <View style={styles.manualIconCircle}>
-              <MaterialCommunityIcons
-                name="barcode-scan"
-                size={17}
-                color={colors.primaryGreen}
-              />
-            </View>
-            <Text style={styles.manualBtnText}>{t("barcode.scanAnother")}</Text>
-          </Pressable>
+            <Button
+              label={t("barcode.scanAnother")}
+              icon="barcode-scan"
+              variant="secondary"
+              onPress={handleReset}
+              fullWidth
+            />
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -305,20 +252,14 @@ export function BarcodeScreen() {
 
   if (phase === "found" && product) {
     return (
-      <SafeAreaView style={styles.root} edges={["top"]}>
-        <View pointerEvents="none" style={styles.backgroundLayer}>
-          <View style={styles.glowTop} />
-          <View style={styles.glowSide} />
-        </View>
-        <ScreenHeader
-          title={t("barcode.title")}
-          onBack={fromRecipePicker ? handleBackFromRecipe : undefined}
-        />
+      <SafeAreaView style={styles.root} edges={["top", "bottom"]}>
+        {header}
         <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={styles.body}
+          style={styles.flex}
+          contentContainerStyle={styles.scrollBody}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets
         >
           <ProductCatalogCard
             product={product}
@@ -334,43 +275,24 @@ export function BarcodeScreen() {
 
   if (phase === "not_found" || phase === "manual") {
     return (
-      <SafeAreaView style={styles.root} edges={["top"]}>
-        <View pointerEvents="none" style={styles.backgroundLayer}>
-          <View style={styles.glowTop} />
-          <View style={styles.glowSide} />
-        </View>
-        <ScreenHeader
-          title={t("barcode.title")}
-          onBack={fromRecipePicker ? handleBackFromRecipe : undefined}
-        />
-        <View style={styles.body}>
+      <SafeAreaView style={styles.root} edges={["top", "bottom"]}>
+        {header}
+        <View style={styles.manualBody}>
           {phase === "not_found" ? (
             <View
-              style={[
-                styles.notFoundBanner,
-                { flexDirection: isRTL ? "row-reverse" : "row" },
-              ]}
+              style={[styles.notFoundBanner, dir.row]}
+              accessibilityRole="alert"
             >
               <MaterialCommunityIcons
                 name="barcode-off"
-                size={16}
-                color={colors.textMuted}
+                size={20}
+                color={colors.warning}
               />
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={[
-                    styles.notFoundTitle,
-                    { textAlign: isRTL ? "right" : "left" },
-                  ]}
-                >
+              <View style={styles.flex}>
+                <Text style={[styles.notFoundTitle, dir.text]}>
                   {t("barcode.notFound")}
                 </Text>
-                <Text
-                  style={[
-                    styles.notFoundHint,
-                    { textAlign: isRTL ? "right" : "left" },
-                  ]}
-                >
+                <Text style={[styles.notFoundHint, dir.text]}>
                   {t("barcode.notFoundHint")}
                 </Text>
               </View>
@@ -390,87 +312,63 @@ export function BarcodeScreen() {
   // ── Camera scanning / loading ──────────────────────────────────────────────
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <View pointerEvents="none" style={styles.backgroundLayer}>
-        <View style={styles.glowTop} />
-        <View style={styles.glowSide} />
-      </View>
-
-      <ScreenHeader
-        title={t("barcode.title")}
-        onBack={fromRecipePicker ? handleBackFromRecipe : undefined}
-      />
+    <SafeAreaView style={styles.root} edges={["top", "bottom"]}>
+      {header}
 
       <View style={styles.body}>
-        <View style={styles.scanCard}>
-          <View style={styles.scanArea}>
-            <CameraView
-              style={styles.camera}
-              facing="back"
-              autofocus="off"
-              zoom={0}
-              onBarcodeScanned={handleScan}
-              barcodeScannerSettings={{
-                barcodeTypes: [...SCANNABLE_BARCODE_TYPES],
-              }}
+        <View style={styles.scanArea}>
+          <CameraView
+            style={styles.camera}
+            facing="back"
+            autofocus="off"
+            zoom={0}
+            onBarcodeScanned={handleScan}
+            barcodeScannerSettings={{
+              barcodeTypes: [...SCANNABLE_BARCODE_TYPES],
+            }}
+          />
+
+          <View style={styles.scanCornerTL} />
+          <View style={styles.scanCornerTR} />
+          <View style={styles.scanCornerBL} />
+          <View style={styles.scanCornerBR} />
+
+          {phase === "loading" ? (
+            <View style={styles.loadingOverlay}>
+              <ActivityIndicator size="large" color={cameraColors.foreground} />
+              <Text style={styles.loadingText}>{t("barcode.searching")}</Text>
+            </View>
+          ) : (
+            <Animated.View
+              style={[
+                styles.scanLine,
+                {
+                  transform: [{
+                    translateY: scanLineAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-90, 90],
+                    }),
+                  }],
+                },
+              ]}
             />
-
-            <View style={styles.scanCornerTL} />
-            <View style={styles.scanCornerTR} />
-            <View style={styles.scanCornerBL} />
-            <View style={styles.scanCornerBR} />
-
-            {phase === "loading" ? (
-              <View style={styles.loadingOverlay}>
-                <ActivityIndicator size="large" color={colors.primaryGreen} />
-                <Text style={styles.loadingText}>{t("barcode.searching")}</Text>
-              </View>
-            ) : (
-              <Animated.View
-                style={[
-                  styles.scanLine,
-                  {
-                    transform: [{
-                      translateY: scanLineAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [-85, 85],
-                      }),
-                    }],
-                  },
-                ]}
-              />
-            )}
-          </View>
-
-          <Text
-            style={[styles.subtitle, { textAlign: isRTL ? "right" : "left" }]}
-          >
-            {t("barcode.subtitle")}
-          </Text>
-          <Text
-            style={[styles.distanceHint, { textAlign: isRTL ? "right" : "left" }]}
-          >
-            {t("barcode.distanceHint")}
-          </Text>
+          )}
         </View>
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.manualBtn,
-            { flexDirection: isRTL ? "row-reverse" : "row" },
-            pressed && styles.manualBtnPressed,
-          ]}
+        <View style={styles.instructions}>
+          <Text style={styles.subtitle}>{t("barcode.subtitle")}</Text>
+          <Text style={styles.distanceHint}>{t("barcode.distanceHint")}</Text>
+        </View>
+      </View>
+
+      <View style={styles.bottomActions}>
+        <Button
+          label={t("barcode.manualButton")}
+          icon="pencil-outline"
+          variant="secondary"
           onPress={handleOpenManual}
-        >
-          <View style={styles.manualIconCircle}>
-            <MaterialCommunityIcons
-              name="pencil-outline"
-              size={17}
-              color={colors.primaryGreen}
-            />
-          </View>
-          <Text style={styles.manualBtnText}>{t("barcode.manualButton")}</Text>
-        </Pressable>
+          fullWidth
+        />
       </View>
     </SafeAreaView>
   );

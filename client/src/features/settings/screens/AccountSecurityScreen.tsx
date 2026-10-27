@@ -1,8 +1,9 @@
-import { View, Text, Pressable, Alert } from 'react-native';
+import { View, Alert, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 import { ScreenHeader } from '../../../shared/components/ScreenHeader';
+import { Button } from '../../../shared/components/ui/Button';
 import { SettingsSection } from '../components/SettingsSection';
 import { SettingsRow } from '../components/SettingsRow';
 import { useDeleteAccount } from '../hooks/useSettings';
@@ -41,11 +42,11 @@ export function AccountSecurityScreen() {
     <SafeAreaView style={styles.root} edges={['top']}>
       <ScreenHeader title={t('account.screenTitle')} />
 
-      <View style={styles.content}>
-        {/* Security */}
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <SettingsSection title={t('account.securitySection')}>
           {isGoogleUser ? (
             <SettingsRow
+              icon="google"
               label={t('account.googleAccount')}
               hint={t('account.googleAccountHint')}
               showChevron={false}
@@ -53,6 +54,7 @@ export function AccountSecurityScreen() {
             />
           ) : (
             <SettingsRow
+              icon="lock-outline"
               label={t('account.changePassword')}
               hint={t('account.changePasswordHint')}
               onPress={() => router.push('/(app)/settings/change-password')}
@@ -61,22 +63,20 @@ export function AccountSecurityScreen() {
           )}
         </SettingsSection>
 
-        {/* Logout */}
         <View style={styles.logoutWrapper}>
-          <Pressable
-            style={({ pressed }) => [styles.logoutBtn, pressed && styles.btnPressed]}
+          <Button
+            label={logout.isPending ? t('account.loggingOut') : t('account.logoutButton')}
+            icon="logout"
+            variant="secondary"
             onPress={() => logout.mutate()}
-            disabled={logout.isPending}
-          >
-            <Text style={styles.logoutText}>
-              {logout.isPending ? t('account.loggingOut') : t('account.logoutButton')}
-            </Text>
-          </Pressable>
+            loading={logout.isPending}
+            fullWidth
+          />
         </View>
 
-        {/* Danger Zone */}
         <SettingsSection title={t('account.dangerSection')} danger>
           <SettingsRow
+            icon="trash-can-outline"
             label={t('account.deleteAccount')}
             hint={t('account.deleteAccountHint')}
             onPress={handleDeleteAccount}
@@ -85,7 +85,7 @@ export function AccountSecurityScreen() {
             last
           />
         </SettingsSection>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

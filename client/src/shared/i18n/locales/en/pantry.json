@@ -2,13 +2,16 @@
   "title": "My Pantry",
   "subtitle": "Manage your products, recipes and saved meals",
   "search": {
-    "placeholder": "Search products..."
+    "placeholder": "Search products...",
+    "placeholderRecipes": "Search recipes...",
+    "placeholderSavedMeals": "Search saved meals..."
   },
   "actions": {
     "addProduct": "Add Product",
     "scanBarcode": "Scan Barcode",
     "addRecipe": "Add Recipe",
-    "addSavedMeal": "Add Saved Meal"
+    "addSavedMeal": "Add Saved Meal",
+    "new": "New"
   },
   "tabs": {
     "products": "Products",
@@ -29,7 +32,10 @@
     "fiberLabel": "Fiber (g)",
     "per100g": "per 100g",
     "calUnit": "kcal",
-    "gramsUnit": "g"
+    "gramsUnit": "g",
+    "changeImage": "Change image",
+    "pickFromGallery": "Choose from gallery",
+    "removeImage": "Remove image"
   },
   "categories": {
     "BREAKFAST": "Breakfast",
@@ -54,7 +60,10 @@
     "updateButton": "Save Changes",
     "saving": "Saving...",
     "loadingProduct": "Loading product...",
-    "back": "Back"
+    "back": "Back",
+    "detailsSection": "Details",
+    "categoriesHint": "Used to prioritize suggestions when adding food to a meal",
+    "caloriesPerServingLabel": "Calories per serving"
   },
   "macros": {
     "protein": "Protein",
@@ -88,7 +97,10 @@
     "deleteConfirmMessage": "Delete this product permanently?",
     "deleteConfirmYes": "Delete",
     "deleteConfirmNo": "Cancel",
-    "back": "Back"
+    "back": "Back",
+    "calculatorByGrams": "Grams",
+    "calculatorByServings": "Servings",
+    "calculateAction": "Calculate"
   },
   "recipe": {
     "nameLabel": "Recipe name *",
@@ -114,7 +126,18 @@
     "scanBarcodeBtn": "Scan Barcode",
     "newProductTitle": "New Product",
     "addAndSelectBtn": "Save & Add to Recipe",
-    "servingSizeOptional": "Serving size (g, optional)"
+    "servingSizeOptional": "Serving size (g, optional)",
+    "imageTitle": "Recipe image",
+    "imageSubtitle": "An image helps you recognize the recipe quickly.",
+    "imageSelected": "The image will appear on the recipe card.",
+    "addImage": "Add image",
+    "changeImage": "Change image",
+    "removeImage": "Remove",
+    "loading": "Loading recipe...",
+    "updateButton": "Save Changes",
+    "addSelectedBtnClean": "Add to recipe",
+    "removeItemNamed": "Remove {{name}}",
+    "toggleUnit": "Switch between grams and servings"
   },
   "addRecipe": {
     "title": "New Recipe",
@@ -132,8 +155,8 @@
     "mealTypeLabel": "Meal type",
     "mealTypePlaceholder": "Select meal type (optional)",
     "itemsSection": "Items",
-    "addProductItem": "+ Add Product",
-    "addRecipeItem": "+ Add Recipe",
+    "addProductItem": "Add product",
+    "addRecipeItem": "Add recipe",
     "gramsLabel": "g",
     "servingsLabel": "servings",
     "gramsPlaceholder": "Amount",
@@ -147,7 +170,18 @@
     "deleteConfirmTitle": "Delete Saved Meal",
     "deleteConfirmMessage": "Delete this saved meal permanently?",
     "deleteConfirmYes": "Delete",
-    "deleteConfirmNo": "Cancel"
+    "deleteConfirmNo": "Cancel",
+    "imageTitle": "Meal image",
+    "imageSubtitle": "An image helps you recognize the meal quickly.",
+    "imageSelected": "The image will appear on the meal card.",
+    "addImage": "Add image",
+    "changeImage": "Change image",
+    "removeImage": "Remove",
+    "loading": "Loading meal...",
+    "updateButton": "Save Changes",
+    "namePlaceholder": "Meal name",
+    "deleteTitle": "Delete Meal",
+    "deleteMessage": "Delete this saved meal?"
   },
   "addSavedMeal": {
     "title": "New Saved Meal",
@@ -249,6 +283,45 @@
     "invalidNumber": "Enter a valid number",
     "negativeNumber": "Value must be zero or greater",
     "noIngredients": "Add at least one ingredient",
-    "noItems": "Add at least one item"
+    "noItems": "Add at least one item",
+    "galleryPermissionDenied": "Allow photo library access to choose an image",
+    "imagePermissionDenied": "Allow photo access to add an image.",
+    "updateRecipeFailed": "Failed to update recipe",
+    "updateSavedMealFailed": "Failed to save changes"
+  },
+  "common": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "close": "Close",
+    "moreOptionsFor": "More options for {{name}}"
+  },
+  "macrosShort": {
+    "protein": "P",
+    "carbs": "C",
+    "fat": "F",
+    "fiber": "Fiber"
+  },
+  "nutritionLine": {
+    "item": "{{label}} {{value}}g"
+  },
+  "foodCard": {
+    "perServingSize": "per serving ({{size}} g)",
+    "recipeTotal": "Whole recipe",
+    "mealTotal": "Meal total",
+    "gramsQuantity": "{{grams}} g",
+    "servingsQuantity": "{{count}} servings ({{grams}} g)",
+    "recipeServings": "×{{count}} recipe"
+  },
+  "productCalculator": {
+    "quickTitle": "Quick calculation"
+  },
+  "editRecipe": {
+    "title": "Edit Recipe",
+    "subtitle": "Update the recipe details and ingredients."
+  },
+  "editSavedMeal": {
+    "title": "Edit Saved Meal",
+    "subtitle": "Update the meal details and items."
   }
 }

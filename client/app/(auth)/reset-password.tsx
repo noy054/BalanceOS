@@ -7,13 +7,16 @@ import { isAxiosError } from "axios";
 
 import { useResetPassword } from "../../src/features/auth/hooks/useAuth";
 import { ScreenShell } from "../../src/shared/components/ScreenShell";
-import { colors } from "../../src/shared/theme";
-import { styles, getDirectionStyles } from "./styles/login.styles";
+import { useAppTheme } from "../../src/shared/theme";
+import { BrandMark } from "../../src/shared/components/BrandMark";
+import { useStyles, getDirectionStyles } from "./styles/login.styles";
 
 export default function ResetPasswordScreen() {
   const { t, i18n } = useTranslation("auth");
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const dir = getDirectionStyles(isRTL);
+  const styles = useStyles();
+  const { colors } = useAppTheme();
 
   const [token, setToken] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -52,7 +55,7 @@ export default function ResetPasswordScreen() {
   return (
     <ScreenShell>
       <View style={styles.header}>
-        <Text style={[styles.brand, dir.text]}>BalanceOS</Text>
+        <BrandMark style={[styles.brand, dir.alignStart]} />
         <Text style={[styles.title, dir.text]}>{t("resetPassword.title")}</Text>
         <Text style={[styles.subtitle, dir.text]}>{t("resetPassword.subtitle")}</Text>
       </View>
@@ -101,8 +104,8 @@ export default function ResetPasswordScreen() {
         onPress={handleSubmit}
         loading={resetPassword.isPending}
         disabled={resetPassword.isPending || !token || !newPassword}
-        buttonColor={colors.primaryGreen}
-        textColor="#081008"
+        buttonColor={colors.accent}
+        textColor={colors.onAccent}
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}
         style={styles.primaryBtn}

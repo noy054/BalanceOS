@@ -8,13 +8,15 @@ import { extractErrorMessage } from '../../src/shared/helpers/extractErrorMessag
 import { ScreenShell } from '../../src/shared/components/ScreenShell';
 import { i18n } from '../../src/shared/i18n';
 import type { SupportedLanguage } from '../../src/shared/i18n';
-import { colors } from '../../src/shared/theme';
-import { styles, getDirectionStyles } from './styles/expert-targets.styles';
+import { useAppTheme } from '../../src/shared/theme';
+import { useStyles, getDirectionStyles } from './styles/expert-targets.styles';
 
 export default function ExpertTargetsScreen() {
   const { t, i18n: i18nHook } = useTranslation('onboarding');
   const isRTL = i18nHook.dir(i18nHook.language) === 'rtl';
   const dir = getDirectionStyles(isRTL);
+  const styles = useStyles();
+  const { colors } = useAppTheme();
 
   const [calories, setCalories] = useState('');
   const [protein, setProtein] = useState('');
@@ -117,7 +119,8 @@ export default function ExpertTargetsScreen() {
         onPress={handleSave}
         loading={upsert.isPending}
         disabled={!canSubmit}
-        buttonColor={colors.primaryGreen}
+        buttonColor={colors.accent}
+        textColor={colors.onAccent}
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}
         style={styles.button}

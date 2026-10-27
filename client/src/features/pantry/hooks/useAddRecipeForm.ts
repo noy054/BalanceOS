@@ -31,6 +31,7 @@ export function useAddRecipeForm(
   const clearPending = useRecipeReturn((state) => state.clearPending);
   const reopenPicker = useRecipeReturn((state) => state.reopenPicker);
   const setReopenPicker = useRecipeReturn((state) => state.setReopenPicker);
+  const setRecipeFormMounted = useRecipeReturn((state) => state.setRecipeFormMounted);
 
   useEffect(() => {
     if (!isEditMode || !existingRecipe) {
@@ -56,9 +57,10 @@ export function useAddRecipeForm(
   }, [existingRecipe, isEditMode]);
 
   useEffect(() => {
+    setRecipeFormMounted(true);
     return () => {
       clearPending();
-      setReopenPicker(false);
+      setRecipeFormMounted(false);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

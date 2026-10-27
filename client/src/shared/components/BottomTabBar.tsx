@@ -1,10 +1,11 @@
-import { Platform, View, Text, Pressable } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
 import { useAppTheme, spacing } from "../theme";
+import { useDirection } from "../hooks/useDirection";
 import { useStyles } from "./styles/BottomTabBar.styles";
 
 type TabId = "home" | "pantry" | "add" | "statistics" | "settings";
@@ -42,8 +43,8 @@ const TABS: TabItem[] = [
   {
     id: "statistics",
     labelKey: "statistics",
-    icon: "chart-bar-stacked",
-    activeIcon: "chart-bar-stacked",
+    icon: "chart-bar",
+    activeIcon: "chart-bar",
     route: "/(app)/statistics",
   },
   {
@@ -61,10 +62,10 @@ type Props = {
 };
 
 export function BottomTabBar({ activeTab = "home", onTabPress }: Props) {
-  const { t, i18n } = useTranslation("dashboard");
+  const { t } = useTranslation("dashboard");
   const { colors } = useAppTheme();
   const styles = useStyles();
-  const isRTL = i18n.dir(i18n.language) === "rtl";
+  const dir = useDirection();
   const insets = useSafeAreaInsets();
 
   function handlePress(tab: TabItem) {
@@ -79,41 +80,34 @@ export function BottomTabBar({ activeTab = "home", onTabPress }: Props) {
     <View
       style={[
         styles.container,
-        {
-          flexDirection: isRTL ? "row-reverse" : "row",
-          // iOS: pad for home indicator; Android: wrapper already sits above the
-          // system nav bar, so only a small constant baseline is needed.
-          paddingBottom: Platform.OS === "ios"
-            ? Math.max(insets.bottom, spacing.sm)
-            : spacing.sm,
-        },
+        dir.row,
+        { paddingBottom: Math.max(insets.bottom, spacing.sm) },
       ]}
+      accessibilityRole="tablist"
     >
       {TABS.map((tab) => {
         const isActive = tab.id === activeTab;
-        const isAdd = tab.id === "add";
+        const label = t(`nav.${tab.labelKey}`);
 
-        if (isAdd) {
+        if (tab.id === "add") {
           return (
             <Pressable
               key={tab.id}
-              style={({ pressed }) => [
-                styles.tabItem,
-                styles.addTabItem,
-                pressed && styles.tabPressed,
-              ]}
+              style={styles.tabItem}
               onPress={() => handlePress(tab)}
-              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel={label}
             >
-              <View style={styles.addCircle}>
-                <MaterialCommunityIcons
-                  name="plus"
-                  size={28}
-                  color={colors.background}
-                />
-              </View>
-
-              <Text style={styles.tabLabel}>{t(`nav.${tab.labelKey}`)}</Text>
+              {({ pressed }) => (
+                <>
+                  <View style={[styles.addButton, pressed && styles.addButtonPressed]}>
+                    <MaterialCommunityIcons name="plus" size={24} color={colors.onAccent} />
+                  </View>
+                  <Text style={styles.tabLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+                    {label}
+                  </Text>
+                </>
+              )}
             </Pressable>
           );
         }
@@ -121,21 +115,27 @@ export function BottomTabBar({ activeTab = "home", onTabPress }: Props) {
         return (
           <Pressable
             key={tab.id}
-            style={({ pressed }) => [
-              styles.tabItem,
-              pressed && styles.tabPressed,
-            ]}
+            style={({ pressed }) => [styles.tabItem, pressed && styles.tabPressed]}
             onPress={() => handlePress(tab)}
-            hitSlop={8}
+            accessibilityRole="tab"
+            accessibilityLabel={label}
+            accessibilityState={{ selected: isActive }}
           >
-            <MaterialCommunityIcons
-              name={isActive ? tab.activeIcon : tab.icon}
-              size={24}
-              color={isActive ? colors.primaryGreen : colors.textMuted}
-            />
+            <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
+              <MaterialCommunityIcons
+                name={isActive ? tab.activeIcon : tab.icon}
+                size={22}
+                color={isActive ? colors.accent : colors.textMuted}
+              />
+            </View>
 
-            <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
-              {t(`nav.${tab.labelKey}`)}
+            <Text
+              style={[styles.tabLabel, isActive && styles.tabLabelActive]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+            >
+              {label}
             </Text>
           </Pressable>
         );

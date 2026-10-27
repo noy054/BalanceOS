@@ -1,85 +1,89 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, radius, useThemedStyles } from "../../../../../shared/theme";
-
-export const useChipStyles = () =>
-  useThemedStyles((colors) =>
-    StyleSheet.create({
-      chip: {
-        backgroundColor: "rgba(49, 216, 107, 0.10)",
-        borderWidth: 1,
-        borderColor: "rgba(49, 216, 107, 0.18)",
-        borderRadius: radius.full,
-        paddingHorizontal: spacing.sm,
-        paddingVertical: 6,
-        marginBottom: spacing.sm,
-        maxWidth: "100%",
-      },
-
-      text: {
-        fontSize: 11,
-        fontWeight: "800",
-        color: colors.primaryGreen,
-        textAlign: "center",
-        writingDirection: "ltr",
-      },
-
-      textRtl: {
-        writingDirection: "rtl",
-      },
-
-      textBold: {
-        fontSize: 13,
-        fontWeight: "900",
-      },
-    }),
-  );
+import {
+  radius,
+  spacing,
+  typography,
+  useThemedStyles,
+} from "../../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       container: {
-        borderRadius: radius.md,
-        paddingTop: 0,
-      },
-
-      containerHighlight: {
-        backgroundColor: "transparent",
-        borderRadius: radius.md,
-        paddingHorizontal: 0,
-        paddingVertical: 0,
+        backgroundColor: colors.surface,
+        borderRadius: radius.lg,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: colors.border,
+        padding: spacing.md,
+        gap: spacing.sm,
       },
 
       label: {
-        fontSize: 12,
-        fontWeight: "800",
+        ...typography.caption,
         color: colors.textSecondary,
-        marginBottom: spacing.sm,
       },
 
-      labelHighlight: {
+      caloriesRow: {
+        alignItems: "baseline",
+        gap: spacing.xs + 2,
+      },
+
+      caloriesValue: {
+        ...typography.display,
+        fontSize: 30,
+        lineHeight: 36,
         color: colors.textPrimary,
       },
 
-      row: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: spacing.xs,
+      caloriesUnit: {
+        ...typography.callout,
+        color: colors.textSecondary,
+      },
+
+      macrosRow: {
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: colors.border,
+        paddingTop: spacing.ms,
+        gap: spacing.sm,
+      },
+
+      macroCell: {
+        flex: 1,
+        gap: 2,
         alignItems: "center",
+      },
+
+      macroValue: {
+        ...typography.bodyStrong,
+        ...typography.number,
+        color: colors.textPrimary,
+        textAlign: "center",
+      },
+
+      macroUnit: {
+        ...typography.caption,
+        fontWeight: "400",
+        color: colors.textMuted,
+      },
+
+      macroLabel: {
+        ...typography.caption,
+        fontWeight: "400",
+        color: colors.textSecondary,
+        textAlign: "center",
       },
     }),
   );
 
 export function getDirectionStyles(isRTL: boolean) {
   return {
-    label: {
-      textAlign: isRTL ? ("right" as const) : ("left" as const),
-      writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),
-    },
-
     row: {
       flexDirection: isRTL ? ("row-reverse" as const) : ("row" as const),
-      justifyContent: isRTL ? ("flex-start" as const) : ("flex-start" as const),
+    },
+    text: {
+      textAlign: isRTL ? ("right" as const) : ("left" as const),
+      writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),
     },
   };
 }

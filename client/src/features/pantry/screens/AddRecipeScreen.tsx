@@ -1,18 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Alert,
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
-import { useAppTheme } from "../../../shared/theme";
+import { Button } from "../../../shared/components/ui/Button";
+import { StateView } from "../../../shared/components/ui/StateView";
+import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
+import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
 import {
   useCreateRecipe,
   useRecipe,
@@ -25,7 +21,7 @@ import { RecipeBasicInfoCard } from "../components/recipes/RecipeBasicInfoCard";
 import { RecipeIngredientsCard } from "../components/recipes/RecipeIngredientsCard";
 import { ImagePickerCard } from "../components/shared/ImagePickerCard";
 import { useAddRecipeForm } from "../hooks/useAddRecipeForm";
-import { getDirectionStyles, useStyles } from "./styles/AddRecipeScreen.styles";
+import { getDirectionStyles, useStyles } from "./styles/FormScreen.styles";
 
 type RouteParams = {
   id?: string;
@@ -38,7 +34,6 @@ type RecipeWithImage = {
 
 export function AddRecipeScreen() {
   const { t, i18n } = useTranslation("pantry");
-  const { colors } = useAppTheme();
   const styles = useStyles();
 
   const params = useLocalSearchParams<RouteParams>();
@@ -118,121 +113,93 @@ export function AddRecipeScreen() {
     }
   }
 
+  const title = isEditMode ? t("editRecipe.title") : t("addRecipe.title");
+
   if (isEditMode && isRecipeLoading) {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primaryGreen} />
-          <Text style={styles.loadingText}>
-            {t("recipe.loading", { defaultValue: "טוען מתכון..." })}
-          </Text>
-        </View>
+        <ScreenHeader title={title} />
+        <StateView variant="loading" message={t("recipe.loading")} />
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader
-        title={
-          isEditMode
-            ? t("editRecipe.title", { defaultValue: "עריכת מתכון" })
-            : t("addRecipe.title")
-        }
-      />
+      <ScreenHeader title={title} />
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={styles.introCard}>
-          <Text style={[styles.subtitle, dir.text]}>
-            {isEditMode
-              ? t("editRecipe.subtitle", {
-                  defaultValue: "עדכני את פרטי המתכון והמצרכים.",
-                })
-              : t("addRecipe.subtitle")}
-          </Text>
-        </View>
-
-        <ImagePickerCard
-          imageUrl={imageUrl}
-          isRTL={isRTL}
-          title={t("recipe.imageTitle", {
-            defaultValue: "תמונה למתכון",
-          })}
-          subtitle={t("recipe.imageSubtitle", {
-            defaultValue: "אפשר להוסיף תמונה שתעזור לזהות מהר את המתכון.",
-          })}
-          selectedSubtitle={t("recipe.imageSelected", {
-            defaultValue: "התמונה תופיע בכרטיס המתכון.",
-          })}
-          addLabel={t("recipe.addImage", {
-            defaultValue: "הוספת תמונה",
-          })}
-          changeLabel={t("recipe.changeImage", {
-            defaultValue: "החלפת תמונה",
-          })}
-          removeLabel={t("recipe.removeImage", {
-            defaultValue: "הסרה",
-          })}
-          placeholderIcon="chef-hat"
-          onChangeImage={setImageUrl}
-          onRemoveImage={() => setImageUrl("")}
-        />
-
-        <RecipeBasicInfoCard
-          name={form.name}
-          description={form.description}
-          mealType={form.mealType}
-          nameError={form.nameError}
-          isRTL={isRTL}
-          onChangeName={form.setName}
-          onChangeDescription={form.setDescription}
-          onChangeMealType={form.setMealType}
-        />
-
-        <RecipeIngredientsCard
-          ingredients={form.ingredients}
-          isRTL={isRTL}
-          onChangeAmount={form.updateAmount}
-          onToggleUnit={form.toggleUnit}
-          onRemoveIngredient={form.removeIngredient}
-          onAddIngredient={() => form.setPickerVisible(true)}
-        />
-
-        {form.hasTotals ? (
-          <View style={styles.totalsContainer}>
-            <NutritionTotals
-              totals={form.liveTotals}
-              label={t("recipe.totalsSection")}
-              variant="highlight"
-            />
-          </View>
-        ) : null}
-      </ScrollView>
-
-      <View style={styles.footer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.saveBtn,
-            pressed && styles.saveBtnPressed,
-            isSaving && styles.saveBtnDisabled,
-          ]}
-          onPress={handleSave}
-          disabled={isSaving}
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.saveBtnText}>
-            {isSaving
-              ? t("recipe.saving")
-              : isEditMode
-                ? t("recipe.updateButton", { defaultValue: "שמור שינויים" })
-                : t("recipe.saveButton")}
+          <Text style={[styles.intro, dir.text]}>
+            {isEditMode ? t("editRecipe.subtitle") : t("addRecipe.subtitle")}
           </Text>
-        </Pressable>
-      </View>
+
+          <ImagePickerCard
+            imageUrl={imageUrl}
+            isRTL={isRTL}
+            title={t("recipe.imageTitle")}
+            subtitle={t("recipe.imageSubtitle")}
+            selectedSubtitle={t("recipe.imageSelected")}
+            addLabel={t("recipe.addImage")}
+            changeLabel={t("recipe.changeImage")}
+            removeLabel={t("recipe.removeImage")}
+            placeholderIcon="chef-hat"
+            onChangeImage={setImageUrl}
+            onRemoveImage={() => setImageUrl("")}
+          />
+
+          <RecipeBasicInfoCard
+            name={form.name}
+            description={form.description}
+            mealType={form.mealType}
+            nameError={form.nameError}
+            isRTL={isRTL}
+            onChangeName={form.setName}
+            onChangeDescription={form.setDescription}
+            onChangeMealType={form.setMealType}
+          />
+
+          <RecipeIngredientsCard
+            ingredients={form.ingredients}
+            isRTL={isRTL}
+            onChangeAmount={form.updateAmount}
+            onToggleUnit={form.toggleUnit}
+            onRemoveIngredient={form.removeIngredient}
+            onAddIngredient={() => form.setPickerVisible(true)}
+          />
+
+          {form.hasTotals ? (
+            <View>
+              <SectionHeader title={t("recipe.totalsSection")} />
+              <NutritionTotals totals={form.liveTotals} label={t("foodCard.recipeTotal")} />
+            </View>
+          ) : null}
+        </ScrollView>
+
+        <StickyFooter>
+          <Button
+            label={
+              isSaving
+                ? t("recipe.saving")
+                : isEditMode
+                  ? t("recipe.updateButton")
+                  : t("recipe.saveButton")
+            }
+            onPress={handleSave}
+            loading={isSaving}
+            fullWidth
+          />
+        </StickyFooter>
+      </KeyboardAvoidingView>
 
       <RecipeIngredientPickerModal
         visible={form.pickerVisible}

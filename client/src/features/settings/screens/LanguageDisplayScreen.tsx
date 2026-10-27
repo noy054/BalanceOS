@@ -1,60 +1,21 @@
-import { View, Text, Pressable } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { SegmentedControl } from "../../../shared/components/ui/SegmentedControl";
 import { SettingsSection } from "../components/SettingsSection";
 import { useNutritionSettings, useUpdateSettings } from "../hooks/useSettings";
 import { saveLanguage, SupportedLanguage } from "../../../shared/i18n";
 import { ThemeMode } from "../types";
 import { saveThemeMode, useAppTheme } from "../../../shared/theme";
-import {
-  useStyles,
-  getDirectionStyles,
-} from "./styles/LanguageDisplayScreen.styles";
-
-type OptionChipProps = {
-  label: string;
-  active: boolean;
-  disabled?: boolean;
-  onPress: () => void;
-};
-
-function OptionChip({
-  label,
-  active,
-  disabled = false,
-  onPress,
-}: OptionChipProps) {
-  const styles = useStyles();
-  return (
-    <Pressable
-      style={[
-        styles.chip,
-        active && styles.chipActive,
-        disabled && styles.chipDisabled,
-      ]}
-      onPress={onPress}
-      disabled={disabled}
-    >
-      <Text
-        style={[
-          styles.chipText,
-          active && styles.chipTextActive,
-          disabled && styles.chipTextDisabled,
-        ]}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
+import { useDirection } from "../../../shared/hooks/useDirection";
+import { useSubScreenStyles } from "./styles/SettingsSubScreen.styles";
 
 export function LanguageDisplayScreen() {
-  const { t, i18n } = useTranslation("settings");
-  const styles = useStyles();
-  const isRTL = i18n.dir(i18n.language) === "rtl";
-  const dir = getDirectionStyles(isRTL);
+  const { t } = useTranslation("settings");
+  const styles = useSubScreenStyles();
+  const dir = useDirection();
 
   const { setThemeMode, themeMode } = useAppTheme();
 
@@ -80,63 +41,40 @@ export function LanguageDisplayScreen() {
     <SafeAreaView style={styles.root} edges={["top"]}>
       <ScreenHeader title={t("languageDisplay.screenTitle")} />
 
-      <View style={styles.content}>
+      <ScrollView
+        style={styles.flex}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <SettingsSection title={t("languageDisplay.languageSection")}>
-          <View style={[styles.optionRow, dir.row]}>
-            <Text style={[styles.optionLabel, dir.text]}>
-              {t("languageDisplay.languageSection")}
-            </Text>
+          <View style={styles.optionBlock}>
+            <SegmentedControl
+              options={[
+                { value: "he" as SupportedLanguage, label: t("language.he") },
+                { value: "en" as SupportedLanguage, label: t("language.en") },
+              ]}
+              value={currentLang}
+              onChange={handleLanguageChange}
+            />
 
-            <View style={[styles.chips, dir.chipsRow]}>
-              <OptionChip
-                label={t("language.he")}
-                active={currentLang === "he"}
-                onPress={() => handleLanguageChange("he")}
-              />
-
-              <OptionChip
-                label={t("language.en")}
-                active={currentLang === "en"}
-                onPress={() => handleLanguageChange("en")}
-              />
-            </View>
-          </View>
-
-          <View style={styles.rtlNote}>
-            <Text style={[styles.rtlNoteText, dir.text]}>
-              {t("languageDisplay.rtlNote")}
-            </Text>
+            <Text style={[styles.note, dir.text]}>{t("languageDisplay.rtlNote")}</Text>
           </View>
         </SettingsSection>
 
         <SettingsSection title={t("languageDisplay.themeSection")}>
-          <View style={[styles.optionRow, dir.row]}>
-            <Text style={[styles.optionLabel, dir.text]}>
-              {t("languageDisplay.themeSection")}
-            </Text>
-
-            <View style={[styles.chips, dir.chipsRow]}>
-              <OptionChip
-                label={t("theme.light")}
-                active={currentTheme === "LIGHT"}
-                onPress={() => handleThemeChange("LIGHT")}
-              />
-
-              <OptionChip
-                label={t("theme.dark")}
-                active={currentTheme === "DARK"}
-                onPress={() => handleThemeChange("DARK")}
-              />
-
-              <OptionChip
-                label={t("theme.system")}
-                active={currentTheme === "SYSTEM"}
-                onPress={() => handleThemeChange("SYSTEM")}
-              />
-            </View>
+          <View style={styles.optionBlock}>
+            <SegmentedControl
+              options={[
+                { value: "LIGHT" as ThemeMode, label: t("theme.light") },
+                { value: "DARK" as ThemeMode, label: t("theme.dark") },
+                { value: "SYSTEM" as ThemeMode, label: t("theme.system") },
+              ]}
+              value={currentTheme}
+              onChange={handleThemeChange}
+            />
           </View>
         </SettingsSection>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

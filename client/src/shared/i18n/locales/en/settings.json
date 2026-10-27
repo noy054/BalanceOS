@@ -227,7 +227,8 @@
     "contact": "Contact Us",
     "contactHint": "Contact support",
 
-    "storeNote": "Store links will be updated after the app is published."
+    "storeNote": "Store links will be updated after the app is published.",
+    "openLinkFailed": "Unable to open link"
   },
   "errors": {
     "loadFailed": "Failed to load settings",
@@ -236,5 +237,10 @@
     "deleteAccountFailed": "Failed to delete account",
     "profileSaveFailed": "Failed to save profile",
     "fullNameRequired": "Full name is required"
+  },
+
+  "common": {
+    "cancel": "Cancel",
+    "done": "Done"
   }
 }

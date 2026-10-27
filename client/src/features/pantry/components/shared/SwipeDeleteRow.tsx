@@ -2,6 +2,7 @@ import { ReactNode, useRef } from "react";
 import { Animated, PanResponder, Pressable, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
+import { useAppTheme } from "../../../../shared/theme";
 import { useStyles } from "./styles/SwipeDeleteRow.styles";
 
 type Props = {
@@ -12,8 +13,8 @@ type Props = {
   onDelete: () => void;
 };
 
-const ACTION_WIDTH = 92;
-const OPEN_DISTANCE = 86;
+const ACTION_WIDTH = 88;
+const OPEN_DISTANCE = 84;
 
 export function SwipeDeleteRow({
   children,
@@ -22,11 +23,18 @@ export function SwipeDeleteRow({
   disabled = false,
   onDelete,
 }: Props) {
+  const { colors } = useAppTheme();
   const styles = useStyles();
   const translateX = useRef(new Animated.Value(0)).current;
   const isOpenRef = useRef(false);
 
   const openValue = isRTL ? OPEN_DISTANCE : -OPEN_DISTANCE;
+
+  const actionOpacity = translateX.interpolate({
+    inputRange: isRTL ? [0, 12, OPEN_DISTANCE] : [-OPEN_DISTANCE, -12, 0],
+    outputRange: isRTL ? [0, 0.6, 1] : [1, 0.6, 0],
+    extrapolate: "clamp",
+  });
 
   function close() {
     isOpenRef.current = false;
@@ -103,10 +111,11 @@ export function SwipeDeleteRow({
 
   return (
     <View style={styles.root}>
-      <View
+      <Animated.View
         style={[
           styles.actionContainer,
           isRTL ? styles.actionLeft : styles.actionRight,
+          { opacity: actionOpacity },
         ]}
       >
         <Pressable
@@ -117,16 +126,18 @@ export function SwipeDeleteRow({
           ]}
           onPress={handleDelete}
           disabled={disabled}
+          accessibilityRole="button"
+          accessibilityLabel={label}
         >
           <MaterialCommunityIcons
             name="trash-can-outline"
             size={22}
-            color="#FFFFFF"
+            color={colors.surface}
           />
 
           <Text style={styles.deleteText}>{label}</Text>
         </Pressable>
-      </View>
+      </Animated.View>
 
       <Animated.View
         style={[

@@ -7,7 +7,7 @@ export const useStyles = () =>
     StyleSheet.create({
       formCard: {
         borderRadius: radius.xl,
-        backgroundColor: colors.cardBackground,
+        backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: colors.border,
         padding: spacing.lg,

@@ -1,18 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { SettingsSection } from "../components/SettingsSection";
 import { SettingsSelectRow } from "../components/SettingsSelectRow";
+import { SettingsToggleRow } from "../components/SettingsToggleRow";
+import { Button } from "../../../shared/components/ui/Button";
+import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
 import { useAppTheme } from "../../../shared/theme";
 import { useNutritionSettings, useUpdateSettings } from "../hooks/useSettings";
 import { FoodUnit } from "../types";
@@ -30,37 +27,6 @@ type FormValues = {
   showGuidedSuggestions: boolean;
   showMotivation: boolean;
 };
-
-type ToggleRowProps = {
-  label: string;
-  hint: string;
-  value: boolean;
-  onChange: (value: boolean) => void;
-  last?: boolean;
-};
-
-function ToggleRow({ label, hint, value, onChange, last }: ToggleRowProps) {
-  const { i18n } = useTranslation("settings");
-  const styles = useStyles();
-  const isRTL = i18n.dir(i18n.language) === "rtl";
-  const dir = getDirectionStyles(isRTL);
-
-  return (
-    <Pressable
-      style={[styles.toggleRow, dir.row, last && styles.toggleRowLast]}
-      onPress={() => onChange(!value)}
-    >
-      <View style={styles.toggleTextGroup}>
-        <Text style={[styles.toggleLabel, dir.text]}>{label}</Text>
-        <Text style={[styles.toggleHint, dir.text]}>{hint}</Text>
-      </View>
-
-      <View style={[styles.switchTrack, value && styles.switchTrackActive]}>
-        <View style={[styles.switchThumb, value && styles.switchThumbActive]} />
-      </View>
-    </Pressable>
-  );
-}
 
 function toFormValues(
   settings: ReturnType<typeof useNutritionSettings>["data"],
@@ -219,124 +185,103 @@ export function TrackingPreferencesScreen() {
         showsVerticalScrollIndicator={false}
       >
         <SettingsSection title={t("tracking.unitsSection")}>
-          <View style={styles.sectionCard}>
-            <SettingsSelectRow
-              label={t("tracking.defaultFoodUnit")}
-              value={defaultFoodUnit}
-              options={[
-                {
-                  value: "GRAMS" as FoodUnit,
-                  label: t("tracking.units.GRAMS"),
-                },
-                {
-                  value: "SERVING" as FoodUnit,
-                  label: t("tracking.units.SERVING"),
-                },
-                {
-                  value: "PIECE" as FoodUnit,
-                  label: t("tracking.units.PIECE"),
-                },
-              ]}
-              onChange={setDefaultFoodUnit}
-              last
-            />
-          </View>
+          <SettingsSelectRow
+            label={t("tracking.defaultFoodUnit")}
+            value={defaultFoodUnit}
+            options={[
+              {
+                value: "GRAMS" as FoodUnit,
+                label: t("tracking.units.GRAMS"),
+              },
+              {
+                value: "SERVING" as FoodUnit,
+                label: t("tracking.units.SERVING"),
+              },
+              {
+                value: "PIECE" as FoodUnit,
+                label: t("tracking.units.PIECE"),
+              },
+            ]}
+            onChange={setDefaultFoodUnit}
+            last
+          />
         </SettingsSection>
 
         <SettingsSection title={t("tracking.homeDisplaySection")}>
-          <View style={styles.sectionCard}>
-            <ToggleRow
-              label={t("tracking.showFiber")}
-              hint={t("tracking.showFiberHint")}
-              value={showFiberOnHome}
-              onChange={setShowFiberOnHome}
-            />
+          <SettingsToggleRow
+            label={t("tracking.showFiber")}
+            hint={t("tracking.showFiberHint")}
+            value={showFiberOnHome}
+            onValueChange={setShowFiberOnHome}
+          />
 
-            <ToggleRow
-              label={t("tracking.showCarbs")}
-              hint={t("tracking.showCarbsHint")}
-              value={showCarbsOnHome}
-              onChange={setShowCarbsOnHome}
-            />
+          <SettingsToggleRow
+            label={t("tracking.showCarbs")}
+            hint={t("tracking.showCarbsHint")}
+            value={showCarbsOnHome}
+            onValueChange={setShowCarbsOnHome}
+          />
 
-            <ToggleRow
-              label={t("tracking.showFat")}
-              hint={t("tracking.showFatHint")}
-              value={showFatOnHome}
-              onChange={setShowFatOnHome}
-            />
+          <SettingsToggleRow
+            label={t("tracking.showFat")}
+            hint={t("tracking.showFatHint")}
+            value={showFatOnHome}
+            onValueChange={setShowFatOnHome}
+          />
 
-            <ToggleRow
-              label={t("tracking.showProgress")}
-              hint={t("tracking.showProgressHint")}
-              value={showProgressPercentages}
-              onChange={setShowProgressPercentages}
-              last
-            />
-          </View>
+          <SettingsToggleRow
+            label={t("tracking.showProgress")}
+            hint={t("tracking.showProgressHint")}
+            value={showProgressPercentages}
+            onValueChange={setShowProgressPercentages}
+            last
+          />
         </SettingsSection>
 
         {!isExpertMode && (
           <SettingsSection title={t("tracking.guidedSection")}>
-            <View style={styles.sectionCard}>
-              <ToggleRow
-                label={t("tracking.showGuidedSuggestions")}
-                hint={t("tracking.showGuidedSuggestionsHint")}
-                value={showGuidedSuggestions}
-                onChange={setShowGuidedSuggestions}
-              />
+            <SettingsToggleRow
+              label={t("tracking.showGuidedSuggestions")}
+              hint={t("tracking.showGuidedSuggestionsHint")}
+              value={showGuidedSuggestions}
+              onValueChange={setShowGuidedSuggestions}
+            />
 
-              <ToggleRow
-                label={t("tracking.showMotivation")}
-                hint={t("tracking.showMotivationHint")}
-                value={showMotivation}
-                onChange={setShowMotivation}
-                last
-              />
-            </View>
+            <SettingsToggleRow
+              label={t("tracking.showMotivation")}
+              hint={t("tracking.showMotivationHint")}
+              value={showMotivation}
+              onValueChange={setShowMotivation}
+              last
+            />
           </SettingsSection>
         )}
+      </ScrollView>
 
+      <StickyFooter>
         {saveSuccess && (
-          <View style={styles.saveSuccessBanner}>
+          <View style={[styles.saveSuccessBanner, dir.row]} accessibilityLiveRegion="polite">
+            <MaterialCommunityIcons name="check-circle-outline" size={18} color={colors.success} />
             <Text style={[styles.saveSuccessText, dir.text]}>
               {t("tracking.saved")}
             </Text>
           </View>
         )}
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.saveBtn,
-            pressed && !isSaveDisabled && styles.saveBtnPressed,
-            isSaveDisabled && styles.saveBtnDisabled,
-          ]}
+        <Button
+          label={
+            isSaving
+              ? t("tracking.saving")
+              : hasChanges
+                ? t("tracking.saveButton")
+                : t("tracking.noChanges")
+          }
           onPress={handleSave}
-          disabled={isSaveDisabled}
-        >
-          <View style={styles.saveBtnContent}>
-            {isSaving && (
-              <ActivityIndicator
-                size="small"
-                color={colors.buttonPrimaryText}
-              />
-            )}
-
-            <Text
-              style={[
-                styles.saveBtnText,
-                isSaveDisabled && styles.saveBtnTextDisabled,
-              ]}
-            >
-              {isSaving
-                ? t("tracking.saving")
-                : hasChanges
-                  ? t("tracking.saveButton")
-                  : t("tracking.noChanges")}
-            </Text>
-          </View>
-        </Pressable>
-      </ScrollView>
+          loading={isSaving}
+          disabled={!hasChanges}
+          fullWidth
+        />
+      </StickyFooter>
     </SafeAreaView>
   );
 }

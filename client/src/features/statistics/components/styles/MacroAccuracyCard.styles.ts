@@ -1,60 +1,72 @@
 import { StyleSheet } from "react-native";
-import { spacing, radius, useThemedStyles } from "../../../../shared/theme";
+
+import { spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       subtitle: {
-        marginTop: 4,
-        fontSize: 12,
-        fontWeight: "600",
-        color: colors.textMuted,
+        ...typography.footnote,
+        color: colors.textSecondary,
       },
+
       rangeMeta: {
-        marginTop: 3,
-        marginBottom: spacing.sm,
-        fontSize: 11,
-        fontWeight: "600",
+        ...typography.caption,
+        fontWeight: "400",
         color: colors.textMuted,
+        marginTop: 2,
+        marginBottom: spacing.xs,
       },
+
       row: {
-        marginBottom: spacing.sm2,
+        marginTop: spacing.ms,
+        gap: spacing.xs + 2,
       },
+
       rowHeader: {
         flexDirection: "row",
+        alignItems: "baseline",
         justifyContent: "space-between",
-        alignItems: "center",
         gap: spacing.sm,
-        marginBottom: 5,
       },
+
       rowHeaderRtl: {
         flexDirection: "row-reverse",
       },
+
       macroName: {
-        flex: 1,
-        fontSize: 13,
-        fontWeight: "700",
+        ...typography.callout,
+        fontWeight: "600",
         color: colors.textPrimary,
       },
+
       macroNumbers: {
-        fontSize: 12,
+        ...typography.callout,
+        ...typography.number,
         fontWeight: "600",
+        color: colors.textPrimary,
+      },
+
+      macroTarget: {
+        fontWeight: "400",
         color: colors.textMuted,
       },
+
       track: {
         height: 6,
+        borderRadius: 3,
         backgroundColor: colors.progressTrack,
-        borderRadius: radius.full,
         overflow: "hidden",
       },
+
       fill: {
         height: "100%",
-        borderRadius: radius.full,
+        borderRadius: 3,
       },
+
       pctLabel: {
-        fontSize: 11,
-        fontWeight: "700",
-        marginTop: 3,
+        ...typography.caption,
+        ...typography.number,
       },
     }),
   );

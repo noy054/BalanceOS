@@ -1,6 +1,7 @@
 import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
+import { formatGrams } from "../../../shared/helpers/formatNumber";
 import { StatisticsSummary } from "../types";
 import { useStyles as useSectionStyles } from "./styles/SectionCard.styles";
 import { useStyles } from "./styles/RangeSummaryCard.styles";
@@ -10,19 +11,18 @@ type Props = {
   isRTL: boolean;
 };
 
+type Tone = "default" | "good" | "attention";
+
 type SummaryItem = {
+  key: string;
   label: string;
   value: string;
   sub?: string;
-  tone?: "default" | "good" | "danger" | "muted";
+  tone?: Tone;
 };
 
 function absValue(value: number) {
   return Math.abs(Math.round(value));
-}
-
-function formatMacroValue(value: number) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
 export function RangeSummaryCard({ summary, isRTL }: Props) {
@@ -31,11 +31,14 @@ export function RangeSummaryCard({ summary, isRTL }: Props) {
   const styles = useStyles();
 
   const textAlign = isRTL ? "right" : "left";
+  const rowDirection = isRTL ? "row-reverse" : "row";
+  const kcal = t("units.kcal");
+  const grams = t("units.g");
 
   const calorieGapValue =
     summary.avgDailyCalorieGap === 0
       ? t("summary.onExactTarget")
-      : `${absValue(summary.avgDailyCalorieGap)} kcal`;
+      : `${absValue(summary.avgDailyCalorieGap)} ${kcal}`;
 
   const calorieGapSub =
     summary.avgDailyCalorieGap > 0
@@ -47,7 +50,7 @@ export function RangeSummaryCard({ summary, isRTL }: Props) {
   const proteinGapValue =
     summary.proteinGap === 0
       ? t("summary.onExactTarget")
-      : `${formatMacroValue(Math.abs(summary.proteinGap))}g`;
+      : `${formatGrams(Math.abs(summary.proteinGap))} ${grams}`;
 
   const proteinGapSub =
     summary.proteinGap > 0
@@ -59,7 +62,7 @@ export function RangeSummaryCard({ summary, isRTL }: Props) {
   const balanceValue =
     summary.calorieBalance === 0
       ? t("summary.onExactTarget")
-      : `${absValue(summary.calorieBalance)} kcal`;
+      : `${absValue(summary.calorieBalance)} ${kcal}`;
 
   const balanceSub =
     summary.calorieBalance > 0
@@ -68,72 +71,78 @@ export function RangeSummaryCard({ summary, isRTL }: Props) {
         ? t("summary.totalDeficit")
         : t("summary.onExactTarget");
 
-  const items: SummaryItem[] = [
+  const accuracyTone: Tone =
+    summary.nutritionAccuracy >= 85
+      ? "good"
+      : summary.nutritionAccuracy < 65
+        ? "attention"
+        : "default";
+
+  const keyStats: SummaryItem[] = [
     {
-      label: t("summary.nutritionAccuracy"),
-      value: `${summary.nutritionAccuracy}%`,
-      sub: t("summary.nutritionAccuracySub"),
-      tone:
-        summary.nutritionAccuracy >= 85
-          ? "good"
-          : summary.nutritionAccuracy < 65
-            ? "danger"
-            : "default",
-    },
-    {
-      label: t("summary.avgCalories"),
-      value: `${summary.avgCalories} kcal`,
-      sub: t("summary.target", { value: `${summary.targetCalories} kcal` }),
-    },
-    {
-      label: t("summary.avgDailyGap"),
-      value: calorieGapValue,
-      sub: calorieGapSub,
-      tone:
-        summary.avgDailyCalorieGap > 0
-          ? "danger"
-          : summary.avgDailyCalorieGap < 0
-            ? "good"
-            : "default",
-    },
-    {
+      key: "avgProtein",
       label: t("summary.avgProtein"),
-      value: `${formatMacroValue(summary.avgProtein)}g`,
-      sub: t("summary.target", { value: `${summary.targetProtein}g` }),
+      value: `${formatGrams(summary.avgProtein)} ${grams}`,
+      sub: t("summary.target", { value: `${summary.targetProtein} ${grams}` }),
     },
     {
-      label: t("summary.proteinGap"),
-      value: proteinGapValue,
-      sub: proteinGapSub,
-      tone:
-        summary.proteinGap < 0
-          ? "danger"
-          : summary.proteinGap > 0
-            ? "good"
-            : "default",
-    },
-    {
+      key: "loggedDays",
       label: t("summary.loggedDays"),
       value: `${summary.loggedDays} / ${summary.rangeDays}`,
       sub: t("summary.loggedDaysSub"),
     },
     {
+      key: "onTarget",
       label: t("summary.onTarget"),
       value: `${summary.onTargetDays} / ${summary.rangeDays}`,
       sub: t("summary.onTargetSub"),
     },
+  ];
+
+  const gapRows: SummaryItem[] = [
     {
+      key: "avgDailyGap",
+      label: t("summary.avgDailyGap"),
+      value: calorieGapValue,
+      sub: calorieGapSub,
+      tone:
+        summary.avgDailyCalorieGap > 0
+          ? "attention"
+          : summary.avgDailyCalorieGap < 0
+            ? "good"
+            : "default",
+    },
+    {
+      key: "proteinGap",
+      label: t("summary.proteinGap"),
+      value: proteinGapValue,
+      sub: proteinGapSub,
+      tone:
+        summary.proteinGap < 0
+          ? "attention"
+          : summary.proteinGap > 0
+            ? "good"
+            : "default",
+    },
+    {
+      key: "calorieBalance",
       label: t("summary.calorieBalance"),
       value: balanceValue,
       sub: balanceSub,
       tone:
         summary.calorieBalance > 0
-          ? "danger"
+          ? "attention"
           : summary.calorieBalance < 0
             ? "good"
             : "default",
     },
   ];
+
+  function toneStyle(tone?: Tone) {
+    if (tone === "good") return styles.valueGood;
+    if (tone === "attention") return styles.valueAttention;
+    return null;
+  }
 
   return (
     <View style={sectionStyles.card}>
@@ -141,38 +150,84 @@ export function RangeSummaryCard({ summary, isRTL }: Props) {
         {t("summary.title")}
       </Text>
 
-      <View style={styles.grid}>
-        {items.map((item) => {
-          const valueStyle =
-            item.tone === "good"
-              ? styles.valueGood
-              : item.tone === "danger"
-                ? styles.valueDanger
-                : item.tone === "muted"
-                  ? styles.valueMuted
-                  : styles.valueDefault;
+      <View style={[styles.heroRow, { flexDirection: rowDirection }]}>
+        <View style={styles.heroCell}>
+          <Text style={[styles.heroLabel, { textAlign }]} numberOfLines={1}>
+            {t("summary.avgCalories")}
+          </Text>
+          <View style={[styles.heroValueRow, { flexDirection: rowDirection }]}>
+            <Text style={styles.heroValue} numberOfLines={1} adjustsFontSizeToFit>
+              {summary.avgCalories}
+            </Text>
+            <Text style={styles.heroUnit}>{kcal}</Text>
+          </View>
+          <Text style={[styles.heroSub, { textAlign }]} numberOfLines={1}>
+            {t("summary.target", { value: `${summary.targetCalories} ${kcal}` })}
+          </Text>
+        </View>
 
-          return (
-            <View key={item.label} style={styles.item}>
-              <Text style={[styles.label, { textAlign }]} numberOfLines={1}>
+        <View style={styles.heroDivider} />
+
+        <View style={styles.heroCell}>
+          <Text style={[styles.heroLabel, { textAlign }]} numberOfLines={1}>
+            {t("summary.nutritionAccuracy")}
+          </Text>
+          <Text
+            style={[styles.heroValue, toneStyle(accuracyTone), { textAlign }]}
+            numberOfLines={1}
+          >
+            {summary.nutritionAccuracy}%
+          </Text>
+          <Text style={[styles.heroSub, { textAlign }]} numberOfLines={2}>
+            {t("summary.nutritionAccuracySub")}
+          </Text>
+        </View>
+      </View>
+
+      <View style={[styles.statsRow, { flexDirection: rowDirection }]}>
+        {keyStats.map((item) => (
+          <View key={item.key} style={styles.statCell}>
+            <Text style={[styles.statValue, { textAlign }]} numberOfLines={1} adjustsFontSizeToFit>
+              {item.value}
+            </Text>
+            <Text style={[styles.statLabel, { textAlign }]} numberOfLines={1}>
+              {item.label}
+            </Text>
+            {item.sub ? (
+              <Text style={[styles.statSub, { textAlign }]} numberOfLines={2}>
+                {item.sub}
+              </Text>
+            ) : null}
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.gapList}>
+        {gapRows.map((item, index) => (
+          <View
+            key={item.key}
+            style={[
+              styles.gapRow,
+              { flexDirection: rowDirection },
+              index > 0 && styles.gapRowBorder,
+            ]}
+          >
+            <View style={styles.gapText}>
+              <Text style={[styles.gapLabel, { textAlign }]} numberOfLines={1}>
                 {item.label}
               </Text>
-
-              <Text
-                style={[styles.value, valueStyle, { textAlign }]}
-                numberOfLines={1}
-              >
-                {item.value}
-              </Text>
-
-              {!!item.sub && (
-                <Text style={[styles.sub, { textAlign }]} numberOfLines={2}>
+              {item.sub ? (
+                <Text style={[styles.gapSub, { textAlign }]} numberOfLines={1}>
                   {item.sub}
                 </Text>
-              )}
+              ) : null}
             </View>
-          );
-        })}
+
+            <Text style={[styles.gapValue, toneStyle(item.tone)]} numberOfLines={1}>
+              {item.value}
+            </Text>
+          </View>
+        ))}
       </View>
     </View>
   );

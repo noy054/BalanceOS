@@ -1,8 +1,9 @@
-import { Pressable, Text, TextInput, View } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Text, TextInput, View } from "react-native";
 import { TFunction } from "i18next";
 
 import { useAppTheme } from "../../../../shared/theme";
+import { IconButton } from "../../../../shared/components/ui/IconButton";
+import { SegmentedControl } from "../../../../shared/components/ui/SegmentedControl";
 import { CalculatedNutrition } from "../../types";
 import { CalculatorUnit } from "../../hooks/useProductCalculator";
 import { NutritionRow } from "../nutrition/NutritionRow";
@@ -20,6 +21,7 @@ type Props = {
   onChangeQuantity: (value: string) => void;
   onSelectUnit: (unit: CalculatorUnit) => void;
   onCalculate: () => void;
+  plain?: boolean;
 };
 
 export function ProductCalculatorCard({
@@ -33,6 +35,7 @@ export function ProductCalculatorCard({
   onChangeQuantity,
   onSelectUnit,
   onCalculate,
+  plain = false,
 }: Props) {
   const { colors } = useAppTheme();
   const styles = useStyles();
@@ -47,9 +50,17 @@ export function ProductCalculatorCard({
         ? t("productDetail.calculatorPlaceholderCalories")
         : t("productDetail.calculatorPlaceholder");
 
+  const unitOptions: { value: CalculatorUnit; label: string }[] = [
+    { value: "grams", label: t("productDetail.calculatorByGrams") },
+    ...(hasServing
+      ? [{ value: "servings" as CalculatorUnit, label: t("productDetail.calculatorByServings") }]
+      : []),
+    { value: "calories", label: t("productDetail.calculatorByCalories") },
+  ];
+
   return (
-    <View style={styles.calculatorCard}>
-      <View style={[styles.sectionHeaderRow, dir.row]}>
+    <View style={plain ? styles.plain : styles.calculatorCard}>
+      {plain ? null : (
         <View style={styles.headerBlock}>
           <Text style={[styles.sectionTitle, dir.text]}>
             {t("productDetail.calculator")}
@@ -59,56 +70,14 @@ export function ProductCalculatorCard({
             {t("productDetail.calculatorHint")}
           </Text>
         </View>
+      )}
 
-        <View style={styles.unitToggleRow}>
-          <Pressable
-            style={[styles.unitBtn, unit === "grams" && styles.unitBtnActive]}
-            onPress={() => unit !== "grams" && onSelectUnit("grams")}
-          >
-            <Text
-              style={[
-                styles.unitBtnText,
-                unit === "grams" && styles.unitBtnTextActive,
-              ]}
-            >
-              {t("addProduct.per100g")}
-            </Text>
-          </Pressable>
-
-          {hasServing && (
-            <Pressable
-              style={[
-                styles.unitBtn,
-                unit === "servings" && styles.unitBtnActive,
-              ]}
-              onPress={() => unit !== "servings" && onSelectUnit("servings")}
-            >
-              <Text
-                style={[
-                  styles.unitBtnText,
-                  unit === "servings" && styles.unitBtnTextActive,
-                ]}
-              >
-                {t("addProduct.perServing")}
-              </Text>
-            </Pressable>
-          )}
-
-          <Pressable
-            style={[styles.unitBtn, unit === "calories" && styles.unitBtnActive]}
-            onPress={() => unit !== "calories" && onSelectUnit("calories")}
-          >
-            <Text
-              style={[
-                styles.unitBtnText,
-                unit === "calories" && styles.unitBtnTextActive,
-              ]}
-            >
-              {t("productDetail.calculatorByCalories")}
-            </Text>
-          </Pressable>
-        </View>
-      </View>
+      <SegmentedControl
+        options={unitOptions}
+        value={unit}
+        size="sm"
+        onChange={(next) => onSelectUnit(next)}
+      />
 
       <View style={[styles.calcRow, dir.row]}>
         <TextInput
@@ -124,21 +93,19 @@ export function ProductCalculatorCard({
           placeholder={placeholder}
           placeholderTextColor={colors.textMuted}
           keyboardType="decimal-pad"
+          returnKeyType="done"
+          onSubmitEditing={onCalculate}
+          accessibilityLabel={placeholder}
         />
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.calcBtn,
-            pressed && styles.calcBtnPressed,
-          ]}
+        <IconButton
+          icon="calculator-variant-outline"
+          variant="filled"
+          size={48}
+          iconSize={22}
+          accessibilityLabel={t("productDetail.calculateAction")}
           onPress={onCalculate}
-        >
-          <MaterialCommunityIcons
-            name="calculator"
-            size={21}
-            color={colors.background}
-          />
-        </Pressable>
+        />
       </View>
 
       {calcResult ? (
@@ -183,6 +150,7 @@ export function ProductCalculatorCard({
             label={t("macros.fat")}
             value={calcResult.fat}
             unit={t("product.gramsUnit")}
+            last={calcResult.fiber == null}
             isRTL={isRTL}
           />
 

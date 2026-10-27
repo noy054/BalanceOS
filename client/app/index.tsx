@@ -3,9 +3,11 @@ import { Redirect } from 'expo-router';
 import { useAuthStore } from '../src/features/auth/hooks/useAuthStore';
 import { useHydrateAuth } from '../src/features/auth/hooks/useAuth';
 import { useNutritionSettings } from '../src/features/nutrition-settings/hooks/useNutritionSettings';
+import { useAppTheme } from '../src/shared/theme';
 
 export default function Index() {
   useHydrateAuth();
+  const { colors } = useAppTheme();
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const isHydrating = useAuthStore((s) => s.isHydrating);
@@ -18,8 +20,8 @@ export default function Index() {
 
   if (isHydrating || !isLanguageReady) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }
@@ -30,8 +32,8 @@ export default function Index() {
 
   if (isPending) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }

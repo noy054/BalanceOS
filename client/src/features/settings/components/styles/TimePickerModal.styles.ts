@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, radius, useThemedStyles } from "../../../../shared/theme";
+import { radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useTimePickerModalStyles = () =>
   useThemedStyles((colors) =>
@@ -8,49 +8,38 @@ export const useTimePickerModalStyles = () =>
       pickerOverlay: {
         flex: 1,
         justifyContent: "flex-end",
-        backgroundColor: "rgba(0, 0, 0, 0.62)",
+        backgroundColor: colors.overlay,
       },
 
       pickerCard: {
-        marginHorizontal: spacing.md,
-        marginBottom: spacing.lg,
-        borderRadius: radius.xl,
-        overflow: "hidden",
-        backgroundColor: colors.cardBackgroundStrong,
-        borderWidth: 1,
-        borderColor: colors.border,
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: radius.xxl,
+        borderTopRightRadius: radius.xxl,
+        paddingHorizontal: spacing.md,
+        paddingTop: spacing.md,
+        paddingBottom: spacing.xl,
       },
 
       pickerHeader: {
         alignItems: "center",
         justifyContent: "space-between",
-        paddingHorizontal: spacing.md,
-        paddingTop: spacing.md,
-        paddingBottom: spacing.sm,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
+        minHeight: 44,
+        marginBottom: spacing.sm,
       },
 
       pickerTitle: {
-        flex: 1,
-        textAlign: "center",
-        fontSize: 16,
-        fontWeight: "900",
+        ...typography.headline,
         color: colors.textPrimary,
       },
 
       pickerCancelText: {
-        minWidth: 58,
-        fontSize: 15,
-        fontWeight: "800",
+        ...typography.body,
         color: colors.textSecondary,
       },
 
       pickerDoneText: {
-        minWidth: 58,
-        fontSize: 15,
-        fontWeight: "900",
-        color: colors.primaryGreen,
+        ...typography.bodyStrong,
+        color: colors.accent,
       },
     }),
   );

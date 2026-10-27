@@ -2,13 +2,16 @@
   "title": "המזווה שלי",
   "subtitle": "נהל את המוצרים, המתכונים והארוחות שלך",
   "search": {
-    "placeholder": "חפש מוצר..."
+    "placeholder": "חפש מוצר...",
+    "placeholderRecipes": "חיפוש מתכון...",
+    "placeholderSavedMeals": "חיפוש ארוחה שמורה..."
   },
   "actions": {
     "addProduct": "הוסף מוצר",
     "scanBarcode": "סרוק ברקוד",
     "addRecipe": "הוסף מתכון",
-    "addSavedMeal": "הוסף ארוחה שמורה"
+    "addSavedMeal": "הוסף ארוחה שמורה",
+    "new": "חדש"
   },
   "tabs": {
     "products": "מוצרים",
@@ -43,7 +46,10 @@
     "fiberLabel": "סיבים (גרם)",
     "per100g": "ל־100 גרם",
     "calUnit": "קק״ל",
-    "gramsUnit": "גרם"
+    "gramsUnit": "גרם",
+    "changeImage": "החלפת תמונה",
+    "pickFromGallery": "בחירה מהגלריה",
+    "removeImage": "הסרת תמונה"
   },
   "categories": {
     "BREAKFAST": "בוקר",
@@ -68,7 +74,10 @@
     "updateButton": "שמור שינויים",
     "saving": "שומר...",
     "loadingProduct": "טוען מוצר...",
-    "back": "חזור"
+    "back": "חזור",
+    "detailsSection": "פרטים",
+    "categoriesHint": "משמש לסידור ההצעות בעת הוספת מזון לארוחה",
+    "caloriesPerServingLabel": "קלוריות למנה"
   },
   "productDetail": {
     "title": "פרטי מוצר",
@@ -88,7 +97,10 @@
     "deleteConfirmMessage": "האם למחוק מוצר זה לצמיתות?",
     "deleteConfirmYes": "מחק",
     "deleteConfirmNo": "ביטול",
-    "back": "חזור"
+    "back": "חזור",
+    "calculatorByGrams": "גרמים",
+    "calculatorByServings": "מנות",
+    "calculateAction": "חישוב"
   },
   "recipe": {
     "nameLabel": "שם המתכון *",
@@ -114,7 +126,18 @@
     "scanBarcodeBtn": "סרוק ברקוד",
     "newProductTitle": "מוצר חדש",
     "addAndSelectBtn": "שמור והוסף למתכון",
-    "servingSizeOptional": "גודל מנה (גרם, אופציונלי)"
+    "servingSizeOptional": "גודל מנה (גרם, אופציונלי)",
+    "imageTitle": "תמונה למתכון",
+    "imageSubtitle": "אפשר להוסיף תמונה שתעזור לזהות מהר את המתכון.",
+    "imageSelected": "התמונה תופיע בכרטיס המתכון.",
+    "addImage": "הוספת תמונה",
+    "changeImage": "החלפת תמונה",
+    "removeImage": "הסרה",
+    "loading": "טוען מתכון...",
+    "updateButton": "שמור שינויים",
+    "addSelectedBtnClean": "הוסף למתכון",
+    "removeItemNamed": "הסרת {{name}}",
+    "toggleUnit": "מעבר בין גרמים למנות"
   },
   "addRecipe": {
     "title": "מתכון חדש",
@@ -132,8 +155,8 @@
     "mealTypeLabel": "סוג ארוחה",
     "mealTypePlaceholder": "בחר סוג ארוחה (לא חובה)",
     "itemsSection": "פריטים",
-    "addProductItem": "+ הוסף מוצר",
-    "addRecipeItem": "+ הוסף מתכון",
+    "addProductItem": "הוספת מוצר",
+    "addRecipeItem": "הוספת מתכון",
     "gramsLabel": "גרם",
     "servingsLabel": "מנות",
     "gramsPlaceholder": "כמות",
@@ -147,7 +170,18 @@
     "deleteConfirmTitle": "מחיקת ארוחה שמורה",
     "deleteConfirmMessage": "האם למחוק ארוחה זו לצמיתות?",
     "deleteConfirmYes": "מחק",
-    "deleteConfirmNo": "ביטול"
+    "deleteConfirmNo": "ביטול",
+    "imageTitle": "תמונה לארוחה",
+    "imageSubtitle": "אפשר להוסיף תמונה שתעזור לזהות מהר את הארוחה.",
+    "imageSelected": "התמונה תופיע בכרטיס הארוחה.",
+    "addImage": "הוספת תמונה",
+    "changeImage": "החלפת תמונה",
+    "removeImage": "הסרה",
+    "loading": "טוען ארוחה...",
+    "updateButton": "שמור שינויים",
+    "namePlaceholder": "שם הארוחה",
+    "deleteTitle": "מחיקת ארוחה",
+    "deleteMessage": "האם למחוק את הארוחה השמורה?"
   },
   "addSavedMeal": {
     "title": "ארוחה שמורה חדשה",
@@ -249,6 +283,45 @@
     "invalidNumber": "יש להזין מספר חוקי",
     "negativeNumber": "הערך חייב להיות אפס או גדול יותר",
     "noIngredients": "יש להוסיף לפחות מצרך אחד",
-    "noItems": "יש להוסיף לפחות פריט אחד"
+    "noItems": "יש להוסיף לפחות פריט אחד",
+    "galleryPermissionDenied": "צריך לאשר גישה לגלריה כדי לבחור תמונה",
+    "imagePermissionDenied": "צריך לאשר גישה לתמונות כדי להוסיף תמונה.",
+    "updateRecipeFailed": "עדכון המתכון נכשל",
+    "updateSavedMealFailed": "שמירת השינויים נכשלה"
+  },
+  "common": {
+    "edit": "עריכה",
+    "delete": "מחיקה",
+    "cancel": "ביטול",
+    "close": "סגירה",
+    "moreOptionsFor": "אפשרויות נוספות עבור {{name}}"
+  },
+  "macrosShort": {
+    "protein": "חלבון",
+    "carbs": "פחמ׳",
+    "fat": "שומן",
+    "fiber": "סיבים"
+  },
+  "nutritionLine": {
+    "item": "{{label}} {{value}} ג׳"
+  },
+  "foodCard": {
+    "perServingSize": "למנה ({{size}} גרם)",
+    "recipeTotal": "מתכון שלם",
+    "mealTotal": "סה״כ ארוחה",
+    "gramsQuantity": "{{grams}} גרם",
+    "servingsQuantity": "{{count}} מנות ({{grams}} גרם)",
+    "recipeServings": "×{{count}} מתכון"
+  },
+  "productCalculator": {
+    "quickTitle": "חישוב מהיר"
+  },
+  "editRecipe": {
+    "title": "עריכת מתכון",
+    "subtitle": "עדכון פרטי המתכון והמצרכים."
+  },
+  "editSavedMeal": {
+    "title": "עריכת ארוחה שמורה",
+    "subtitle": "עדכון פרטי הארוחה והפריטים."
   }
 }

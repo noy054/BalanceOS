@@ -1,77 +1,66 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing, radius } from '../../../src/shared/theme';
 
-export const styles = StyleSheet.create({
-  header: { marginBottom: 36 },
-  brand: {
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 2.8,
-    color: colors.primaryGreen,
-    textTransform: 'uppercase',
-    marginBottom: spacing.md,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: colors.textPrimary,
-    marginBottom: 6,
-    letterSpacing: -0.8,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    lineHeight: 22,
-    fontWeight: '500',
-  },
-  field: { marginBottom: spacing.md },
-  fieldLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: colors.textSecondary,
-    marginBottom: 7,
-    letterSpacing: 0.1,
-  },
-  input: { backgroundColor: colors.inputBackground },
-  btnContent: { height: 56 },
-  btnLabel: { fontSize: 15, fontWeight: '800', letterSpacing: 0.2, color: '#081008' },
-  primaryBtn: { borderRadius: radius.md, marginTop: spacing.sm },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: spacing.md,
-    gap: spacing.sm,
-  },
-  dividerLine: { flex: 1, height: 1, backgroundColor: colors.border },
-  dividerText: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5, fontWeight: '600' },
-  googleBtn: { borderRadius: radius.md, borderColor: colors.border, borderWidth: 1.5 },
-  googleLabel: { fontSize: 14, fontWeight: '600' },
-  footer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 28,
-    gap: spacing.xs,
-  },
-  footerText: { color: colors.textSecondary, fontSize: 14, fontWeight: '500' },
-  link: { color: colors.primaryGreen, fontWeight: '800', fontSize: 14 },
-  forgotLink: { color: colors.textSecondary, fontSize: 12, fontWeight: '500', marginTop: 6 },
-  errorBox: {
-    backgroundColor: colors.dangerLight,
-    borderColor: colors.danger,
-    borderWidth: 1,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 10,
-    marginBottom: spacing.sm,
-    marginTop: 2,
-  },
-  errorText: {
-    color: colors.danger,
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 20,
-  },
-});
+import { radius, spacing, typography, useThemedStyles } from '../../../src/shared/theme';
+
+export const useStyles = () =>
+  useThemedStyles((colors) =>
+    StyleSheet.create({
+      header: { marginBottom: spacing.xl, gap: spacing.sm },
+      brand: { marginBottom: spacing.ml },
+      title: {
+        ...typography.title,
+        fontSize: 28,
+        lineHeight: 34,
+        color: colors.textPrimary,
+      },
+      subtitle: {
+        ...typography.body,
+        color: colors.textSecondary,
+      },
+      field: { marginBottom: spacing.md },
+      fieldLabel: {
+        ...typography.label,
+        fontWeight: '500',
+        color: colors.textSecondary,
+        marginBottom: spacing.xs + 2,
+      },
+      input: { backgroundColor: colors.inputBackground },
+      btnContent: { height: 50 },
+      btnLabel: { ...typography.bodyStrong, letterSpacing: 0 },
+      primaryBtn: { borderRadius: radius.md, marginTop: spacing.sm },
+      divider: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: spacing.ml,
+        gap: spacing.ms,
+      },
+      dividerLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: colors.borderStrong },
+      dividerText: { ...typography.caption, color: colors.textMuted },
+      googleBtn: { borderRadius: radius.md, borderColor: colors.borderStrong, borderWidth: 1 },
+      googleLabel: { ...typography.bodyStrong, fontWeight: '500', letterSpacing: 0 },
+      footer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: spacing.xl,
+        gap: spacing.xs,
+      },
+      footerText: { ...typography.callout, color: colors.textSecondary },
+      link: { ...typography.callout, fontWeight: '600', color: colors.accent, paddingVertical: spacing.xs },
+      forgotLink: { ...typography.footnote, color: colors.accent, marginTop: spacing.sm, paddingVertical: spacing.xs },
+      errorBox: {
+        backgroundColor: colors.dangerSoft,
+        borderRadius: radius.md,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.sm2,
+        marginBottom: spacing.sm,
+        marginTop: 2,
+      },
+      errorText: {
+        ...typography.callout,
+        color: colors.danger,
+      },
+    }),
+  );
 
 export function getDirectionStyles(isRTL: boolean) {
   return {
@@ -81,6 +70,9 @@ export function getDirectionStyles(isRTL: boolean) {
     },
     row: {
       flexDirection: isRTL ? 'row-reverse' as const : 'row' as const,
+    },
+    alignStart: {
+      alignSelf: isRTL ? 'flex-end' as const : 'flex-start' as const,
     },
     inputContent: {
       textAlign: isRTL ? 'right' as const : 'left' as const,

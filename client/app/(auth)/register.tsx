@@ -7,14 +7,17 @@ import { useTranslation } from "react-i18next";
 import { useRegister } from "../../src/features/auth/hooks/useAuth";
 import { extractErrorMessage } from "../../src/shared/helpers/extractErrorMessage";
 import { ScreenShell } from "../../src/shared/components/ScreenShell";
-import { colors } from "../../src/shared/theme";
-import { styles, getDirectionStyles } from "./styles/register.styles";
+import { useAppTheme } from "../../src/shared/theme";
+import { BrandMark } from "../../src/shared/components/BrandMark";
+import { useStyles, getDirectionStyles } from "./styles/login.styles";
 
 export default function RegisterScreen() {
   const { t, i18n } = useTranslation("auth");
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const dir = getDirectionStyles(isRTL);
+  const styles = useStyles();
+  const { colors } = useAppTheme();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -45,7 +48,7 @@ export default function RegisterScreen() {
   return (
     <ScreenShell>
       <View style={styles.header}>
-        <Text style={[styles.brand, dir.text]}>BalanceOS</Text>
+        <BrandMark style={[styles.brand, dir.alignStart]} />
         <Text style={[styles.title, dir.text]}>{t("register.title")}</Text>
         <Text style={[styles.subtitle, dir.text]}>
           {t("register.subtitle")}
@@ -120,11 +123,11 @@ export default function RegisterScreen() {
         onPress={handleRegister}
         loading={register.isPending}
         disabled={register.isPending || !fullName || !email || !password}
-        buttonColor={colors.primaryGreen}
-        textColor="#081008"
+        buttonColor={colors.accent}
+        textColor={colors.onAccent}
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}
-        style={styles.button}
+        style={styles.primaryBtn}
       >
         {t("register.createButton")}
       </Button>

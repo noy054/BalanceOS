@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { spacing, useThemedStyles } from '../../../../shared/theme';
+
+import { spacing, typography, useThemedStyles } from '../../../../shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -8,22 +9,30 @@ export const useStyles = () =>
         alignItems: 'center',
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm2,
-        minHeight: 52,
+        minHeight: 56,
+        gap: spacing.ms,
       },
       rowBorder: {
-        borderBottomWidth: 1,
+        borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: colors.border,
       },
-      left: { flex: 1, marginEnd: spacing.sm },
+      pressed: {
+        backgroundColor: colors.surfaceMuted,
+      },
+      left: {
+        flex: 1,
+        gap: 2,
+      },
       label: {
-        fontSize: 15,
+        ...typography.body,
         color: colors.textPrimary,
       },
-      labelDisabled: { color: colors.textMuted },
-      hint: {
-        fontSize: 12,
+      labelDisabled: {
         color: colors.textMuted,
-        marginTop: 1,
+      },
+      hint: {
+        ...typography.footnote,
+        color: colors.textSecondary,
       },
     }),
   );

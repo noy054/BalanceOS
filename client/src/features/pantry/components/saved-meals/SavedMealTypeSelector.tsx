@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { ScrollView, Pressable, Text } from "react-native";
+import type { ScrollViewInstance } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { MEAL_TYPES } from "../../constants";
@@ -19,7 +20,7 @@ export function SavedMealTypeSelector({
 }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
 
   useEffect(() => {
     if (!isRTL) {

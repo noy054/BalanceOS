@@ -1,30 +1,25 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, useThemedStyles } from "../../../../../shared/theme";
+import { spacing, typography, useThemedStyles } from "../../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       selectedPanel: {
-        borderTopWidth: 1,
-        borderTopColor: colors.primaryGreenMid,
-        backgroundColor: colors.cardBackground,
-        maxHeight: 220,
+        backgroundColor: colors.surface,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: colors.border,
+        paddingHorizontal: spacing.md,
+        paddingTop: spacing.ms,
       },
 
       selectedHeader: {
-        fontSize: 11,
-        fontWeight: "900",
-        color: colors.primaryGreen,
-        textTransform: "uppercase",
-        letterSpacing: 0.6,
-        paddingHorizontal: spacing.md,
-        paddingTop: spacing.sm,
-        paddingBottom: spacing.xs,
+        ...typography.label,
+        color: colors.textSecondary,
       },
 
       selectedScroll: {
-        flex: 1,
+        maxHeight: 190,
       },
     }),
   );

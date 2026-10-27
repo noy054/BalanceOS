@@ -4,6 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { useAppTheme } from "../../../../shared/theme";
+import { Button } from "../../../../shared/components/ui/Button";
 import { getDirectionStyles, useStyles } from "./styles/ImagePickerCard.styles";
 
 type Props = {
@@ -42,12 +43,7 @@ export function ImagePickerCard({
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
-      Alert.alert(
-        "",
-        t("errors.imagePermissionDenied", {
-          defaultValue: "צריך לאשר גישה לתמונות כדי להוסיף תמונה.",
-        }),
-      );
+      Alert.alert("", t("errors.imagePermissionDenied"));
       return;
     }
 
@@ -65,62 +61,39 @@ export function ImagePickerCard({
   }
 
   return (
-    <View style={styles.card}>
-      <View style={[styles.row, dir.row]}>
-        <Pressable
-          onPress={handlePickImage}
-          style={({ pressed }) => [
-            styles.imageButton,
-            pressed && styles.pressed,
-          ]}
-        >
+    <View style={[styles.card, dir.row]}>
+      <Pressable
+        onPress={handlePickImage}
+        style={({ pressed }) => [styles.imageButton, pressed && styles.pressed]}
+        accessibilityRole="imagebutton"
+        accessibilityLabel={imageUrl ? changeLabel : addLabel}
+      >
+        {imageUrl ? (
+          <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
+        ) : (
+          <MaterialCommunityIcons name={placeholderIcon} size={26} color={colors.textMuted} />
+        )}
+      </Pressable>
+
+      <View style={styles.textWrap}>
+        <Text style={[styles.title, dir.text]}>{title}</Text>
+
+        <Text style={[styles.subtitle, dir.text]}>
+          {imageUrl ? selectedSubtitle : subtitle}
+        </Text>
+
+        <View style={[styles.actionsRow, dir.row]}>
+          <Button
+            label={imageUrl ? changeLabel : addLabel}
+            icon={imageUrl ? "image-edit-outline" : "image-plus"}
+            variant="secondary"
+            size="sm"
+            onPress={handlePickImage}
+          />
+
           {imageUrl ? (
-            <Image
-              source={{ uri: imageUrl }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-          ) : (
-            <MaterialCommunityIcons
-              name={placeholderIcon}
-              size={30}
-              color={colors.primaryGreen}
-            />
-          )}
-        </Pressable>
-
-        <View style={styles.textWrap}>
-          <Text style={[styles.title, dir.text]}>{title}</Text>
-
-          <Text style={[styles.subtitle, dir.text]}>
-            {imageUrl ? selectedSubtitle : subtitle}
-          </Text>
-
-          <View style={[styles.actionsRow, dir.row]}>
-            <Pressable
-              onPress={handlePickImage}
-              style={({ pressed }) => [
-                styles.primaryAction,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.primaryActionText}>
-                {imageUrl ? changeLabel : addLabel}
-              </Text>
-            </Pressable>
-
-            {imageUrl ? (
-              <Pressable
-                onPress={onRemoveImage}
-                style={({ pressed }) => [
-                  styles.secondaryAction,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <Text style={styles.secondaryActionText}>{removeLabel}</Text>
-              </Pressable>
-            ) : null}
-          </View>
+            <Button label={removeLabel} variant="ghost" size="sm" onPress={onRemoveImage} />
+          ) : null}
         </View>
       </View>
     </View>

@@ -1,8 +1,8 @@
-import { Pressable, Text, TextInput, View } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { useAppTheme } from "../../../../shared/theme";
+import { SearchField } from "../../../../shared/components/ui/SearchField";
+import { Button } from "../../../../shared/components/ui/Button";
 import { useStyles } from "./styles/RecipeIngredientPickerSearchActions.styles";
 
 type DirectionStyles = ReturnType<
@@ -25,66 +25,35 @@ export function RecipeIngredientPickerSearchActions({
   onScanBarcode,
 }: Props) {
   const { t } = useTranslation("pantry");
-  const { colors } = useAppTheme();
   const styles = useStyles();
 
   return (
-    <>
-      <View style={[styles.searchRow, dir.row]}>
-        <MaterialCommunityIcons
-          name="magnify"
-          size={18}
-          color={colors.textMuted}
-        />
-
-        <TextInput
-          style={[styles.searchInput, dir.input]}
-          value={search}
-          onChangeText={onChangeSearch}
-          placeholder={t("picker.searchPlaceholder")}
-          placeholderTextColor={colors.textMuted}
-          autoFocus={false}
-          returnKeyType="search"
-        />
-      </View>
+    <View style={styles.wrapper}>
+      <SearchField
+        value={search}
+        onChangeText={onChangeSearch}
+        placeholder={t("search.placeholder")}
+      />
 
       <View style={[styles.quickActionsRow, dir.row]}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.secondaryBtn,
-            pressed && styles.secondaryBtnPressed,
-          ]}
+        <Button
+          label={t("recipe.createManualBtn")}
+          icon="plus"
+          variant="secondary"
+          size="sm"
           onPress={onAddProduct}
-        >
-          <MaterialCommunityIcons
-            name="plus-circle-outline"
-            size={15}
-            color={colors.textSecondary}
-          />
+          style={styles.quickAction}
+        />
 
-          <Text style={[styles.secondaryBtnText, dir.text]} numberOfLines={1}>
-            {t("recipe.createManualBtn")}
-          </Text>
-        </Pressable>
-
-        <Pressable
-          style={({ pressed }) => [
-            styles.secondaryBtn,
-            pressed && styles.secondaryBtnPressed,
-          ]}
+        <Button
+          label={t("recipe.scanBarcodeBtn")}
+          icon="barcode-scan"
+          variant="secondary"
+          size="sm"
           onPress={onScanBarcode}
-        >
-          <MaterialCommunityIcons
-            name="barcode-scan"
-            size={15}
-            color={colors.textSecondary}
-          />
-
-          <Text style={[styles.secondaryBtnText, dir.text]} numberOfLines={1}>
-            {t("recipe.scanBarcodeBtn")}
-          </Text>
-        </Pressable>
+          style={styles.quickAction}
+        />
       </View>
-    </>
+    </View>
   );
 }

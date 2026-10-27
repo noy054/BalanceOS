@@ -1,13 +1,11 @@
-import { Text, TextInput, Pressable, View } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Text, TextInput, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { useAppTheme } from "../../../../shared/theme";
+import { IconButton } from "../../../../shared/components/ui/IconButton";
+import { formatCalories } from "../../../../shared/helpers/formatNumber";
 import { SavedMealDraftItem } from "../../helpers/savedMealDraft";
-import {
-  getDirectionStyles,
-  useStyles,
-} from "./styles/SavedMealDraftItemRow.styles";
+import { useDraftRowStyles } from "../shared/styles/DraftItemRow.styles";
 
 type Props = {
   item: SavedMealDraftItem;
@@ -24,8 +22,13 @@ export function SavedMealDraftItemRow({
 }: Props) {
   const { t } = useTranslation("pantry");
   const { colors } = useAppTheme();
-  const styles = useStyles();
-  const dir = getDirectionStyles(isRTL);
+  const styles = useDraftRowStyles();
+
+  const row = { flexDirection: isRTL ? ("row-reverse" as const) : ("row" as const) };
+  const text = {
+    textAlign: isRTL ? ("right" as const) : ("left" as const),
+    writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),
+  };
 
   const itemName =
     item.kind === "product" ? item.product.name : item.recipe.name;
@@ -33,12 +36,8 @@ export function SavedMealDraftItemRow({
   const itemSubtitle =
     item.kind === "product"
       ? (item.product.brand ??
-        `${item.product.caloriesPer100g} ${t("product.calUnit")}/100${t(
-          "product.gramsUnit",
-        )}`)
-      : `${item.recipe.totals.calories} ${t("product.calUnit")} / ${t(
-          "savedMeal.servingsLabel",
-        )}`;
+        `${formatCalories(item.product.caloriesPer100g)} ${t("product.calUnit")} · ${t("product.per100g")}`)
+      : `${formatCalories(item.recipe.totals.calories)} ${t("product.calUnit")} · ${t("foodCard.recipeTotal")}`;
 
   const amountValue = item.kind === "product" ? item.grams : item.servings;
 
@@ -53,18 +52,18 @@ export function SavedMealDraftItemRow({
       : t("savedMeal.servingsLabel");
 
   return (
-    <View style={[styles.itemRow, dir.row]}>
-      <View style={styles.itemInfo}>
-        <Text style={[styles.itemName, dir.text]} numberOfLines={1}>
+    <View style={[styles.row, row]}>
+      <View style={styles.info}>
+        <Text style={[styles.name, text]} numberOfLines={2}>
           {itemName}
         </Text>
 
-        <Text style={[styles.itemKind, dir.text]} numberOfLines={1}>
+        <Text style={[styles.meta, text]} numberOfLines={1}>
           {itemSubtitle}
         </Text>
       </View>
 
-      <View style={[styles.amountBox, dir.row]}>
+      <View style={[styles.amountBox, row]}>
         <TextInput
           style={styles.amountInput}
           value={amountValue}
@@ -73,25 +72,19 @@ export function SavedMealDraftItemRow({
           placeholder={amountPlaceholder}
           placeholderTextColor={colors.textMuted}
           textAlign="center"
+          accessibilityLabel={`${itemName}, ${amountPlaceholder}`}
         />
 
         <Text style={styles.unitLabel}>{unitLabel}</Text>
       </View>
 
-      <Pressable
+      <IconButton
+        icon="close"
+        size={32}
+        iconSize={18}
+        accessibilityLabel={t("recipe.removeItemNamed", { name: itemName })}
         onPress={() => onRemove(item.key)}
-        hitSlop={8}
-        style={({ pressed }) => [
-          styles.removeBtn,
-          pressed && styles.removeBtnPressed,
-        ]}
-      >
-        <MaterialCommunityIcons
-          name="close"
-          size={18}
-          color={colors.textMuted}
-        />
-      </Pressable>
+      />
     </View>
   );
 }

@@ -1,6 +1,7 @@
-import { View, Text } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useStyles, getDirectionStyles } from './styles/SettingsSection.styles';
+import { View } from 'react-native';
+
+import { SectionHeader } from '../../../shared/components/ui/SectionHeader';
+import { useStyles } from './styles/SettingsSection.styles';
 
 type Props = {
   title: string;
@@ -9,15 +10,12 @@ type Props = {
 };
 
 export function SettingsSection({ title, children, danger = false }: Props) {
-  const { i18n } = useTranslation();
   const styles = useStyles();
-  const isRTL = i18n.dir(i18n.language) === 'rtl';
-  const dir = getDirectionStyles(isRTL);
 
   return (
     <View style={styles.wrapper}>
-      <Text style={[styles.title, danger && styles.titleDanger, dir.title]}>{title}</Text>
-      <View style={styles.card}>{children}</View>
+      <SectionHeader title={title} tone={danger ? 'danger' : 'default'} />
+      <View style={[styles.card, danger && styles.cardDanger]}>{children}</View>
     </View>
   );
 }
