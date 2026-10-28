@@ -143,10 +143,14 @@ export function SettingsScreen() {
           {isAdmin ? (
             <SettingsSection title={t("sections.admin")}>
               <SettingsRow
-                icon="database-check-outline"
-                label={t("catalogReview.title")}
-                hint={t("catalogReview.rowSubtitle", { count: pendingReviews })}
-                onPress={() => router.push("/(app)/settings/catalog-review")}
+                icon="shield-crown-outline"
+                label={t("admin.row")}
+                hint={
+                  pendingReviews > 0
+                    ? t("catalogReview.rowSubtitle", { count: pendingReviews })
+                    : t("admin.rowSubtitle")
+                }
+                onPress={() => router.push("/(app)/settings/admin")}
                 last
               />
             </SettingsSection>

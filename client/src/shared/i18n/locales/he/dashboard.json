@@ -9,7 +9,8 @@
     "overTargetLabel": "מעל היעד",
     "targetReachedLabel": "היעד הושג",
     "unitShort": "קק״ל",
-    "progressA11y": "נאכלו {{eaten}} מתוך {{target}} קלוריות"
+    "progressA11y": "נאכלו {{eaten}} מתוך {{target}} קלוריות",
+    "remainingDayLabel": "נשאר ליום זה"
   },
   "macros": {
     "protein": "חלבון",
@@ -130,15 +131,16 @@
     "cartItems_one": "פריט אחד להוספה",
     "cartItems_two": "{{count}} פריטים להוספה",
     "cartItems_many": "{{count}} פריטים להוספה",
-    "cartItems_other": "{{count}} פריטים להוספה"
+    "cartItems_other": "{{count}} פריטים להוספה",
+    "forDate": "{{date}}"
   },
   "header": {
     "today": "היום"
   },
   "errors": {
-    "loadFailed": "לא ניתן לטעון את סיכום היום",
+    "loadFailed": "לא ניתן לטעון את סיכום היום הנבחר",
     "retry": "ניסיון נוסף",
-    "mealsLoadFailed": "לא ניתן לטעון את הארוחות של היום"
+    "mealsLoadFailed": "לא ניתן לטעון את הארוחות של היום הנבחר"
   },
   "remove": {
     "itemTitle": "להסיר את {{name}} מ{{meal}}?",
@@ -154,5 +156,34 @@
     "itemA11y": "הסרת {{name}}",
     "mealMenuA11y": "אפשרויות נוספות עבור {{meal}}",
     "removeMeal": "הסרת הארוחה"
+  },
+  "date": {
+    "today": "היום",
+    "yesterday": "אתמול",
+    "tomorrow": "מחר",
+    "previousDay": "היום הקודם",
+    "nextDay": "היום הבא",
+    "openCalendar": "בחירת תאריך",
+    "openCalendarFor": "{{date}}. בחירת תאריך",
+    "backToToday": "היום",
+    "backToTodayA11y": "חזרה להיום",
+    "calendarTitle": "בחירת יום",
+    "previousMonth": "החודש הקודם",
+    "nextMonth": "החודש הבא",
+    "goToToday": "מעבר להיום",
+    "itemsLogged_one": "פריט אחד נרשם",
+    "itemsLogged_two": "{{count}} פריטים נרשמו",
+    "itemsLogged_many": "{{count}} פריטים נרשמו",
+    "itemsLogged_other": "{{count}} פריטים נרשמו"
+  },
+  "announcements": {
+    "kind": {
+      "UPDATE": "מה חדש",
+      "NOTICE": "הודעה",
+      "IMPORTANT": "חשוב"
+    },
+    "untitled": "הודעה",
+    "dismiss": "סגירת ההודעה",
+    "gotIt": "הבנתי"
   }
 }

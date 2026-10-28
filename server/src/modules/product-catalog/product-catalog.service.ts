@@ -54,6 +54,7 @@ export class ProductCatalogService {
   ): Promise<ProductCatalogItemDto | null> {
     const internal = await this.repo.findByNormalizedBarcode(barcode.canonical);
     if (internal) return internal;
+    if (await this.repo.isArchivedBarcode(barcode.canonical)) return null;
 
     const miss = await this.repo.findMiss(barcode.canonical);
     if (miss && Date.now() - miss.lastCheckedAt.getTime() < MISS_TTL_MS)

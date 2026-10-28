@@ -1,25 +1,29 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ComponentProps } from "react";
 import { RefreshControl, ScrollView, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
-import { TabHeader } from "../../../shared/components/TabHeader";
 import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
 import { StateView } from "../../../shared/components/ui/StateView";
 import { DailySummaryCard } from "../components/DailySummaryCard";
 import { MealSectionCard } from "../components/MealSectionCard";
 import { CopyMealModal } from "../components/CopyMealModal";
 import { MEAL_SHORTCUTS } from "../../meals/constants/mealShortcuts";
-import { useTodayDayLog, useTodayMeals } from "../hooks/useDayLog";
+import { DayHeader } from "../components/DayHeader";
+import { DayPickerSheet } from "../components/DayPickerSheet";
+import { prefetchDay, useDayLog, useDayMeals } from "../hooks/useDayLog";
+import { useSelectedDate } from "../hooks/useSelectedDate";
+import { HomeAnnouncements } from "../../announcements/components/HomeAnnouncements";
+import { addDays } from "../../../shared/helpers/dateKey";
 import { useMealRemoval } from "../hooks/useMealRemoval";
 import { DayLogSummary, MealEntrySummary } from "../types";
 import { useNutritionSettings } from "../../settings/hooks/useSettings";
 import { useAppTheme } from "../../../shared/theme";
 import { useStyles } from "./styles/HomeDashboardScreen.styles";
-import { getLocale } from "../../../shared/i18n";
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
@@ -48,38 +52,34 @@ type MealSection = {
   meal: MealEntrySummary | null;
 };
 
-function formatToday(dateString: string, language: string) {
-  const date = dateString ? new Date(`${dateString}T12:00:00`) : new Date();
-  const validDate = Number.isNaN(date.getTime()) ? new Date() : date;
-
-  try {
-    return validDate.toLocaleDateString(getLocale(language), {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-    });
-  } catch {
-    return validDate.toDateString();
-  }
-}
-
 export function HomeDashboardScreen() {
   const { t, i18n } = useTranslation("dashboard");
   const styles = useStyles();
   const { colors } = useAppTheme();
+  const queryClient = useQueryClient();
+  const { date, today, isToday, setDate, goToToday } = useSelectedDate();
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const {
     data: summary = EMPTY_SUMMARY,
     isLoading: isSummaryLoading,
     isError: isSummaryError,
+    isPlaceholderData: isSummaryStale,
     refetch: refetchSummary,
-  } = useTodayDayLog();
+  } = useDayLog(date);
   const {
     data: mealsData,
     isLoading: isMealsLoading,
     isError: isMealsError,
+    isPlaceholderData: isMealsStale,
     refetch: refetchMeals,
-  } = useTodayMeals();
+  } = useDayMeals(date);
+  const isSwitchingDay = isSummaryStale || isMealsStale;
+
+  useEffect(() => {
+    prefetchDay(queryClient, addDays(date, -1));
+    prefetchDay(queryClient, addDays(date, 1));
+  }, [queryClient, date]);
   const { data: settings } = useNutritionSettings();
 
   const meals = useMemo(() => mealsData?.meals ?? [], [mealsData]);
@@ -139,7 +139,7 @@ export function HomeDashboardScreen() {
   }, [meals]);
 
   const [copyingMeal, setCopyingMeal] = useState<MealEntrySummary | null>(null);
-  const removal = useMealRemoval();
+  const removal = useMealRemoval(date);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -152,7 +152,7 @@ export function HomeDashboardScreen() {
   }, [refetchSummary, refetchMeals]);
 
   function handleMealTypeSelect(type: string) {
-    router.push(`/(app)/meal/add-item?mealType=${type}`);
+    router.push(`/(app)/meal/add-item?mealType=${type}&date=${date}`);
   }
 
   return (
@@ -172,12 +172,21 @@ export function HomeDashboardScreen() {
             />
           }
         >
-          <TabHeader
-            overline={formatToday(summary.date, i18n.language)}
-            title={t("header.today")}
+          <DayHeader
+            date={date}
+            today={today}
+            onPrevious={() => setDate(addDays(date, -1))}
+            onNext={() => setDate(addDays(date, 1))}
+            onToday={goToToday}
+            onOpenCalendar={() => setIsCalendarOpen(true)}
           />
 
-          <View style={styles.body}>
+          <View
+            style={[styles.body, isSwitchingDay && styles.bodySwitching]}
+            pointerEvents={isSwitchingDay ? "none" : "auto"}
+          >
+            <HomeAnnouncements />
+
             {isSummaryLoading ? (
               <StateView variant="loading" compact style={styles.stateCard} />
             ) : isSummaryError ? (
@@ -195,6 +204,7 @@ export function HomeDashboardScreen() {
                 target={summary.caloriesTarget}
                 macros={visibleMacros}
                 showPercentages={settings?.showProgressPercentages ?? true}
+                isToday={isToday}
               />
             )}
 
@@ -237,7 +247,16 @@ export function HomeDashboardScreen() {
 
       <CopyMealModal
         meal={copyingMeal}
+        sourceDate={date}
         onClose={() => setCopyingMeal(null)}
+      />
+
+      <DayPickerSheet
+        visible={isCalendarOpen}
+        date={date}
+        today={today}
+        onSelect={setDate}
+        onClose={() => setIsCalendarOpen(false)}
       />
     </TabScreenLayout>
   );

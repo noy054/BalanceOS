@@ -7,10 +7,10 @@ import { formatCalories } from "../../../shared/helpers/formatNumber";
 import { MealEntrySummary, MealItemSummary } from "../types";
 import { useRemoveMealEntry, useRemoveMealItem } from "./useDayLog";
 
-export function useMealRemoval() {
+export function useMealRemoval(date: string) {
   const { t } = useTranslation("dashboard");
-  const removeItemMutation = useRemoveMealItem();
-  const removeMealMutation = useRemoveMealEntry();
+  const removeItemMutation = useRemoveMealItem(date);
+  const removeMealMutation = useRemoveMealEntry(date);
   const [pendingIds, setPendingIds] = useState<ReadonlySet<string>>(new Set());
 
   function setPending(id: string, pending: boolean) {

@@ -1,13 +1,13 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '../../../shared/components/ui/Button';
 import { IconButton } from '../../../shared/components/ui/IconButton';
 import { SegmentedControl } from '../../../shared/components/ui/SegmentedControl';
 import { useDirection } from '../../../shared/hooks/useDirection';
-import { formatCalories, formatGrams } from '../../../shared/helpers/formatNumber';
+import { formatGrams } from '../../../shared/helpers/formatNumber';
 import { radius, spacing, typography, useThemedStyles } from '../../../shared/theme';
-import { AmountUnit, amountToGrams } from '../../pantry/helpers/serving';
+import { NutritionStrip } from '../../pantry/components/food/NutritionStrip';
+import { AmountUnit, amountToGrams, getServing } from '../../pantry/helpers/serving';
 import { useServingFormat } from '../../pantry/hooks/useServingFormat';
 import { CalculatedNutrition } from '../../pantry/types';
 import { SelectedItem } from '../hooks/useMealSelection';
@@ -18,13 +18,13 @@ type Props = {
   unit: AmountUnit;
   unitOptions: AmountUnit[];
   nutrition: CalculatedNutrition | null;
-  primary: boolean;
   onChangeQuantity: (value: string) => void;
   onChangeUnit: (unit: AmountUnit) => void;
   onStep: (direction: 1 | -1) => void;
   onDeselect: () => void;
-  onAdd: () => void;
 };
+
+const EMPTY_NUTRITION: CalculatedNutrition = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
 
 export function SelectionPanel({
   selected,
@@ -32,12 +32,10 @@ export function SelectionPanel({
   unit,
   unitOptions,
   nutrition,
-  primary,
   onChangeQuantity,
   onChangeUnit,
   onStep,
   onDeselect,
-  onAdd,
 }: Props) {
   const { t } = useTranslation('dashboard');
   const styles = useStyles();
@@ -45,25 +43,25 @@ export function SelectionPanel({
   const servingFormat = useServingFormat();
 
   const product = selected.kind === 'product' ? selected.item : null;
-  const unitLabel = product
-    ? unit === 'servings'
-      ? servingFormat.unitName(product)
-      : t('addItem.gramsLabel')
-    : t('addItem.servingsLabel');
+  const servingLabel = (product && getServing(product)?.unit) || t('addItem.servingsLabel');
+  const unitLabel = product && unit === 'grams' ? t('addItem.gramsLabel') : servingLabel;
 
   const parsed = parseFloat(quantity.replace(',', '.'));
   const grams =
     product && !Number.isNaN(parsed) && parsed > 0 ? amountToGrams(product, parsed, unit) : null;
 
-  const summary = [
-    product && unit === 'servings' ? servingFormat.unitWeight(product) : null,
-    grams != null && unit === 'servings' ? t('addItem.gramsAmount', { grams: formatGrams(grams) }) : null,
-    nutrition ? t('addItem.caloriesAmount', { calories: formatCalories(nutrition.calories) }) : null,
-  ]
-    .filter(Boolean)
-    .join(' · ');
+  const detail =
+    selected.kind === 'savedMeal'
+      ? t('addItem.wholeMeal')
+      : grams != null && unit === 'servings'
+        ? t('addItem.gramsAmount', { grams: formatGrams(grams) })
+        : product
+          ? servingFormat.perServing(product)
+          : null;
 
   const hasQuantity = selected.kind !== 'savedMeal';
+  const showUnitToggle = unitOptions.length > 1 && product;
+  const values = nutrition ?? EMPTY_NUTRITION;
 
   return (
     <View style={styles.panel}>
@@ -72,81 +70,77 @@ export function SelectionPanel({
           <Text style={[styles.name, dir.text]} numberOfLines={1}>
             {selected.item.name}
           </Text>
-          {summary ? (
-            <Text style={[styles.summary, dir.text]} numberOfLines={1}>
-              {summary}
+          {detail ? (
+            <Text style={[styles.detail, dir.text]} numberOfLines={1}>
+              {detail}
             </Text>
           ) : null}
         </View>
 
         <IconButton
           icon="close"
-          size={36}
+          size={32}
           iconSize={18}
+          variant="tonal"
           accessibilityLabel={t('addItem.deselect', { name: selected.item.name })}
           onPress={onDeselect}
         />
       </View>
 
-      {unitOptions.length > 1 && product ? (
-        <SegmentedControl
-          size="sm"
-          options={unitOptions.map((option) => ({
-            value: option,
-            label: option === 'servings' ? servingFormat.unitName(product) : t('addItem.gramsLabel'),
-          }))}
-          value={unit}
-          onChange={onChangeUnit}
-        />
-      ) : null}
+      <NutritionStrip
+        calories={values.calories}
+        macros={values}
+        style={!nutrition ? styles.nutritionMuted : undefined}
+      />
 
-      <View style={[styles.actionRow, dir.row]}>
-        {hasQuantity ? (
+      {hasQuantity ? (
+        <View style={[styles.controlsRow, dir.row]}>
           <View style={[styles.stepper, dir.row]}>
             <IconButton
               icon="minus"
               variant="tonal"
-              size={40}
-              iconSize={18}
+              size={44}
+              iconSize={20}
               accessibilityLabel={t('addItem.decrease')}
               onPress={() => onStep(-1)}
             />
-            <View style={styles.quantityBlock}>
-              <TextInput
-                style={styles.quantityInput}
-                keyboardType="decimal-pad"
-                value={quantity}
-                onChangeText={onChangeQuantity}
-                selectTextOnFocus
-                textAlign="center"
-                accessibilityLabel={unitLabel}
-              />
-              <Text style={styles.unitLabel} numberOfLines={1}>
-                {unitLabel}
-              </Text>
-            </View>
+            <TextInput
+              style={styles.quantityInput}
+              keyboardType="decimal-pad"
+              value={quantity}
+              onChangeText={onChangeQuantity}
+              selectTextOnFocus
+              textAlign="center"
+              accessibilityLabel={unitLabel}
+            />
             <IconButton
               icon="plus"
               variant="tonal"
-              size={40}
-              iconSize={18}
+              size={44}
+              iconSize={20}
               accessibilityLabel={t('addItem.increase')}
               onPress={() => onStep(1)}
             />
           </View>
-        ) : (
-          <Text style={[styles.wholeMeal, dir.text]}>{t('addItem.wholeMeal')}</Text>
-        )}
 
-        <Button
-          label={t('addItem.addToList')}
-          icon="plus"
-          variant={primary ? 'primary' : 'tonal'}
-          onPress={onAdd}
-          disabled={!nutrition}
-          style={styles.addButton}
-        />
-      </View>
+          {showUnitToggle ? (
+            <SegmentedControl
+              size="sm"
+              style={styles.unitToggle}
+              options={unitOptions.map((option) => ({
+                value: option,
+                label: option === 'servings' ? servingLabel : t('addItem.gramsLabel'),
+              }))}
+              value={unit}
+              onChange={onChangeUnit}
+            />
+          ) : (
+            <Text style={[styles.unitLabel, dir.text]} numberOfLines={2}>
+              {unitLabel}
+            </Text>
+          )}
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -155,13 +149,10 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       panel: {
-        gap: spacing.ms,
-        backgroundColor: colors.surfaceMuted,
-        borderRadius: radius.lg,
-        padding: spacing.ms,
+        gap: spacing.md,
       },
       headerRow: {
-        alignItems: 'center',
+        alignItems: 'flex-start',
         gap: spacing.sm,
       },
       headerText: {
@@ -170,55 +161,47 @@ const useStyles = () =>
         gap: 2,
       },
       name: {
-        ...typography.bodyStrong,
+        ...typography.headline,
         color: colors.textPrimary,
       },
-      summary: {
+      detail: {
         ...typography.footnote,
         ...typography.number,
         color: colors.textSecondary,
       },
-      actionRow: {
+      nutritionMuted: {
+        opacity: 0.4,
+      },
+      controlsRow: {
         alignItems: 'center',
-        gap: spacing.sm,
+        flexWrap: 'wrap',
+        gap: spacing.ms,
       },
       stepper: {
-        flex: 1,
-        minWidth: 0,
         alignItems: 'center',
         gap: spacing.xs,
       },
-      quantityBlock: {
-        flex: 1,
-        minWidth: 56,
-        alignItems: 'center',
-        gap: 2,
-      },
       quantityInput: {
-        alignSelf: 'stretch',
-        minHeight: 40,
+        width: 72,
+        height: 44,
         borderRadius: radius.md,
-        borderWidth: 1,
-        borderColor: colors.accent,
-        backgroundColor: colors.surface,
+        backgroundColor: colors.inputBackground,
         ...typography.headline,
         ...typography.number,
+        fontWeight: '700',
         color: colors.textPrimary,
         textAlign: 'center',
         paddingHorizontal: spacing.xs,
       },
-      unitLabel: {
-        maxWidth: '100%',
-        ...typography.caption,
-        color: colors.textSecondary,
+      unitToggle: {
+        flexGrow: 1,
+        flexBasis: 0,
+        minWidth: 168,
       },
-      wholeMeal: {
+      unitLabel: {
         flex: 1,
         ...typography.callout,
         color: colors.textSecondary,
-      },
-      addButton: {
-        flexShrink: 0,
       },
     }),
   );

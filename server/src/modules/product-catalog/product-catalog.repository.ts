@@ -15,15 +15,23 @@ export class ProductCatalogRepository {
   findByNormalizedBarcode(
     normalizedBarcode: string,
   ): Promise<ProductCatalogItemDto | null> {
-    return this.prisma.productCatalogItem.findUnique({
-      where: { normalizedBarcode },
+    return this.prisma.productCatalogItem.findFirst({
+      where: { normalizedBarcode, archivedAt: null },
       select: CATALOG_ITEM_PUBLIC_SELECT,
     });
   }
 
+  async isArchivedBarcode(normalizedBarcode: string): Promise<boolean> {
+    const item = await this.prisma.productCatalogItem.findUnique({
+      where: { normalizedBarcode },
+      select: { archivedAt: true },
+    });
+    return Boolean(item?.archivedAt);
+  }
+
   findById(id: string): Promise<ProductCatalogItemDto | null> {
-    return this.prisma.productCatalogItem.findUnique({
-      where: { id },
+    return this.prisma.productCatalogItem.findFirst({
+      where: { id, archivedAt: null },
       select: CATALOG_ITEM_PUBLIC_SELECT,
     });
   }
@@ -35,6 +43,7 @@ export class ProductCatalogRepository {
   ): Promise<ProductCatalogItemDto[]> {
     return this.prisma.productCatalogItem.findMany({
       where: {
+        archivedAt: null,
         OR: [
           { name: { contains: query, mode: 'insensitive' } },
           { brand: { contains: query, mode: 'insensitive' } },

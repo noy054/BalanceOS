@@ -28,10 +28,15 @@ model User {
   savedMeals          SavedMeal[]
   dayLogs             DayLog[]
 
-  createdCatalogItems ProductCatalogItem[] @relation("ProductCatalogCreatedBy")
-  updatedCatalogItems ProductCatalogItem[] @relation("ProductCatalogUpdatedBy")
-  catalogSubmissions  CatalogSubmission[]  @relation("CatalogSubmissionAuthor")
-  reviewedSubmissions CatalogSubmission[]  @relation("CatalogSubmissionReviewer")
+  createdCatalogItems  ProductCatalogItem[]  @relation("ProductCatalogCreatedBy")
+  updatedCatalogItems  ProductCatalogItem[]  @relation("ProductCatalogUpdatedBy")
+  catalogSubmissions   CatalogSubmission[]   @relation("CatalogSubmissionAuthor")
+  reviewedSubmissions  CatalogSubmission[]   @relation("CatalogSubmissionReviewer")
+  archivedCatalogItems ProductCatalogItem[]  @relation("ProductCatalogArchivedBy")
+  adminAuditLogs       AdminAuditLog[]
+  createdAnnouncements Announcement[]        @relation("AnnouncementCreatedBy")
+  updatedAnnouncements Announcement[]        @relation("AnnouncementUpdatedBy")
+  announcementReceipts AnnouncementReceipt[]
 
   @@index([email])
 }
@@ -114,6 +119,7 @@ enum CatalogSubmissionStatus {
   PENDING
   APPROVED
   REJECTED
+  MERGED
 }
 
 enum FoodUnit {
@@ -175,11 +181,14 @@ model ProductCatalogItem {
   externalId       String?
   externalRawData  Json?
 
-  createdByUserId String?
-  updatedByUserId String?
+  createdByUserId  String?
+  updatedByUserId  String?
+  archivedAt       DateTime?
+  archivedByUserId String?
 
-  createdByUser User? @relation("ProductCatalogCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
-  updatedByUser User? @relation("ProductCatalogUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  createdByUser  User? @relation("ProductCatalogCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedByUser  User? @relation("ProductCatalogUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  archivedByUser User? @relation("ProductCatalogArchivedBy", fields: [archivedByUserId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -191,6 +200,8 @@ model ProductCatalogItem {
   @@index([brand(ops: raw("gin_trgm_ops"))], type: Gin, map: "ProductCatalogItem_brand_trgm_idx")
   @@index([createdByUserId])
   @@index([updatedByUserId])
+  @@index([archivedAt])
+  @@index([archivedByUserId])
 }
 
 model BarcodeLookupMiss {
@@ -425,6 +436,7 @@ model CatalogSubmission {
   pantryProductId   String?
   catalogItemId     String?
   normalizedBarcode String?
+  productName       String                  @default("")
   proposedData      Json
   reviewedByUserId  String?
   reviewNote        String?
@@ -442,4 +454,99 @@ model CatalogSubmission {
   @@index([pantryProductId])
   @@index([catalogItemId])
   @@index([userId])
+}
+
+model AdminAuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String
+  summary     String?
+  details     Json?
+  createdAt   DateTime @default(now())
+
+  actor User? @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([entityType, entityId, createdAt])
+  @@index([actorUserId])
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum AnnouncementKind {
+  UPDATE
+  NOTICE
+  IMPORTANT
+}
+
+enum AnnouncementDisplay {
+  BANNER
+  POPUP
+}
+
+enum AnnouncementActionType {
+  NONE
+  ROUTE
+  URL
+}
+
+model Announcement {
+  id     String             @id @default(cuid())
+  status AnnouncementStatus @default(DRAFT)
+  kind   AnnouncementKind   @default(NOTICE)
+
+  display AnnouncementDisplay @default(BANNER)
+
+  titleHe String
+  titleEn String
+  bodyHe  String
+  bodyEn  String
+
+  actionType    AnnouncementActionType @default(NONE)
+  actionTarget  String?
+  actionLabelHe String?
+  actionLabelEn String?
+
+  platforms     String[]
+  minAppVersion String?
+  maxAppVersion String?
+
+  publishAt  DateTime?
+  expiresAt  DateTime?
+  archivedAt DateTime?
+
+  createdByUserId String?
+  updatedByUserId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy User? @relation("AnnouncementCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedBy User? @relation("AnnouncementUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  receipts AnnouncementReceipt[]
+
+  @@index([status, publishAt, expiresAt])
+  @@index([createdByUserId])
+  @@index([updatedByUserId])
+}
+
+model AnnouncementReceipt {
+  id             String    @id @default(cuid())
+  userId         String
+  announcementId String
+  seenAt         DateTime  @default(now())
+  dismissedAt    DateTime?
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, announcementId])
+  @@index([announcementId])
 }

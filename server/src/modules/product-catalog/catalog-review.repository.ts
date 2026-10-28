@@ -14,6 +14,14 @@ import {
   isShareableImage,
   toJson,
 } from './catalog-data';
+import {
+  AUDIT_ACTION,
+  AUDIT_ENTITY,
+  AuditEntry,
+  diffFields,
+  toAuditData,
+  toJsonObject,
+} from '../audit/audit.types';
 
 const SUBMISSION_INCLUDE = {
   user: { select: { id: true, email: true, fullName: true } },
@@ -35,9 +43,21 @@ export type ApproveParams = {
   pantryProductId: string | null;
   proposedOriginal: CatalogProductData;
   reviewNote: string | null;
+  kind: CatalogSubmissionKind;
 };
 
-function catalogFields(data: CatalogProductData) {
+export type MergeParams = {
+  submissionId: string;
+  adminId: string;
+  targetCatalogItemId: string;
+  submitterId: string;
+  pantryProductId: string | null;
+  normalizedBarcode: string | null;
+  reviewNote: string | null;
+  productName: string;
+};
+
+export function catalogFields(data: CatalogProductData) {
   return {
     name: data.name,
     brand: data.brand,
@@ -58,8 +78,6 @@ function catalogFields(data: CatalogProductData) {
     servingUnit: data.servingUnit,
     ...(isShareableImage(data.imageUrl) ? { imageUrl: data.imageUrl } : {}),
     ...(data.nutrients ? { nutrients: data.nutrients } : {}),
-    // Without per-100g values the per-100g extras would describe a basis
-    // the item no longer has, so drop them.
     ...(data.caloriesPer100g === null
       ? {
           nutrients: Prisma.DbNull,
@@ -72,6 +90,35 @@ function catalogFields(data: CatalogProductData) {
   };
 }
 
+async function linkPantryProduct(
+  tx: Prisma.TransactionClient,
+  submitterId: string,
+  pantryProductId: string | null,
+  catalogItemId: string,
+) {
+  if (!pantryProductId) return;
+  const alreadyLinked = await tx.pantryProduct.findFirst({
+    where: { userId: submitterId, catalogItemId },
+    select: { id: true },
+  });
+  if (alreadyLinked) return;
+  await tx.pantryProduct.updateMany({
+    where: { id: pantryProductId, catalogItemId: null },
+    data: { catalogItemId },
+  });
+}
+
+function claimPending(
+  tx: Prisma.TransactionClient,
+  id: string,
+  status: CatalogSubmissionStatus,
+) {
+  return tx.catalogSubmission.updateMany({
+    where: { id, status: CatalogSubmissionStatus.PENDING },
+    data: { status },
+  });
+}
+
 @Injectable()
 export class CatalogReviewRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -79,14 +126,14 @@ export class CatalogReviewRepository {
   findCatalogItem(id: string) {
     return this.prisma.productCatalogItem.findUnique({
       where: { id },
-      select: CATALOG_ITEM_REVIEW_SELECT,
+      select: { ...CATALOG_ITEM_REVIEW_SELECT, archivedAt: true },
     });
   }
 
   findCatalogItemByBarcode(normalizedBarcode: string) {
     return this.prisma.productCatalogItem.findUnique({
       where: { normalizedBarcode },
-      select: CATALOG_ITEM_REVIEW_SELECT,
+      select: { ...CATALOG_ITEM_REVIEW_SELECT, archivedAt: true },
     });
   }
 
@@ -96,9 +143,37 @@ export class CatalogReviewRepository {
         name: { contains: name.trim(), mode: 'insensitive' },
         ...(excludeId ? { id: { not: excludeId } } : {}),
       },
-      select: CATALOG_ITEM_REVIEW_SELECT,
-      orderBy: { name: 'asc' },
+      select: { ...CATALOG_ITEM_REVIEW_SELECT, archivedAt: true },
+      orderBy: [
+        { archivedAt: { sort: 'desc', nulls: 'first' } },
+        { name: 'asc' },
+      ],
       take: 5,
+    });
+  }
+
+  findSimilarPendingSubmissions(
+    id: string,
+    normalizedBarcode: string | null,
+    productName: string,
+  ): Promise<SubmissionRow[]> {
+    const name = productName.trim();
+    const matchers: Prisma.CatalogSubmissionWhereInput[] = [
+      ...(normalizedBarcode ? [{ normalizedBarcode }] : []),
+      ...(name
+        ? [{ productName: { equals: name, mode: 'insensitive' as const } }]
+        : []),
+    ];
+    if (matchers.length === 0) return Promise.resolve([]);
+    return this.prisma.catalogSubmission.findMany({
+      where: {
+        id: { not: id },
+        status: CatalogSubmissionStatus.PENDING,
+        OR: matchers,
+      },
+      include: SUBMISSION_INCLUDE,
+      orderBy: { createdAt: 'asc' },
+      take: 10,
     });
   }
 
@@ -137,13 +212,25 @@ export class CatalogReviewRepository {
   list(params: {
     status?: CatalogSubmissionStatus;
     kind?: CatalogSubmissionKind;
+    q?: string;
     take: number;
     cursor?: string;
   }): Promise<SubmissionRow[]> {
+    const q = params.q?.trim();
     return this.prisma.catalogSubmission.findMany({
       where: {
         ...(params.status ? { status: params.status } : {}),
         ...(params.kind ? { kind: params.kind } : {}),
+        ...(q
+          ? {
+              OR: [
+                { productName: { contains: q, mode: 'insensitive' } },
+                { normalizedBarcode: { contains: q } },
+                { user: { email: { contains: q, mode: 'insensitive' } } },
+                { user: { fullName: { contains: q, mode: 'insensitive' } } },
+              ],
+            }
+          : {}),
       },
       include: SUBMISSION_INCLUDE,
       orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }],
@@ -167,55 +254,127 @@ export class CatalogReviewRepository {
     });
   }
 
-  /** Returns null when the submission is no longer pending. */
-  async reject(
+  reject(
     id: string,
     adminId: string,
-    note: string | null,
+    note: string,
+    productName: string,
   ): Promise<SubmissionRow | null> {
-    const claimed = await this.prisma.catalogSubmission.updateMany({
-      where: { id, status: CatalogSubmissionStatus.PENDING },
-      data: {
-        status: CatalogSubmissionStatus.REJECTED,
-        reviewedByUserId: adminId,
-        reviewedAt: new Date(),
-        reviewNote: note,
-      },
+    return this.prisma.$transaction(async (tx) => {
+      const claimed = await claimPending(
+        tx,
+        id,
+        CatalogSubmissionStatus.REJECTED,
+      );
+      if (claimed.count === 0) return null;
+      await tx.adminAuditLog.create({
+        data: toAuditData({
+          actorUserId: adminId,
+          action: AUDIT_ACTION.SUBMISSION_REJECTED,
+          entityType: AUDIT_ENTITY.CATALOG_SUBMISSION,
+          entityId: id,
+          summary: productName,
+          details: { reason: note },
+        }),
+      });
+      return tx.catalogSubmission.update({
+        where: { id },
+        data: {
+          reviewedByUserId: adminId,
+          reviewedAt: new Date(),
+          reviewNote: note,
+        },
+        include: SUBMISSION_INCLUDE,
+      });
     });
-    if (claimed.count === 0) return null;
-    return this.findById(id);
   }
 
-  /** Returns null when the submission is no longer pending. */
+  merge(params: MergeParams): Promise<SubmissionRow | null> {
+    return this.prisma.$transaction(async (tx) => {
+      const claimed = await claimPending(
+        tx,
+        params.submissionId,
+        CatalogSubmissionStatus.MERGED,
+      );
+      if (claimed.count === 0) return null;
+
+      await linkPantryProduct(
+        tx,
+        params.submitterId,
+        params.pantryProductId,
+        params.targetCatalogItemId,
+      );
+
+      if (params.normalizedBarcode) {
+        await tx.barcodeLookupMiss.deleteMany({
+          where: { normalizedBarcode: params.normalizedBarcode },
+        });
+      }
+
+      await tx.adminAuditLog.create({
+        data: toAuditData({
+          actorUserId: params.adminId,
+          action: AUDIT_ACTION.SUBMISSION_MERGED,
+          entityType: AUDIT_ENTITY.CATALOG_SUBMISSION,
+          entityId: params.submissionId,
+          summary: params.productName,
+          details: {
+            targetCatalogItemId: params.targetCatalogItemId,
+            note: params.reviewNote,
+          },
+        }),
+      });
+
+      return tx.catalogSubmission.update({
+        where: { id: params.submissionId },
+        data: {
+          catalogItemId: params.targetCatalogItemId,
+          reviewedByUserId: params.adminId,
+          reviewedAt: new Date(),
+          reviewNote: params.reviewNote,
+        },
+        include: SUBMISSION_INCLUDE,
+      });
+    });
+  }
+
   approve(params: ApproveParams): Promise<SubmissionRow | null> {
     return this.prisma.$transaction(async (tx) => {
-      // Claim the submission first: the status condition takes a row lock,
-      // so a concurrent approval waits here and then matches nothing.
-      const claimed = await tx.catalogSubmission.updateMany({
-        where: {
-          id: params.submissionId,
-          status: CatalogSubmissionStatus.PENDING,
-        },
-        data: { status: CatalogSubmissionStatus.APPROVED },
-      });
+      const claimed = await claimPending(
+        tx,
+        params.submissionId,
+        CatalogSubmissionStatus.APPROVED,
+      );
       if (claimed.count === 0) return null;
 
       let catalogItemId = params.targetCatalogItemId;
+      const entries: AuditEntry[] = [];
 
       if (catalogItemId) {
         const current = await tx.productCatalogItem.findUniqueOrThrow({
           where: { id: catalogItemId },
           select: CATALOG_ITEM_REVIEW_SELECT,
         });
+        const before = fromCatalogRow(current);
         await tx.productCatalogItem.update({
           where: { id: catalogItemId },
           data: {
             ...catalogFields(params.data),
-            originalData:
-              current.originalData ?? toJson(fromCatalogRow(current)),
+            originalData: current.originalData ?? toJson(before),
             verificationStatus: ProductVerificationStatus.ADMIN_VERIFIED,
             updatedByUserId: params.adminId,
           },
+        });
+        entries.push({
+          actorUserId: params.adminId,
+          action: AUDIT_ACTION.CATALOG_ITEM_UPDATED,
+          entityType: AUDIT_ENTITY.CATALOG_ITEM,
+          entityId: catalogItemId,
+          summary: params.data.name,
+          details: toJsonObject({
+            submissionId: params.submissionId,
+            changes: diffFields(before, { ...before, ...params.data }),
+          }),
         });
       } else {
         const created = await tx.productCatalogItem.create({
@@ -232,26 +391,43 @@ export class CatalogReviewRepository {
           select: { id: true },
         });
         catalogItemId = created.id;
+        entries.push({
+          actorUserId: params.adminId,
+          action: AUDIT_ACTION.CATALOG_ITEM_CREATED,
+          entityType: AUDIT_ENTITY.CATALOG_ITEM,
+          entityId: catalogItemId,
+          summary: params.data.name,
+          details: { submissionId: params.submissionId },
+        });
       }
 
-      if (params.pantryProductId) {
-        const alreadyLinked = await tx.pantryProduct.findFirst({
-          where: { userId: params.submitterId, catalogItemId },
-          select: { id: true },
-        });
-        if (!alreadyLinked) {
-          await tx.pantryProduct.updateMany({
-            where: { id: params.pantryProductId, catalogItemId: null },
-            data: { catalogItemId },
-          });
-        }
-      }
+      await linkPantryProduct(
+        tx,
+        params.submitterId,
+        params.pantryProductId,
+        catalogItemId,
+      );
 
       if (params.normalizedBarcode) {
         await tx.barcodeLookupMiss.deleteMany({
           where: { normalizedBarcode: params.normalizedBarcode },
         });
       }
+
+      entries.unshift({
+        actorUserId: params.adminId,
+        action: AUDIT_ACTION.SUBMISSION_APPROVED,
+        entityType: AUDIT_ENTITY.CATALOG_SUBMISSION,
+        entityId: params.submissionId,
+        summary: params.data.name,
+        details: toJsonObject({
+          kind: params.kind,
+          catalogItemId,
+          note: params.reviewNote,
+          changes: diffFields(params.proposedOriginal, params.data),
+        }),
+      });
+      await tx.adminAuditLog.createMany({ data: entries.map(toAuditData) });
 
       return tx.catalogSubmission.update({
         where: { id: params.submissionId },

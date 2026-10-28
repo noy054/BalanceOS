@@ -52,5 +52,11 @@ export const useStyles = () =>
         color: colors.textPrimary,
         textAlign: "center",
       },
+
+      subtitle: {
+        ...typography.caption,
+        color: colors.accent,
+        textAlign: "center",
+      },
     }),
   );

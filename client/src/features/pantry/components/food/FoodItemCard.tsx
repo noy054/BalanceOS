@@ -6,8 +6,10 @@ import { useTranslation } from "react-i18next";
 
 import {
   radius,
+  shadows,
   spacing,
   typography,
+  useAppTheme,
   useThemedStyles,
 } from "../../../../shared/theme";
 import { useDirection } from "../../../../shared/hooks/useDirection";
@@ -50,6 +52,7 @@ export function FoodItemCard({
   const { t } = useTranslation("pantry");
   const styles = useStyles();
   const dir = useDirection();
+  const { colors } = useAppTheme();
 
   const calorieText = formatCalories(calories);
   const unit = t("product.calUnit");
@@ -90,7 +93,13 @@ export function FoodItemCard({
               {title}
             </Text>
 
-            {trailing ? <View style={styles.trailing}>{trailing}</View> : null}
+            {selected ? (
+              <View style={styles.check}>
+                <MaterialCommunityIcons name="check" size={14} color={colors.onAccent} />
+              </View>
+            ) : trailing ? (
+              <View style={styles.trailing}>{trailing}</View>
+            ) : null}
           </View>
 
           {meta ? (
@@ -101,7 +110,7 @@ export function FoodItemCard({
         </View>
       </View>
 
-      <NutritionStrip calories={calories} macros={macros} />
+      <NutritionStrip calories={calories} macros={macros} style={styles.nutrition} />
     </Pressable>
   );
 }
@@ -113,19 +122,17 @@ const useStyles = () =>
         gap: spacing.ms,
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
+        borderWidth: 1.5,
+        borderColor: "transparent",
         paddingVertical: spacing.ms,
-        paddingHorizontal: spacing.ms,
+        paddingHorizontal: spacing.ms + 2,
+        ...shadows.sm,
       },
       cardHighlighted: {
-        backgroundColor: colors.accentSoft,
         borderColor: colors.accentBorder,
       },
       cardSelected: {
         borderColor: colors.accent,
-        borderWidth: 1.5,
-        backgroundColor: colors.accentSoft,
       },
       cardPressed: {
         backgroundColor: colors.surfaceMuted,
@@ -153,9 +160,21 @@ const useStyles = () =>
         marginVertical: -spacing.sm,
         marginHorizontal: -spacing.xs - 2,
       },
+      check: {
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        backgroundColor: colors.accent,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 1,
+      },
       meta: {
         ...typography.footnote,
         color: colors.textSecondary,
+      },
+      nutrition: {
+        paddingTop: spacing.xs,
       },
     }),
   );

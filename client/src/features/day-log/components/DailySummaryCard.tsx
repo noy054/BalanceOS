@@ -13,6 +13,7 @@ type Props = {
   target: number;
   macros: MacroItem[];
   showPercentages: boolean;
+  isToday?: boolean;
 };
 
 function macroColor(colors: AppColors, key: MacroItem["key"]) {
@@ -28,7 +29,13 @@ function macroColor(colors: AppColors, key: MacroItem["key"]) {
   }
 }
 
-export function DailySummaryCard({ eaten, target, macros, showPercentages }: Props) {
+export function DailySummaryCard({
+  eaten,
+  target,
+  macros,
+  showPercentages,
+  isToday = true,
+}: Props) {
   const { t } = useTranslation("dashboard");
   const { colors } = useAppTheme();
   const styles = useStyles();
@@ -52,7 +59,9 @@ export function DailySummaryCard({ eaten, target, macros, showPercentages }: Pro
     ? t("calories.overTargetLabel")
     : isTargetReached
       ? t("calories.targetReachedLabel")
-      : t("calories.remainingLabel");
+      : isToday
+        ? t("calories.remainingLabel")
+        : t("calories.remainingDayLabel");
 
   const mainNumber = isOverTarget ? exceeded : remaining;
   const unit = t("calories.unitShort");

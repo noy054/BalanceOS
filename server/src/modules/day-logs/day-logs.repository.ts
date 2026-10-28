@@ -68,6 +68,18 @@ export class DayLogsRepository {
     });
   }
 
+  findDaysInRange(userId: string, from: string, to: string) {
+    return this.prisma.dayLog.findMany({
+      where: { userId, date: { gte: from, lte: to } },
+      select: {
+        date: true,
+        caloriesTotal: true,
+        mealEntries: { select: { _count: { select: { items: true } } } },
+      },
+      orderBy: { date: 'asc' },
+    });
+  }
+
   async findOrCreateToday(
     userId: string,
     date: string,

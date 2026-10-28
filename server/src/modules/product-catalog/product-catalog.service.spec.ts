@@ -14,6 +14,7 @@ function setup(options: {
 }) {
   const repo = {
     findByNormalizedBarcode: jest.fn().mockResolvedValue(null),
+    isArchivedBarcode: jest.fn().mockResolvedValue(false),
     findMiss: jest.fn().mockResolvedValue(null),
     recordMiss: jest.fn().mockResolvedValue(undefined),
     clearMiss: jest.fn().mockResolvedValue(undefined),

@@ -24,7 +24,7 @@ export type DayLogTargetsSnapshot = {
 };
 
 export type DayLogResponse = {
-  id: string;
+  id: string | null;
   date: string;
   targetsSnapshot: DayLogTargetsSnapshot;
   caloriesTotal: number;
@@ -55,6 +55,16 @@ export type MealEntrySummary = MealMacros & {
 
 export type DayLogMealsResponse = {
   meals: MealEntrySummary[];
+};
+
+export type DayLogCalendarDay = {
+  date: string;
+  calories: number;
+  itemCount: number;
+};
+
+export type DayLogCalendarResponse = {
+  days: DayLogCalendarDay[];
 };
 
 export type AddMealItemPayload = {

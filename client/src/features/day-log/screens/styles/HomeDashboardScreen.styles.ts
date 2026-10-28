@@ -26,6 +26,10 @@ export const useStyles = () =>
         gap: spacing.lg,
       },
 
+      bodySwitching: {
+        opacity: 0.55,
+      },
+
       stateCard: {
         backgroundColor: colors.surface,
         borderRadius: radius.lg,

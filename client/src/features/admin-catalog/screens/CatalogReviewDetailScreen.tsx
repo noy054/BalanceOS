@@ -1,11 +1,9 @@
 import { useMemo, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { router, useLocalSearchParams } from "expo-router";
 
-import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { FormInput } from "../../../shared/components/FormInput";
 import { Button } from "../../../shared/components/ui/Button";
 import { FormSection } from "../../../shared/components/ui/FormSection";
@@ -18,13 +16,24 @@ import { radius, spacing, typography, useAppTheme, useThemedStyles } from "../..
 import { ProductBasicInfoForm } from "../../pantry/components/products/ProductBasicInfoForm";
 import { ProductNutritionForm } from "../../pantry/components/products/ProductNutritionForm";
 import { ProductFormPrefill, useAddProductForm } from "../../pantry/hooks/useAddProductForm";
+import { AdminScaffold } from "../../admin/components/AdminScaffold";
+import { AdminHistoryList } from "../../admin/components/AdminHistoryList";
+import { AdminListRow } from "../../admin/components/AdminListRow";
+import { ReasonSheet } from "../../admin/components/ReasonSheet";
+import { StatusBadge } from "../../admin/components/StatusBadge";
+import { ADMIN_ROUTES } from "../../admin/constants";
+import { formatDateTime, formatShortDate, personName } from "../../admin/helpers/format";
+import { adminErrorMessage } from "../../admin/helpers/errors";
 import { CatalogComparisonTable } from "../components/CatalogComparisonTable";
+import { submissionStatusTone } from "../helpers/tones";
 import {
   useApproveSubmission,
   useCatalogSubmission,
   useIsAdmin,
+  useMergeSubmission,
   useRejectSubmission,
 } from "../hooks/useAdminCatalog";
+import { CatalogItemView } from "../types";
 
 export function CatalogReviewDetailScreen() {
   const { t, i18n } = useTranslation("settings");
@@ -36,17 +45,17 @@ export function CatalogReviewDetailScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const submissionId = typeof id === "string" ? id : "";
 
-  const { data: submission, isLoading, isError } = useCatalogSubmission(isAdmin ? submissionId : "");
+  const { data: submission, isLoading, isError, refetch } = useCatalogSubmission(isAdmin ? submissionId : "");
   const approve = useApproveSubmission(submissionId);
   const reject = useRejectSubmission(submissionId);
+  const merge = useMergeSubmission(submissionId);
   const [reviewNote, setReviewNote] = useState("");
   const [targetId, setTargetId] = useState<string | null>(null);
+  const [rejectOpen, setRejectOpen] = useState(false);
 
   const source = useMemo<ProductFormPrefill | null>(
     () =>
-      submission?.proposed
-        ? { ...submission.proposed, id: submission.id, mealCategories: [] }
-        : null,
+      submission?.proposed ? { ...submission.proposed, id: submission.id, mealCategories: [] } : null,
     [submission],
   );
 
@@ -58,35 +67,32 @@ export function CatalogReviewDetailScreen() {
     invalidNumberError: tPantry("errors.invalidNumber"),
   });
 
-  if (!isAdmin) {
-    return (
-      <SafeAreaView style={styles.root} edges={["top"]}>
-        <ScreenHeader title={t("catalogReview.title")} />
-        <StateView variant="error" message={t("catalogReview.notAllowed")} />
-      </SafeAreaView>
-    );
-  }
+  const title = t("catalogReview.detailTitle");
 
-  if (isLoading || (!submission && !isError)) {
+  if (isLoading || (isAdmin && !submission && !isError)) {
     return (
-      <SafeAreaView style={styles.root} edges={["top"]}>
-        <ScreenHeader title={t("catalogReview.detailTitle")} />
+      <AdminScaffold title={title}>
         <StateView variant="loading" />
-      </SafeAreaView>
+      </AdminScaffold>
     );
   }
 
   if (!submission) {
     return (
-      <SafeAreaView style={styles.root} edges={["top"]}>
-        <ScreenHeader title={t("catalogReview.detailTitle")} />
-        <StateView variant="error" message={t("catalogReview.loadFailed")} />
-      </SafeAreaView>
+      <AdminScaffold title={title}>
+        <StateView
+          variant="error"
+          message={t("catalogReview.loadFailed")}
+          actionLabel={t("catalogReview.retry")}
+          onAction={() => refetch()}
+        />
+      </AdminScaffold>
     );
   }
 
   const isPending = submission.status === "PENDING";
   const isCorrection = submission.kind === "CORRECTION";
+  const target = submission.similarItems.find((item) => item.id === targetId) ?? null;
   const columns = [
     ...(submission.catalogItem?.original
       ? [{ key: "original", label: t("catalogReview.columns.original"), data: submission.catalogItem.original }]
@@ -94,12 +100,26 @@ export function CatalogReviewDetailScreen() {
     ...(submission.catalogItem
       ? [{ key: "current", label: t("catalogReview.columns.current"), data: submission.catalogItem.current }]
       : []),
+    ...(target ? [{ key: "target", label: t("admin.submissions.targetColumn"), data: target.current }] : []),
     { key: "proposed", label: t("catalogReview.columns.proposed"), data: submission.proposed },
   ];
+
+  function showError(err: unknown) {
+    Alert.alert("", adminErrorMessage(err, t, t("catalogReview.actionFailed")));
+  }
 
   async function handleApprove() {
     const payload = form.validate();
     if (!payload) return;
+    const confirmed = await confirmAction({
+      title: target ? t("admin.submissions.approveIntoTitle") : t("admin.submissions.approveTitle"),
+      message: target
+        ? t("admin.submissions.approveIntoMessage", { name: target.current.name })
+        : t("admin.submissions.approveMessage"),
+      confirmLabel: t("catalogReview.approve"),
+      cancelLabel: t("catalogReview.cancel"),
+    });
+    if (!confirmed) return;
     try {
       await approve.mutateAsync({
         ...payload,
@@ -107,35 +127,42 @@ export function CatalogReviewDetailScreen() {
         ...(reviewNote.trim() ? { reviewNote: reviewNote.trim() } : {}),
       });
       router.back();
-    } catch {
-      Alert.alert("", t("catalogReview.actionFailed"));
+    } catch (err: unknown) {
+      showError(err);
     }
   }
 
-  async function handleReject() {
+  async function handleMerge(item: CatalogItemView) {
     const confirmed = await confirmAction({
-      title: t("catalogReview.rejectTitle"),
-      message: t("catalogReview.rejectMessage"),
-      confirmLabel: t("catalogReview.reject"),
+      title: t("admin.submissions.mergeTitle"),
+      message: t("admin.submissions.mergeMessage", { name: item.current.name }),
+      confirmLabel: t("admin.submissions.merge"),
       cancelLabel: t("catalogReview.cancel"),
-      destructive: true,
     });
     if (!confirmed) return;
     try {
-      await reject.mutateAsync(reviewNote.trim() || undefined);
+      await merge.mutateAsync({
+        targetCatalogItemId: item.id,
+        ...(reviewNote.trim() ? { reviewNote: reviewNote.trim() } : {}),
+      });
       router.back();
-    } catch {
-      Alert.alert("", t("catalogReview.actionFailed"));
+    } catch (err: unknown) {
+      showError(err);
     }
   }
 
-  const formatDate = (value: string) =>
-    new Date(value).toLocaleString(i18n.language, { dateStyle: "medium", timeStyle: "short" });
+  async function handleReject(reason: string) {
+    try {
+      await reject.mutateAsync(reason);
+      setRejectOpen(false);
+      router.back();
+    } catch (err: unknown) {
+      showError(err);
+    }
+  }
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={t("catalogReview.detailTitle")} />
-
+    <AdminScaffold title={title}>
       <KeyboardAvoider>
         <ScrollView
           contentContainerStyle={styles.content}
@@ -143,71 +170,126 @@ export function CatalogReviewDetailScreen() {
           keyboardDismissMode="interactive"
         >
           <View style={[styles.metaCard, dir.alignStart]}>
-            <Text style={[styles.badge, isCorrection ? styles.badgeCorrection : styles.badgeNew]}>
-              {isCorrection ? t("catalogReview.kind.CORRECTION") : t("catalogReview.kind.NEW_PRODUCT")}
-            </Text>
+            <View style={[styles.badges, dir.row]}>
+              <StatusBadge
+                label={t(`catalogReview.kind.${submission.kind}`)}
+                tone={isCorrection ? "warning" : "accent"}
+              />
+              <StatusBadge
+                label={t(`catalogReview.status.${submission.status}`)}
+                tone={submissionStatusTone(submission.status)}
+              />
+            </View>
+            <Text style={[styles.metaTitle, dir.text]}>{submission.proposed?.name ?? "—"}</Text>
             <Text style={[styles.metaText, dir.text]}>
               {t("catalogReview.submittedBy", {
-                name: submission.submitter.fullName || submission.submitter.email,
-                date: formatDate(submission.updatedAt),
+                name: personName(submission.submitter),
+                date: formatDateTime(submission.updatedAt, i18n.language),
               })}
             </Text>
-            {submission.normalizedBarcode ? (
-              <Text style={[styles.metaText, dir.text]}>
-                {t("catalogReview.barcode", { barcode: submission.normalizedBarcode })}
-              </Text>
-            ) : null}
+            <Text style={[styles.metaText, dir.text]}>
+              {submission.normalizedBarcode
+                ? t("catalogReview.barcode", { barcode: submission.normalizedBarcode })
+                : t("admin.submissions.noBarcode")}
+            </Text>
             {submission.catalogItem ? (
               <Text style={[styles.metaText, dir.text]}>
                 {t("catalogReview.source", {
-                  source: submission.catalogItem.externalProvider ?? submission.catalogItem.source,
+                  source: t(`admin.sources.${submission.catalogItem.source}`, {
+                    defaultValue: submission.catalogItem.externalProvider ?? submission.catalogItem.source,
+                  }),
                 })}
               </Text>
             ) : null}
             {!isPending ? (
               <Text style={[styles.metaStrong, dir.text]}>
-                {t(`catalogReview.status.${submission.status}`)}
-                {submission.reviewNote ? ` · ${submission.reviewNote}` : ""}
+                {t("admin.submissions.reviewedBy", {
+                  name: personName(submission.reviewer),
+                  date: formatDateTime(submission.reviewedAt, i18n.language),
+                })}
+                {submission.reviewNote ? ` · “${submission.reviewNote}”` : ""}
               </Text>
-            ) : null}
+            ) : (
+              <Text style={[styles.privacyNote, dir.text]}>{t("admin.submissions.privateNote")}</Text>
+            )}
           </View>
 
           <FormSection title={t("catalogReview.compare")}>
             <CatalogComparisonTable columns={columns} highlightKey="proposed" />
           </FormSection>
 
-          {submission.similarItems.length > 0 && isPending ? (
+          {submission.similarSubmissions.length > 0 ? (
             <FormSection
-              title={t("catalogReview.similarTitle")}
-              hint={t("catalogReview.similarHint")}
+              title={t("admin.submissions.duplicatesTitle")}
+              hint={t("admin.submissions.duplicatesHint")}
             >
+              <View style={styles.stack}>
+                {submission.similarSubmissions.map((other) => (
+                  <AdminListRow
+                    key={other.id}
+                    title={other.proposed?.name ?? "—"}
+                    lines={[
+                      t("catalogReview.submittedBy", {
+                        name: personName(other.submitter),
+                        date: formatShortDate(other.updatedAt, i18n.language),
+                      }),
+                    ]}
+                    onPress={() => router.push(ADMIN_ROUTES.submission(other.id))}
+                  />
+                ))}
+              </View>
+            </FormSection>
+          ) : null}
+
+          {isPending && !isCorrection && submission.similarItems.length > 0 ? (
+            <FormSection title={t("catalogReview.similarTitle")} hint={t("catalogReview.similarHint")}>
               <View style={styles.similarList}>
                 {[null, ...submission.similarItems].map((item) => {
+                  const archived = Boolean(item?.archivedAt);
                   const selected = (item?.id ?? null) === targetId;
                   return (
                     <Pressable
                       key={item?.id ?? "new"}
-                      onPress={() => setTargetId(item?.id ?? null)}
+                      onPress={() => !archived && setTargetId(item?.id ?? null)}
+                      disabled={archived}
                       accessibilityRole="radio"
-                      accessibilityState={{ selected }}
-                      style={[styles.similarRow, dir.row, selected && styles.similarRowSelected]}
+                      accessibilityState={{ selected, disabled: archived }}
+                      style={[
+                        styles.similarRow,
+                        dir.row,
+                        selected && styles.similarRowSelected,
+                        archived && styles.similarRowDisabled,
+                      ]}
                     >
                       <MaterialCommunityIcons
                         name={selected ? "radiobox-marked" : "radiobox-blank"}
                         size={20}
                         color={selected ? colors.accent : colors.textMuted}
                       />
-                      <Text style={[styles.similarText, dir.text]} numberOfLines={2}>
-                        {item
-                          ? [item.current.name, item.current.brand, item.normalizedBarcode]
-                              .filter(Boolean)
-                              .join(" · ")
-                          : t("catalogReview.createNew")}
-                      </Text>
+                      <View style={styles.similarBody}>
+                        <Text style={[styles.similarText, dir.text]} numberOfLines={2}>
+                          {item
+                            ? [item.current.name, item.current.brand, item.normalizedBarcode]
+                                .filter(Boolean)
+                                .join(" · ")
+                            : t("catalogReview.createNew")}
+                        </Text>
+                        {archived ? <StatusBadge label={t("admin.catalog.archived")} tone="neutral" /> : null}
+                      </View>
                     </Pressable>
                   );
                 })}
               </View>
+              {target ? (
+                <Button
+                  label={t("admin.submissions.mergeWithoutChanges")}
+                  icon="call-merge"
+                  variant="tonal"
+                  onPress={() => handleMerge(target)}
+                  loading={merge.isPending}
+                  style={styles.mergeButton}
+                />
+              ) : null}
             </FormSection>
           ) : null}
 
@@ -245,6 +327,10 @@ export function CatalogReviewDetailScreen() {
               />
             </>
           ) : null}
+
+          <FormSection title={t("admin.history.title")}>
+            <AdminHistoryList entries={submission.history} />
+          </FormSection>
         </ScrollView>
 
         {isPending ? (
@@ -253,12 +339,11 @@ export function CatalogReviewDetailScreen() {
               <Button
                 label={t("catalogReview.reject")}
                 variant="secondary"
-                onPress={handleReject}
-                loading={reject.isPending}
+                onPress={() => setRejectOpen(true)}
                 style={styles.footerButton}
               />
               <Button
-                label={t("catalogReview.approve")}
+                label={target ? t("admin.submissions.approveInto") : t("catalogReview.approve")}
                 icon="check"
                 onPress={handleApprove}
                 loading={approve.isPending}
@@ -268,14 +353,25 @@ export function CatalogReviewDetailScreen() {
           </StickyFooter>
         ) : null}
       </KeyboardAvoider>
-    </SafeAreaView>
+
+      <ReasonSheet
+        visible={rejectOpen}
+        title={t("catalogReview.rejectTitle")}
+        message={t("catalogReview.rejectMessage")}
+        label={t("admin.submissions.rejectReason")}
+        confirmLabel={t("catalogReview.reject")}
+        destructive
+        loading={reject.isPending}
+        onConfirm={handleReject}
+        onClose={() => setRejectOpen(false)}
+      />
+    </AdminScaffold>
   );
 }
 
 const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      root: { flex: 1, backgroundColor: colors.background },
       content: {
         paddingHorizontal: spacing.md,
         paddingBottom: spacing.xl,
@@ -285,22 +381,14 @@ const useStyles = () =>
         gap: spacing.xs,
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
         padding: spacing.md,
       },
-      badge: {
-        ...typography.caption,
-        fontWeight: "700",
-        borderRadius: radius.sm,
-        paddingHorizontal: spacing.sm,
-        paddingVertical: 2,
-        overflow: "hidden",
-      },
-      badgeCorrection: { color: colors.warning, backgroundColor: colors.warningSoft },
-      badgeNew: { color: colors.accent, backgroundColor: colors.accentSoft },
+      badges: { gap: spacing.xs, flexWrap: "wrap" },
+      metaTitle: { ...typography.headline, color: colors.textPrimary, marginTop: spacing.xs },
       metaText: { ...typography.footnote, color: colors.textSecondary },
       metaStrong: { ...typography.footnote, fontWeight: "600", color: colors.textPrimary },
+      privacyNote: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
+      stack: { gap: spacing.sm },
       sectionIntro: {
         ...typography.callout,
         color: colors.textSecondary,
@@ -314,7 +402,10 @@ const useStyles = () =>
         borderRadius: radius.md,
       },
       similarRowSelected: { backgroundColor: colors.accentSoft },
-      similarText: { flex: 1, ...typography.callout, color: colors.textPrimary },
+      similarRowDisabled: { opacity: 0.55 },
+      similarBody: { flex: 1, gap: 2 },
+      similarText: { ...typography.callout, color: colors.textPrimary },
+      mergeButton: { marginTop: spacing.sm },
       footerRow: { gap: spacing.sm },
       footerButton: { flex: 1 },
     }),

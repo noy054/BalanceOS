@@ -1,103 +1,93 @@
 import { useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { FlatList, StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
-import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { SearchField } from "../../../shared/components/ui/SearchField";
 import { SegmentedControl } from "../../../shared/components/ui/SegmentedControl";
 import { StateView } from "../../../shared/components/ui/StateView";
 import { ListGap } from "../../../shared/components/ui/ListGap";
-import { useDirection } from "../../../shared/hooks/useDirection";
-import { radius, spacing, typography, useAppTheme, useThemedStyles } from "../../../shared/theme";
+import { spacing, useThemedStyles } from "../../../shared/theme";
 import { FoodThumb } from "../../pantry/components/food/FoodThumb";
 import { FOOD_ICONS } from "../../pantry/hooks/useFoodCardModels";
-import {
-  useCatalogReviewSummary,
-  useCatalogSubmissions,
-  useIsAdmin,
-} from "../hooks/useAdminCatalog";
+import { AdminScaffold } from "../../admin/components/AdminScaffold";
+import { AdminListRow } from "../../admin/components/AdminListRow";
+import { FilterChips } from "../../admin/components/FilterChips";
+import { StatusBadge } from "../../admin/components/StatusBadge";
+import { ADMIN_ROUTES } from "../../admin/constants";
+import { formatShortDate, personName } from "../../admin/helpers/format";
+import { readParam } from "../../admin/helpers/navigation";
+import { submissionStatusTone } from "../helpers/tones";
+import { useCatalogReviewSummary, useCatalogSubmissions, useIsAdmin } from "../hooks/useAdminCatalog";
 import { CatalogSubmission, CatalogSubmissionKind, CatalogSubmissionStatus } from "../types";
+
+const KINDS = ["NEW_PRODUCT", "CORRECTION"] as const;
+const STATUSES = ["PENDING", "APPROVED", "MERGED", "REJECTED"] as const;
 
 export function CatalogReviewListScreen() {
   const { t, i18n } = useTranslation("settings");
-  const { colors } = useAppTheme();
   const styles = useStyles();
-  const dir = useDirection();
   const isAdmin = useIsAdmin();
+  const params = useLocalSearchParams<{ kind?: string; status?: string }>();
 
-  const [kind, setKind] = useState<CatalogSubmissionKind>("CORRECTION");
-  const [status, setStatus] = useState<CatalogSubmissionStatus>("PENDING");
+  const [kind, setKind] = useState<CatalogSubmissionKind>(
+    () => readParam(params.kind, KINDS) ?? "NEW_PRODUCT",
+  );
+  const [status, setStatus] = useState<CatalogSubmissionStatus>(
+    () => readParam(params.status, STATUSES) ?? "PENDING",
+  );
+  const [search, setSearch] = useState("");
   const { data: summary } = useCatalogReviewSummary(isAdmin);
-  const { data = [], isLoading, isError, refetch, loadMore } = useCatalogSubmissions(status, kind);
-
-  if (!isAdmin) {
-    return (
-      <SafeAreaView style={styles.root} edges={["top"]}>
-        <ScreenHeader title={t("catalogReview.title")} />
-        <StateView variant="error" message={t("catalogReview.notAllowed")} />
-      </SafeAreaView>
-    );
-  }
-
-  const formatDate = (value: string) =>
-    new Date(value).toLocaleDateString(i18n.language, { day: "numeric", month: "short" });
+  const { data = [], isLoading, isError, refetch, loadMore } = useCatalogSubmissions(
+    status,
+    kind,
+    search,
+    isAdmin,
+  );
 
   function renderItem({ item }: { item: CatalogSubmission }) {
-    const data = item.proposed;
+    const proposed = item.proposed;
     return (
-      <Pressable
-        onPress={() => router.push(`/(app)/settings/catalog-review/${item.id}`)}
-        accessibilityRole="button"
-        style={({ pressed }) => [styles.card, dir.row, pressed && styles.pressed]}
-      >
-        <FoodThumb imageUrl={data?.imageUrl ?? null} fallbackIcon={FOOD_ICONS.product} size={48} />
-        <View style={styles.cardBody}>
-          <Text style={[styles.cardTitle, dir.text]} numberOfLines={1}>
-            {data?.name ?? "—"}
-          </Text>
-          <Text style={[styles.cardMeta, dir.text]} numberOfLines={1}>
-            {[data?.brand, item.normalizedBarcode].filter(Boolean).join(" · ") || "—"}
-          </Text>
-          <Text style={[styles.cardMeta, dir.text]} numberOfLines={1}>
-            {t("catalogReview.submittedBy", {
-              name: item.submitter.fullName || item.submitter.email,
-              date: formatDate(item.updatedAt),
-            })}
-          </Text>
-        </View>
-        <MaterialCommunityIcons name={dir.forwardIcon} size={22} color={colors.textMuted} />
-      </Pressable>
+      <AdminListRow
+        title={proposed?.name ?? "—"}
+        leading={<FoodThumb imageUrl={proposed?.imageUrl ?? null} fallbackIcon={FOOD_ICONS.product} size={44} />}
+        lines={[
+          [proposed?.brand, item.normalizedBarcode ?? t("admin.submissions.noBarcode")].filter(Boolean).join(" · "),
+          t("catalogReview.submittedBy", {
+            name: personName(item.submitter),
+            date: formatShortDate(item.updatedAt, i18n.language),
+          }),
+        ]}
+        badges={
+          status !== "PENDING" ? (
+            <StatusBadge label={t(`catalogReview.status.${item.status}`)} tone={submissionStatusTone(item.status)} />
+          ) : null
+        }
+        onPress={() => router.push(ADMIN_ROUTES.submission(item.id))}
+      />
     );
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={t("catalogReview.title")} />
-
+    <AdminScaffold title={t("catalogReview.title")}>
       <View style={styles.controls}>
         <SegmentedControl
           options={[
             {
-              value: "CORRECTION" as CatalogSubmissionKind,
-              label: t("catalogReview.corrections", { count: summary?.pendingCorrections ?? 0 }),
-            },
-            {
               value: "NEW_PRODUCT" as CatalogSubmissionKind,
               label: t("catalogReview.newProducts", { count: summary?.pendingNewProducts ?? 0 }),
+            },
+            {
+              value: "CORRECTION" as CatalogSubmissionKind,
+              label: t("catalogReview.corrections", { count: summary?.pendingCorrections ?? 0 }),
             },
           ]}
           value={kind}
           onChange={setKind}
         />
-        <SegmentedControl
-          size="sm"
-          options={[
-            { value: "PENDING" as CatalogSubmissionStatus, label: t("catalogReview.status.PENDING") },
-            { value: "APPROVED" as CatalogSubmissionStatus, label: t("catalogReview.status.APPROVED") },
-            { value: "REJECTED" as CatalogSubmissionStatus, label: t("catalogReview.status.REJECTED") },
-          ]}
+        <SearchField value={search} onChangeText={setSearch} placeholder={t("admin.submissions.search")} />
+        <FilterChips
+          options={STATUSES.map((value) => ({ value, label: t(`catalogReview.status.${value}`) }))}
           value={status}
           onChange={setStatus}
         />
@@ -119,21 +109,26 @@ export function CatalogReviewListScreen() {
           renderItem={renderItem}
           ItemSeparatorComponent={ListGap}
           contentContainerStyle={styles.list}
+          keyboardShouldPersistTaps="handled"
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
           ListEmptyComponent={
-            <StateView variant="empty" compact icon="check-all" title={t("catalogReview.empty")} />
+            <StateView
+              variant="empty"
+              compact
+              icon={search.trim() ? "magnify" : "check-all"}
+              title={search.trim() ? t("admin.common.noResults") : t("catalogReview.empty")}
+            />
           }
         />
       )}
-    </SafeAreaView>
+    </AdminScaffold>
   );
 }
 
 const useStyles = () =>
-  useThemedStyles((colors) =>
+  useThemedStyles(() =>
     StyleSheet.create({
-      root: { flex: 1, backgroundColor: colors.background },
       controls: {
         paddingHorizontal: spacing.md,
         paddingBottom: spacing.ms,
@@ -144,18 +139,5 @@ const useStyles = () =>
         paddingBottom: spacing.xl,
         flexGrow: 1,
       },
-      card: {
-        alignItems: "center",
-        gap: spacing.ms,
-        backgroundColor: colors.surface,
-        borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
-        padding: spacing.ms,
-      },
-      pressed: { backgroundColor: colors.surfaceMuted },
-      cardBody: { flex: 1, minWidth: 0, gap: 2 },
-      cardTitle: { ...typography.bodyStrong, color: colors.textPrimary },
-      cardMeta: { ...typography.footnote, color: colors.textSecondary },
     }),
   );

@@ -3,7 +3,6 @@ import { Alert, FlatList, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { ScreenHeader } from '../../../shared/components/ScreenHeader';
 import { Button } from '../../../shared/components/ui/Button';
@@ -24,9 +23,11 @@ import { useFoodCardModels } from '../../pantry/hooks/useFoodCardModels';
 import { useMealReturn } from '../../pantry/mealReturnStore';
 import { sortByMealCategory } from '../../pantry/helpers/sortByMealCategory';
 import { useServingFormat } from '../../pantry/hooks/useServingFormat';
-import { useAppTheme } from '../../../shared/theme';
 import { useDirection } from '../../../shared/hooks/useDirection';
 import { formatCalories } from '../../../shared/helpers/formatNumber';
+import { DateKey } from '../../../shared/helpers/dateKey';
+import { useSelectedDate } from '../../day-log/hooks/useSelectedDate';
+import { useDayLabels } from '../../day-log/hooks/useDayLabels';
 import { SelectionPanel } from '../components/SelectionPanel';
 import { MealCartEntry, SelectedAmount, useMealSelection } from '../hooks/useMealSelection';
 import { useStyles } from './styles/AddMealItemScreen.styles';
@@ -73,11 +74,14 @@ function matchesSearch<T extends { name: string }>(items: T[], search: string) {
 
 type Props = {
   mealType?: string;
+  date?: DateKey;
 };
 
-export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
+export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Props) {
   const { t, i18n } = useTranslation('dashboard');
-  const { colors } = useAppTheme();
+  const selectedDate = useSelectedDate();
+  const date = dateProp ?? selectedDate.date;
+  const dayLabels = useDayLabels(selectedDate.today);
   const styles = useStyles();
   const insets = useSafeAreaInsets();
   const models = useFoodCardModels();
@@ -100,7 +104,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
   } = usePantryProducts(search);
   const { data: recipes = [], isLoading: loadingRecipes } = useRecipes();
   const { data: savedMeals = [], isLoading: loadingSavedMeals } = useSavedMeals();
-  const addMealItems = useAddMealItems();
+  const addMealItems = useAddMealItems(date);
 
   useFocusEffect(
     useCallback(() => {
@@ -122,6 +126,11 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
   const screenTitle = activeMealType
     ? t('addItem.title', { mealType: mealTypeLabel })
     : t('addItem.titleGeneral');
+
+  const dateSubtitle =
+    date === selectedDate.today
+      ? undefined
+      : t('addItem.forDate', { date: dayLabels.relative(date) ?? dayLabels.full(date) });
 
   const filteredProducts = useMemo(
     () => sortByMealCategory(products, mealTypeToCategory(activeMealType)),
@@ -215,14 +224,6 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
         ? t('addItem.searchRecipes')
         : t('addItem.searchSavedMeals');
 
-  function renderSelectionMark(isSelected: boolean) {
-    return (
-      <View style={[styles.radio, isSelected && styles.radioActive]}>
-        {isSelected ? <MaterialCommunityIcons name="check" size={14} color={colors.onAccent} /> : null}
-      </View>
-    );
-  }
-
   function renderItem({ item }: { item: ListItem }) {
     if (activeTab === 'products') {
       const product = item as PantryProduct;
@@ -233,7 +234,6 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
           selected={isSelected}
           accessibilityHint={isSelected ? t('addItem.tapToDeselect') : undefined}
           onPress={() => selection.select({ kind: 'product', item: product })}
-          trailing={renderSelectionMark(isSelected)}
         />
       );
     }
@@ -247,7 +247,6 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
           selected={isSelected}
           accessibilityHint={isSelected ? t('addItem.tapToDeselect') : undefined}
           onPress={() => selection.select({ kind: 'recipe', item: recipe })}
-          trailing={renderSelectionMark(isSelected)}
         />
       );
     }
@@ -260,7 +259,6 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
         selected={isSelected}
         accessibilityHint={isSelected ? t('addItem.tapToDeselect') : undefined}
         onPress={() => selection.select({ kind: 'savedMeal', item: meal })}
-        trailing={renderSelectionMark(isSelected)}
       />
     );
   }
@@ -272,6 +270,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
     <SafeAreaView style={styles.root} edges={['top']} key={i18n.language}>
       <ScreenHeader
         title={screenTitle}
+        subtitle={dateSubtitle}
         rightElement={
           <Button label={t('addItem.done')} variant="ghost" size="sm" onPress={() => router.back()} />
         }
@@ -300,28 +299,30 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
               selection.deselect();
             }}
             placeholder={searchPlaceholder}
+            trailing={
+              activeTab === 'products' ? (
+                <>
+                  <IconButton
+                    icon="barcode-scan"
+                    variant="tonal"
+                    size={48}
+                    iconSize={22}
+                    accessibilityLabel={t('addItem.scanBarcode')}
+                    onPress={() => router.push('/(app)/pantry/barcode?returnTo=meal')}
+                  />
+                  <IconButton
+                    icon="plus"
+                    variant="tonal"
+                    size={48}
+                    iconSize={24}
+                    accessibilityLabel={t('addItem.createProduct')}
+                    onPress={() => router.push('/(app)/pantry/add-product?returnTo=meal')}
+                  />
+                </>
+              ) : null
+            }
           />
 
-          {activeTab === 'products' ? (
-            <View style={[styles.quickActions, dir.row]}>
-              <Button
-                label={t('addItem.scanBarcode')}
-                icon="barcode-scan"
-                variant="tonal"
-                size="sm"
-                onPress={() => router.push('/(app)/pantry/barcode?returnTo=meal')}
-                style={styles.quickAction}
-              />
-              <Button
-                label={t('addItem.createProduct')}
-                icon="plus"
-                variant="tonal"
-                size="sm"
-                onPress={() => router.push('/(app)/pantry/add-product?returnTo=meal')}
-                style={styles.quickAction}
-              />
-            </View>
-          ) : null}
         </View>
 
         {isLoading ? (
@@ -359,42 +360,6 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
 
         {showDock ? (
           <View style={[styles.dock, { paddingBottom: Math.max(insets.bottom, DOCK_MIN_BOTTOM) }]}>
-            {cart.length > 0 ? (
-              <View style={styles.cartSection}>
-                <View style={[styles.cartHeader, dir.row]}>
-                  <Text style={[styles.dockLabel, dir.text]}>
-                    {t('addItem.cartItems', { count: cart.length })}
-                  </Text>
-                  <Text style={styles.cartTotal}>
-                    {t('addItem.caloriesAmount', { calories: formatCalories(cartCalories) })}
-                  </Text>
-                </View>
-
-                <ScrollView style={styles.cartScroll} nestedScrollEnabled showsVerticalScrollIndicator={false}>
-                  {cart.map((entry) => (
-                    <View key={entry.key} style={[styles.cartRow, dir.row]}>
-                      <View style={styles.cartText}>
-                        <Text style={[styles.cartItemName, dir.text]} numberOfLines={1}>
-                          {entry.name}
-                        </Text>
-                        <Text style={[styles.cartItemQty, dir.text]} numberOfLines={1}>
-                          {amountLabel(entry.amount)}
-                        </Text>
-                      </View>
-                      <Text style={styles.cartItemCalories}>{formatCalories(entry.calories)}</Text>
-                      <IconButton
-                        icon="close"
-                        size={32}
-                        iconSize={16}
-                        accessibilityLabel={t('addItem.removeFromList', { name: entry.name })}
-                        onPress={() => setCart((prev) => prev.filter((e) => e.key !== entry.key))}
-                      />
-                    </View>
-                  ))}
-                </ScrollView>
-              </View>
-            ) : null}
-
             {selection.selected ? (
               <SelectionPanel
                 selected={selection.selected}
@@ -402,27 +367,73 @@ export function AddMealItemScreen({ mealType: mealTypeProp }: Props) {
                 unit={selection.unit}
                 unitOptions={selection.unitOptions}
                 nutrition={selection.nutrition}
-                primary={cart.length === 0}
                 onChangeQuantity={selection.setQuantity}
                 onChangeUnit={selection.changeUnit}
                 onStep={selection.step}
                 onDeselect={selection.deselect}
-                onAdd={handleAddToCart}
               />
-            ) : null}
+            ) : (
+              <ScrollView style={styles.cartScroll} nestedScrollEnabled showsVerticalScrollIndicator={false}>
+                {cart.map((entry, index) => (
+                  <View
+                    key={entry.key}
+                    style={[styles.cartRow, dir.row, index > 0 && styles.cartRowDivider]}
+                  >
+                    <View style={styles.cartText}>
+                      <Text style={[styles.cartItemName, dir.text]} numberOfLines={1}>
+                        {entry.name}
+                      </Text>
+                      <Text style={[styles.cartItemQty, dir.text]} numberOfLines={1}>
+                        {amountLabel(entry.amount)}
+                      </Text>
+                    </View>
+                    <Text style={styles.cartItemCalories}>{formatCalories(entry.calories)}</Text>
+                    <IconButton
+                      icon="close"
+                      size={32}
+                      iconSize={16}
+                      accessibilityLabel={t('addItem.removeFromList', { name: entry.name })}
+                      onPress={() => setCart((prev) => prev.filter((e) => e.key !== entry.key))}
+                    />
+                  </View>
+                ))}
+              </ScrollView>
+            )}
 
-            {cart.length > 0 ? (
-              <Button
-                label={
-                  addMealItems.isPending
-                    ? t('addItem.saving')
-                    : t('addItem.saveButton', { mealType: mealTypeLabel })
-                }
-                onPress={handleSave}
-                loading={addMealItems.isPending}
-                fullWidth
-              />
-            ) : null}
+            <View style={[styles.bar, dir.row]}>
+              {cart.length > 0 ? (
+                <View style={styles.barSummary}>
+                  <Text style={[styles.barCount, dir.text]} numberOfLines={1}>
+                    {t('addItem.cartItems', { count: cart.length })}
+                  </Text>
+                  <Text style={[styles.barCalories, dir.text]} numberOfLines={1}>
+                    {t('addItem.caloriesAmount', { calories: formatCalories(cartCalories) })}
+                  </Text>
+                </View>
+              ) : null}
+
+              {selection.selected ? (
+                <Button
+                  label={t('addItem.addToList')}
+                  icon="plus"
+                  onPress={handleAddToCart}
+                  disabled={!selection.nutrition}
+                  variant={cart.length > 0 ? 'tonal' : 'primary'}
+                  style={styles.barButton}
+                />
+              ) : (
+                <Button
+                  label={
+                    addMealItems.isPending
+                      ? t('addItem.saving')
+                      : t('addItem.saveButton', { mealType: mealTypeLabel })
+                  }
+                  onPress={handleSave}
+                  loading={addMealItems.isPending}
+                  style={styles.barButton}
+                />
+              )}
+            </View>
           </View>
         ) : null}
       </KeyboardAvoider>

@@ -21,6 +21,8 @@ import {
   CatalogReviewRepository,
   SubmissionRow,
 } from './catalog-review.repository';
+import { AuditService } from '../audit/audit.service';
+import { AUDIT_ENTITY, AuditLogRow } from '../audit/audit.types';
 import {
   CatalogProductData,
   catalogDataDiffers,
@@ -32,17 +34,19 @@ import {
 import {
   ApproveCatalogSubmissionDto,
   ListCatalogSubmissionsDto,
+  MergeCatalogSubmissionDto,
 } from './dto/catalog-review.dto';
 import { ProductCatalogItemReviewDto } from './types/product-catalog.types';
 
 const DEFAULT_PAGE = 20;
 
-type CatalogItemView = {
+export type CatalogItemView = {
   id: string;
   source: string;
   verificationStatus: string;
   externalProvider: string | null;
   normalizedBarcode: string | null;
+  archivedAt: Date | null;
   current: CatalogProductData;
   original: CatalogProductData | null;
 };
@@ -63,19 +67,22 @@ export type CatalogSubmissionView = {
   catalogItem: CatalogItemView | null;
 };
 
-function toItemView(item: ProductCatalogItemReviewDto): CatalogItemView {
+export function toItemView(
+  item: ProductCatalogItemReviewDto & { archivedAt?: Date | null },
+): CatalogItemView {
   return {
     id: item.id,
     source: item.source,
     verificationStatus: item.verificationStatus,
     externalProvider: item.externalProvider,
     normalizedBarcode: item.normalizedBarcode,
+    archivedAt: item.archivedAt ?? null,
     current: fromCatalogRow(item),
     original: item.originalData ? parseCatalogData(item.originalData) : null,
   };
 }
 
-function toView(row: SubmissionRow): CatalogSubmissionView {
+export function toView(row: SubmissionRow): CatalogSubmissionView {
   return {
     id: row.id,
     kind: row.kind,
@@ -93,11 +100,27 @@ function toView(row: SubmissionRow): CatalogSubmissionView {
   };
 }
 
+export function toHistoryView(row: AuditLogRow) {
+  return {
+    id: row.id,
+    action: row.action,
+    entityType: row.entityType,
+    entityId: row.entityId,
+    summary: row.summary,
+    details: row.details,
+    createdAt: row.createdAt,
+    actor: row.actor,
+  };
+}
+
 @Injectable()
 export class CatalogReviewService {
   private readonly logger = new Logger(CatalogReviewService.name);
 
-  constructor(private readonly repo: CatalogReviewRepository) {}
+  constructor(
+    private readonly repo: CatalogReviewRepository,
+    private readonly audit: AuditService,
+  ) {}
 
   async recordProductChange(product: PantryProductModel): Promise<void> {
     try {
@@ -130,19 +153,12 @@ export class CatalogReviewService {
         pantryProductId: product.id,
         catalogItemId: catalogItem.id,
         normalizedBarcode: catalogItem.normalizedBarcode,
+        productName: proposed.name,
         proposedData: toJson(proposed),
       });
       return;
     }
 
-    // Only barcoded (packaged) products are catalog candidates. Barcode-less
-    // products are the user's own foods and stay private.
-    if (!product.normalizedBarcode) {
-      if (pending?.kind === CatalogSubmissionKind.NEW_PRODUCT) {
-        await this.repo.deleteSubmission(pending.id);
-      }
-      return;
-    }
     if (!pending && (await this.repo.hasRejectedNewProduct(product.id))) {
       return;
     }
@@ -153,6 +169,7 @@ export class CatalogReviewService {
       pantryProductId: product.id,
       catalogItemId: null,
       normalizedBarcode: product.normalizedBarcode,
+      productName: proposed.name,
       proposedData: toJson(proposed),
     });
   }
@@ -175,6 +192,7 @@ export class CatalogReviewService {
     const rows = await this.repo.list({
       status: dto.status ?? CatalogSubmissionStatus.PENDING,
       kind: dto.kind,
+      q: dto.q,
       take: limit + 1,
       cursor: dto.cursor,
     });
@@ -196,8 +214,23 @@ export class CatalogReviewService {
     const row = await this.repo.findById(id);
     if (!row) throw new NotFoundException('Submission not found');
     const view = toView(row);
-    const similar = await this.findSimilar(view);
-    return { ...view, similarItems: similar.map(toItemView) };
+    const [similar, similarSubmissions, history] = await Promise.all([
+      this.findSimilar(view),
+      view.status === CatalogSubmissionStatus.PENDING
+        ? this.repo.findSimilarPendingSubmissions(
+            row.id,
+            row.normalizedBarcode,
+            row.productName || view.proposed?.name || '',
+          )
+        : Promise.resolve([]),
+      this.audit.recent(AUDIT_ENTITY.CATALOG_SUBMISSION, row.id),
+    ]);
+    return {
+      ...view,
+      similarItems: similar.map(toItemView),
+      similarSubmissions: similarSubmissions.map(toView),
+      history: history.map(toHistoryView),
+    };
   }
 
   private async findSimilar(view: CatalogSubmissionView) {
@@ -214,12 +247,17 @@ export class CatalogReviewService {
     return byBarcode ? [byBarcode, ...byName] : byName;
   }
 
-  async approve(adminId: string, id: string, dto: ApproveCatalogSubmissionDto) {
+  private async loadPending(id: string): Promise<SubmissionRow> {
     const row = await this.repo.findById(id);
     if (!row) throw new NotFoundException('Submission not found');
     if (row.status !== CatalogSubmissionStatus.PENDING) {
       throw new ConflictException('This submission was already reviewed');
     }
+    return row;
+  }
+
+  async approve(adminId: string, id: string, dto: ApproveCatalogSubmissionDto) {
+    const row = await this.loadPending(id);
 
     const proposed = parseCatalogData(row.proposedData);
     if (!proposed) throw new BadRequestException('Submission data is invalid');
@@ -251,6 +289,7 @@ export class CatalogReviewService {
         pantryProductId: row.pantryProductId,
         proposedOriginal: proposed,
         reviewNote: dto.reviewNote?.trim() || null,
+        kind: row.kind,
       });
       if (!updated) {
         throw new ConflictException('This submission was already reviewed');
@@ -275,28 +314,61 @@ export class CatalogReviewService {
     normalizedBarcode: string | undefined,
   ): Promise<string | null> {
     if (dto.targetCatalogItemId) {
-      const target = await this.repo.findCatalogItem(dto.targetCatalogItemId);
-      if (!target) throw new NotFoundException('Catalog product not found');
-      return target.id;
+      return this.requireActiveItem(dto.targetCatalogItemId);
     }
     if (row.kind === CatalogSubmissionKind.CORRECTION && row.catalogItemId) {
-      return row.catalogItemId;
+      return this.requireActiveItem(row.catalogItemId);
     }
     if (normalizedBarcode) {
       const existing =
         await this.repo.findCatalogItemByBarcode(normalizedBarcode);
-      if (existing) return existing.id;
+      if (existing) return this.requireActiveItem(existing.id);
     }
     return null;
   }
 
-  async reject(adminId: string, id: string, note?: string) {
-    const row = await this.repo.findById(id);
-    if (!row) throw new NotFoundException('Submission not found');
-    if (row.status !== CatalogSubmissionStatus.PENDING) {
+  private async requireActiveItem(id: string): Promise<string> {
+    const target = await this.repo.findCatalogItem(id);
+    if (!target) throw new NotFoundException('Catalog product not found');
+    if (target.archivedAt) {
+      throw new ConflictException(
+        'The catalog product is archived. Restore it before applying changes.',
+      );
+    }
+    return target.id;
+  }
+
+  async merge(adminId: string, id: string, dto: MergeCatalogSubmissionDto) {
+    const row = await this.loadPending(id);
+    const targetId = await this.requireActiveItem(dto.targetCatalogItemId);
+    const updated = await this.repo.merge({
+      submissionId: row.id,
+      adminId,
+      targetCatalogItemId: targetId,
+      submitterId: row.userId,
+      pantryProductId: row.pantryProductId,
+      normalizedBarcode: row.normalizedBarcode,
+      reviewNote: dto.reviewNote?.trim() || null,
+      productName: row.productName,
+    });
+    if (!updated) {
       throw new ConflictException('This submission was already reviewed');
     }
-    const updated = await this.repo.reject(id, adminId, note?.trim() || null);
+    return toView(updated);
+  }
+
+  async reject(adminId: string, id: string, note: string) {
+    const row = await this.loadPending(id);
+    const reason = note.trim();
+    if (!reason) {
+      throw new BadRequestException('A rejection reason is required');
+    }
+    const updated = await this.repo.reject(
+      id,
+      adminId,
+      reason,
+      row.productName,
+    );
     if (!updated) {
       throw new ConflictException('This submission was already reviewed');
     }

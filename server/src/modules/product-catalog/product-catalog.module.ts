@@ -8,9 +8,12 @@ import { PrismaModule } from '../../prisma/prisma.module';
 import { AdminCatalogController } from './admin-catalog.controller';
 import { CatalogReviewService } from './catalog-review.service';
 import { CatalogReviewRepository } from './catalog-review.repository';
+import { CatalogAdminService } from './catalog-admin.service';
+import { CatalogAdminRepository } from './catalog-admin.repository';
+import { AuditModule } from '../audit/audit.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AuditModule],
   controllers: [ProductCatalogController, AdminCatalogController],
   providers: [
     ProductCatalogService,
@@ -19,7 +22,9 @@ import { CatalogReviewRepository } from './catalog-review.repository';
     UsdaFoodDataCentralClient,
     CatalogReviewService,
     CatalogReviewRepository,
+    CatalogAdminService,
+    CatalogAdminRepository,
   ],
-  exports: [ProductCatalogService, CatalogReviewService],
+  exports: [ProductCatalogService, CatalogReviewService, CatalogAdminService],
 })
 export class ProductCatalogModule {}

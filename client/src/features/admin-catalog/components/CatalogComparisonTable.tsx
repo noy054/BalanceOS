@@ -110,10 +110,7 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       table: {
-        backgroundColor: colors.surface,
-        borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
+        borderRadius: radius.md,
         overflow: "hidden",
       },
       row: {

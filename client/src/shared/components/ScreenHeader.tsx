@@ -20,6 +20,7 @@ type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
 type Props = {
   title: string;
+  subtitle?: string;
   onBack?: () => void;
   rightElement?: ReactNode;
   rightIconName?: IconName;
@@ -31,6 +32,7 @@ type Props = {
 
 export function ScreenHeader({
   title,
+  subtitle,
   onBack,
   rightElement,
   rightIconName,
@@ -101,6 +103,17 @@ export function ScreenHeader({
         >
           {title}
         </Text>
+        {subtitle ? (
+          <Text
+            style={[
+              styles.subtitle,
+              { writingDirection: dir.isRTL ? "rtl" : "ltr", textAlign: "center" },
+            ]}
+            numberOfLines={1}
+          >
+            {subtitle}
+          </Text>
+        ) : null}
       </View>
 
       <View

@@ -1,10 +1,11 @@
-import { ConflictException } from '@nestjs/common';
+import { BadRequestException, ConflictException } from '@nestjs/common';
 import { CatalogReviewService } from './catalog-review.service';
 import { CatalogReviewRepository } from './catalog-review.repository';
 import { PantryProductModel } from '../../../generated/prisma/models';
 import { EMPTY_NUTRITION } from '../pantry/product-nutrition.normalizer';
 import { OpenFoodFactsClient } from './open-food-facts.client';
 import { normalizeBarcode } from '../../common/barcode/barcode.utils';
+import { AuditService } from '../audit/audit.service';
 
 const catalogItem = {
   id: 'c1',
@@ -72,9 +73,13 @@ function setup(pending: { id: string; kind: string } | null = null) {
     findCatalogItemByBarcode: jest.fn().mockResolvedValue(null),
     approve: jest.fn(),
     reject: jest.fn(),
+    merge: jest.fn(),
+    findSimilarPendingSubmissions: jest.fn().mockResolvedValue([]),
   };
+  const audit = { recent: jest.fn().mockResolvedValue([]) };
   const service = new CatalogReviewService(
     repo as unknown as CatalogReviewRepository,
+    audit as unknown as AuditService,
   );
   return { service, repo };
 }
@@ -117,24 +122,45 @@ describe('CatalogReviewService.recordProductChange', () => {
       product({ catalogItemId: null, name: 'Grandma soup' }),
     );
     expect(repo.createSubmission).toHaveBeenCalledWith(
-      expect.objectContaining({ kind: 'NEW_PRODUCT', pantryProductId: 'p1' }),
+      expect.objectContaining({
+        kind: 'NEW_PRODUCT',
+        pantryProductId: 'p1',
+        productName: 'Grandma soup',
+      }),
     );
   });
 
-  it('keeps barcode-less manual products private', async () => {
+  it('submits barcode-less manual products for review without publishing them', async () => {
     const { service, repo } = setup();
     await service.recordProductChange(
-      product({ catalogItemId: null, normalizedBarcode: null }),
+      product({
+        catalogItemId: null,
+        normalizedBarcode: null,
+        barcode: null,
+        name: 'Home granola',
+      }),
     );
-    expect(repo.createSubmission).not.toHaveBeenCalled();
+    expect(repo.createSubmission).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: 'NEW_PRODUCT',
+        normalizedBarcode: null,
+        productName: 'Home granola',
+      }),
+    );
+    expect(repo.approve).not.toHaveBeenCalled();
   });
 
-  it('withdraws a pending new-product submission when the barcode is removed', async () => {
+  it('keeps one pending submission when a barcode is removed from a manual product', async () => {
     const { service, repo } = setup({ id: 's1', kind: 'NEW_PRODUCT' });
     await service.recordProductChange(
-      product({ catalogItemId: null, normalizedBarcode: null }),
+      product({ catalogItemId: null, normalizedBarcode: null, barcode: null }),
     );
-    expect(repo.deleteSubmission).toHaveBeenCalledWith('s1');
+    expect(repo.deleteSubmission).not.toHaveBeenCalled();
+    expect(repo.createSubmission).not.toHaveBeenCalled();
+    expect(repo.updateSubmission).toHaveBeenCalledWith(
+      's1',
+      expect.objectContaining({ normalizedBarcode: null }),
+    );
   });
 
   it('does not re-queue a product an admin already rejected', async () => {
@@ -142,6 +168,62 @@ describe('CatalogReviewService.recordProductChange', () => {
     repo.hasRejectedNewProduct.mockResolvedValue(true);
     await service.recordProductChange(product({ catalogItemId: null }));
     expect(repo.createSubmission).not.toHaveBeenCalled();
+  });
+});
+
+describe('CatalogReviewService review actions', () => {
+  const pending = {
+    id: 's2',
+    kind: 'NEW_PRODUCT',
+    status: 'PENDING',
+    userId: 'u1',
+    pantryProductId: 'p1',
+    catalogItemId: null,
+    normalizedBarcode: null,
+    productName: 'Home granola',
+    proposedData: { ...EMPTY_NUTRITION, name: 'Home granola' },
+  };
+
+  it('requires a rejection reason', async () => {
+    const { service, repo } = setup();
+    repo.findById.mockResolvedValue(pending);
+    await expect(service.reject('admin', 's2', '   ')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+    expect(repo.reject).not.toHaveBeenCalled();
+  });
+
+  it('merges a submission into an existing product without changing it', async () => {
+    const { service, repo } = setup();
+    repo.findById.mockResolvedValue(pending);
+    repo.merge.mockResolvedValue({
+      ...pending,
+      status: 'MERGED',
+      user: {},
+      reviewedBy: null,
+      catalogItem: null,
+    });
+    await service.merge('admin', 's2', { targetCatalogItemId: 'c1' });
+    expect(repo.merge).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targetCatalogItemId: 'c1',
+        submissionId: 's2',
+      }),
+    );
+    expect(repo.approve).not.toHaveBeenCalled();
+  });
+
+  it('refuses to merge into an archived product', async () => {
+    const { service, repo } = setup();
+    repo.findById.mockResolvedValue(pending);
+    repo.findCatalogItem.mockResolvedValue({
+      ...catalogItem,
+      archivedAt: new Date(),
+    });
+    await expect(
+      service.merge('admin', 's2', { targetCatalogItemId: 'c1' }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(repo.merge).not.toHaveBeenCalled();
   });
 });
 

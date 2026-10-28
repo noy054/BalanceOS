@@ -9,6 +9,8 @@ import { DayLogsModule } from './modules/day-logs/day-logs.module';
 import { ProductCatalogModule } from './modules/product-catalog/product-catalog.module';
 import { StatisticsModule } from './modules/statistics/statistics.module';
 import { BarcodeModule } from './modules/barcode/barcode.module';
+import { AnnouncementsModule } from './modules/announcements/announcements.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { BarcodeModule } from './modules/barcode/barcode.module';
     ProductCatalogModule,
     StatisticsModule,
     BarcodeModule,
+    AnnouncementsModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

@@ -10,6 +10,9 @@ import {
 } from '../nutrition-calculator/nutrition-calculator.service';
 import { AddMealItemDto } from './dto/add-meal-item.dto';
 import { CopyMealDto } from './dto/copy-meal.dto';
+import { daysBetween } from '../../common/date/day-key';
+
+const MAX_CALENDAR_DAYS = 61;
 
 function todayDate(): string {
   return new Date().toISOString().split('T')[0];
@@ -23,14 +26,58 @@ export class DayLogsService {
   ) {}
 
   async getOrCreateToday(userId: string) {
-    const date = todayDate();
+    return this.getOrCreateDay(userId, todayDate());
+  }
+
+  private async getOrCreateDay(userId: string, date: string) {
     const existing = await this.repo.findToday(userId, date);
     if (existing) return existing;
     const targets = await this.repo.findUserTargets(userId);
     return this.repo.findOrCreateToday(userId, date, targets);
   }
 
-  async addMealItem(userId: string, dto: AddMealItemDto) {
+  async getDay(userId: string, date: string) {
+    const existing = await this.repo.findToday(userId, date);
+    if (existing) return existing;
+    const targets = await this.repo.findUserTargets(userId);
+    return {
+      id: null,
+      date,
+      targetsSnapshot: targets,
+      caloriesTotal: 0,
+      proteinTotal: 0,
+      carbsTotal: 0,
+      fatTotal: 0,
+      fiberTotal: 0,
+    };
+  }
+
+  async getCalendar(userId: string, from: string, to: string) {
+    const span = daysBetween(from, to);
+    if (span < 0 || span > MAX_CALENDAR_DAYS) {
+      throw new BadRequestException(
+        `The range must cover 1 to ${MAX_CALENDAR_DAYS + 1} days`,
+      );
+    }
+    const rows = await this.repo.findDaysInRange(userId, from, to);
+    const days = rows
+      .map((row) => ({
+        date: row.date,
+        calories: Math.round(row.caloriesTotal),
+        itemCount: row.mealEntries.reduce(
+          (sum, entry) => sum + entry._count.items,
+          0,
+        ),
+      }))
+      .filter((day) => day.itemCount > 0);
+    return { days };
+  }
+
+  addMealItem(userId: string, dto: AddMealItemDto) {
+    return this.addMealItemOnDate(userId, todayDate(), dto);
+  }
+
+  async addMealItemOnDate(userId: string, date: string, dto: AddMealItemDto) {
     const sourceCount = [
       dto.pantryProductId,
       dto.pantryRecipeId,
@@ -105,7 +152,7 @@ export class DayLogsService {
       snapshot = this.calculator.savedMealSnapshot(meal, totals);
     }
 
-    const dayLog = await this.getOrCreateToday(userId);
+    const dayLog = await this.getOrCreateDay(userId, date);
     const mealEntry = await this.repo.findOrCreateMealEntry(
       dayLog.id,
       dto.mealType,
@@ -125,8 +172,11 @@ export class DayLogsService {
     return { id: item.id };
   }
 
-  async getTodayMeals(userId: string) {
-    const date = todayDate();
+  getTodayMeals(userId: string) {
+    return this.getDayMeals(userId, todayDate());
+  }
+
+  async getDayMeals(userId: string, date: string) {
     const dayLog = await this.repo.findTodayMeals(userId, date);
 
     if (!dayLog) return { meals: [] };

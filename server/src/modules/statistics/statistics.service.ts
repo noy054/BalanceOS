@@ -83,13 +83,13 @@ export class StatisticsService {
   async getStatistics(
     userId: string,
     range: StatRange,
+    clientToday?: string,
   ): Promise<StatisticsResponseDto> {
     const rangeDays = range === '7D' ? 7 : range === '14D' ? 14 : 30;
 
-    const nowUtc = new Date();
-    const endDate = nowUtc.toISOString().slice(0, 10);
+    const endDate = clientToday ?? new Date().toISOString().slice(0, 10);
 
-    const startUtc = new Date(nowUtc);
+    const startUtc = new Date(`${endDate}T00:00:00Z`);
     startUtc.setUTCDate(startUtc.getUTCDate() - (rangeDays - 1));
     const startDate = startUtc.toISOString().slice(0, 10);
 

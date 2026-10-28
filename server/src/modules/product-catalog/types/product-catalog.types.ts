@@ -47,3 +47,18 @@ export type ProductCatalogItemDto = Prisma.ProductCatalogItemGetPayload<{
 export type ProductCatalogItemReviewDto = Prisma.ProductCatalogItemGetPayload<{
   select: typeof CATALOG_ITEM_REVIEW_SELECT;
 }>;
+
+const PERSON_SELECT = { id: true, email: true, fullName: true } as const;
+
+export const CATALOG_ITEM_ADMIN_SELECT = {
+  ...CATALOG_ITEM_REVIEW_SELECT,
+  archivedAt: true,
+  createdByUser: { select: PERSON_SELECT },
+  updatedByUser: { select: PERSON_SELECT },
+  archivedByUser: { select: PERSON_SELECT },
+  _count: { select: { pantryProducts: true } },
+} as const satisfies Prisma.ProductCatalogItemSelect;
+
+export type ProductCatalogItemAdminRow = Prisma.ProductCatalogItemGetPayload<{
+  select: typeof CATALOG_ITEM_ADMIN_SELECT;
+}>;

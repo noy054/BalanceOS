@@ -43,57 +43,41 @@ export const useStyles = () =>
         flexGrow: 1,
       },
 
-      radio: {
-        width: 22,
-        height: 22,
-        borderRadius: 11,
-        borderWidth: 1.5,
-        borderColor: colors.borderStrong,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginHorizontal: spacing.xs,
-      },
-
-      radioActive: {
-        backgroundColor: colors.accent,
-        borderColor: colors.accent,
-      },
-
       dock: {
         backgroundColor: colors.surface,
         borderTopLeftRadius: radius.xl,
         borderTopRightRadius: radius.xl,
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
         paddingHorizontal: spacing.md,
         paddingTop: spacing.md,
-        gap: spacing.ms,
+        gap: spacing.md,
         ...shadows.lg,
       },
 
-      dockLabel: {
-        ...typography.label,
-        color: colors.textSecondary,
-      },
-
-      cartSection: {
-        gap: spacing.xs,
-      },
-
       cartScroll: {
-        maxHeight: 148,
+        maxHeight: 156,
+        flexGrow: 0,
       },
 
       cartRow: {
         alignItems: 'center',
         gap: spacing.sm,
-        minHeight: 44,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: colors.border,
+        minHeight: 48,
+      },
+
+      cartRowDivider: {
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: colors.border,
+      },
+
+      cartText: {
+        flex: 1,
+        minWidth: 0,
+        gap: 1,
       },
 
       cartItemName: {
         ...typography.callout,
+        fontWeight: '600',
         color: colors.textPrimary,
       },
 
@@ -104,38 +88,38 @@ export const useStyles = () =>
         color: colors.textSecondary,
       },
 
-      quickActions: {
-        gap: spacing.sm,
-      },
-
-      quickAction: {
-        flex: 1,
-      },
-
-      cartHeader: {
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: spacing.sm,
-      },
-
-      cartTotal: {
-        ...typography.footnote,
+      cartItemCalories: {
+        ...typography.callout,
         ...typography.number,
         fontWeight: '600',
         color: colors.textPrimary,
       },
 
-      cartText: {
-        flex: 1,
-        minWidth: 0,
-        gap: 1,
+      bar: {
+        alignItems: 'center',
+        gap: spacing.ms,
       },
 
-      cartItemCalories: {
-        ...typography.footnote,
-        ...typography.number,
-        fontWeight: '600',
+      barSummary: {
+        flex: 1,
+        minWidth: 0,
+      },
+
+      barCount: {
+        ...typography.caption,
         color: colors.textSecondary,
+      },
+
+      barCalories: {
+        ...typography.headline,
+        ...typography.number,
+        color: colors.textPrimary,
+      },
+
+      barButton: {
+        flexGrow: 1,
+        flexBasis: 0,
+        minWidth: 150,
       },
     }),
   );

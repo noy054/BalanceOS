@@ -9,7 +9,8 @@
     "overTargetLabel": "Over target",
     "targetReachedLabel": "Target reached",
     "unitShort": "kcal",
-    "progressA11y": "{{eaten}} of {{target}} calories eaten"
+    "progressA11y": "{{eaten}} of {{target}} calories eaten",
+    "remainingDayLabel": "Remaining"
   },
   "macros": {
     "protein": "Protein",
@@ -126,27 +127,55 @@
     "recipeAmount": "×{{count}} recipe",
     "invalidAmount": "Enter an amount greater than zero",
     "cartItems_one": "{{count}} item to add",
-    "cartItems_other": "{{count}} items to add"
+    "cartItems_other": "{{count}} items to add",
+    "forDate": "{{date}}"
   },
   "header": {
     "today": "Today"
   },
   "errors": {
-    "loadFailed": "Couldn't load today's summary",
+    "loadFailed": "Couldn't load this day's summary",
     "retry": "Try again",
-    "mealsLoadFailed": "Couldn't load today's meals"
+    "mealsLoadFailed": "Couldn't load this day's meals"
   },
   "remove": {
     "itemTitle": "Remove {{name}} from {{meal}}?",
-    "itemMessage": "{{calories}} kcal will be removed from today's totals.",
+    "itemMessage": "{{calories}} kcal will be removed from this day's totals.",
     "mealTitle": "Remove everything from {{meal}}?",
-    "mealMessage_one": "{{count}} item ({{calories}} kcal) will be removed from today's totals.",
-    "mealMessage_other": "{{count}} items ({{calories}} kcal) will be removed from today's totals.",
+    "mealMessage_one": "{{count}} item ({{calories}} kcal) will be removed from this day's totals.",
+    "mealMessage_other": "{{count}} items ({{calories}} kcal) will be removed from this day's totals.",
     "confirm": "Remove",
     "cancel": "Cancel",
     "failed": "Couldn't remove it. Try again.",
     "itemA11y": "Remove {{name}}",
     "mealMenuA11y": "More options for {{meal}}",
     "removeMeal": "Remove meal"
+  },
+  "date": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "previousDay": "Previous day",
+    "nextDay": "Next day",
+    "openCalendar": "Choose a date",
+    "openCalendarFor": "{{date}}. Choose a date",
+    "backToToday": "Today",
+    "backToTodayA11y": "Back to today",
+    "calendarTitle": "Choose a day",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "goToToday": "Go to today",
+    "itemsLogged_one": "{{count}} item logged",
+    "itemsLogged_other": "{{count}} items logged"
+  },
+  "announcements": {
+    "kind": {
+      "UPDATE": "What's new",
+      "NOTICE": "Notice",
+      "IMPORTANT": "Important"
+    },
+    "untitled": "Announcement",
+    "dismiss": "Dismiss announcement",
+    "gotIt": "Got it"
   }
 }

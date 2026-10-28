@@ -13,6 +13,8 @@ import {
   useThemedStyles,
 } from "../../../shared/theme";
 import { useDirection } from "../../../shared/hooks/useDirection";
+import { addDays, DateKey, fromDateKey, todayKey } from "../../../shared/helpers/dateKey";
+import { useDayLabels } from "../hooks/useDayLabels";
 import { BottomSheet } from "../../../shared/components/ui/BottomSheet";
 import { Button } from "../../../shared/components/ui/Button";
 
@@ -22,26 +24,21 @@ type DayOption = {
   dayNum: number;
 };
 
-function getNextSixDays(): DayOption[] {
-  const days: DayOption[] = [];
-  for (let i = 1; i <= 6; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() + i);
-    days.push({
-      date: d.toISOString().split("T")[0],
-      dayIndex: d.getDay(),
-      dayNum: d.getDate(),
-    });
-  }
-  return days;
+function getNextSixDays(sourceDate: DateKey): DayOption[] {
+  return Array.from({ length: 6 }, (_, index) => {
+    const date = addDays(sourceDate, index + 1);
+    const day = fromDateKey(date);
+    return { date, dayIndex: day.getDay(), dayNum: day.getDate() };
+  });
 }
 
 type Props = {
   meal: MealEntrySummary | null;
+  sourceDate: DateKey;
   onClose: () => void;
 };
 
-export function CopyMealModal({ meal, onClose }: Props) {
+export function CopyMealModal({ meal, sourceDate, onClose }: Props) {
   const { t } = useTranslation("dashboard");
   const { colors } = useAppTheme();
   const styles = useStyles();
@@ -49,7 +46,8 @@ export function CopyMealModal({ meal, onClose }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const copyMeal = useCopyMealEntry();
 
-  const days = getNextSixDays();
+  const days = getNextSixDays(sourceDate);
+  const labels = useDayLabels(todayKey());
 
   function toggleDay(date: string) {
     setSelected((prev) => {
@@ -107,7 +105,8 @@ export function CopyMealModal({ meal, onClose }: Props) {
       <ScrollView style={styles.dayList} showsVerticalScrollIndicator={false}>
         {days.map((day) => {
           const isSelected = selected.has(day.date);
-          const dayName = t(`copyMeal.weekdays.${day.dayIndex}`);
+          const dayName = labels.relative(day.date) ?? t(`copyMeal.weekdays.${day.dayIndex}`);
+          const dateLabel = labels.short(day.date);
 
           return (
             <Pressable
@@ -115,7 +114,7 @@ export function CopyMealModal({ meal, onClose }: Props) {
               onPress={() => toggleDay(day.date)}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: isSelected }}
-              accessibilityLabel={`${dayName} ${day.date}`}
+              accessibilityLabel={`${dayName}, ${labels.full(day.date)}`}
               style={({ pressed }) => [
                 styles.dayRow,
                 dir.row,
@@ -130,7 +129,7 @@ export function CopyMealModal({ meal, onClose }: Props) {
               </View>
 
               <Text style={[styles.dayName, dir.text]}>{dayName}</Text>
-              <Text style={styles.dayDate}>{day.date}</Text>
+              <Text style={styles.dayDate}>{dateLabel}</Text>
             </Pressable>
           );
         })}

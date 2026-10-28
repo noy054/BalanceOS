@@ -12,6 +12,10 @@ export class StatisticsController {
 
   @Get()
   get(@CurrentUser() user: UserPublic, @Query() query: StatisticsQueryDto) {
-    return this.service.getStatistics(user.id, query.range ?? '7D');
+    return this.service.getStatistics(
+      user.id,
+      query.range ?? '7D',
+      query.endDate,
+    );
   }
 }

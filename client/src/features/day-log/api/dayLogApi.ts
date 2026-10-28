@@ -1,19 +1,31 @@
 import { apiClient } from '../../../shared/api/client';
 import { DAY_LOG_ENDPOINTS } from '../constants';
-import { AddMealItemPayload, CopyMealPayload, DayLogMealsResponse, DayLogResponse } from '../types';
+import {
+  AddMealItemPayload,
+  CopyMealPayload,
+  DayLogCalendarResponse,
+  DayLogMealsResponse,
+  DayLogResponse,
+} from '../types';
 
 export const dayLogApi = {
-  getToday(): Promise<DayLogResponse> {
-    return apiClient.get<DayLogResponse>(DAY_LOG_ENDPOINTS.TODAY).then((r) => r.data);
+  getDay(date: string): Promise<DayLogResponse> {
+    return apiClient.get<DayLogResponse>(DAY_LOG_ENDPOINTS.DAY(date)).then((r) => r.data);
   },
 
-  getTodayMeals(): Promise<DayLogMealsResponse> {
-    return apiClient.get<DayLogMealsResponse>(DAY_LOG_ENDPOINTS.TODAY_MEALS).then((r) => r.data);
+  getDayMeals(date: string): Promise<DayLogMealsResponse> {
+    return apiClient.get<DayLogMealsResponse>(DAY_LOG_ENDPOINTS.DAY_MEALS(date)).then((r) => r.data);
   },
 
-  addMealItem(payload: AddMealItemPayload): Promise<{ id: string }> {
+  getCalendar(from: string, to: string): Promise<DayLogCalendarResponse> {
     return apiClient
-      .post<{ id: string }>(DAY_LOG_ENDPOINTS.ADD_MEAL_ITEM, payload)
+      .get<DayLogCalendarResponse>(DAY_LOG_ENDPOINTS.CALENDAR, { params: { from, to } })
+      .then((r) => r.data);
+  },
+
+  addMealItem(date: string, payload: AddMealItemPayload): Promise<{ id: string }> {
+    return apiClient
+      .post<{ id: string }>(DAY_LOG_ENDPOINTS.ADD_MEAL_ITEM(date), payload)
       .then((r) => r.data);
   },
 

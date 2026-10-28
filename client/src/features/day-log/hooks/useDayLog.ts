@@ -1,4 +1,10 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { dayLogApi } from '../api/dayLogApi';
 import { DAY_LOG_QUERY_KEYS } from '../constants';
 import {
@@ -24,15 +30,21 @@ function toDayLogSummary(r: DayLogResponse): DayLogSummary {
   };
 }
 
-function refreshDayLog(queryClient: QueryClient) {
+function refreshDayLog(queryClient: QueryClient, date?: string) {
   return Promise.all([
-    queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.today, refetchType: 'all' }),
-    queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.todayMeals, refetchType: 'all' }),
+    ...(date
+      ? [
+          queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.day(date), refetchType: 'all' }),
+          queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.meals(date), refetchType: 'all' }),
+        ]
+      : []),
+    queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.all }),
     queryClient.invalidateQueries({ queryKey: ['statistics'] }),
   ]);
 }
 
 type RemovalSnapshot = {
+  date: string;
   meals: DayLogMealsResponse | undefined;
   summary: DayLogSummary | undefined;
 };
@@ -54,29 +66,31 @@ function subtractMacros<T extends MealMacros>(target: T, removed: MealMacros): T
   };
 }
 
-async function cancelDayLogQueries(queryClient: QueryClient) {
+async function cancelDayLogQueries(queryClient: QueryClient, date: string) {
   await Promise.all([
-    queryClient.cancelQueries({ queryKey: DAY_LOG_QUERY_KEYS.today }),
-    queryClient.cancelQueries({ queryKey: DAY_LOG_QUERY_KEYS.todayMeals }),
+    queryClient.cancelQueries({ queryKey: DAY_LOG_QUERY_KEYS.day(date) }),
+    queryClient.cancelQueries({ queryKey: DAY_LOG_QUERY_KEYS.meals(date) }),
   ]);
 }
 
 function applyRemoval(
   queryClient: QueryClient,
+  date: string,
   removed: MealMacros,
   updateMeals: (meals: DayLogMealsResponse) => DayLogMealsResponse,
 ): RemovalSnapshot {
   const snapshot: RemovalSnapshot = {
-    meals: queryClient.getQueryData<DayLogMealsResponse>(DAY_LOG_QUERY_KEYS.todayMeals),
-    summary: queryClient.getQueryData<DayLogSummary>(DAY_LOG_QUERY_KEYS.today),
+    date,
+    meals: queryClient.getQueryData<DayLogMealsResponse>(DAY_LOG_QUERY_KEYS.meals(date)),
+    summary: queryClient.getQueryData<DayLogSummary>(DAY_LOG_QUERY_KEYS.day(date)),
   };
 
   if (snapshot.meals) {
-    queryClient.setQueryData(DAY_LOG_QUERY_KEYS.todayMeals, updateMeals(snapshot.meals));
+    queryClient.setQueryData(DAY_LOG_QUERY_KEYS.meals(date), updateMeals(snapshot.meals));
   }
 
   if (snapshot.summary) {
-    queryClient.setQueryData<DayLogSummary>(DAY_LOG_QUERY_KEYS.today, {
+    queryClient.setQueryData<DayLogSummary>(DAY_LOG_QUERY_KEYS.day(date), {
       ...snapshot.summary,
       caloriesEaten: Math.max(0, snapshot.summary.caloriesEaten - removed.calories),
       macros: snapshot.summary.macros.map((macro) => ({
@@ -91,31 +105,50 @@ function applyRemoval(
 
 function restore(queryClient: QueryClient, snapshot: RemovalSnapshot | undefined) {
   if (!snapshot) return;
-  queryClient.setQueryData(DAY_LOG_QUERY_KEYS.todayMeals, snapshot.meals);
-  queryClient.setQueryData(DAY_LOG_QUERY_KEYS.today, snapshot.summary);
+  queryClient.setQueryData(DAY_LOG_QUERY_KEYS.meals(snapshot.date), snapshot.meals);
+  queryClient.setQueryData(DAY_LOG_QUERY_KEYS.day(snapshot.date), snapshot.summary);
 }
 
-export function useTodayDayLog() {
+const DAY_STALE_TIME = 30 * 1000;
+
+function dayQuery(date: string) {
+  return {
+    queryKey: DAY_LOG_QUERY_KEYS.day(date),
+    queryFn: async () => toDayLogSummary(await dayLogApi.getDay(date)),
+    staleTime: DAY_STALE_TIME,
+  };
+}
+
+function dayMealsQuery(date: string) {
+  return {
+    queryKey: DAY_LOG_QUERY_KEYS.meals(date),
+    queryFn: () => dayLogApi.getDayMeals(date),
+    staleTime: DAY_STALE_TIME,
+  };
+}
+
+export function prefetchDay(queryClient: QueryClient, date: string) {
+  return Promise.all([
+    queryClient.prefetchQuery(dayQuery(date)),
+    queryClient.prefetchQuery(dayMealsQuery(date)),
+  ]);
+}
+
+export function useDayLog(date: string) {
+  return useQuery({ ...dayQuery(date), placeholderData: keepPreviousData });
+}
+
+export function useDayMeals(date: string) {
+  return useQuery({ ...dayMealsQuery(date), placeholderData: keepPreviousData });
+}
+
+export function useDayLogCalendar(from: string, to: string, enabled = true) {
   return useQuery({
-    queryKey: DAY_LOG_QUERY_KEYS.today,
-    queryFn: async () => toDayLogSummary(await dayLogApi.getToday()),
-    staleTime: 30 * 1000,
-  });
-}
-
-export function useTodayMeals() {
-  return useQuery({
-    queryKey: DAY_LOG_QUERY_KEYS.todayMeals,
-    queryFn: () => dayLogApi.getTodayMeals(),
-    staleTime: 30 * 1000,
-  });
-}
-
-export function useAddMealItem() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (payload: AddMealItemPayload) => dayLogApi.addMealItem(payload),
-    onSuccess: () => refreshDayLog(queryClient),
+    queryKey: DAY_LOG_QUERY_KEYS.calendar(from, to),
+    queryFn: () => dayLogApi.getCalendar(from, to),
+    staleTime: 60 * 1000,
+    placeholderData: keepPreviousData,
+    enabled,
   });
 }
 
@@ -129,34 +162,35 @@ export class PartialAddMealItemsError extends Error {
   }
 }
 
-export function useAddMealItems() {
+export function useAddMealItems(date: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payloads: AddMealItemPayload[]) => {
       let savedCount = 0;
       try {
         for (const payload of payloads) {
-          await dayLogApi.addMealItem(payload);
+          await dayLogApi.addMealItem(date, payload);
           savedCount += 1;
         }
       } catch (err: unknown) {
         throw new PartialAddMealItemsError(savedCount, err);
       }
     },
-    onSettled: () => refreshDayLog(queryClient),
+    onSettled: () => refreshDayLog(queryClient, date),
   });
 }
 
-export function useRemoveMealItem() {
+export function useRemoveMealItem(date: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (itemId: string) => dayLogApi.removeMealItem(itemId),
     onMutate: async (itemId: string) => {
-      await cancelDayLogQueries(queryClient);
-      const meals = queryClient.getQueryData<DayLogMealsResponse>(DAY_LOG_QUERY_KEYS.todayMeals);
+      await cancelDayLogQueries(queryClient, date);
+      const meals = queryClient.getQueryData<DayLogMealsResponse>(DAY_LOG_QUERY_KEYS.meals(date));
       const item = meals?.meals.flatMap((meal) => meal.items).find((entry) => entry.id === itemId);
       return applyRemoval(
         queryClient,
+        date,
         item ?? ZERO_MACROS,
         (data) => ({
           meals: data.meals
@@ -173,26 +207,27 @@ export function useRemoveMealItem() {
       );
     },
     onError: (_error, _itemId, snapshot) => restore(queryClient, snapshot),
-    onSettled: () => refreshDayLog(queryClient),
+    onSettled: () => refreshDayLog(queryClient, date),
   });
 }
 
-export function useRemoveMealEntry() {
+export function useRemoveMealEntry(date: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (mealEntryId: string) => dayLogApi.removeMealEntry(mealEntryId),
     onMutate: async (mealEntryId: string) => {
-      await cancelDayLogQueries(queryClient);
-      const meals = queryClient.getQueryData<DayLogMealsResponse>(DAY_LOG_QUERY_KEYS.todayMeals);
+      await cancelDayLogQueries(queryClient, date);
+      const meals = queryClient.getQueryData<DayLogMealsResponse>(DAY_LOG_QUERY_KEYS.meals(date));
       const entry = meals?.meals.find((meal) => meal.id === mealEntryId);
       return applyRemoval(
         queryClient,
+        date,
         entry ?? ZERO_MACROS,
         (data) => ({ meals: data.meals.filter((meal) => meal.id !== mealEntryId) }),
       );
     },
     onError: (_error, _id, snapshot) => restore(queryClient, snapshot),
-    onSettled: () => refreshDayLog(queryClient),
+    onSettled: () => refreshDayLog(queryClient, date),
   });
 }
 
@@ -200,6 +235,10 @@ export function useCopyMealEntry() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: CopyMealPayload) => dayLogApi.copyMealEntry(payload),
-    onSuccess: () => refreshDayLog(queryClient),
+    onSuccess: (_data, payload) =>
+      Promise.all([
+        refreshDayLog(queryClient),
+        ...payload.targetDates.map((date) => refreshDayLog(queryClient, date)),
+      ]),
   });
 }
