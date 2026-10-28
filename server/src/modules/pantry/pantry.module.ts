@@ -9,6 +9,7 @@ import { SavedMealsController } from './saved-meals.controller';
 import { SavedMealsService } from './saved-meals.service';
 import { SavedMealsRepository } from './saved-meals.repository';
 import { ProductCatalogModule } from '../product-catalog/product-catalog.module';
+import { PantryItemValidator } from './pantry-item.validator';
 
 @Module({
   imports: [ProductCatalogModule],
@@ -20,6 +21,7 @@ import { ProductCatalogModule } from '../product-catalog/product-catalog.module'
     RecipesRepository,
     SavedMealsService,
     SavedMealsRepository,
+    PantryItemValidator,
   ],
   exports: [PantryService],
 })

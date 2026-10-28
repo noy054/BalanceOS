@@ -1,10 +1,11 @@
 import { apiClient } from '../../../shared/api/client';
-import { PANTRY_ENDPOINTS } from '../constants';
+import { CATALOG_ENDPOINTS, PANTRY_ENDPOINTS } from '../constants';
 import {
   AddFromCatalogPayload,
   CreatePantryProductPayload,
   Page,
   PantryProduct,
+  ProductCatalogProduct,
   UpdatePantryProductPayload,
 } from '../types';
 
@@ -28,6 +29,12 @@ export const pantryApi = {
   create(payload: CreatePantryProductPayload): Promise<PantryProduct> {
     return apiClient
       .post<PantryProduct>(PANTRY_ENDPOINTS.BASE, payload)
+      .then((r) => r.data);
+  },
+
+  getCatalogItem(id: string): Promise<ProductCatalogProduct> {
+    return apiClient
+      .get<ProductCatalogProduct>(CATALOG_ENDPOINTS.BY_ID(id))
       .then((r) => r.data);
   },
 

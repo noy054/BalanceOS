@@ -5,7 +5,8 @@
     "preferences": "Preferences",
     "notifications": "Notifications",
     "account": "Account & Security",
-    "app": "App"
+    "app": "App",
+    "admin": "Administration"
   },
   "profile": {
     "screenTitle": "Edit Profile",
@@ -80,49 +81,35 @@
     "screenTitle": "Tracking Preferences",
     "row": "Tracking Preferences",
     "rowSubtitle": "Units, display",
-
     "defaultUnitSection": "Default Unit",
     "defaultUnitTitle": "How food is added",
     "defaultUnitDescription": "Choose whether food should be added by grams, serving, or piece by default.",
-
     "homeDisplaySection": "Home Display",
     "guidedSection": "Guided Mode",
     "unitsSection": "Units",
-
     "showFiber": "Show fiber",
-    "showFiberHint": "Show fiber in the home macro card",
-
+    "showFiberHint": "Show fiber on Home and on food cards",
     "showCarbs": "Show carbs",
-    "showCarbsHint": "Show carbs on the home screen",
-
+    "showCarbsHint": "Show carbs on Home and on food cards",
     "showFat": "Show fat",
-    "showFatHint": "Show fat on the home screen",
-
+    "showFatHint": "Show fat on Home and on food cards",
     "showProgress": "Show progress percentages",
     "showProgressHint": "Show percentages and progress rings",
-
     "showGuidedSuggestions": "Show suggestions",
     "showGuidedSuggestionsHint": "Helpful suggestions for guided users",
-
     "showMotivation": "Show motivation",
     "showMotivationHint": "Motivational messages and reminders",
-
     "defaultFoodUnit": "Default food unit",
-
     "comingSoon": "Coming soon",
-
     "foodUnitGrams": "Grams",
     "foodUnitServing": "Serving",
     "foodUnitPiece": "Piece",
-
     "enabled": "Enabled",
     "disabled": "Disabled",
-
     "saveButton": "Save Preferences",
     "saving": "Saving...",
     "saved": "Saved successfully",
     "noChanges": "No changes to save",
-
     "units": {
       "GRAMS": "Grams",
       "SERVING": "Serving",
@@ -134,28 +121,22 @@
     "row": "Notifications",
     "rowSubtitle": "Meal reminders, daily summary",
     "comingSoon": "Notification scheduling requires expo-notifications to be installed",
-
     "mealRemindersSection": "Meal Reminders",
     "breakfastReminder": "Breakfast",
     "lunchReminder": "Lunch",
     "dinnerReminder": "Dinner",
-
     "summariesSection": "Summaries",
     "waterSection": "Water",
     "waterReminder": "Water Reminder",
     "waterIntervalLabel": "Interval (minutes)",
-
     "dailySummary": "Daily Summary",
     "weeklySummary": "Weekly Summary",
     "weeklySummaryDayLabel": "Day of week",
-
     "timePlaceholder": "HH:MM",
     "pickTime": "Pick time",
     "permissionDenied": "Please allow notifications on your phone to enable reminders",
-
     "saveButton": "Save",
     "saving": "Saving...",
-
     "days": {
       "0": "Sunday",
       "1": "Monday",
@@ -205,28 +186,20 @@
     "rowSubtitlePrefix": "Version",
     "versionValue": "1.0.0",
     "versionLabel": "App Version",
-
     "tagline": "Simple, precise nutrition tracking for people who want control.",
-
     "website": "Website",
     "websiteHint": "Open the official website",
-
     "rateApp": "Rate the app",
     "rateAppHint": "Open the app store page",
-
     "shareApp": "Share app",
     "shareAppHint": "Send the app link",
-
     "legalSection": "Legal",
     "terms": "Terms of Service",
     "termsHint": "Read the terms of service",
-
     "privacy": "Privacy Policy",
     "privacyHint": "Read the privacy policy",
-
     "contact": "Contact Us",
     "contactHint": "Contact support",
-
     "storeNote": "Store links will be updated after the app is published.",
     "openLinkFailed": "Unable to open link"
   },
@@ -238,9 +211,55 @@
     "profileSaveFailed": "Failed to save profile",
     "fullNameRequired": "Full name is required"
   },
-
   "common": {
     "cancel": "Cancel",
     "done": "Done"
+  },
+  "catalogReview": {
+    "title": "Catalog review",
+    "detailTitle": "Review submission",
+    "rowSubtitle_one": "{{count}} pending review",
+    "rowSubtitle_other": "{{count}} pending reviews",
+    "notAllowed": "Only administrators can review the shared catalog.",
+    "corrections": "Corrections ({{count}})",
+    "newProducts": "New products ({{count}})",
+    "status": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected"
+    },
+    "kind": {
+      "CORRECTION": "Correction to catalog product",
+      "NEW_PRODUCT": "New product"
+    },
+    "submittedBy": "{{name}} · {{date}}",
+    "barcode": "Barcode {{barcode}}",
+    "source": "Source: {{source}}",
+    "empty": "Nothing to review here",
+    "loadFailed": "Couldn't load submissions",
+    "retry": "Try again",
+    "compare": "Compare values",
+    "columns": {
+      "original": "Original",
+      "current": "Catalog now",
+      "proposed": "Submitted"
+    },
+    "fields": {
+      "name": "Name",
+      "brand": "Brand",
+      "basis": "Values for",
+      "serving": "Serving"
+    },
+    "similarTitle": "Possible duplicates",
+    "similarHint": "Merge into an existing catalog product instead of creating a new one.",
+    "createNew": "Create a new catalog product",
+    "editIntro": "Edit the values that will be published to the shared catalog.",
+    "noteLabel": "Review note (optional)",
+    "approve": "Approve",
+    "reject": "Reject",
+    "cancel": "Cancel",
+    "rejectTitle": "Reject this submission?",
+    "rejectMessage": "The shared catalog stays unchanged. The user's own product is not affected.",
+    "actionFailed": "Couldn't complete the review. Try again."
   }
 }

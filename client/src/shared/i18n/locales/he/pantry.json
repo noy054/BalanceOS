@@ -44,7 +44,7 @@
     "carbsLabel": "פחמימות (גרם)",
     "fatLabel": "שומן (גרם)",
     "fiberLabel": "סיבים (גרם)",
-    "per100g": "ל־100 גרם",
+    "per100g": "ל־100 גרם",
     "calUnit": "קק״ל",
     "gramsUnit": "גרם",
     "changeImage": "החלפת תמונה",
@@ -77,12 +77,15 @@
     "back": "חזור",
     "detailsSection": "פרטים",
     "categoriesHint": "משמש לסידור ההצעות בעת הוספת מזון לארוחה",
-    "caloriesPerServingLabel": "קלוריות למנה"
+    "caloriesPerServingLabel": "קלוריות למנה",
+    "reviewTitle": "בדיקת מוצר",
+    "reviewSubtitle": "בדקו את פרטי הסריקה ותקנו לפני השמירה. השינויים נשמרים במזווה שלכם בלבד ונשלחים לבדיקה.",
+    "reviewValuesHint": "השלימו ערכים חסרים. ערכים שלא סופקו על ידי המקור נשארים ריקים."
   },
   "productDetail": {
     "title": "פרטי מוצר",
     "nutritionSection": "ערכי תזונה ל-100 גרם",
-    "nutritionPerServing": "ערכי תזונה למנה ({{size}} גרם)",
+    "nutritionPerServing": "ערכי תזונה למנה ({{size}} גרם)",
     "calculator": "מחשבון ארוחה",
     "calculatorHint": "הזן כמות לחישוב ערכי תזונה",
     "calculatorPlaceholder": "כמות בגרמים",
@@ -100,7 +103,8 @@
     "back": "חזור",
     "calculatorByGrams": "גרמים",
     "calculatorByServings": "מנות",
-    "calculateAction": "חישוב"
+    "calculateAction": "חישוב",
+    "nutritionFor": "ערכי תזונה {{basis}}"
   },
   "recipe": {
     "nameLabel": "שם המתכון *",
@@ -227,15 +231,15 @@
       "sizeLabel": "גודל",
       "labelField": "תיאור",
       "labelPlaceholder": "למשל: כוס, פרוסה",
-      "preview": "לפי מנה ({{g}}גרם)"
+      "preview": "למנה ({{g}} גרם)"
     },
     "calcSection": {
       "title": "מחשבון",
       "grams": "גרם",
       "calories": "קק״ל",
       "placeholder": "הכנס ערך",
-      "resultByGrams": "{{cal}} קק״ל · {{p}}ג׳ P · {{c}}ג׳ C · {{f}}ג׳ F",
-      "resultByCalories": "≈ {{grams}}ג׳ · {{cal}} קק״ל · {{p}}ג׳ P · {{c}}ג׳ C · {{f}}ג׳ F"
+      "resultByGrams": "{{cal}} קק״ל · חלבון {{p}} ג׳ · פחמ׳ {{c}} ג׳ · שומן {{f}} ג׳",
+      "resultByCalories": "≈ {{grams}} גרם · {{cal}} קק״ל · חלבון {{p}} ג׳ · פחמ׳ {{c}} ג׳ · שומן {{f}} ג׳"
     },
     "manualForm": {
       "title": "הוסף מוצר ידנית",
@@ -259,7 +263,15 @@
     "missingNutrition": {
       "title": "חסרים ערכים תזונתיים",
       "hint": "המקור לא סיפק ערכים אלה. הזן אותם ל-100 גרם לפי התווית."
-    }
+    },
+    "createProduct": "יצירת מוצר",
+    "notFoundCreateHint": "צרו אותו בעצמכם עם ערכי התזונה, המנה ותמונה. הוא יישמר עם הברקוד הזה.",
+    "reviewAndEdit": "בדיקה ועריכה",
+    "missingValuesNotice": "חלק מערכי התזונה חסרים. בדקו את המוצר והשלימו אותם לפני ההוספה.",
+    "sourceOpenFoodFacts": "ערכים מ־Open Food Facts",
+    "sourceUsda": "ערכים מ־USDA FoodData Central",
+    "sourceVerified": "מאומת על ידי BalanceOS",
+    "sourceCommunity": "קטלוג משותף"
   },
   "empty": {
     "products": "אין מוצרים במזווה עדיין",
@@ -303,15 +315,23 @@
     "fiber": "סיבים"
   },
   "nutritionLine": {
-    "item": "{{label}} {{value}} ג׳"
+    "item": "{{label}} {{value}} ג׳"
   },
   "foodCard": {
-    "perServingSize": "למנה ({{size}} גרם)",
+    "perServingSize": "למנה ({{size}} גרם)",
     "recipeTotal": "מתכון שלם",
     "mealTotal": "סה״כ ארוחה",
-    "gramsQuantity": "{{grams}} גרם",
-    "servingsQuantity": "{{count}} מנות ({{grams}} גרם)",
-    "recipeServings": "×{{count}} מתכון"
+    "gramsQuantity": "{{grams}} גרם",
+    "servingsQuantity": "{{count}} מנות ({{grams}} גרם)",
+    "recipeServings": "×{{count}} מתכון",
+    "servingsQuantity_one": "מנה אחת ({{grams}} גרם)",
+    "servingsQuantity_two": "{{count}} מנות ({{grams}} גרם)",
+    "servingsQuantity_many": "{{count}} מנות ({{grams}} גרם)",
+    "servingsQuantity_other": "{{count}} מנות ({{grams}} גרם)",
+    "servingsCount_one": "מנה אחת",
+    "servingsCount_two": "{{count}} מנות",
+    "servingsCount_many": "{{count}} מנות",
+    "servingsCount_other": "{{count}} מנות"
   },
   "productCalculator": {
     "quickTitle": "חישוב מהיר"
@@ -323,5 +343,37 @@
   "editSavedMeal": {
     "title": "עריכת ארוחה שמורה",
     "subtitle": "עדכון פרטי הארוחה והפריטים."
+  },
+  "serving": {
+    "servingsUnit": "מנות",
+    "servingOne": "מנה",
+    "per": "ל־{{quantity}} {{unit}} ({{grams}} גרם)",
+    "perGrams": "למנה ({{grams}} גרם)",
+    "amount": "{{count}} {{unit}} ({{grams}} גרם)",
+    "unitWeight": "{{grams}} גרם ליחידה",
+    "quantityLabel": "כמות",
+    "unitLabel": "יחידה",
+    "unitPlaceholder": "לדוגמה: פרוסות",
+    "weightLabel": "משקל כולל (גרם) *",
+    "hint": "תארו את המנה, למשל 2 פרוסות = 60 גרם. השאירו את היחידה ריקה למנה שנמדדת בגרמים.",
+    "gramsShort": "גרם",
+    "toggleA11y": "מעבר בין גרמים ל{{unit}}",
+    "sectionTitle": "מנה",
+    "sectionTitleOptional": "מנה (לא חובה)",
+    "weightLabelOptional": "משקל כולל (גרם)",
+    "quantityOf": "כמות ({{unit}})",
+    "servingWeight": "מנה אחת = {{grams}} גרם",
+    "perNoWeight": "ל־{{quantity}} {{unit}}",
+    "perServingPlain": "למנה",
+    "amountNoWeight": "{{count}} {{unit}}",
+    "weightLabelServing": "משקל בגרמים (לא חובה)",
+    "hintServing": "הזינו את הערכים למנה הזו, למשל ביצה גדולה אחת או 2 פרוסות. הוסיפו משקל רק אם הוא ידוע; הוא מאפשר רישום בגרמים."
+  },
+  "strip": {
+    "gramsUnit": "ג׳",
+    "proteinShort": "חלבון",
+    "carbsShort": "פחמ׳",
+    "fatShort": "שומן",
+    "fiberShort": "סיבים"
   }
 }

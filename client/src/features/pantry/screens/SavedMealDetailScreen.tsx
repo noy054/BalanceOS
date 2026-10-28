@@ -15,6 +15,7 @@ import { StateView } from "../../../shared/components/ui/StateView";
 import { ActionSheet } from "../../../shared/components/ui/ActionSheet";
 import { formatGrams } from "../../../shared/helpers/formatNumber";
 import { useStyles } from "./styles/ItemDetailScreen.styles";
+import { useServingFormat } from "../hooks/useServingFormat";
 
 type Props = {
   id: string;
@@ -24,6 +25,7 @@ export function SavedMealDetailScreen({ id }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
   const models = useFoodCardModels();
+  const servingFormat = useServingFormat();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -124,8 +126,8 @@ export function SavedMealDetailScreen({ id }: Props) {
 
               const name = product?.name ?? recipe?.name ?? "—";
 
-              const detail = isProduct
-                ? t("foodCard.gramsQuantity", { grams: formatGrams(item.grams) })
+              const detail = product
+                ? servingFormat.amount(product, item)
                 : t("foodCard.recipeServings", { count: item.servings ?? 0 });
 
               return (

@@ -13,6 +13,7 @@ import {
   RecipeIngredientDraft,
   RecipeIngredientSelectionInput,
 } from "../helpers/recipeDraft";
+import { convertAmount } from "../helpers/serving";
 
 export function useAddRecipeForm(
   existingRecipe?: PantryRecipe,
@@ -134,7 +135,7 @@ export function useAddRecipeForm(
         return {
           ...ingredient,
           unit: nextUnit,
-          grams: nextUnit === "servings" ? "1" : "",
+          grams: convertAmount(ingredient.product, ingredient.grams, ingredient.unit, nextUnit),
         };
       }),
     );

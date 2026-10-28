@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   Text,
   View,
@@ -21,6 +20,7 @@ import { Button } from "../../../shared/components/ui/Button";
 import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
 import { useStyles } from "./styles/NutritionTargetsScreen.styles";
 import { useDirection } from "../../../shared/hooks/useDirection";
+import { keyboardBehavior } from "../../../shared/components/ui/KeyboardAvoider";
 
 type FormValues = {
   targetMode: TargetMode;
@@ -163,7 +163,7 @@ export function NutritionTargetsScreen() {
 
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={keyboardBehavior}
       >
         <ScrollView
           style={styles.flex}

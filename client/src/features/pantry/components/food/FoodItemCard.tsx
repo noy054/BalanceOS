@@ -13,7 +13,8 @@ import {
 import { useDirection } from "../../../../shared/hooks/useDirection";
 import { formatCalories } from "../../../../shared/helpers/formatNumber";
 import { FoodThumb } from "./FoodThumb";
-import { MacroValues, NutritionLine } from "./NutritionLine";
+import { MacroValues } from "./NutritionLine";
+import { NutritionStrip } from "./NutritionStrip";
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
@@ -64,49 +65,43 @@ export function FoodItemCard({
       accessibilityState={{ selected }}
       style={({ pressed }) => [
         styles.card,
-        dir.row,
         highlighted && styles.cardHighlighted,
         selected && styles.cardSelected,
         pressed && styles.cardPressed,
       ]}
     >
-      {onImagePress && imageUrl ? (
-        <Pressable
-          onPress={onImagePress}
-          hitSlop={4}
-          accessibilityRole="imagebutton"
-          accessibilityLabel={title}
-        >
-          {thumb}
-        </Pressable>
-      ) : (
-        thumb
-      )}
+      <View style={[styles.topRow, dir.row]}>
+        {onImagePress && imageUrl ? (
+          <Pressable
+            onPress={onImagePress}
+            hitSlop={4}
+            accessibilityRole="imagebutton"
+            accessibilityLabel={title}
+          >
+            {thumb}
+          </Pressable>
+        ) : (
+          thumb
+        )}
 
-      <View style={styles.body}>
-        <View style={[styles.titleRow, dir.row]}>
-          <Text style={[styles.title, dir.text]} numberOfLines={2}>
-            {title}
-          </Text>
+        <View style={styles.body}>
+          <View style={[styles.titleRow, dir.row]}>
+            <Text style={[styles.title, dir.text]} numberOfLines={2}>
+              {title}
+            </Text>
 
-          {trailing ? <View style={styles.trailing}>{trailing}</View> : null}
-        </View>
+            {trailing ? <View style={styles.trailing}>{trailing}</View> : null}
+          </View>
 
-        {meta ? (
-          <Text style={[styles.meta, dir.text]} numberOfLines={1}>
-            {meta}
-          </Text>
-        ) : null}
-
-        <View style={[styles.nutritionRow, dir.row]}>
-          <Text style={styles.calorieValue} numberOfLines={1}>
-            {calorieText}
-            <Text style={styles.calorieUnit}> {unit}</Text>
-          </Text>
-
-          <NutritionLine macros={macros} numberOfLines={2} style={styles.macros} />
+          {meta ? (
+            <Text style={[styles.meta, dir.text]} numberOfLines={2}>
+              {meta}
+            </Text>
+          ) : null}
         </View>
       </View>
+
+      <NutritionStrip calories={calories} macros={macros} />
     </Pressable>
   );
 }
@@ -115,7 +110,6 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       card: {
-        alignItems: "flex-start",
         gap: spacing.ms,
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
@@ -135,6 +129,10 @@ const useStyles = () =>
       },
       cardPressed: {
         backgroundColor: colors.surfaceMuted,
+      },
+      topRow: {
+        alignItems: "flex-start",
+        gap: spacing.ms,
       },
       body: {
         flex: 1,
@@ -158,24 +156,6 @@ const useStyles = () =>
       meta: {
         ...typography.footnote,
         color: colors.textSecondary,
-      },
-      nutritionRow: {
-        alignItems: "baseline",
-        gap: spacing.sm2,
-        marginTop: spacing.xs,
-      },
-      calorieValue: {
-        ...typography.bodyStrong,
-        ...typography.number,
-        color: colors.textPrimary,
-      },
-      calorieUnit: {
-        ...typography.caption,
-        fontWeight: "400",
-        color: colors.textSecondary,
-      },
-      macros: {
-        flex: 1,
       },
     }),
   );

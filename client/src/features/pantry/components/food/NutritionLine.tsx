@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { typography, useThemedStyles } from "../../../../shared/theme";
 import { useDirection } from "../../../../shared/hooks/useDirection";
 import { formatGrams } from "../../../../shared/helpers/formatNumber";
+import { useMacroVisibility } from "../../hooks/useMacroVisibility";
 
 export type MacroValues = {
   protein: number;
@@ -20,14 +21,21 @@ type Props = {
 
 export function useMacroLineText(macros: MacroValues) {
   const { t } = useTranslation("pantry");
+  const { showCarbs, showFat, showFiber } = useMacroVisibility();
 
   const parts = [
     t("nutritionLine.item", { label: t("macrosShort.protein"), value: formatGrams(macros.protein) }),
-    t("nutritionLine.item", { label: t("macrosShort.carbs"), value: formatGrams(macros.carbs) }),
-    t("nutritionLine.item", { label: t("macrosShort.fat"), value: formatGrams(macros.fat) }),
   ];
 
-  if (macros.fiber != null && macros.fiber > 0) {
+  if (showCarbs) {
+    parts.push(t("nutritionLine.item", { label: t("macrosShort.carbs"), value: formatGrams(macros.carbs) }));
+  }
+
+  if (showFat) {
+    parts.push(t("nutritionLine.item", { label: t("macrosShort.fat"), value: formatGrams(macros.fat) }));
+  }
+
+  if (showFiber && macros.fiber != null && macros.fiber > 0) {
     parts.push(t("nutritionLine.item", { label: t("macrosShort.fiber"), value: formatGrams(macros.fiber) }));
   }
 

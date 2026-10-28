@@ -9,6 +9,7 @@ import {
   getTimePickerModalDirectionStyles,
   useTimePickerModalStyles,
 } from "./styles/TimePickerModal.styles";
+import { getLocale } from "../../../shared/i18n";
 
 type Props = {
   visible: boolean;
@@ -68,7 +69,7 @@ export function TimePickerModal({
             mode="time"
             display="spinner"
             is24Hour
-            locale={i18n.language === "he" ? "he-IL" : "en-US"}
+            locale={getLocale(i18n.language)}
             textColor={colors.textPrimary}
             themeVariant={resolvedTheme === "dark" ? "dark" : "light"}
             onChange={onChange}

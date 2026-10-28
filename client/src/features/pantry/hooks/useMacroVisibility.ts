@@ -1,12 +1,5 @@
-import { useNutritionSettings } from "../../settings/hooks/useSettings";
+import { useNutritionDisplay } from "../../settings/components/NutritionDisplayProvider";
 
 export function useMacroVisibility() {
-  const { data: settings } = useNutritionSettings();
-
-  return {
-    showCarbs: settings?.showCarbsOnHome ?? true,
-    showFat: settings?.showFatOnHome ?? true,
-    showFiber: settings?.showFiberOnHome ?? true,
-    showPercentages: settings?.showProgressPercentages ?? true,
-  };
+  return useNutritionDisplay();
 }

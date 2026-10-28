@@ -46,6 +46,15 @@ export class DayLogsController {
     return this.service.copyMealEntry(user.id, mealEntryId, dto);
   }
 
+  @Delete('meal-entries/:mealEntryId')
+  @HttpCode(204)
+  async removeMealEntry(
+    @CurrentUser() user: UserPublic,
+    @Param('mealEntryId') mealEntryId: string,
+  ): Promise<void> {
+    return this.service.removeMealEntry(user.id, mealEntryId);
+  }
+
   @Delete('meal-items/:itemId')
   @HttpCode(204)
   async removeMealItem(

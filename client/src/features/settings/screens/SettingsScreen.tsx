@@ -8,6 +8,7 @@ import { SettingsSection } from "../components/SettingsSection";
 import { SettingsRow } from "../components/SettingsRow";
 import { useNutritionSettings } from "../hooks/useSettings";
 import { useAuthStore } from "../../auth/hooks/useAuthStore";
+import { useCatalogReviewSummary } from "../../admin-catalog/hooks/useAdminCatalog";
 import { useStyles, getDirectionStyles } from "./styles/SettingsScreen.styles";
 
 function getInitials(name: string): string {
@@ -29,6 +30,10 @@ export function SettingsScreen() {
 
   const user = useAuthStore((state) => state.user);
   const { data: settings } = useNutritionSettings();
+  const isAdmin = user?.role === "ADMIN";
+  const { data: reviewSummary } = useCatalogReviewSummary(isAdmin);
+  const pendingReviews =
+    (reviewSummary?.pendingCorrections ?? 0) + (reviewSummary?.pendingNewProducts ?? 0);
 
   const isExpertMode = settings?.experienceMode === "EXPERT";
 
@@ -40,8 +45,9 @@ export function SettingsScreen() {
     ? t("experience.expert")
     : t("experience.guided");
 
-  const languageSubtitle =
-    settings?.preferredLanguage === "en" ? t("language.en") : t("language.he");
+  const languageSubtitle = t(`language.${settings?.preferredLanguage ?? i18n.language}`, {
+    defaultValue: settings?.preferredLanguage ?? i18n.language,
+  });
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
@@ -133,6 +139,18 @@ export function SettingsScreen() {
               last
             />
           </SettingsSection>
+
+          {isAdmin ? (
+            <SettingsSection title={t("sections.admin")}>
+              <SettingsRow
+                icon="database-check-outline"
+                label={t("catalogReview.title")}
+                hint={t("catalogReview.rowSubtitle", { count: pendingReviews })}
+                onPress={() => router.push("/(app)/settings/catalog-review")}
+                last
+              />
+            </SettingsSection>
+          ) : null}
 
           <SettingsSection title={t("sections.app")}>
             <SettingsRow

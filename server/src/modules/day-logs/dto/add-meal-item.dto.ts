@@ -33,7 +33,7 @@ export class AddMealItemDto {
 
   @IsOptional()
   @IsNumber()
-  @Min(0.1)
+  @Min(0.01)
   @Type(() => Number)
   servings?: number;
 }

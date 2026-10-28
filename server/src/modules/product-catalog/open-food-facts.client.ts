@@ -7,14 +7,28 @@ import { NormalizedBarcode } from '../../common/barcode/barcode.utils';
 import {
   ExternalLookupResult,
   NormalizedProductData,
+  NutrientMap,
 } from './types/external-product.types';
 
-interface OFFNutriments {
-  'energy-kcal_100g'?: number;
-  proteins_100g?: number;
-  carbohydrates_100g?: number;
-  fat_100g?: number;
-  fiber_100g?: number;
+type OFFNutriments = Record<string, unknown>;
+
+function toNumber(value: unknown): number | null {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value.replace(',', '.'));
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function extractPer100g(nutriments: OFFNutriments): NutrientMap {
+  const result: NutrientMap = {};
+  for (const [key, value] of Object.entries(nutriments)) {
+    if (!key.endsWith('_100g')) continue;
+    const parsed = toNumber(value);
+    if (parsed !== null) result[key.slice(0, -'_100g'.length)] = parsed;
+  }
+  return result;
 }
 
 interface OFFProduct {
@@ -26,6 +40,9 @@ interface OFFProduct {
   /** 400px display-size variant provided by OFF v2 API */
   image_front_display_url?: string;
   nutriments?: OFFNutriments;
+  serving_size?: string;
+  serving_quantity?: number | string;
+  serving_quantity_unit?: string;
   code?: string;
   [key: string]: unknown;
 }
@@ -64,9 +81,16 @@ export class OpenFoodFactsClient {
     product: OFFProduct,
     barcode: NormalizedBarcode,
   ): NormalizedProductData {
-    const n = product.nutriments ?? {};
-    const nullableNum = (v: number | undefined): number | null =>
-      v != null ? v : null;
+    const nutrients = extractPer100g(product.nutriments ?? {});
+    const value = (key: string): number | null => nutrients[key] ?? null;
+    const servingQuantity = toNumber(product.serving_quantity);
+    const servingUnit = product.serving_quantity_unit?.trim().toLowerCase();
+    const servingSizeGrams =
+      servingQuantity !== null &&
+      servingQuantity > 0 &&
+      (!servingUnit || servingUnit === 'g')
+        ? servingQuantity
+        : null;
 
     const name =
       product.product_name_he?.trim() ||
@@ -77,8 +101,6 @@ export class OpenFoodFactsClient {
       ? product.brands.split(',')[0].trim() || null
       : null;
 
-    // Prefer the 400px display variant to avoid fetching multi-MB full images.
-    // Fall back to image_front_url then image_url if the display variant is absent.
     const imageUrl =
       product.image_front_display_url ||
       product.image_front_url ||
@@ -91,11 +113,18 @@ export class OpenFoodFactsClient {
       name,
       brand,
       imageUrl,
-      caloriesPer100g: nullableNum(n['energy-kcal_100g']),
-      proteinPer100g: nullableNum(n.proteins_100g),
-      carbsPer100g: nullableNum(n.carbohydrates_100g),
-      fatPer100g: nullableNum(n.fat_100g),
-      fiberPer100g: nullableNum(n.fiber_100g),
+      caloriesPer100g: value('energy-kcal'),
+      proteinPer100g: value('proteins'),
+      carbsPer100g: value('carbohydrates'),
+      fatPer100g: value('fat'),
+      fiberPer100g: value('fiber'),
+      sugarPer100g: value('sugars'),
+      saturatedFatPer100g: value('saturated-fat'),
+      sodiumPer100g: value('sodium'),
+      saltPer100g: value('salt'),
+      nutrients: Object.keys(nutrients).length > 0 ? nutrients : null,
+      servingSizeGrams,
+      servingSizeText: product.serving_size?.trim() || null,
       source: ProductSource.OPEN_FOOD_FACTS,
       verificationStatus: ProductVerificationStatus.AUTO_IMPORTED,
       externalProvider: 'open_food_facts',

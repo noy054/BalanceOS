@@ -1,8 +1,9 @@
-import { I18nManager } from 'react-native';
 import { Stack } from 'expo-router';
-
-const slideAnimation = I18nManager.isRTL ? 'slide_from_left' : 'slide_from_right';
+import { useTranslation } from 'react-i18next';
 
 export default function OnboardingLayout() {
+  const { i18n } = useTranslation();
+  const slideAnimation = i18n.dir(i18n.language) === 'rtl' ? 'slide_from_left' : 'slide_from_right';
+
   return <Stack screenOptions={{ headerShown: false, animation: slideAnimation }} />;
 }

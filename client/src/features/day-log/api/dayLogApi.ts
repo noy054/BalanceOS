@@ -23,6 +23,12 @@ export const dayLogApi = {
       .then(() => undefined);
   },
 
+  removeMealEntry(mealEntryId: string): Promise<void> {
+    return apiClient
+      .delete(DAY_LOG_ENDPOINTS.REMOVE_MEAL_ENTRY(mealEntryId))
+      .then(() => undefined);
+  },
+
   copyMealEntry(payload: CopyMealPayload): Promise<void> {
     return apiClient
       .post(DAY_LOG_ENDPOINTS.COPY_MEAL_ENTRY(payload.mealEntryId), { targetDates: payload.targetDates })

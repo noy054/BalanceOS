@@ -53,6 +53,7 @@ export class UsersService {
       fullName: user.fullName,
       provider: user.provider,
       googleId: user.googleId,
+      role: user.role,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

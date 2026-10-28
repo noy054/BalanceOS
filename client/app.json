@@ -39,12 +39,20 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow BalanceOS to access your camera to scan barcodes.",
+          "cameraPermission": "Allow BalanceOS to use your camera to scan barcodes and take product photos.",
           "microphonePermission": false,
           "recordAudioAndroid": false
         }
       ],
-      "expo-status-bar"
+      "expo-status-bar",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow BalanceOS to access your photos to add product images.",
+          "cameraPermission": "Allow BalanceOS to use your camera to scan barcodes and take product photos.",
+          "microphonePermission": false
+        }
+      ]
     ]
   }
 }

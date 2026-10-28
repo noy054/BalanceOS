@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView, Alert, KeyboardAvoidingView, Platform } from "react-native";
+import { ScrollView, Alert, KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
@@ -12,6 +12,7 @@ import { useProductCalculator } from "../hooks/useProductCalculator";
 import { NutritionFactsCard } from "../components/nutrition/NutritionFactsCard";
 import { ProductCalculatorCard } from "../components/products/ProductCalculatorCard";
 import { useStyles } from "./styles/ProductDetailScreen.styles";
+import { keyboardBehavior } from "../../../shared/components/ui/KeyboardAvoider";
 
 type Props = {
   id: string;
@@ -104,7 +105,7 @@ export function ProductDetailScreen({ id }: Props) {
 
       <KeyboardAvoidingView
         style={styles.scroll}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={keyboardBehavior}
       >
         <ScrollView
           style={styles.scroll}
@@ -117,7 +118,7 @@ export function ProductDetailScreen({ id }: Props) {
           <ProductCalculatorCard
             quantity={quantity}
             unit={unit}
-            servingSizeG={product?.servingSizeG}
+            serving={product}
             calcResult={calcResult}
             isRTL={isRTL}
             t={t}

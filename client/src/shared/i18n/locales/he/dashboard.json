@@ -42,11 +42,11 @@
     "andMore": "+{{count}} עוד",
     "copyToMoreDays": "הוסף לימים נוספים",
     "sectionTitle": "ארוחות",
-    "summary": "{{calories}} קק״ל · {{protein}} ג׳ חלבון",
+    "summary": "{{calories}} קק״ל · {{protein}} ג׳ חלבון",
     "emptyMeal": "עדיין לא נרשם דבר",
     "addToMeal": "הוספה ל{{meal}}",
-    "itemCalories": "{{calories}} קק״ל",
-    "itemProtein": "{{protein}} ג׳ חלבון",
+    "itemCalories": "{{calories}} קק״ל",
+    "itemProtein": "{{protein}} ג׳ חלבון",
     "itemsCount_one": "פריט אחד",
     "itemsCount_two": "{{count}} פריטים",
     "itemsCount_many": "{{count}} פריטים",
@@ -87,6 +87,7 @@
     "noSavedMeals": "אין ארוחות שמורות",
     "loadError": "שגיאה בטעינה",
     "logError": "שגיאה בשמירה",
+    "logPartialError": "{{count}} פריטים נשמרו. השאר עדיין ברשימה. נסה לשמור שוב.",
     "wholeMeal": "הוסף ארוחה שלמה",
     "selectItem": "בחר פריט מהרשימה למעלה",
     "done": "סיום",
@@ -115,7 +116,21 @@
     "scanBarcode": "סריקת ברקוד",
     "searchProducts": "חיפוש מוצרים",
     "searchRecipes": "חיפוש מתכונים",
-    "searchSavedMeals": "חיפוש ארוחות שמורות"
+    "searchSavedMeals": "חיפוש ארוחות שמורות",
+    "selectionPreview": "{{grams}} גרם · {{calories}} קק״ל",
+    "createProduct": "יצירת מוצר",
+    "deselect": "ביטול הבחירה של {{name}}",
+    "tapToDeselect": "הקישו שוב כדי לבטל את הבחירה",
+    "decrease": "הפחתת כמות",
+    "increase": "הגדלת כמות",
+    "gramsAmount": "{{grams}} גרם",
+    "caloriesAmount": "{{calories}} קק״ל",
+    "recipeAmount": "×{{count}} מתכון",
+    "invalidAmount": "הזינו כמות גדולה מאפס",
+    "cartItems_one": "פריט אחד להוספה",
+    "cartItems_two": "{{count}} פריטים להוספה",
+    "cartItems_many": "{{count}} פריטים להוספה",
+    "cartItems_other": "{{count}} פריטים להוספה"
   },
   "header": {
     "today": "היום"
@@ -124,5 +139,20 @@
     "loadFailed": "לא ניתן לטעון את סיכום היום",
     "retry": "ניסיון נוסף",
     "mealsLoadFailed": "לא ניתן לטעון את הארוחות של היום"
+  },
+  "remove": {
+    "itemTitle": "להסיר את {{name}} מ{{meal}}?",
+    "itemMessage": "{{calories}} קק״ל יוסרו מהסיכום היומי.",
+    "mealTitle": "להסיר את כל הפריטים מ{{meal}}?",
+    "mealMessage_one": "פריט אחד ({{calories}} קק״ל) יוסר מהסיכום היומי.",
+    "mealMessage_two": "{{count}} פריטים ({{calories}} קק״ל) יוסרו מהסיכום היומי.",
+    "mealMessage_many": "{{count}} פריטים ({{calories}} קק״ל) יוסרו מהסיכום היומי.",
+    "mealMessage_other": "{{count}} פריטים ({{calories}} קק״ל) יוסרו מהסיכום היומי.",
+    "confirm": "הסרה",
+    "cancel": "ביטול",
+    "failed": "לא ניתן היה להסיר. נסו שוב.",
+    "itemA11y": "הסרת {{name}}",
+    "mealMenuA11y": "אפשרויות נוספות עבור {{meal}}",
+    "removeMeal": "הסרת הארוחה"
   }
 }

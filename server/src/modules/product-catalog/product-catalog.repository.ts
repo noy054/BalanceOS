@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NormalizedProductData } from './types/external-product.types';
+import { EMPTY_NUTRITION } from '../pantry/product-nutrition.normalizer';
+import { toJson } from './catalog-data';
 import {
   CATALOG_ITEM_PUBLIC_SELECT,
   ProductCatalogItemDto,
@@ -61,13 +63,32 @@ export class ProductCatalogRepository {
         carbsPer100g: data.carbsPer100g,
         fatPer100g: data.fatPer100g,
         fiberPer100g: data.fiberPer100g,
+        sugarPer100g: data.sugarPer100g ?? null,
+        saturatedFatPer100g: data.saturatedFatPer100g ?? null,
+        sodiumPer100g: data.sodiumPer100g ?? null,
+        saltPer100g: data.saltPer100g ?? null,
+        nutrients: data.nutrients ?? undefined,
         servingSizeGrams: data.servingSizeGrams ?? null,
         servingSizeText: data.servingSizeText ?? null,
+        originalData: toJson({
+          ...EMPTY_NUTRITION,
+          name: data.name,
+          brand: data.brand,
+          barcode: data.barcode,
+          imageUrl: data.imageUrl,
+          caloriesPer100g: data.caloriesPer100g,
+          proteinPer100g: data.proteinPer100g,
+          carbsPer100g: data.carbsPer100g,
+          fatPer100g: data.fatPer100g,
+          fiberPer100g: data.fiberPer100g,
+          servingSizeG: data.servingSizeGrams ?? null,
+          servingSizeText: data.servingSizeText ?? null,
+          nutrients: data.nutrients ?? null,
+        }),
         source: data.source,
         verificationStatus: data.verificationStatus,
         externalProvider: data.externalProvider,
         externalId: data.externalId,
-        // Prisma JSON input type is incompatible with Record<string,unknown> at compile time but safe at runtime
         externalRawData: data.externalRawData as unknown as object,
         createdByUserId: userId,
         updatedByUserId: userId,

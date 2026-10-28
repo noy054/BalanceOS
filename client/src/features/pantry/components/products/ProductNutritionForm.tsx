@@ -8,7 +8,9 @@ import {
   NutritionMode,
   ProductFormErrors,
   ProductFormState,
+  ServingFormState,
 } from "../../helpers/productForm";
+import { ServingFields } from "./ServingFields";
 import { useStyles } from "./styles/ProductNutritionForm.styles";
 
 type Props = {
@@ -18,9 +20,10 @@ type Props = {
   errors: ProductFormErrors;
   nutritionMode: NutritionMode;
   isPerServing: boolean;
-  servingSizeG: string;
+  serving: ServingFormState;
+  requireCoreValues?: boolean;
   onSwitchMode: (mode: NutritionMode) => void;
-  onChangeServingSize: (value: string) => void;
+  onChangeServing: (key: keyof ServingFormState, value: string) => void;
   field: (key: keyof ProductFormState) => {
     value: string;
     onChangeText: (text: string) => void;
@@ -34,17 +37,35 @@ export function ProductNutritionForm({
   errors,
   nutritionMode,
   isPerServing,
-  servingSizeG,
+  serving,
+  requireCoreValues = false,
   onSwitchMode,
-  onChangeServingSize,
+  onChangeServing,
   field,
 }: Props) {
   const styles = useStyles();
 
+  const servingFields = (
+    <View style={isPerServing ? styles.servingFirst : styles.servingLast}>
+      <ServingFields
+        serving={serving}
+        perServingMode={isPerServing}
+        language={language}
+        weightError={errors.servingSizeG}
+        quantityError={errors.servingQuantity}
+        onChange={onChangeServing}
+      />
+    </View>
+  );
+
   return (
     <FormSection
       title={t("addProduct.nutritionSection")}
-      hint={t("addProduct.emptyValuesBecomeZero")}
+      hint={
+        requireCoreValues
+          ? t("addProduct.reviewValuesHint")
+          : t("addProduct.emptyValuesBecomeZero")
+      }
     >
       <View style={styles.modeRow}>
         <SegmentedControl
@@ -57,16 +78,7 @@ export function ProductNutritionForm({
         />
       </View>
 
-      {isPerServing ? (
-        <FormInput
-          key={`serving-${language}`}
-          label={t("addProduct.servingSizeLabel")}
-          value={servingSizeG}
-          onChangeText={onChangeServingSize}
-          error={errors.servingSizeG}
-          keyboardType="decimal-pad"
-        />
-      ) : null}
+      {isPerServing ? servingFields : null}
 
       <FormInput
         key={`calories-${language}-${nutritionMode}`}
@@ -123,6 +135,8 @@ export function ProductNutritionForm({
           />
         </View>
       </View>
+
+      {isPerServing ? null : servingFields}
     </FormSection>
   );
 }

@@ -5,7 +5,8 @@
     "preferences": "העדפות",
     "notifications": "התראות",
     "account": "חשבון ואבטחה",
-    "app": "אפליקציה"
+    "app": "אפליקציה",
+    "admin": "ניהול"
   },
   "profile": {
     "screenTitle": "עריכת פרופיל",
@@ -80,49 +81,35 @@
     "screenTitle": "העדפות מעקב",
     "row": "העדפות מעקב",
     "rowSubtitle": "יחידות, תצוגה",
-
     "defaultUnitSection": "יחידת ברירת מחדל",
     "defaultUnitTitle": "איך להוסיף אוכל ליומן",
     "defaultUnitDescription": "בחרי אם ברירת המחדל בהוספת אוכל תהיה לפי גרמים, מנה או יחידה.",
-
     "homeDisplaySection": "תצוגת מסך הבית",
     "guidedSection": "מצב מונחה",
     "unitsSection": "יחידות מידה",
-
     "showFiber": "הצג סיבים",
-    "showFiberHint": "הצגת סיבים בכרטיס המאקרו במסך הבית",
-
+    "showFiberHint": "הצגת סיבים במסך הבית ובכרטיסי המזון",
     "showCarbs": "הצג פחמימות",
-    "showCarbsHint": "הצגת פחמימות במסך הבית",
-
+    "showCarbsHint": "הצגת פחמימות במסך הבית ובכרטיסי המזון",
     "showFat": "הצג שומן",
-    "showFatHint": "הצגת שומן במסך הבית",
-
+    "showFatHint": "הצגת שומן במסך הבית ובכרטיסי המזון",
     "showProgress": "הצג אחוזי התקדמות",
     "showProgressHint": "הצגת אחוזים וטבעות התקדמות",
-
     "showGuidedSuggestions": "הצג המלצות",
     "showGuidedSuggestionsHint": "הצעות שיעזרו למשתמש להתקדם",
-
     "showMotivation": "הצג מוטיבציה",
     "showMotivationHint": "הודעות עידוד ותזכורות מוטיבציה",
-
     "defaultFoodUnit": "יחידת מידה ברירת מחדל",
-
     "comingSoon": "בקרוב",
-
     "foodUnitGrams": "גרמים",
     "foodUnitServing": "מנה",
     "foodUnitPiece": "יחידה",
-
     "enabled": "פעיל",
     "disabled": "כבוי",
-
     "saveButton": "שמור העדפות",
     "saving": "שומר...",
     "saved": "נשמר בהצלחה",
     "noChanges": "אין שינויים לשמירה",
-
     "units": {
       "GRAMS": "גרמים",
       "SERVING": "מנה",
@@ -134,28 +121,22 @@
     "row": "התראות",
     "rowSubtitle": "תזכורות ארוחות, סיכום יומי",
     "comingSoon": "תזמון התראות דורש התקנת expo-notifications",
-
     "mealRemindersSection": "תזכורות ארוחות",
     "breakfastReminder": "ארוחת בוקר",
     "lunchReminder": "ארוחת צהריים",
     "dinnerReminder": "ארוחת ערב",
-
     "summariesSection": "סיכומים",
     "waterSection": "שתייה",
     "waterReminder": "תזכורת שתייה",
     "waterIntervalLabel": "תדירות בדקות",
-
     "dailySummary": "סיכום יומי",
     "weeklySummary": "סיכום שבועי",
     "weeklySummaryDayLabel": "יום בשבוע",
-
     "timePlaceholder": "HH:MM",
     "pickTime": "בחירת שעה",
     "permissionDenied": "כדי להפעיל התראות צריך לאשר הרשאה בטלפון",
-
     "saveButton": "שמור",
     "saving": "שומר...",
-
     "days": {
       "0": "ראשון",
       "1": "שני",
@@ -205,28 +186,20 @@
     "rowSubtitlePrefix": "גרסה",
     "versionValue": "1.0.0",
     "versionLabel": "גרסת אפליקציה",
-
     "tagline": "מעקב תזונה פשוט, מדויק ונקי למי שרוצה שליטה.",
-
     "website": "אתר",
     "websiteHint": "פתיחת האתר הרשמי",
-
     "rateApp": "דרג את האפליקציה",
     "rateAppHint": "פתיחת עמוד האפליקציה בחנות",
-
     "shareApp": "שתף את האפליקציה",
     "shareAppHint": "שליחת קישור לאפליקציה",
-
     "legalSection": "מידע משפטי",
     "terms": "תנאי שימוש",
     "termsHint": "קריאת תנאי השימוש",
-
     "privacy": "מדיניות פרטיות",
     "privacyHint": "קריאת מדיניות הפרטיות",
-
     "contact": "צור קשר",
     "contactHint": "יצירת קשר עם התמיכה",
-
     "storeNote": "קישורי החנויות יעודכנו לאחר פרסום האפליקציה.",
     "openLinkFailed": "לא ניתן לפתוח את הקישור"
   },
@@ -238,9 +211,57 @@
     "profileSaveFailed": "שמירת הפרופיל נכשלה",
     "fullNameRequired": "צריך להזין שם מלא"
   },
-
   "common": {
     "cancel": "ביטול",
     "done": "אישור"
+  },
+  "catalogReview": {
+    "title": "בדיקת קטלוג",
+    "detailTitle": "בדיקת הגשה",
+    "rowSubtitle_one": "הגשה אחת ממתינה",
+    "rowSubtitle_two": "{{count}} הגשות ממתינות",
+    "rowSubtitle_many": "{{count}} הגשות ממתינות",
+    "rowSubtitle_other": "{{count}} הגשות ממתינות",
+    "notAllowed": "רק מנהלים יכולים לבדוק את הקטלוג המשותף.",
+    "corrections": "תיקונים ({{count}})",
+    "newProducts": "מוצרים חדשים ({{count}})",
+    "status": {
+      "PENDING": "ממתין",
+      "APPROVED": "אושר",
+      "REJECTED": "נדחה"
+    },
+    "kind": {
+      "CORRECTION": "תיקון למוצר בקטלוג",
+      "NEW_PRODUCT": "מוצר חדש"
+    },
+    "submittedBy": "{{name}} · {{date}}",
+    "barcode": "ברקוד {{barcode}}",
+    "source": "מקור: {{source}}",
+    "empty": "אין מה לבדוק כאן",
+    "loadFailed": "לא ניתן לטעון את ההגשות",
+    "retry": "נסו שוב",
+    "compare": "השוואת ערכים",
+    "columns": {
+      "original": "מקורי",
+      "current": "בקטלוג כעת",
+      "proposed": "הוגש"
+    },
+    "fields": {
+      "name": "שם",
+      "brand": "מותג",
+      "basis": "ערכים עבור",
+      "serving": "מנה"
+    },
+    "similarTitle": "כפילויות אפשריות",
+    "similarHint": "מיזוג לתוך מוצר קיים בקטלוג במקום יצירת מוצר חדש.",
+    "createNew": "יצירת מוצר חדש בקטלוג",
+    "editIntro": "ערכו את הערכים שיפורסמו בקטלוג המשותף.",
+    "noteLabel": "הערת בדיקה (לא חובה)",
+    "approve": "אישור",
+    "reject": "דחייה",
+    "cancel": "ביטול",
+    "rejectTitle": "לדחות את ההגשה?",
+    "rejectMessage": "הקטלוג המשותף לא ישתנה. המוצר של המשתמש לא מושפע.",
+    "actionFailed": "לא ניתן היה להשלים את הבדיקה. נסו שוב."
   }
 }

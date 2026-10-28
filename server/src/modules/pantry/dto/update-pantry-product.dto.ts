@@ -1,19 +1,8 @@
-import {
-  IsArray,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  MaxLength,
-  Min,
-  ValidateIf,
-} from 'class-validator';
-import { Transform, Type } from 'class-transformer';
-import { ProductCategory } from '../../../../generated/prisma/enums';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 import { IsBarcode } from '../../../common/barcode/is-barcode.validator';
+import { ProductNutritionInputDto } from './product-nutrition-input.dto';
 
-export class UpdatePantryProductDto {
+export class UpdatePantryProductDto extends ProductNutritionInputDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -23,7 +12,7 @@ export class UpdatePantryProductDto {
   @IsOptional()
   @IsString()
   @MaxLength(100)
-  brand?: string;
+  brand?: string | null;
 
   @IsOptional()
   @IsBarcode()
@@ -31,49 +20,5 @@ export class UpdatePantryProductDto {
 
   @IsOptional()
   @IsString()
-  imageUrl?: string;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Type(() => Number)
-  caloriesPer100g?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Type(() => Number)
-  proteinPer100g?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Type(() => Number)
-  carbsPer100g?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Type(() => Number)
-  fatPer100g?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Type(() => Number)
-  fiberPer100g?: number;
-
-  @IsOptional()
-  @ValidateIf((o) => o.servingSizeG !== null)
-  @IsNumber()
-  @Min(1)
-  @Transform(({ value }) =>
-    value === null || value === undefined ? value : Number(value),
-  )
-  servingSizeG?: number | null;
-
-  @IsOptional()
-  @IsArray()
-  @IsEnum(ProductCategory, { each: true })
-  mealCategories?: ProductCategory[];
+  imageUrl?: string | null;
 }

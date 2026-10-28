@@ -9,7 +9,29 @@ export const ALL_PRODUCT_CATEGORIES: ProductCategory[] = [
   "SNACK",
 ];
 
-export type PantryProduct = {
+export type NutritionBasis = "PER_100G" | "PER_SERVING";
+
+export type NutrientMap = Record<string, number>;
+
+export type ProductNutritionFields = {
+  nutritionBasis?: NutritionBasis;
+  caloriesPer100g: number | null;
+  proteinPer100g: number | null;
+  carbsPer100g: number | null;
+  fatPer100g: number | null;
+  fiberPer100g: number | null;
+  caloriesPerServing?: number | null;
+  proteinPerServing?: number | null;
+  carbsPerServing?: number | null;
+  fatPerServing?: number | null;
+  fiberPerServing?: number | null;
+  servingSizeG: number | null;
+  servingSizeText: string | null;
+  servingQuantity?: number | null;
+  servingUnit?: string | null;
+};
+
+export type PantryProduct = ProductNutritionFields & {
   id: string;
   userId: string;
   name: string;
@@ -18,38 +40,43 @@ export type PantryProduct = {
   barcode: string | null;
   normalizedBarcode: string | null;
   catalogItemId: string | null;
-  caloriesPer100g: number;
-  proteinPer100g: number;
-  carbsPer100g: number;
-  fatPer100g: number;
-  fiberPer100g: number | null;
-  servingSizeG: number | null;
-  servingSizeText: string | null;
+  nutrients?: NutrientMap | null;
   mealCategories: ProductCategory[];
   createdAt: string;
   updatedAt: string;
 };
 
-export type CreatePantryProductPayload = {
+export type ProductNutritionPayload = {
+  nutritionBasis: NutritionBasis;
+  caloriesPer100g: number | null;
+  proteinPer100g: number | null;
+  carbsPer100g: number | null;
+  fatPer100g: number | null;
+  fiberPer100g: number | null;
+  caloriesPerServing: number | null;
+  proteinPerServing: number | null;
+  carbsPerServing: number | null;
+  fatPerServing: number | null;
+  fiberPerServing: number | null;
+  servingSizeG: number | null;
+  servingQuantity: number | null;
+  servingUnit: string | null;
+};
+
+export type CreatePantryProductPayload = Partial<ProductNutritionPayload> & {
   name: string;
   brand?: string;
   barcode?: string;
   imageUrl?: string;
-  caloriesPer100g: number;
-  proteinPer100g: number;
-  carbsPer100g: number;
-  fatPer100g: number;
-  fiberPer100g?: number;
-  servingSizeG?: number;
   servingSizeText?: string;
   mealCategories?: ProductCategory[];
 };
 
-export type UpdatePantryProductPayload = Omit<
-  Partial<CreatePantryProductPayload>,
-  "servingSizeG"
-> & {
-  servingSizeG?: number | null;
+export type UpdatePantryProductPayload = Partial<ProductNutritionPayload> & {
+  name?: string;
+  brand?: string | null;
+  imageUrl?: string | null;
+  servingSizeText?: string | null;
   mealCategories?: ProductCategory[];
 };
 
@@ -81,8 +108,21 @@ export type ProductCatalogProduct = {
   carbsPer100g: number | null;
   fatPer100g: number | null;
   fiberPer100g: number | null;
+  nutritionBasis?: NutritionBasis;
+  caloriesPerServing?: number | null;
+  proteinPerServing?: number | null;
+  carbsPerServing?: number | null;
+  fatPerServing?: number | null;
+  fiberPerServing?: number | null;
+  sugarPer100g?: number | null;
+  saturatedFatPer100g?: number | null;
+  sodiumPer100g?: number | null;
+  saltPer100g?: number | null;
+  nutrients?: NutrientMap | null;
   servingSizeGrams: number | null;
   servingSizeText: string | null;
+  servingQuantity?: number | null;
+  servingUnit?: string | null;
   source: ProductCatalogSource;
   verificationStatus: ProductCatalogVerificationStatus;
   externalProvider: string | null;
@@ -90,14 +130,11 @@ export type ProductCatalogProduct = {
   updatedAt: string;
 };
 
-export type AddFromCatalogPayload = {
-  caloriesPer100g?: number;
-  proteinPer100g?: number;
-  carbsPer100g?: number;
-  fatPer100g?: number;
-  fiberPer100g?: number;
-  servingSizeG?: number;
-  servingSizeText?: string;
+export type AddFromCatalogPayload = Partial<ProductNutritionPayload> & {
+  name?: string;
+  brand?: string | null;
+  imageUrl?: string | null;
+  servingSizeText?: string | null;
   mealCategories?: ProductCategory[];
 };
 
@@ -148,14 +185,24 @@ export type RecipeItemProduct = Pick<
   | "carbsPer100g"
   | "fatPer100g"
   | "fiberPer100g"
+  | "nutritionBasis"
+  | "caloriesPerServing"
+  | "proteinPerServing"
+  | "carbsPerServing"
+  | "fatPerServing"
+  | "fiberPerServing"
   | "servingSizeG"
+  | "servingSizeText"
+  | "servingQuantity"
+  | "servingUnit"
   | "mealCategories"
 >;
 
 export type RecipeItem = {
   id: string;
   productId: string;
-  grams: number;
+  grams: number | null;
+  servings?: number | null;
   product: RecipeItemProduct;
   nutrition: NutritionTotals;
 };
@@ -176,26 +223,27 @@ export type CreateRecipePayload = {
   name: string;
   description?: string;
   mealType?: MealType | string;
-  items: Array<{
-    productId: string;
-    grams: number;
-  }>;
+  items: RecipeItemPayload[];
+};
+
+export type RecipeItemPayload = {
+  productId: string;
+  grams?: number;
+  servings?: number;
 };
 
 export type UpdateRecipePayload = {
   name?: string;
   description?: string;
   mealType?: MealType | string;
-  items?: Array<{
-    productId: string;
-    grams: number;
-  }>;
+  items?: RecipeItemPayload[];
 };
 
 // ── Saved Meals ─────────────────────────────────────────────────────────────
 
 export type SavedMealRecipeItem = {
-  grams: number;
+  grams: number | null;
+  servings?: number | null;
   product: RecipeItemProduct;
 };
 

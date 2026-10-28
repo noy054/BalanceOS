@@ -1,16 +1,19 @@
-import { Text, TextInput, View } from "react-native";
+import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { useAppTheme } from "../../../../shared/theme";
 import { IconButton } from "../../../../shared/components/ui/IconButton";
 import { formatCalories } from "../../../../shared/helpers/formatNumber";
 import { SavedMealDraftItem } from "../../helpers/savedMealDraft";
 import { useDraftRowStyles } from "../shared/styles/DraftItemRow.styles";
+import { AmountUnitInput } from "../shared/AmountUnitInput";
+import { hasServing } from "../../helpers/serving";
+import { useServingFormat } from "../../hooks/useServingFormat";
 
 type Props = {
   item: SavedMealDraftItem;
   isRTL: boolean;
   onChangeAmount: (key: string, value: string) => void;
+  onToggleUnit: (key: string) => void;
   onRemove: (key: string) => void;
 };
 
@@ -18,11 +21,12 @@ export function SavedMealDraftItemRow({
   item,
   isRTL,
   onChangeAmount,
+  onToggleUnit,
   onRemove,
 }: Props) {
   const { t } = useTranslation("pantry");
-  const { colors } = useAppTheme();
   const styles = useDraftRowStyles();
+  const format = useServingFormat();
 
   const row = { flexDirection: isRTL ? ("row-reverse" as const) : ("row" as const) };
   const text = {
@@ -35,21 +39,15 @@ export function SavedMealDraftItemRow({
 
   const itemSubtitle =
     item.kind === "product"
-      ? (item.product.brand ??
-        `${formatCalories(item.product.caloriesPer100g)} ${t("product.calUnit")} · ${t("product.per100g")}`)
+      ? [
+          item.product.brand,
+          hasServing(item.product)
+            ? format.perServing(item.product)
+            : `${formatCalories(item.product.caloriesPer100g)} ${t("product.calUnit")} · ${t("product.per100g")}`,
+        ]
+          .filter(Boolean)
+          .join(" · ")
       : `${formatCalories(item.recipe.totals.calories)} ${t("product.calUnit")} · ${t("foodCard.recipeTotal")}`;
-
-  const amountValue = item.kind === "product" ? item.grams : item.servings;
-
-  const amountPlaceholder =
-    item.kind === "product"
-      ? t("savedMeal.gramsPlaceholder")
-      : t("savedMeal.servingsPlaceholder");
-
-  const unitLabel =
-    item.kind === "product"
-      ? t("savedMeal.gramsLabel")
-      : t("savedMeal.servingsLabel");
 
   return (
     <View style={[styles.row, row]}>
@@ -63,20 +61,24 @@ export function SavedMealDraftItemRow({
         </Text>
       </View>
 
-      <View style={[styles.amountBox, row]}>
-        <TextInput
-          style={styles.amountInput}
-          value={amountValue}
-          onChangeText={(value) => onChangeAmount(item.key, value)}
-          keyboardType="decimal-pad"
-          placeholder={amountPlaceholder}
-          placeholderTextColor={colors.textMuted}
-          textAlign="center"
-          accessibilityLabel={`${itemName}, ${amountPlaceholder}`}
+      {item.kind === "product" ? (
+        <AmountUnitInput
+          name={itemName}
+          value={item.grams}
+          unit={item.unit}
+          product={item.product}
+          onChangeValue={(value) => onChangeAmount(item.key, value)}
+          onToggleUnit={() => onToggleUnit(item.key)}
         />
-
-        <Text style={styles.unitLabel}>{unitLabel}</Text>
-      </View>
+      ) : (
+        <AmountUnitInput
+          name={itemName}
+          value={item.servings}
+          unit="servings"
+          fixedUnitLabel={t("savedMeal.servingsLabel")}
+          onChangeValue={(value) => onChangeAmount(item.key, value)}
+        />
+      )}
 
       <IconButton
         icon="close"

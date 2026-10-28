@@ -39,6 +39,10 @@ export const useStyles = () =>
         opacity: states.pressedOpacity,
       },
 
+      pending: {
+        opacity: states.disabledOpacity,
+      },
+
       iconWrap: {
         width: 40,
         height: 40,
@@ -93,12 +97,13 @@ export const useStyles = () =>
       items: {
         borderTopWidth: StyleSheet.hairlineWidth,
         borderTopColor: colors.border,
-        marginHorizontal: spacing.md,
+        marginStart: spacing.md,
+        marginEnd: spacing.md,
       },
 
       itemRow: {
         alignItems: "center",
-        gap: spacing.ms,
+        gap: spacing.sm,
         minHeight: 48,
         paddingVertical: spacing.sm,
       },

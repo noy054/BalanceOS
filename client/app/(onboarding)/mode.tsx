@@ -8,6 +8,7 @@ import { ScreenShell } from '../../src/shared/components/ScreenShell';
 import { BrandMark } from '../../src/shared/components/BrandMark';
 import { useAppTheme } from '../../src/shared/theme';
 import { useStyles, getDirectionStyles } from './styles/mode.styles';
+import { getDirection } from '../../src/shared/theme/direction';
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -44,7 +45,7 @@ export default function OnboardingModeScreen() {
         </View>
 
         <MaterialCommunityIcons
-          name={isRTL ? 'chevron-left' : 'chevron-right'}
+          name={getDirection(isRTL).forwardIcon}
           size={22}
           color={colors.textMuted}
         />

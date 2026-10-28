@@ -51,8 +51,8 @@
     "dailyAverage": "ממוצע יומי בטווח שנבחר",
     "loggedDays": "הוזנו {{loggedDays}} מתוך {{rangeDays}} ימים",
     "exactTarget": "בול על היעד",
-    "overTarget": "מעל היעד ב־{{value}}{{unit}}",
-    "underTarget": "חסר {{value}}{{unit}}"
+    "overTarget": "מעל היעד ב־{{value}} {{unit}}",
+    "underTarget": "חסר {{value}} {{unit}}"
   },
 
   "macros": {

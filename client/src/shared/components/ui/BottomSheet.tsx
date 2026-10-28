@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import {
   KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -14,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { radius, shadows, spacing, typography, useThemedStyles } from "../../theme";
 import { useDirection } from "../../hooks/useDirection";
 import { IconButton } from "./IconButton";
+import { keyboardBehavior } from "./KeyboardAvoider";
 
 type Props = {
   visible: boolean;
@@ -50,7 +50,7 @@ export function BottomSheet({
     >
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={keyboardBehavior}
       >
         <Pressable
           style={styles.overlay}

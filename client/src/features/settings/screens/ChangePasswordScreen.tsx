@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, Alert, Text, View, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView, Alert, Text, View, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { Button } from '../../../shared/components/ui/Button';
 import { useChangePassword } from '../hooks/useSettings';
 import { useAppTheme } from '../../../shared/theme';
 import { useStyles } from './styles/ChangePasswordScreen.styles';
+import { keyboardBehavior } from '../../../shared/components/ui/KeyboardAvoider';
 
 export function ChangePasswordScreen() {
   const { t, i18n } = useTranslation('settings');
@@ -53,7 +54,7 @@ export function ChangePasswordScreen() {
 
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={keyboardBehavior}
       >
         <ScrollView
           style={styles.flex}

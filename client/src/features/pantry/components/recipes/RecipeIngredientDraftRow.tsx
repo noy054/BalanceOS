@@ -1,9 +1,11 @@
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { useAppTheme } from "../../../../shared/theme";
 import { IconButton } from "../../../../shared/components/ui/IconButton";
 import { RecipeIngredientDraft } from "../../helpers/recipeDraft";
+import { hasServing } from "../../helpers/serving";
+import { useServingFormat } from "../../hooks/useServingFormat";
+import { AmountUnitInput } from "../shared/AmountUnitInput";
 import { useDraftRowStyles } from "../shared/styles/DraftItemRow.styles";
 
 type Props = {
@@ -22,8 +24,8 @@ export function RecipeIngredientDraftRow({
   onRemove,
 }: Props) {
   const { t } = useTranslation("pantry");
-  const { colors } = useAppTheme();
   const styles = useDraftRowStyles();
+  const format = useServingFormat();
 
   const row = { flexDirection: isRTL ? ("row-reverse" as const) : ("row" as const) };
   const text = {
@@ -33,17 +35,10 @@ export function RecipeIngredientDraftRow({
 
   const meta = [
     ingredient.product.brand,
-    ingredient.product.servingSizeG
-      ? `${t("addProduct.perServing")} · ${ingredient.product.servingSizeG} ${t("product.gramsUnit")}`
-      : null,
+    hasServing(ingredient.product) ? format.perServing(ingredient.product) : null,
   ]
     .filter(Boolean)
     .join(" · ");
-
-  const placeholder =
-    ingredient.unit === "servings"
-      ? t("savedMeal.servingsPlaceholder")
-      : t("recipe.gramsPlaceholder");
 
   return (
     <View style={[styles.row, row]}>
@@ -59,45 +54,14 @@ export function RecipeIngredientDraftRow({
         ) : null}
       </View>
 
-      <View style={[styles.amountBox, row]}>
-        <TextInput
-          style={styles.amountInput}
-          value={ingredient.grams}
-          onChangeText={(value) => onChangeAmount(ingredient.key, value)}
-          keyboardType="decimal-pad"
-          placeholder={placeholder}
-          placeholderTextColor={colors.textMuted}
-          textAlign="center"
-          accessibilityLabel={`${ingredient.product.name}, ${placeholder}`}
-        />
-
-        {ingredient.product.servingSizeG ? (
-          <Pressable
-            onPress={() => onToggleUnit(ingredient.key)}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={t("recipe.toggleUnit")}
-            style={({ pressed }) => [
-              styles.unitToggle,
-              ingredient.unit === "servings" && styles.unitToggleActive,
-              pressed && styles.unitTogglePressed,
-            ]}
-          >
-            <Text
-              style={[
-                styles.unitToggleText,
-                ingredient.unit === "servings" && styles.unitToggleTextActive,
-              ]}
-            >
-              {ingredient.unit === "servings"
-                ? t("recipe.servingsLabel")
-                : t("recipe.gramsLabel")}
-            </Text>
-          </Pressable>
-        ) : (
-          <Text style={styles.unitLabel}>{t("recipe.gramsLabel")}</Text>
-        )}
-      </View>
+      <AmountUnitInput
+        name={ingredient.product.name}
+        value={ingredient.grams}
+        unit={ingredient.unit}
+        product={ingredient.product}
+        onChangeValue={(value) => onChangeAmount(ingredient.key, value)}
+        onToggleUnit={() => onToggleUnit(ingredient.key)}
+      />
 
       <IconButton
         icon="close"

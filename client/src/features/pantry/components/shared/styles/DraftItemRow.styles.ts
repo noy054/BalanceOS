@@ -58,6 +58,7 @@ export const useDraftRowStyles = () =>
 
       unitLabel: {
         minWidth: 40,
+        maxWidth: 88,
         ...typography.caption,
         color: colors.textSecondary,
         textAlign: "center",
@@ -65,6 +66,7 @@ export const useDraftRowStyles = () =>
 
       unitToggle: {
         minWidth: 52,
+        maxWidth: 96,
         minHeight: 32,
         paddingHorizontal: spacing.sm,
         borderRadius: radius.sm,

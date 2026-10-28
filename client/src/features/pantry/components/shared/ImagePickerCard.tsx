@@ -1,10 +1,10 @@
-import { Alert, Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { useAppTheme } from "../../../../shared/theme";
 import { Button } from "../../../../shared/components/ui/Button";
+import { useImageSource } from "../../../../shared/hooks/useImageSource";
 import { getDirectionStyles, useStyles } from "./styles/ImagePickerCard.styles";
 
 type Props = {
@@ -34,31 +34,12 @@ export function ImagePickerCard({
   onChangeImage,
   onRemoveImage,
 }: Props) {
-  const { t } = useTranslation("pantry");
+  const { t } = useTranslation("common");
   const { colors } = useAppTheme();
   const styles = useStyles();
   const dir = getDirectionStyles(isRTL);
-
-  async function handlePickImage() {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permission.granted) {
-      Alert.alert("", t("errors.imagePermissionDenied"));
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.85,
-    });
-
-    if (result.canceled || !result.assets?.[0]?.uri) {
-      return;
-    }
-
-    onChangeImage(result.assets[0].uri);
-  }
+  const source = useImageSource({ onPick: onChangeImage });
+  const handlePickImage = source.pickFromLibrary;
 
   return (
     <View style={[styles.card, dir.row]}>
@@ -83,6 +64,14 @@ export function ImagePickerCard({
         </Text>
 
         <View style={[styles.actionsRow, dir.row]}>
+          <Button
+            label={t("image.takePhoto")}
+            icon="camera-outline"
+            variant="secondary"
+            size="sm"
+            onPress={source.takePhoto}
+          />
+
           <Button
             label={imageUrl ? changeLabel : addLabel}
             icon={imageUrl ? "image-edit-outline" : "image-plus"}

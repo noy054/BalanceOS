@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
+import { Alert, KeyboardAvoidingView, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router, useLocalSearchParams } from "expo-router";
@@ -27,6 +27,7 @@ import { SavedMealBasicInfoCard } from "../components/saved-meals/SavedMealBasic
 import { SavedMealItemsCard } from "../components/saved-meals/SavedMealItemsCard";
 import { ImagePickerCard } from "../components/shared/ImagePickerCard";
 import { getDirectionStyles, useStyles } from "./styles/FormScreen.styles";
+import { keyboardBehavior } from "../../../shared/components/ui/KeyboardAvoider";
 
 type RouteParams = {
   id?: string;
@@ -117,7 +118,7 @@ export function AddSavedMealScreen() {
 
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={keyboardBehavior}
       >
         <ScrollView
           style={styles.flex}
@@ -157,6 +158,7 @@ export function AddSavedMealScreen() {
             items={form.items}
             isRTL={isRTL}
             onChangeAmount={form.updateAmount}
+            onToggleUnit={form.toggleUnit}
             onRemoveItem={form.removeItem}
             onAddProduct={() => form.setProductPickerVisible(true)}
             onAddRecipe={() => form.setRecipePickerVisible(true)}

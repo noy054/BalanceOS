@@ -9,12 +9,13 @@ datasource db {
 }
 
 model User {
-  id           String  @id @default(cuid())
-  email        String  @unique
+  id           String   @id @default(cuid())
+  email        String   @unique
   fullName     String
   passwordHash String?
-  provider     String  @default("local")
-  googleId     String? @unique
+  provider     String   @default("local")
+  googleId     String?  @unique
+  role         UserRole @default(USER)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -29,6 +30,8 @@ model User {
 
   createdCatalogItems ProductCatalogItem[] @relation("ProductCatalogCreatedBy")
   updatedCatalogItems ProductCatalogItem[] @relation("ProductCatalogUpdatedBy")
+  catalogSubmissions  CatalogSubmission[]  @relation("CatalogSubmissionAuthor")
+  reviewedSubmissions CatalogSubmission[]  @relation("CatalogSubmissionReviewer")
 
   @@index([email])
 }
@@ -92,6 +95,27 @@ model UserNutritionSettings {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum NutritionBasis {
+  PER_100G
+  PER_SERVING
+}
+
+enum CatalogSubmissionKind {
+  CORRECTION
+  NEW_PRODUCT
+}
+
+enum CatalogSubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum FoodUnit {
   GRAMS
   SERVING
@@ -120,6 +144,10 @@ model ProductCatalogItem {
 
   servingSizeText  String?
   servingSizeGrams Float?
+  servingQuantity  Float?
+  servingUnit      String?
+
+  nutritionBasis NutritionBasis @default(PER_100G)
 
   caloriesPer100g     Float?
   proteinPer100g      Float?
@@ -130,6 +158,15 @@ model ProductCatalogItem {
   fiberPer100g        Float?
   sodiumPer100g       Float?
   saltPer100g         Float?
+
+  caloriesPerServing Float?
+  proteinPerServing  Float?
+  carbsPerServing    Float?
+  fatPerServing      Float?
+  fiberPerServing    Float?
+
+  nutrients    Json?
+  originalData Json?
 
   source             ProductSource             @default(MANUAL)
   verificationStatus ProductVerificationStatus @default(UNVERIFIED)
@@ -148,6 +185,7 @@ model ProductCatalogItem {
   updatedAt DateTime @updatedAt
 
   pantryProducts PantryProduct[]
+  submissions    CatalogSubmission[]
 
   @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "ProductCatalogItem_name_trgm_idx")
   @@index([brand(ops: raw("gin_trgm_ops"))], type: Gin, map: "ProductCatalogItem_brand_trgm_idx")
@@ -210,22 +248,31 @@ model PasswordResetToken {
 }
 
 model PantryProduct {
-  id                String            @id @default(cuid())
-  userId            String
-  name              String
-  brand             String?
-  barcode           String?
-  normalizedBarcode String?
-  catalogItemId     String?
-  imageUrl          String?
-  caloriesPer100g   Float
-  proteinPer100g    Float
-  carbsPer100g      Float
-  fatPer100g        Float
-  fiberPer100g      Float?
-  servingSizeG      Float?
-  servingSizeText   String?
-  mealCategories    ProductCategory[]
+  id                 String            @id @default(cuid())
+  userId             String
+  name               String
+  brand              String?
+  barcode            String?
+  normalizedBarcode  String?
+  catalogItemId      String?
+  imageUrl           String?
+  nutritionBasis     NutritionBasis    @default(PER_100G)
+  caloriesPer100g    Float?
+  proteinPer100g     Float?
+  carbsPer100g       Float?
+  fatPer100g         Float?
+  fiberPer100g       Float?
+  caloriesPerServing Float?
+  proteinPerServing  Float?
+  carbsPerServing    Float?
+  fatPerServing      Float?
+  fiberPerServing    Float?
+  nutrients          Json?
+  servingSizeG       Float?
+  servingSizeText    String?
+  servingQuantity    Float?
+  servingUnit        String?
+  mealCategories     ProductCategory[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -235,6 +282,7 @@ model PantryProduct {
   recipeItems    PantryRecipeItem[]
   savedMealItems SavedMealItem[]
   mealItems      MealItem[]
+  submissions    CatalogSubmission[]
 
   @@unique([userId, normalizedBarcode])
   @@unique([userId, catalogItemId])
@@ -266,7 +314,8 @@ model PantryRecipeItem {
   id        String @id @default(cuid())
   recipeId  String
   productId String
-  grams     Float
+  grams     Float?
+  servings  Float?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -366,4 +415,31 @@ model MealItem {
   savedMeal     SavedMeal?     @relation(fields: [savedMealId], references: [id], onDelete: SetNull)
 
   @@index([mealEntryId])
+}
+
+model CatalogSubmission {
+  id                String                  @id @default(cuid())
+  kind              CatalogSubmissionKind
+  status            CatalogSubmissionStatus @default(PENDING)
+  userId            String
+  pantryProductId   String?
+  catalogItemId     String?
+  normalizedBarcode String?
+  proposedData      Json
+  reviewedByUserId  String?
+  reviewNote        String?
+  reviewedAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User                @relation("CatalogSubmissionAuthor", fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy    User?               @relation("CatalogSubmissionReviewer", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+  pantryProduct PantryProduct?      @relation(fields: [pantryProductId], references: [id], onDelete: SetNull)
+  catalogItem   ProductCatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: SetNull)
+
+  @@index([status, kind, createdAt])
+  @@index([pantryProductId])
+  @@index([catalogItemId])
+  @@index([userId])
 }

@@ -4,6 +4,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
 import { useAppTheme } from '../../../shared/theme';
 import { useStyles, getDirectionStyles } from './styles/SettingsRow.styles';
+import { getDirection } from '../../../shared/theme/direction';
 
 type Props = {
   label: string;
@@ -31,6 +32,7 @@ export function SettingsRow({
   const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === 'rtl';
   const dir = getDirectionStyles(isRTL);
+  const direction = getDirection(isRTL);
 
   const content = (pressed: boolean) => (
     <View style={[styles.row, dir.row, pressed && styles.pressed]}>
@@ -56,7 +58,7 @@ export function SettingsRow({
           {rightElement ?? null}
           {onPress && showChevron ? (
             <MaterialCommunityIcons
-              name={isRTL ? 'chevron-left' : 'chevron-right'}
+              name={direction.forwardIcon}
               size={20}
               color={colors.textMuted}
             />

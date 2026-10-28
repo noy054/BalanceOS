@@ -34,18 +34,22 @@ export type DayLogResponse = {
   fiberTotal: number;
 };
 
-export type MealItemSummary = {
-  id: string;
-  name: string;
+export type MealMacros = {
   calories: number;
   protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
 };
 
-export type MealEntrySummary = {
+export type MealItemSummary = MealMacros & {
+  id: string;
+  name: string;
+};
+
+export type MealEntrySummary = MealMacros & {
   id: string;
   mealType: string;
-  calories: number;
-  protein: number;
   items: MealItemSummary[];
 };
 

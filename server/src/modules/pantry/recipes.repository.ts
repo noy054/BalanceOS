@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateRecipeDto, RecipeItemDto } from './dto/create-recipe.dto';
+import { PRODUCT_NUTRITION_SELECT } from './product-select';
 
 const RECIPE_INCLUDE = {
   items: {
@@ -10,12 +11,9 @@ const RECIPE_INCLUDE = {
           id: true,
           name: true,
           brand: true,
-          caloriesPer100g: true,
-          proteinPer100g: true,
-          carbsPer100g: true,
-          fatPer100g: true,
-          fiberPer100g: true,
-          servingSizeG: true,
+          imageUrl: true,
+          mealCategories: true,
+          ...PRODUCT_NUTRITION_SELECT,
         },
       },
     },
@@ -56,7 +54,8 @@ export class RecipesRepository {
         items: {
           create: dto.items.map((item) => ({
             productId: item.productId,
-            grams: item.grams,
+            grams: item.grams ?? null,
+            servings: item.servings ?? null,
           })),
         },
       },
@@ -94,7 +93,8 @@ export class RecipesRepository {
             data: items.map((item) => ({
               recipeId: id,
               productId: item.productId,
-              grams: item.grams,
+              grams: item.grams ?? null,
+              servings: item.servings ?? null,
             })),
           });
         }

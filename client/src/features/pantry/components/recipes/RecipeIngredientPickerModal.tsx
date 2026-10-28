@@ -10,6 +10,7 @@ import { RecipeIngredientPickerSearchActions } from "./RecipeIngredientPickerSea
 import { RecipeIngredientPickerProductList } from "./RecipeIngredientPickerProductList";
 import { RecipeIngredientPickerSelectedPanel } from "./RecipeIngredientPickerSelectedPanel";
 import { RecipeIngredientPickerFooter } from "./RecipeIngredientPickerFooter";
+import { useKeyboardInset } from "../../../../shared/hooks/useKeyboardInset";
 import {
   getDirectionStyles,
   useStyles,
@@ -41,6 +42,7 @@ export function RecipeIngredientPickerModal({
   const dir = getDirectionStyles(isRTL);
 
   const picker = useRecipeIngredientPicker(products);
+  const keyboardInset = useKeyboardInset();
 
   function handleSearchChange(text: string) {
     picker.setSearch(text);
@@ -81,7 +83,7 @@ export function RecipeIngredientPickerModal({
       presentationStyle="pageSheet"
       onRequestClose={handleClose}
     >
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingBottom: keyboardInset }]}>
         <RecipeIngredientPickerHeader dir={dir} onClose={handleClose} />
 
         <RecipeIngredientPickerSearchActions

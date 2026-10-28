@@ -2,9 +2,11 @@ import type { ComponentProps } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
-import { formatGrams } from "../../../shared/helpers/formatNumber";
+import { useServingFormat } from "./useServingFormat";
 import { PantryProduct, PantryRecipe, SavedMeal } from "../types";
 import { MacroValues } from "../components/food/NutritionLine";
+import { hasServing } from "../helpers/serving";
+import { nutritionPer100g, nutritionPerServing } from "../helpers/nutrition";
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
@@ -57,13 +59,15 @@ function joinMeta(parts: Array<string | null | undefined | false>) {
 
 export function useFoodCardModels() {
   const { t } = useTranslation("pantry");
+  const format = useServingFormat();
 
-  function productBasisLabel(product: Pick<PantryProduct, "servingSizeG">) {
-    const hasServing = product.servingSizeG != null && product.servingSizeG > 0;
-
-    return hasServing
-      ? t("foodCard.perServingSize", { size: formatGrams(product.servingSizeG) })
-      : t("product.per100g");
+  function productBasisLabel(
+    product: Pick<
+      PantryProduct,
+      "nutritionBasis" | "servingSizeG" | "servingQuantity" | "servingUnit"
+    >,
+  ) {
+    return format.perServing(product);
   }
 
   function mealTypeLabel(mealType: string | null) {
@@ -71,8 +75,9 @@ export function useFoodCardModels() {
   }
 
   function product(item: PantryProduct): FoodCardModel {
-    const hasServing = item.servingSizeG != null && item.servingSizeG > 0;
-    const mul = hasServing ? (item.servingSizeG as number) / 100 : 1;
+    const values =
+      (hasServing(item) ? nutritionPerServing(item) : nutritionPer100g(item)) ??
+      nutritionPer100g(item);
     const categories = (item.mealCategories ?? [])
       .map((cat) => t(`categories.${cat}` as Parameters<typeof t>[0]))
       .join(", ");
@@ -82,12 +87,12 @@ export function useFoodCardModels() {
       meta: joinMeta([item.brand, productBasisLabel(item), categories]),
       imageUrl: item.imageUrl ?? null,
       fallbackIcon: FOOD_ICONS.product,
-      calories: item.caloriesPer100g * mul,
+      calories: values?.calories ?? 0,
       macros: {
-        protein: item.proteinPer100g * mul,
-        carbs: item.carbsPer100g * mul,
-        fat: item.fatPer100g * mul,
-        fiber: item.fiberPer100g != null ? item.fiberPer100g * mul : null,
+        protein: values?.protein ?? 0,
+        carbs: values?.carbs ?? 0,
+        fat: values?.fat ?? 0,
+        fiber: values?.fiber ?? null,
       },
     };
   }

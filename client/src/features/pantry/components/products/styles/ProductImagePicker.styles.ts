@@ -56,15 +56,3 @@ export const useStyles = () =>
       },
     }),
   );
-
-export function getDirectionStyles(isRTL: boolean) {
-  return {
-    row: {
-      flexDirection: isRTL ? ("row-reverse" as const) : ("row" as const),
-    },
-    text: {
-      textAlign: isRTL ? ("right" as const) : ("left" as const),
-      writingDirection: isRTL ? ("rtl" as const) : ("ltr" as const),
-    },
-  };
-}

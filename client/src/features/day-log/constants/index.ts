@@ -3,6 +3,7 @@ export const DAY_LOG_ENDPOINTS = {
   TODAY_MEALS: '/day-logs/today/meals',
   ADD_MEAL_ITEM: '/day-logs/today/meal-items',
   REMOVE_MEAL_ITEM: (itemId: string) => `/day-logs/meal-items/${itemId}`,
+  REMOVE_MEAL_ENTRY: (mealEntryId: string) => `/day-logs/meal-entries/${mealEntryId}`,
   COPY_MEAL_ENTRY: (mealEntryId: string) => `/day-logs/meal-entries/${mealEntryId}/copy`,
 } as const;
 

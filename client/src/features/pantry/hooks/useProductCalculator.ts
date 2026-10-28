@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { calculateNutritionForGrams } from "../helpers/nutrition";
+import { nutritionForAmount } from "../helpers/nutrition";
+import {
+  defaultAmount,
+  hasServing as productHasServing,
+  toAmountPayload,
+} from "../helpers/serving";
 import { CalculatedNutrition, PantryProduct } from "../types";
 
 export type CalculatorUnit = "grams" | "servings" | "calories";
@@ -13,11 +18,11 @@ export function useProductCalculator(product?: PantryProduct | null) {
 
   useEffect(() => {
     if (!product) return;
-    const hasServing = product.servingSizeG != null && product.servingSizeG > 0;
+    const hasServing = productHasServing(product);
     setCalcResult(null);
     setGramsResult(null);
     setUnit(hasServing ? "servings" : "grams");
-    setQuantity(hasServing ? "1" : "");
+    setQuantity(hasServing ? defaultAmount(product, "servings") : "");
   // Re-init only when the product itself changes, not on every render.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product?.id]);
@@ -40,20 +45,27 @@ export function useProductCalculator(product?: PantryProduct | null) {
     if (!product || Number.isNaN(parsed) || parsed <= 0) return;
 
     if (unit === "calories") {
-      if (product.caloriesPer100g <= 0) return;
-      const grams = (parsed / product.caloriesPer100g) * 100;
-      setCalcResult(calculateNutritionForGrams(product, grams));
-      setGramsResult(Math.round(grams));
+      const kcal100 = nutritionForAmount(product, { grams: 100 })?.calories ?? 0;
+      if (kcal100 > 0) {
+        const grams = (parsed / kcal100) * 100;
+        setCalcResult(nutritionForAmount(product, { grams }));
+        setGramsResult(Math.round(grams));
+        return;
+      }
+      const kcalServing = product.caloriesPerServing ?? 0;
+      if (kcalServing <= 0) return;
+      setCalcResult(nutritionForAmount(product, { servings: parsed / kcalServing }));
+      setGramsResult(null);
       return;
     }
 
-    const grams =
-      unit === "servings" && product.servingSizeG != null && product.servingSizeG > 0
-        ? parsed * product.servingSizeG
-        : parsed;
-
     setGramsResult(null);
-    setCalcResult(calculateNutritionForGrams(product, grams));
+    setCalcResult(
+      nutritionForAmount(
+        product,
+        toAmountPayload(product, parsed, unit === "servings" ? "servings" : "grams"),
+      ),
+    );
   }
 
   return { quantity, unit, calcResult, gramsResult, updateQuantity, selectUnit, calculate };

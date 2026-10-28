@@ -4,6 +4,7 @@ export type UserPublic = {
   fullName: string;
   provider: string;
   googleId: string | null;
+  role?: "USER" | "ADMIN";
   createdAt: string;
   updatedAt: string;
 };

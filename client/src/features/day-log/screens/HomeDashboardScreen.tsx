@@ -14,10 +14,12 @@ import { MealSectionCard } from "../components/MealSectionCard";
 import { CopyMealModal } from "../components/CopyMealModal";
 import { MEAL_SHORTCUTS } from "../../meals/constants/mealShortcuts";
 import { useTodayDayLog, useTodayMeals } from "../hooks/useDayLog";
+import { useMealRemoval } from "../hooks/useMealRemoval";
 import { DayLogSummary, MealEntrySummary } from "../types";
 import { useNutritionSettings } from "../../settings/hooks/useSettings";
 import { useAppTheme } from "../../../shared/theme";
 import { useStyles } from "./styles/HomeDashboardScreen.styles";
+import { getLocale } from "../../../shared/i18n";
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
@@ -51,7 +53,7 @@ function formatToday(dateString: string, language: string) {
   const validDate = Number.isNaN(date.getTime()) ? new Date() : date;
 
   try {
-    return validDate.toLocaleDateString(language === "he" ? "he-IL" : "en-US", {
+    return validDate.toLocaleDateString(getLocale(language), {
       weekday: "long",
       day: "numeric",
       month: "long",
@@ -137,6 +139,7 @@ export function HomeDashboardScreen() {
   }, [meals]);
 
   const [copyingMeal, setCopyingMeal] = useState<MealEntrySummary | null>(null);
+  const removal = useMealRemoval();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -204,7 +207,7 @@ export function HomeDashboardScreen() {
                 <StateView
                   variant="error"
                   compact
-                style={styles.stateCard}
+                  style={styles.stateCard}
                   message={t("errors.mealsLoadFailed")}
                   actionLabel={t("errors.retry")}
                   onAction={() => refetchMeals()}
@@ -218,8 +221,11 @@ export function HomeDashboardScreen() {
                       labelKey={section.labelKey}
                       icon={MEAL_ICONS[section.mealType] ?? "food-apple-outline"}
                       meal={section.meal}
+                      pendingIds={removal.pendingIds}
                       onAdd={handleMealTypeSelect}
                       onCopy={setCopyingMeal}
+                      onRemoveItem={removal.removeItem}
+                      onRemoveMeal={removal.removeMeal}
                     />
                   ))}
                 </View>

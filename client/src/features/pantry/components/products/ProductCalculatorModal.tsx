@@ -41,7 +41,7 @@ export function ProductCalculatorModal({ product, visible, onClose }: Props) {
           plain
           quantity={quantity}
           unit={unit}
-          servingSizeG={product.servingSizeG}
+          serving={product}
           calcResult={calcResult}
           isRTL={isRTL}
           t={t}

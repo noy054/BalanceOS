@@ -17,39 +17,50 @@ import hePantry from "./locales/he/pantry.json";
 import heSettings from "./locales/he/settings.json";
 import heStatistics from "./locales/he/statistics.json";
 
-export type SupportedLanguage = "he" | "en";
+const resources = {
+  he: {
+    auth: heAuth,
+    onboarding: heOnboarding,
+    common: heCommon,
+    dashboard: heDashboard,
+    pantry: hePantry,
+    settings: heSettings,
+    statistics: heStatistics,
+  },
+  en: {
+    auth: enAuth,
+    onboarding: enOnboarding,
+    common: enCommon,
+    dashboard: enDashboard,
+    pantry: enPantry,
+    settings: enSettings,
+    statistics: enStatistics,
+  },
+};
 
-export const SUPPORTED_LANGUAGES: SupportedLanguage[] = ["he", "en"];
+export type SupportedLanguage = keyof typeof resources;
+
+export const SUPPORTED_LANGUAGES = Object.keys(resources) as SupportedLanguage[];
+
+export const LANGUAGE_LOCALES: Record<SupportedLanguage, string> = {
+  he: "he-IL",
+  en: "en-US",
+};
 
 export const DEFAULT_LANGUAGE: SupportedLanguage = "he";
 
 export function isSupportedLanguage(
   language: string | null | undefined,
 ): language is SupportedLanguage {
-  return language === "he" || language === "en";
+  return Boolean(language) && SUPPORTED_LANGUAGES.includes(language as SupportedLanguage);
+}
+
+export function getLocale(language: string): string {
+  return isSupportedLanguage(language) ? LANGUAGE_LOCALES[language] : language;
 }
 
 i18n.use(initReactI18next).init({
-  resources: {
-    en: {
-      auth: enAuth,
-      onboarding: enOnboarding,
-      common: enCommon,
-      dashboard: enDashboard,
-      pantry: enPantry,
-      settings: enSettings,
-      statistics: enStatistics,
-    },
-    he: {
-      auth: heAuth,
-      onboarding: heOnboarding,
-      common: heCommon,
-      dashboard: heDashboard,
-      pantry: hePantry,
-      settings: heSettings,
-      statistics: heStatistics,
-    },
-  },
+  resources,
   lng: DEFAULT_LANGUAGE,
   fallbackLng: "en",
   ns: ["auth", "onboarding", "common", "dashboard", "pantry", "settings", "statistics"],

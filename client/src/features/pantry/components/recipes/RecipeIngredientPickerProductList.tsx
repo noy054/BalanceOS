@@ -41,6 +41,7 @@ export function RecipeIngredientPickerProductList({
       style={styles.list}
       contentContainerStyle={styles.listContent}
       keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
       renderItem={({ item }) => (

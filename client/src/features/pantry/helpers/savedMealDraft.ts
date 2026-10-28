@@ -6,7 +6,15 @@ import {
   SavedMealItem,
   SavedMealItemRecipe,
 } from "../types";
-import { sumNutrition } from "./nutrition";
+import { calcProductNutrition, sumNutrition } from "./nutrition";
+import {
+  AmountPayload,
+  AmountUnit,
+  amountFromStored,
+  defaultAmount,
+  defaultAmountUnit,
+  toAmountPayload,
+} from "./serving";
 
 export type SavedMealDraftProduct = PantryProduct | RecipeItemProduct;
 
@@ -21,6 +29,7 @@ export type ProductDraftItem = {
   key: string;
   product: SavedMealDraftProduct;
   grams: string;
+  unit: AmountUnit;
 };
 
 export type RecipeDraftItem = {
@@ -33,10 +42,9 @@ export type RecipeDraftItem = {
 export type SavedMealDraftItem = ProductDraftItem | RecipeDraftItem;
 
 export type SavedMealPayloadItem =
-  | {
+  | ({
       productId: string;
-      grams: number;
-    }
+    } & AmountPayload)
   | {
       recipeId: string;
       servings: number;
@@ -55,20 +63,6 @@ function roundMacro(value: number) {
   return Math.round(value * 10) / 10;
 }
 
-function calcProductDraftNutrition(
-  product: SavedMealDraftProduct,
-  grams: number,
-): NutritionTotalsType {
-  const factor = grams / 100;
-
-  return {
-    calories: Math.round(product.caloriesPer100g * factor),
-    protein: roundMacro(product.proteinPer100g * factor),
-    carbs: roundMacro(product.carbsPer100g * factor),
-    fat: roundMacro(product.fatPer100g * factor),
-    fiber: roundMacro((product.fiberPer100g ?? 0) * factor),
-  };
-}
 
 export function calcRecipeTotals(
   recipe: SavedMealDraftRecipe,
@@ -91,7 +85,8 @@ export function createSavedMealDraftFromProduct(
     kind: "product",
     key: makeSavedMealDraftKey(),
     product,
-    grams: "100",
+    grams: defaultAmount(product),
+    unit: defaultAmountUnit(product),
   };
 }
 
@@ -109,18 +104,20 @@ export function createSavedMealDraftFromRecipe(
 export function createSavedMealDraftFromSavedMealItem(
   item: SavedMealItem,
 ): SavedMealDraftItem | null {
-  if (item.product && item.grams != null) {
+  if (item.product && (item.grams != null || item.servings != null)) {
+    const stored = amountFromStored(item.product, item);
     return {
       kind: "product",
       key: item.id,
       product: item.product,
-      grams: String(item.grams),
+      grams: stored.amount,
+      unit: stored.unit,
     };
   }
 
   if (item.recipe && item.servings != null) {
     const liveTotals = sumNutrition(
-      item.recipe.items.map((ri) => calcProductDraftNutrition(ri.product, ri.grams)),
+      item.recipe.items.map((ri) => calcProductNutrition(ri.product, ri)),
     );
     return {
       kind: "recipe",
@@ -140,10 +137,13 @@ export function calculateSavedMealDraftTotals(items: SavedMealDraftItem[]) {
   const nutritionList = items
     .map((item) => {
       if (item.kind === "product") {
-        const grams = parsePositiveNumber(item.grams);
+        const amount = parsePositiveNumber(item.grams);
 
-        if (grams) {
-          return calcProductDraftNutrition(item.product, grams);
+        if (amount) {
+          return calcProductNutrition(
+            item.product,
+            toAmountPayload(item.product, amount, item.unit),
+          );
         }
 
         return null;
@@ -168,12 +168,12 @@ export function buildSavedMealPayloadItems(
   return items
     .map((item) => {
       if (item.kind === "product") {
-        const grams = parsePositiveNumber(item.grams);
+        const amount = parsePositiveNumber(item.grams);
 
-        if (grams) {
+        if (amount) {
           return {
             productId: item.product.id,
-            grams,
+            ...toAmountPayload(item.product, amount, item.unit),
           };
         }
 

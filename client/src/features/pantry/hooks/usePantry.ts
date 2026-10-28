@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
+  InfiniteData,
   QueryClient,
   useInfiniteQuery,
   useMutation,
@@ -7,17 +8,69 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { pantryApi } from '../api/pantryApi';
-import { BARCODE_QUERY_KEYS, PANTRY_PAGE_SIZE, PANTRY_QUERY_KEYS } from '../constants';
+import {
+  BARCODE_QUERY_KEYS,
+  CATALOG_QUERY_KEYS,
+  PANTRY_PAGE_SIZE,
+  PANTRY_QUERY_KEYS,
+  RECIPE_QUERY_KEYS,
+  SAVED_MEAL_QUERY_KEYS,
+} from '../constants';
 import {
   AddFromCatalogPayload,
   CreatePantryProductPayload,
+  Page,
   PantryProduct,
   UpdatePantryProductPayload,
 } from '../types';
 
+type ProductPages = InfiniteData<Page<PantryProduct>, string | undefined>;
+
+function patchProductPages(
+  queryClient: QueryClient,
+  update: (items: PantryProduct[], pageIndex: number) => PantryProduct[],
+) {
+  queryClient.setQueriesData<ProductPages>(
+    { queryKey: ['pantry', 'products', 'pages'] },
+    (data) =>
+      data
+        ? {
+            ...data,
+            pages: data.pages.map((page, index) => ({
+              ...page,
+              items: update(page.items, index),
+            })),
+          }
+        : data,
+  );
+}
+
+function upsertProduct(queryClient: QueryClient, product: PantryProduct) {
+  queryClient.setQueryData(PANTRY_QUERY_KEYS.detail(product.id), product);
+  let found = false;
+  patchProductPages(queryClient, (items) =>
+    items.map((item) => {
+      if (item.id !== product.id) return item;
+      found = true;
+      return product;
+    }),
+  );
+  if (!found) {
+    patchProductPages(queryClient, (items, index) =>
+      index === 0
+        ? [...items, product].sort((a, b) => a.name.localeCompare(b.name))
+        : items,
+    );
+  }
+}
+
 function invalidatePantryProducts(queryClient: QueryClient) {
-  queryClient.invalidateQueries({ queryKey: PANTRY_QUERY_KEYS.list });
-  queryClient.invalidateQueries({ queryKey: BARCODE_QUERY_KEYS.all });
+  return Promise.all([
+    queryClient.invalidateQueries({ queryKey: PANTRY_QUERY_KEYS.list }),
+    queryClient.invalidateQueries({ queryKey: BARCODE_QUERY_KEYS.all }),
+    queryClient.invalidateQueries({ queryKey: RECIPE_QUERY_KEYS.list }),
+    queryClient.invalidateQueries({ queryKey: SAVED_MEAL_QUERY_KEYS.list }),
+  ]);
 }
 
 export function usePantryProducts(search?: string) {
@@ -68,9 +121,17 @@ export function useCreatePantryProduct() {
   return useMutation({
     mutationFn: (payload: CreatePantryProductPayload) => pantryApi.create(payload),
     onSuccess: (created) => {
-      queryClient.setQueryData(PANTRY_QUERY_KEYS.detail(created.id), created);
-      invalidatePantryProducts(queryClient);
+      upsertProduct(queryClient, created);
+      void invalidatePantryProducts(queryClient);
     },
+  });
+}
+
+export function useCatalogItem(id: string) {
+  return useQuery({
+    queryKey: CATALOG_QUERY_KEYS.detail(id),
+    queryFn: () => pantryApi.getCatalogItem(id),
+    enabled: Boolean(id),
   });
 }
 
@@ -85,8 +146,8 @@ export function useAddPantryProductFromCatalog() {
       payload: AddFromCatalogPayload;
     }) => pantryApi.addFromCatalog(catalogItemId, payload),
     onSuccess: (created) => {
-      queryClient.setQueryData(PANTRY_QUERY_KEYS.detail(created.id), created);
-      invalidatePantryProducts(queryClient);
+      upsertProduct(queryClient, created);
+      void invalidatePantryProducts(queryClient);
     },
   });
 }
@@ -97,8 +158,8 @@ export function useUpdatePantryProduct(id: string) {
     mutationFn: (payload: UpdatePantryProductPayload) =>
       pantryApi.update(id, payload),
     onSuccess: (updated) => {
-      queryClient.setQueryData(PANTRY_QUERY_KEYS.detail(id), updated);
-      invalidatePantryProducts(queryClient);
+      upsertProduct(queryClient, updated);
+      void invalidatePantryProducts(queryClient);
     },
   });
 }
@@ -109,7 +170,8 @@ export function useDeletePantryProduct() {
     mutationFn: (id: string) => pantryApi.delete(id),
     onSuccess: (_data, id) => {
       queryClient.removeQueries({ queryKey: PANTRY_QUERY_KEYS.detail(id) });
-      invalidatePantryProducts(queryClient);
+      patchProductPages(queryClient, (items) => items.filter((item) => item.id !== id));
+      void invalidatePantryProducts(queryClient);
     },
   });
 }

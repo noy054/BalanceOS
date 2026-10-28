@@ -38,12 +38,6 @@ export const useStyles = () =>
         paddingBottom: spacing.xl,
       },
 
-      manualBody: {
-        flex: 1,
-        paddingHorizontal: spacing.md,
-        paddingTop: spacing.sm,
-        gap: spacing.ms,
-      },
 
       scanArea: {
         width: "100%",
@@ -185,6 +179,10 @@ export const useStyles = () =>
         marginBottom: spacing.sm,
       },
 
+      resultIconWarning: {
+        backgroundColor: colors.warningSoft,
+      },
+
       resultTitle: {
         ...typography.label,
         color: colors.textSecondary,
@@ -214,27 +212,6 @@ export const useStyles = () =>
 
       actionsStack: {
         gap: spacing.sm,
-      },
-
-      notFoundBanner: {
-        alignItems: "flex-start",
-        gap: spacing.ms,
-        backgroundColor: colors.warningSoft,
-        borderRadius: radius.md,
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.ms,
-      },
-
-      notFoundTitle: {
-        ...typography.callout,
-        fontWeight: "600",
-        color: colors.textPrimary,
-      },
-
-      notFoundHint: {
-        ...typography.footnote,
-        color: colors.textSecondary,
-        marginTop: 2,
       },
     }),
   );

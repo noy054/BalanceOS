@@ -1,58 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { MacrosSnapshot } from '../nutrition-calculator/nutrition-calculator.service';
+import { ProductNutritionSource } from '../nutrition-calculator/product-nutrition';
+import { PRODUCT_NUTRITION_SELECT } from '../pantry/product-select';
 
-export type PantryProductRow = {
+export type PantryProductRow = ProductNutritionSource & {
   id: string;
   name: string;
-  caloriesPer100g: number;
-  proteinPer100g: number;
-  carbsPer100g: number;
-  fatPer100g: number;
-  fiberPer100g: number | null;
 };
+
+type AmountRow = { grams: number | null; servings: number | null };
 
 export type PantryRecipeRow = {
   id: string;
   name: string;
-  items: Array<{
-    grams: number;
-    product: {
-      caloriesPer100g: number;
-      proteinPer100g: number;
-      carbsPer100g: number;
-      fatPer100g: number;
-      fiberPer100g: number | null;
-    };
-  }>;
+  items: Array<AmountRow & { product: ProductNutritionSource }>;
 };
 
 export type SavedMealRow = {
   id: string;
   name: string;
-  items: Array<{
-    grams: number | null;
-    servings: number | null;
-    product: {
-      caloriesPer100g: number;
-      proteinPer100g: number;
-      carbsPer100g: number;
-      fatPer100g: number;
-      fiberPer100g: number | null;
-    } | null;
-    recipe: {
-      items: Array<{
-        grams: number;
-        product: {
-          caloriesPer100g: number;
-          proteinPer100g: number;
-          carbsPer100g: number;
-          fatPer100g: number;
-          fiberPer100g: number | null;
-        };
-      }>;
-    } | null;
-  }>;
+  items: Array<
+    AmountRow & {
+      product: ProductNutritionSource | null;
+      recipe: {
+        items: Array<AmountRow & { product: ProductNutritionSource }>;
+      } | null;
+    }
+  >;
 };
 
 const DEFAULT_TARGETS = {
@@ -146,11 +121,7 @@ export class DayLogsRepository {
       select: {
         id: true,
         name: true,
-        caloriesPer100g: true,
-        proteinPer100g: true,
-        carbsPer100g: true,
-        fatPer100g: true,
-        fiberPer100g: true,
+        ...PRODUCT_NUTRITION_SELECT,
       },
     });
   }
@@ -167,14 +138,9 @@ export class DayLogsRepository {
         items: {
           select: {
             grams: true,
+            servings: true,
             product: {
-              select: {
-                caloriesPer100g: true,
-                proteinPer100g: true,
-                carbsPer100g: true,
-                fatPer100g: true,
-                fiberPer100g: true,
-              },
+              select: PRODUCT_NUTRITION_SELECT,
             },
           },
         },
@@ -196,27 +162,16 @@ export class DayLogsRepository {
             grams: true,
             servings: true,
             product: {
-              select: {
-                caloriesPer100g: true,
-                proteinPer100g: true,
-                carbsPer100g: true,
-                fatPer100g: true,
-                fiberPer100g: true,
-              },
+              select: PRODUCT_NUTRITION_SELECT,
             },
             recipe: {
               select: {
                 items: {
                   select: {
                     grams: true,
+                    servings: true,
                     product: {
-                      select: {
-                        caloriesPer100g: true,
-                        proteinPer100g: true,
-                        carbsPer100g: true,
-                        fatPer100g: true,
-                        fiberPer100g: true,
-                      },
+                      select: PRODUCT_NUTRITION_SELECT,
                     },
                   },
                 },
@@ -279,6 +234,20 @@ export class DayLogsRepository {
         },
       },
     });
+  }
+
+  findMealEntryWithOwnership(mealEntryId: string) {
+    return this.prisma.mealEntry.findUnique({
+      where: { id: mealEntryId },
+      select: {
+        id: true,
+        dayLog: { select: { id: true, userId: true } },
+      },
+    });
+  }
+
+  deleteMealItemsByEntry(mealEntryId: string) {
+    return this.prisma.mealItem.deleteMany({ where: { mealEntryId } });
   }
 
   deleteMealItem(itemId: string) {

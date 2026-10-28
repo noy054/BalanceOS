@@ -45,14 +45,24 @@ export class DayLogsService {
     let snapshot: MacrosSnapshot;
 
     if (dto.pantryProductId) {
-      if (!dto.grams)
-        throw new BadRequestException('grams is required for products');
+      if (Boolean(dto.grams) === Boolean(dto.servings))
+        throw new BadRequestException(
+          'Products require either grams or servings',
+        );
       const product = await this.repo.findPantryProductForUser(
         dto.pantryProductId,
         userId,
       );
       if (!product) throw new NotFoundException('Product not found');
-      snapshot = this.calculator.productSnapshot(product, dto.grams);
+      const productSnapshot = this.calculator.productSnapshot(product, {
+        grams: dto.grams,
+        servings: dto.servings,
+      });
+      if (!productSnapshot)
+        throw new BadRequestException(
+          'This amount cannot be calculated for this product',
+        );
+      snapshot = productSnapshot;
     } else if (dto.pantryRecipeId) {
       if (!dto.servings)
         throw new BadRequestException('servings is required for recipes');
@@ -69,11 +79,12 @@ export class DayLogsService {
       );
       if (!meal) throw new NotFoundException('Saved meal not found');
       const itemTotals = meal.items.map((item) => {
-        if (item.product && item.grams) {
-          return this.calculator.productSnapshot(
+        if (item.product && (item.grams || item.servings)) {
+          const productSnapshot = this.calculator.productSnapshot(
             { ...item.product, name: '' },
-            item.grams,
+            item,
           );
+          if (productSnapshot) return productSnapshot;
         }
         if (item.recipe && item.servings) {
           return this.calculator.recipeSnapshot(
@@ -137,15 +148,24 @@ export class DayLogsService {
       .map((entry) => {
         let calories = 0;
         let protein = 0;
+        let carbs = 0;
+        let fat = 0;
+        let fiber = 0;
         const items = entry.items.map((item) => {
           const s = item.macrosSnapshot as MacrosSnapshot;
           calories += s.calories;
           protein += s.protein;
+          carbs += s.carbs ?? 0;
+          fat += s.fat ?? 0;
+          fiber += s.fiber ?? 0;
           return {
             id: item.id,
             name: s.name,
             calories: s.calories,
             protein: s.protein,
+            carbs: s.carbs ?? 0,
+            fat: s.fat ?? 0,
+            fiber: s.fiber ?? 0,
           };
         });
         return {
@@ -153,6 +173,9 @@ export class DayLogsService {
           mealType: entry.mealType,
           calories: Math.round(calories),
           protein: Math.round(protein * 10) / 10,
+          carbs: Math.round(carbs * 10) / 10,
+          fat: Math.round(fat * 10) / 10,
+          fiber: Math.round(fiber * 10) / 10,
           items,
         };
       });
@@ -199,6 +222,15 @@ export class DayLogsService {
 
       await this.repo.recalculateAndSaveTotals(dayLog.id);
     }
+  }
+
+  async removeMealEntry(userId: string, mealEntryId: string): Promise<void> {
+    const entry = await this.repo.findMealEntryWithOwnership(mealEntryId);
+    if (!entry || entry.dayLog.userId !== userId) {
+      throw new NotFoundException('Meal entry not found');
+    }
+    await this.repo.deleteMealItemsByEntry(mealEntryId);
+    await this.repo.recalculateAndSaveTotals(entry.dayLog.id);
   }
 
   async removeMealItem(userId: string, itemId: string): Promise<void> {

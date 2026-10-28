@@ -10,6 +10,7 @@ type Props = {
   items: SavedMealDraftItem[];
   isRTL: boolean;
   onChangeAmount: (key: string, value: string) => void;
+  onToggleUnit: (key: string) => void;
   onRemoveItem: (key: string) => void;
   onAddProduct: () => void;
   onAddRecipe: () => void;
@@ -19,6 +20,7 @@ export function SavedMealItemsCard({
   items,
   isRTL,
   onChangeAmount,
+  onToggleUnit,
   onRemoveItem,
   onAddProduct,
   onAddRecipe,
@@ -34,6 +36,7 @@ export function SavedMealItemsCard({
           item={item}
           isRTL={isRTL}
           onChangeAmount={onChangeAmount}
+          onToggleUnit={onToggleUnit}
           onRemove={onRemoveItem}
         />
       ))}

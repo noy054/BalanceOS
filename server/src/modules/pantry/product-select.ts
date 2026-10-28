@@ -1,0 +1,17 @@
+export const PRODUCT_NUTRITION_SELECT = {
+  nutritionBasis: true,
+  caloriesPer100g: true,
+  proteinPer100g: true,
+  carbsPer100g: true,
+  fatPer100g: true,
+  fiberPer100g: true,
+  caloriesPerServing: true,
+  proteinPerServing: true,
+  carbsPerServing: true,
+  fatPerServing: true,
+  fiberPerServing: true,
+  servingSizeG: true,
+  servingSizeText: true,
+  servingQuantity: true,
+  servingUnit: true,
+} as const;

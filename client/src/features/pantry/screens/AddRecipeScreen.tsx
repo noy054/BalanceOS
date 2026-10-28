@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
+import { Alert, KeyboardAvoidingView, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router, useLocalSearchParams } from "expo-router";
@@ -22,6 +22,7 @@ import { RecipeIngredientsCard } from "../components/recipes/RecipeIngredientsCa
 import { ImagePickerCard } from "../components/shared/ImagePickerCard";
 import { useAddRecipeForm } from "../hooks/useAddRecipeForm";
 import { getDirectionStyles, useStyles } from "./styles/FormScreen.styles";
+import { keyboardBehavior } from "../../../shared/components/ui/KeyboardAvoider";
 
 type RouteParams = {
   id?: string;
@@ -130,7 +131,7 @@ export function AddRecipeScreen() {
 
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={keyboardBehavior}
       >
         <ScrollView
           style={styles.flex}

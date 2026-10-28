@@ -63,7 +63,10 @@
     "back": "Back",
     "detailsSection": "Details",
     "categoriesHint": "Used to prioritize suggestions when adding food to a meal",
-    "caloriesPerServingLabel": "Calories per serving"
+    "caloriesPerServingLabel": "Calories per serving",
+    "reviewTitle": "Review product",
+    "reviewSubtitle": "Check the scanned details and correct anything before saving. Your changes are saved to your pantry only and sent for review.",
+    "reviewValuesHint": "Fill in any missing values. Values the source didn't provide are left empty."
   },
   "macros": {
     "protein": "Protein",
@@ -82,7 +85,7 @@
   "productDetail": {
     "title": "Product Details",
     "nutritionSection": "Nutrition per 100g",
-    "nutritionPerServing": "Nutrition per serving ({{size}}g)",
+    "nutritionPerServing": "Nutrition per serving ({{size}} g)",
     "calculator": "Meal Calculator",
     "calculatorHint": "Enter amount to calculate nutrition values",
     "calculatorPlaceholder": "Amount in grams",
@@ -100,7 +103,8 @@
     "back": "Back",
     "calculatorByGrams": "Grams",
     "calculatorByServings": "Servings",
-    "calculateAction": "Calculate"
+    "calculateAction": "Calculate",
+    "nutritionFor": "Nutrition {{basis}}"
   },
   "recipe": {
     "nameLabel": "Recipe name *",
@@ -227,15 +231,15 @@
       "sizeLabel": "Size",
       "labelField": "Label",
       "labelPlaceholder": "e.g. 1 cup, 1 slice",
-      "preview": "Per serving ({{g}}g)"
+      "preview": "Per serving ({{g}} g)"
     },
     "calcSection": {
       "title": "Calculator",
       "grams": "g",
       "calories": "kcal",
       "placeholder": "Enter value",
-      "resultByGrams": "{{cal}} kcal · {{p}}g P · {{c}}g C · {{f}}g F",
-      "resultByCalories": "≈ {{grams}}g · {{cal}} kcal · {{p}}g P · {{c}}g C · {{f}}g F"
+      "resultByGrams": "{{cal}} kcal · P {{p}} g · C {{c}} g · F {{f}} g",
+      "resultByCalories": "≈ {{grams}} g · {{cal}} kcal · P {{p}} g · C {{c}} g · F {{f}} g"
     },
     "manualForm": {
       "title": "Add Product Manually",
@@ -259,7 +263,15 @@
     "missingNutrition": {
       "title": "Missing nutrition values",
       "hint": "The source did not provide these values. Enter them per 100g from the label."
-    }
+    },
+    "createProduct": "Create product",
+    "notFoundCreateHint": "Create it yourself with its nutrition values, serving and a photo. It will be saved with this barcode.",
+    "reviewAndEdit": "Review & edit",
+    "missingValuesNotice": "Some nutrition values are missing. Review the product and fill them in before adding it.",
+    "sourceOpenFoodFacts": "Values from Open Food Facts",
+    "sourceUsda": "Values from USDA FoodData Central",
+    "sourceVerified": "Verified by BalanceOS",
+    "sourceCommunity": "Shared catalog"
   },
   "empty": {
     "products": "No products in pantry yet",
@@ -303,15 +315,19 @@
     "fiber": "Fiber"
   },
   "nutritionLine": {
-    "item": "{{label}} {{value}}g"
+    "item": "{{label}} {{value}} g"
   },
   "foodCard": {
-    "perServingSize": "per serving ({{size}} g)",
+    "perServingSize": "per serving ({{size}} g)",
     "recipeTotal": "Whole recipe",
     "mealTotal": "Meal total",
-    "gramsQuantity": "{{grams}} g",
-    "servingsQuantity": "{{count}} servings ({{grams}} g)",
-    "recipeServings": "×{{count}} recipe"
+    "gramsQuantity": "{{grams}} g",
+    "servingsQuantity": "{{count}} servings ({{grams}} g)",
+    "recipeServings": "×{{count}} recipe",
+    "servingsQuantity_one": "{{count}} serving ({{grams}} g)",
+    "servingsQuantity_other": "{{count}} servings ({{grams}} g)",
+    "servingsCount_one": "{{count}} serving",
+    "servingsCount_other": "{{count}} servings"
   },
   "productCalculator": {
     "quickTitle": "Quick calculation"
@@ -323,5 +339,37 @@
   "editSavedMeal": {
     "title": "Edit Saved Meal",
     "subtitle": "Update the meal details and items."
+  },
+  "serving": {
+    "servingsUnit": "servings",
+    "servingOne": "serving",
+    "per": "per {{quantity}} {{unit}} ({{grams}} g)",
+    "perGrams": "per serving ({{grams}} g)",
+    "amount": "{{count}} {{unit}} ({{grams}} g)",
+    "unitWeight": "{{grams}} g each",
+    "quantityLabel": "Quantity",
+    "unitLabel": "Unit",
+    "unitPlaceholder": "e.g. slices",
+    "weightLabel": "Total weight (g) *",
+    "hint": "Describe the serving, for example 2 slices = 60 g. Leave the unit empty for a serving measured in grams.",
+    "gramsShort": "g",
+    "toggleA11y": "Switch between grams and {{unit}}",
+    "sectionTitle": "Serving",
+    "sectionTitleOptional": "Serving (optional)",
+    "weightLabelOptional": "Total weight (g)",
+    "quantityOf": "Number of {{unit}}",
+    "servingWeight": "1 serving = {{grams}} g",
+    "perNoWeight": "per {{quantity}} {{unit}}",
+    "perServingPlain": "per serving",
+    "amountNoWeight": "{{count}} {{unit}}",
+    "weightLabelServing": "Weight in grams (optional)",
+    "hintServing": "Enter the values for this serving, for example 1 large egg or 2 slices. Add the weight only if you know it; it enables logging in grams."
+  },
+  "strip": {
+    "gramsUnit": "g",
+    "proteinShort": "Prot.",
+    "carbsShort": "Carbs",
+    "fatShort": "Fat",
+    "fiberShort": "Fiber"
   }
 }

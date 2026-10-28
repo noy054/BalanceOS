@@ -14,6 +14,7 @@ import { PickerHeader } from "../shared/PickerHeader";
 import { useFoodCardModels } from "../../hooks/useFoodCardModels";
 import { useStyles } from "./styles/ProductPickerModal.styles";
 import { ListGap } from "../../../../shared/components/ui/ListGap";
+import { useKeyboardInset } from "../../../../shared/hooks/useKeyboardInset";
 
 type ProductPickerModalProps = {
   visible: boolean;
@@ -52,6 +53,7 @@ export function ProductPickerModal({
   const styles = useStyles();
   const insets = useSafeAreaInsets();
   const models = useFoodCardModels();
+  const keyboardInset = useKeyboardInset();
 
   const [search, setSearch] = useState("");
 
@@ -81,7 +83,7 @@ export function ProductPickerModal({
       presentationStyle="pageSheet"
       onRequestClose={handleClose}
     >
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingBottom: keyboardInset }]}>
         <PickerHeader title={t("picker.productsTitle")} onClose={handleClose} />
 
         <View style={styles.searchWrap}>
@@ -102,6 +104,7 @@ export function ProductPickerModal({
             onEndReached={onEndReached}
             onEndReachedThreshold={0.5}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
             renderItem={({ item }) => {
               const isAdded = selectedIds.includes(item.id);
 
@@ -117,7 +120,10 @@ export function ProductPickerModal({
             ItemSeparatorComponent={ListGap}
             contentContainerStyle={[
               styles.list,
-              { paddingBottom: insets.bottom + styles.list.paddingBottom },
+              {
+                paddingBottom:
+                  (keyboardInset > 0 ? 0 : insets.bottom) + styles.list.paddingBottom,
+              },
             ]}
           />
         )}
@@ -143,6 +149,7 @@ export function RecipePickerModal({
   const styles = useStyles();
   const insets = useSafeAreaInsets();
   const models = useFoodCardModels();
+  const keyboardInset = useKeyboardInset();
 
   const [search, setSearch] = useState("");
 
@@ -167,7 +174,7 @@ export function RecipePickerModal({
       presentationStyle="pageSheet"
       onRequestClose={handleClose}
     >
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingBottom: keyboardInset }]}>
         <PickerHeader title={t("picker.recipesTitle")} onClose={handleClose} />
 
         <View style={styles.searchWrap}>
@@ -186,6 +193,7 @@ export function RecipePickerModal({
             data={filtered}
             keyExtractor={(item) => item.id}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
             renderItem={({ item }) => (
               <FoodItemCard
                 {...models.recipe(item)}
@@ -196,7 +204,10 @@ export function RecipePickerModal({
             ItemSeparatorComponent={ListGap}
             contentContainerStyle={[
               styles.list,
-              { paddingBottom: insets.bottom + styles.list.paddingBottom },
+              {
+                paddingBottom:
+                  (keyboardInset > 0 ? 0 : insets.bottom) + styles.list.paddingBottom,
+              },
             ]}
           />
         )}

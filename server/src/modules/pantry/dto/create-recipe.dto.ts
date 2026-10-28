@@ -25,10 +25,17 @@ export class RecipeItemDto {
   @IsNotEmpty()
   productId: string;
 
+  @IsOptional()
   @IsNumber()
   @Min(0.1)
   @Type(() => Number)
-  grams: number;
+  grams?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0.01)
+  @Type(() => Number)
+  servings?: number;
 }
 
 export class CreateRecipeDto {

@@ -4,53 +4,28 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { SavedMealsRepository, SavedMealRow } from './saved-meals.repository';
-import { CreateSavedMealDto } from './dto/create-saved-meal.dto';
+import {
+  CreateSavedMealDto,
+  SavedMealItemDto,
+} from './dto/create-saved-meal.dto';
 import { UpdateSavedMealDto } from './dto/update-saved-meal.dto';
 import {
   NutritionTotals,
-  calcProductNutrition,
+  calcItemNutrition,
   sumNutrition,
 } from './nutrition.utils';
-
-function calcRecipeTotals(
-  recipeItems: Array<{
-    grams: number;
-    product: {
-      caloriesPer100g: number;
-      proteinPer100g: number;
-      carbsPer100g: number;
-      fatPer100g: number;
-      fiberPer100g: number | null;
-    };
-  }>,
-): NutritionTotals {
-  return sumNutrition(
-    recipeItems.map((ri) => calcProductNutrition(ri.product, ri.grams)),
-  );
-}
+import { scaledRecipeTotals } from '../nutrition-calculator/nutrition-calculator.service';
+import { ZERO_TOTALS } from '../nutrition-calculator/product-nutrition';
+import { PantryItemValidator } from './pantry-item.validator';
 
 function enrichSavedMeal(meal: NonNullable<SavedMealRow>) {
   const enrichedItems = meal.items.map((item) => {
-    let nutrition: NutritionTotals = {
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      fiber: 0,
-    };
+    let nutrition: NutritionTotals = { ...ZERO_TOTALS };
 
-    if (item.product && item.grams) {
-      nutrition = calcProductNutrition(item.product, item.grams);
+    if (item.product && (item.grams || item.servings)) {
+      nutrition = calcItemNutrition(item.product, item);
     } else if (item.recipe && item.servings) {
-      const recipeTotals = calcRecipeTotals(item.recipe.items);
-      const s = item.servings;
-      nutrition = {
-        calories: Math.round(recipeTotals.calories * s),
-        protein: Math.round(recipeTotals.protein * s * 10) / 10,
-        carbs: Math.round(recipeTotals.carbs * s * 10) / 10,
-        fat: Math.round(recipeTotals.fat * s * 10) / 10,
-        fiber: Math.round(recipeTotals.fiber * s * 10) / 10,
-      };
+      nutrition = scaledRecipeTotals(item.recipe.items, item.servings);
     }
 
     return { ...item, nutrition };
@@ -65,7 +40,10 @@ function enrichSavedMeal(meal: NonNullable<SavedMealRow>) {
 
 @Injectable()
 export class SavedMealsService {
-  constructor(private readonly repo: SavedMealsRepository) {}
+  constructor(
+    private readonly repo: SavedMealsRepository,
+    private readonly validator: PantryItemValidator,
+  ) {}
 
   async list(userId: string) {
     const meals = await this.repo.findAllByUserId(userId);
@@ -79,27 +57,14 @@ export class SavedMealsService {
   }
 
   async create(userId: string, dto: CreateSavedMealDto) {
-    for (const item of dto.items) {
-      const hasProduct = !!item.productId;
-      const hasRecipe = !!item.recipeId;
-      if (hasProduct === hasRecipe) {
-        throw new BadRequestException(
-          'Each item must have exactly one of productId or recipeId',
-        );
-      }
-      if (hasProduct && !item.grams) {
-        throw new BadRequestException('Product items require grams');
-      }
-      if (hasRecipe && !item.servings) {
-        throw new BadRequestException('Recipe items require servings');
-      }
-    }
+    await this.validateItems(userId, dto.items);
     const meal = await this.repo.create(userId, dto);
     return enrichSavedMeal(meal);
   }
 
   async update(userId: string, id: string, dto: UpdateSavedMealDto) {
     await this.getById(userId, id);
+    if (dto.items) await this.validateItems(userId, dto.items);
     const updated = await this.repo.updateWithItems(
       id,
       dto.name,
@@ -112,5 +77,34 @@ export class SavedMealsService {
   async delete(userId: string, id: string): Promise<void> {
     await this.getById(userId, id);
     await this.repo.delete(id);
+  }
+
+  private async validateItems(userId: string, items: SavedMealItemDto[]) {
+    for (const item of items) {
+      const hasProduct = !!item.productId;
+      const hasRecipe = !!item.recipeId;
+      if (hasProduct === hasRecipe) {
+        throw new BadRequestException(
+          'Each item must have exactly one of productId or recipeId',
+        );
+      }
+      if (hasRecipe && !item.servings) {
+        throw new BadRequestException('Recipe items require servings');
+      }
+    }
+    await this.validator.validateProductAmounts(
+      userId,
+      items
+        .filter((item) => item.productId)
+        .map((item) => ({
+          productId: item.productId!,
+          grams: item.grams,
+          servings: item.servings,
+        })),
+    );
+    await this.validator.validateRecipeOwnership(
+      userId,
+      items.filter((item) => item.recipeId).map((item) => item.recipeId!),
+    );
   }
 }

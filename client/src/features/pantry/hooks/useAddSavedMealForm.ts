@@ -10,6 +10,7 @@ import {
   SavedMealDraftItem,
 } from "../helpers/savedMealDraft";
 import { MealType, PantryProduct, PantryRecipe, SavedMeal } from "../types";
+import { convertAmount } from "../helpers/serving";
 
 export function useAddSavedMealForm(
   existingMeal: SavedMeal | undefined,
@@ -110,6 +111,24 @@ export function useAddSavedMealForm(
     );
   }
 
+  function toggleUnit(key: string) {
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.key !== key || item.kind !== "product") {
+          return item;
+        }
+
+        const nextUnit = item.unit === "grams" ? "servings" : "grams";
+
+        return {
+          ...item,
+          unit: nextUnit,
+          grams: convertAmount(item.product, item.grams, item.unit, nextUnit),
+        };
+      }),
+    );
+  }
+
   function removeItem(key: string) {
     setItems((prev) => prev.filter((item) => item.key !== key));
   }
@@ -123,6 +142,7 @@ export function useAddSavedMealForm(
     productPickerVisible,
     recipePickerVisible,
     liveTotals,
+    toggleUnit,
     hasTotals,
     selectedProductIds,
     validItems,

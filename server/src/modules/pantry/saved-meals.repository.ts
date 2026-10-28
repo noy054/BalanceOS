@@ -4,6 +4,7 @@ import {
   CreateSavedMealDto,
   SavedMealItemDto,
 } from './dto/create-saved-meal.dto';
+import { PRODUCT_NUTRITION_SELECT } from './product-select';
 
 const SAVED_MEAL_INCLUDE = {
   items: {
@@ -13,11 +14,9 @@ const SAVED_MEAL_INCLUDE = {
           id: true,
           name: true,
           brand: true,
-          caloriesPer100g: true,
-          proteinPer100g: true,
-          carbsPer100g: true,
-          fatPer100g: true,
-          fiberPer100g: true,
+          imageUrl: true,
+          mealCategories: true,
+          ...PRODUCT_NUTRITION_SELECT,
         },
       },
       recipe: {
@@ -26,11 +25,9 @@ const SAVED_MEAL_INCLUDE = {
             include: {
               product: {
                 select: {
-                  caloriesPer100g: true,
-                  proteinPer100g: true,
-                  carbsPer100g: true,
-                  fatPer100g: true,
-                  fiberPer100g: true,
+                  id: true,
+                  name: true,
+                  ...PRODUCT_NUTRITION_SELECT,
                 },
               },
             },

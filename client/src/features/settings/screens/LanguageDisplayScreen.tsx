@@ -6,7 +6,7 @@ import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { SegmentedControl } from "../../../shared/components/ui/SegmentedControl";
 import { SettingsSection } from "../components/SettingsSection";
 import { useNutritionSettings, useUpdateSettings } from "../hooks/useSettings";
-import { saveLanguage, SupportedLanguage } from "../../../shared/i18n";
+import { saveLanguage, SUPPORTED_LANGUAGES, SupportedLanguage } from "../../../shared/i18n";
 import { ThemeMode } from "../types";
 import { saveThemeMode, useAppTheme } from "../../../shared/theme";
 import { useDirection } from "../../../shared/hooks/useDirection";
@@ -50,8 +50,10 @@ export function LanguageDisplayScreen() {
           <View style={styles.optionBlock}>
             <SegmentedControl
               options={[
-                { value: "he" as SupportedLanguage, label: t("language.he") },
-                { value: "en" as SupportedLanguage, label: t("language.en") },
+                ...SUPPORTED_LANGUAGES.map((language) => ({
+                  value: language,
+                  label: t(`language.${language}`),
+                })),
               ]}
               value={currentLang}
               onChange={handleLanguageChange}

@@ -19,5 +19,17 @@
       "he": "Hebrew",
       "en": "English"
     }
+  },
+  "image": {
+    "permissionTitle": "Permission needed",
+    "cameraDenied": "Camera access is off. Allow it in Settings to take product photos.",
+    "libraryDenied": "Photo access is off. Allow it in Settings to choose product images.",
+    "openSettings": "Open Settings",
+    "cancel": "Cancel",
+    "failed": "Couldn't open your photos. Try again.",
+    "cameraUnavailable": "The camera isn't available on this device.",
+    "takePhoto": "Take photo",
+    "chooseFromLibrary": "Choose photo",
+    "remove": "Remove"
   }
 }

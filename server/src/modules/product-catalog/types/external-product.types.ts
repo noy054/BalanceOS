@@ -3,6 +3,8 @@ import {
   ProductVerificationStatus,
 } from '../../../../generated/prisma/enums';
 
+export type NutrientMap = Record<string, number>;
+
 export interface NormalizedProductData {
   barcode: string;
   normalizedBarcode: string;
@@ -14,6 +16,11 @@ export interface NormalizedProductData {
   carbsPer100g: number | null;
   fatPer100g: number | null;
   fiberPer100g: number | null;
+  sugarPer100g?: number | null;
+  saturatedFatPer100g?: number | null;
+  sodiumPer100g?: number | null;
+  saltPer100g?: number | null;
+  nutrients?: NutrientMap | null;
   servingSizeGrams?: number | null;
   servingSizeText?: string | null;
   source: ProductSource;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { I18nManager } from "react-native";
+import * as Updates from "expo-updates";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 
@@ -50,11 +51,10 @@ export default function RootLayout() {
   useEffect(() => {
     Promise.all([loadSavedLanguage(), loadSavedThemeMode()]).then(
       ([{ lang, wasSet }, savedThemeMode]) => {
-        const resolvedLang = wasSet ? lang : i18n.language;
-        const shouldBeRTL = resolvedLang === "he";
-        I18nManager.allowRTL(true);
-        if (I18nManager.isRTL !== shouldBeRTL) {
-          I18nManager.forceRTL(shouldBeRTL);
+        I18nManager.allowRTL(false);
+        if (I18nManager.isRTL) {
+          I18nManager.forceRTL(false);
+          Updates.reloadAsync().catch(() => undefined);
         }
 
         if (wasSet && i18n.language !== lang) {

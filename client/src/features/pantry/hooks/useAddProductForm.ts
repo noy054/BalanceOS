@@ -1,46 +1,58 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { PantryProduct, ProductCategory } from "../types";
+import { ProductCategory } from "../types";
 import {
   buildProductPayload,
   getProductFormFromProduct,
   INITIAL_PRODUCT_FORM,
+  INITIAL_SERVING_FORM,
   NutritionMode,
   ProductFormErrors,
+  ProductFormSource,
   ProductFormState,
+  ServingFormState,
 } from "../helpers/productForm";
 
+export type ProductFormPrefill = ProductFormSource & {
+  id: string;
+  mealCategories?: ProductCategory[];
+};
+
 type Args = {
-  productToEdit?: PantryProduct;
-  isEditMode: boolean;
+  source?: ProductFormPrefill | null;
+  requireCoreValues?: boolean;
+  preferPer100g?: boolean;
   requiredFieldError: string;
   invalidNumberError: string;
 };
 
 export function useAddProductForm({
-  productToEdit,
-  isEditMode,
+  source,
+  requireCoreValues = false,
+  preferPer100g = false,
   requiredFieldError,
   invalidNumberError,
 }: Args) {
+  const hydratedIdRef = useRef<string | null>(null);
   const [form, setForm] = useState<ProductFormState>(INITIAL_PRODUCT_FORM);
   const [errors, setErrors] = useState<ProductFormErrors>({});
   const [nutritionMode, setNutritionMode] = useState<NutritionMode>("per100g");
-  const [servingSizeG, setServingSizeG] = useState("");
+  const [serving, setServing] = useState<ServingFormState>(INITIAL_SERVING_FORM);
   const [mealCategories, setMealCategories] = useState<ProductCategory[]>([]);
 
   useEffect(() => {
-    if (!isEditMode || !productToEdit) {
+    if (!source || hydratedIdRef.current === source.id) {
       return;
     }
 
-    const productForm = getProductFormFromProduct(productToEdit);
+    hydratedIdRef.current = source.id;
+    const productForm = getProductFormFromProduct(source, { preferPer100g });
 
     setForm(productForm.form);
     setNutritionMode(productForm.nutritionMode);
-    setServingSizeG(productForm.servingSizeG);
-    setMealCategories(productToEdit.mealCategories ?? []);
-  }, [isEditMode, productToEdit]);
+    setServing(productForm.serving);
+    setMealCategories(source.mealCategories ?? []);
+  }, [source, preferPer100g]);
 
   function updateField(key: keyof ProductFormState, value: string) {
     setForm((prev) => ({
@@ -73,7 +85,6 @@ export function useAddProductForm({
 
   function switchMode(mode: NutritionMode) {
     setNutritionMode(mode);
-    setServingSizeG("");
     setErrors({});
 
     setForm((prev) => ({
@@ -86,13 +97,14 @@ export function useAddProductForm({
     }));
   }
 
-  function updateServingSize(value: string) {
-    setServingSizeG(value);
+  function updateServing(key: keyof ServingFormState, value: string) {
+    setServing((prev) => ({ ...prev, [key]: value }));
 
-    if (errors.servingSizeG) {
+    if (errors.servingSizeG || errors.servingQuantity) {
       setErrors((prev) => ({
         ...prev,
         servingSizeG: undefined,
+        servingQuantity: undefined,
       }));
     }
   }
@@ -106,8 +118,9 @@ export function useAddProductForm({
   function validate() {
     const result = buildProductPayload({
       form,
-      servingSizeG,
+      serving,
       nutritionMode,
+      requireCoreValues,
       requiredFieldError,
       invalidNumberError,
     });
@@ -124,7 +137,7 @@ export function useAddProductForm({
     form,
     errors,
     nutritionMode,
-    servingSizeG,
+    serving,
     mealCategories,
     isPerServing: nutritionMode === "perServing",
     hasImagePreview: Boolean(form.imageUrl.trim()),
@@ -133,7 +146,7 @@ export function useAddProductForm({
     updateImage,
     removeImage,
     switchMode,
-    updateServingSize,
+    updateServing,
     toggleCategory,
     validate,
   };

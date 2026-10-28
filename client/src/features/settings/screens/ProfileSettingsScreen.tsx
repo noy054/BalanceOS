@@ -16,6 +16,7 @@ import {
   getDirectionStyles,
   useStyles,
 } from "./styles/ProfileSettingsScreen.styles";
+import { keyboardBehavior } from "../../../shared/components/ui/KeyboardAvoider";
 
 export function ProfileSettingsScreen() {
   const { t, i18n } = useTranslation("settings");
@@ -31,7 +32,7 @@ export function ProfileSettingsScreen() {
 
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={keyboardBehavior}
       >
         <ScrollView
           style={styles.flex}

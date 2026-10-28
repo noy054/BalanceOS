@@ -15,6 +15,7 @@ import { StateView } from "../../../shared/components/ui/StateView";
 import { ActionSheet } from "../../../shared/components/ui/ActionSheet";
 import { formatGrams } from "../../../shared/helpers/formatNumber";
 import { useStyles } from "./styles/ItemDetailScreen.styles";
+import { useServingFormat } from "../hooks/useServingFormat";
 
 type Props = {
   id: string;
@@ -24,6 +25,7 @@ export function RecipeDetailScreen({ id }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
   const models = useFoodCardModels();
+  const servingFormat = useServingFormat();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -118,15 +120,7 @@ export function RecipeDetailScreen({ id }: Props) {
           <View style={styles.itemsCard}>
             {recipe.items.map((item, index) => {
               const product = item.product;
-              const servingSize = product.servingSizeG;
-              const hasServing = servingSize != null && servingSize > 0;
-
-              const quantityText = hasServing
-                ? t("foodCard.servingsQuantity", {
-                    count: Math.round((item.grams / servingSize!) * 10) / 10,
-                    grams: formatGrams(item.grams),
-                  })
-                : t("foodCard.gramsQuantity", { grams: formatGrams(item.grams) });
+              const quantityText = servingFormat.amount(product, item);
 
               return (
                 <FoodLineItem

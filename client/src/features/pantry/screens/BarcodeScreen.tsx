@@ -11,7 +11,6 @@ import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { Button } from "../../../shared/components/ui/Button";
 import { StateView } from "../../../shared/components/ui/StateView";
 import { ProductCatalogCard } from "../components/products/ProductCatalogCard";
-import { BarcodeManualProductForm } from "../components/products/BarcodeManualProductForm";
 import { useBarcodeResolver } from "../hooks/useBarcodeResolver";
 import { getBarcodeLookupErrorKey, isScannableBarcode } from "../helpers/barcode";
 import { SCANNABLE_BARCODE_TYPES } from "../constants";
@@ -23,7 +22,7 @@ import { cameraColors, useAppTheme } from "../../../shared/theme";
 import { useStyles } from "./styles/BarcodeScreen.styles";
 import { useDirection } from "../../../shared/hooks/useDirection";
 
-type Phase = "scanning" | "loading" | "found" | "not_found" | "manual" | "exists";
+type Phase = "scanning" | "loading" | "found" | "not_found" | "exists";
 
 export function BarcodeScreen() {
   const { t } = useTranslation("pantry");
@@ -82,7 +81,6 @@ export function BarcodeScreen() {
   const scanLocked = useRef(false);
   const resolveBarcode = useBarcodeResolver();
 
-  // Animate the scan line up and down while actively scanning
   const scanLineAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (phase !== "scanning") return;
@@ -96,10 +94,7 @@ export function BarcodeScreen() {
     return () => loop.stop();
   }, [phase, scanLineAnim]);
 
-  async function handleScan({ data, type }: BarcodeScanningResult) {
-    if (__DEV__) {
-      console.log("[barcode]", { type, data, valid: isScannableBarcode(data), locked: scanLocked.current });
-    }
+  async function handleScan({ data }: BarcodeScanningResult) {
     if (scanLocked.current) return;
     const barcode = data.trim();
     if (!isScannableBarcode(barcode)) return;
@@ -146,13 +141,20 @@ export function BarcodeScreen() {
     setPhase("scanning");
   }
 
-  function handleManualSuccess(p: PantryProduct) {
-    handleProductAdded(p);
-    router.back();
+  function openEditor(params: { barcode?: string; catalogId?: string }) {
+    productWasSavedRef.current = true;
+    router.replace({
+      pathname: "/(app)/pantry/add-product",
+      params: {
+        ...(params.barcode ? { barcode: params.barcode } : {}),
+        ...(params.catalogId ? { catalogId: params.catalogId } : {}),
+        ...(fromRecipePicker || fromMealFlow ? { returnTo } : {}),
+      },
+    });
   }
 
   function handleOpenManual() {
-    setPhase("manual");
+    openEditor({ barcode: scannedBarcode || undefined });
   }
 
   const header = (
@@ -265,45 +267,42 @@ export function BarcodeScreen() {
             product={product}
             onScanAnother={handleReset}
             onAdded={handleProductAdded}
+            onEdit={() => openEditor({ catalogId: product.id })}
           />
         </ScrollView>
       </SafeAreaView>
     );
   }
 
-  // ── Manual entry ───────────────────────────────────────────────────────────
-
-  if (phase === "not_found" || phase === "manual") {
+  if (phase === "not_found") {
     return (
       <SafeAreaView style={styles.root} edges={["top", "bottom"]}>
         {header}
-        <View style={styles.manualBody}>
-          {phase === "not_found" ? (
-            <View
-              style={[styles.notFoundBanner, dir.row]}
-              accessibilityRole="alert"
-            >
-              <MaterialCommunityIcons
-                name="barcode-off"
-                size={20}
-                color={colors.warning}
-              />
-              <View style={styles.flex}>
-                <Text style={[styles.notFoundTitle, dir.text]}>
-                  {t("barcode.notFound")}
-                </Text>
-                <Text style={[styles.notFoundHint, dir.text]}>
-                  {t("barcode.notFoundHint")}
-                </Text>
-              </View>
+        <View style={styles.body}>
+          <View style={styles.resultCard} accessibilityRole="alert">
+            <View style={[styles.resultIcon, styles.resultIconWarning]}>
+              <MaterialCommunityIcons name="barcode-off" size={26} color={colors.warning} />
             </View>
-          ) : null}
+            <Text style={styles.resultTitle}>{t("barcode.notFound")}</Text>
+            {scannedBarcode ? <Text style={styles.resultMeta}>{scannedBarcode}</Text> : null}
+            <Text style={styles.resultHint}>{t("barcode.notFoundCreateHint")}</Text>
+          </View>
 
-          <BarcodeManualProductForm
-            barcode={scannedBarcode}
-            onSuccess={handleManualSuccess}
-            onCancel={handleReset}
-          />
+          <View style={styles.actionsStack}>
+            <Button
+              label={t("barcode.createProduct")}
+              icon="plus"
+              onPress={handleOpenManual}
+              fullWidth
+            />
+            <Button
+              label={t("barcode.scanAnother")}
+              icon="barcode-scan"
+              variant="secondary"
+              onPress={handleReset}
+              fullWidth
+            />
+          </View>
         </View>
       </SafeAreaView>
     );

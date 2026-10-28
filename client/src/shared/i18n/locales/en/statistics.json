@@ -51,8 +51,8 @@
     "dailyAverage": "Daily average in selected range",
     "loggedDays": "{{loggedDays}} of {{rangeDays}} days logged",
     "exactTarget": "On target",
-    "overTarget": "{{value}}{{unit}} over target",
-    "underTarget": "{{value}}{{unit}} under target"
+    "overTarget": "{{value}} {{unit}} over target",
+    "underTarget": "{{value}} {{unit}} under target"
   },
 
   "macros": {

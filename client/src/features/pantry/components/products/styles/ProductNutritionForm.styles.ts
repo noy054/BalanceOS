@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import { spacing, useThemedStyles } from "../../../../../shared/theme";
 
 export const useStyles = () =>
-  useThemedStyles(() =>
+  useThemedStyles((colors) =>
     StyleSheet.create({
       modeRow: {
         marginBottom: spacing.md,
@@ -16,6 +16,18 @@ export const useStyles = () =>
 
       gridCell: {
         flex: 1,
+      },
+
+      servingFirst: {
+        marginBottom: spacing.md,
+      },
+
+      servingLast: {
+        marginTop: spacing.md,
+        marginBottom: spacing.md,
+        paddingTop: spacing.md,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: colors.border,
       },
     }),
   );

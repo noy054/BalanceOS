@@ -1,7 +1,8 @@
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, ViewStyle } from "react-native";
+import { KeyboardAvoidingView, ScrollView, StyleSheet, ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { spacing, useThemedStyles } from "../theme";
+import { keyboardBehavior } from "./ui/KeyboardAvoider";
 
 type Props = {
   children: React.ReactNode;
@@ -15,7 +16,7 @@ export function ScreenShell({ children, contentStyle }: Props) {
     <SafeAreaView style={styles.flex} edges={["top", "bottom"]}>
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={keyboardBehavior}
       >
         <ScrollView
           contentContainerStyle={[styles.content, contentStyle]}

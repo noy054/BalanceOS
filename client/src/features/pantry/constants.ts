@@ -7,6 +7,14 @@ export const PANTRY_ENDPOINTS = {
 
 export const PANTRY_PAGE_SIZE = 50;
 
+export const CATALOG_ENDPOINTS = {
+  BY_ID: (id: string) => `/product-catalog/${encodeURIComponent(id)}`,
+} as const;
+
+export const CATALOG_QUERY_KEYS = {
+  detail: (id: string) => ["product-catalog", id] as const,
+};
+
 export const BARCODE_ENDPOINTS = {
   RESOLVE: (barcode: string) => `/barcode/${encodeURIComponent(barcode)}/resolve`,
 } as const;

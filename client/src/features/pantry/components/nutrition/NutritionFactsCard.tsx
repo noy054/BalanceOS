@@ -8,8 +8,11 @@ import { PantryProduct } from "../../types";
 import { NutritionRow } from "../nutrition/NutritionRow";
 import { FoodThumb } from "../food/FoodThumb";
 import { FOOD_ICONS } from "../../hooks/useFoodCardModels";
+import { useServingFormat } from "../../hooks/useServingFormat";
+import { getServing } from "../../helpers/serving";
 import { getDirectionStyles } from "../../screens/styles/ProductDetailScreen.styles";
 import { useStyles } from "./styles/NutritionFactsCard.styles";
+import { nutritionPer100g, nutritionPerServing } from "../../helpers/nutrition";
 
 type Props = {
   product: PantryProduct;
@@ -17,28 +20,26 @@ type Props = {
   isRTL: boolean;
 };
 
-function r1(n: number) {
-  return Math.round(n * 10) / 10;
-}
-
 export function NutritionFactsCard({ product, t, isRTL }: Props) {
   const { colors } = useAppTheme();
   const styles = useStyles();
   const dir = getDirectionStyles(isRTL);
+  const format = useServingFormat();
+  const serving = getServing(product);
 
-  const hasServing = product.servingSizeG != null && product.servingSizeG > 0;
-  const mul = hasServing ? product.servingSizeG! / 100 : 1;
+  const hasServing = serving !== null;
+  const values = (hasServing ? nutritionPerServing(product) : nutritionPer100g(product)) ?? null;
 
-  const displayCalories = r1(product.caloriesPer100g * mul);
-  const displayProtein = r1(product.proteinPer100g * mul);
-  const displayCarbs = r1(product.carbsPer100g * mul);
-  const displayFat = r1(product.fatPer100g * mul);
-  const displayFiber =
-    product.fiberPer100g != null ? r1(product.fiberPer100g * mul) : null;
+  const displayCalories = values?.calories ?? 0;
+  const displayProtein = values?.protein ?? 0;
+  const displayCarbs = values?.carbs ?? 0;
+  const displayFat = values?.fat ?? 0;
+  const displayFiber = values?.fiber ?? null;
 
   const sectionLabel = hasServing
-    ? t("productDetail.nutritionPerServing", { size: product.servingSizeG })
+    ? t("productDetail.nutritionFor", { basis: format.perServing(product) })
     : t("productDetail.nutritionSection");
+  const unitWeight = serving?.unit ? format.unitWeight(product) : null;
 
   const hasMeta =
     Boolean(product.brand) ||
@@ -78,6 +79,9 @@ export function NutritionFactsCard({ product, t, isRTL }: Props) {
 
       <View style={styles.heroCard}>
         <Text style={[styles.heroLabel, dir.text]}>{sectionLabel}</Text>
+        {unitWeight ? (
+          <Text style={[styles.metaMuted, dir.text]}>{unitWeight}</Text>
+        ) : null}
 
         <NutritionRow
           label={t("macros.calories")}

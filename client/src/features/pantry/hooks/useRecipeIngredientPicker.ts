@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { PantryProduct } from "../types";
 import { PickerDraft } from "../helpers/recipeIngredientPickerDraft";
 import { sortByMealCategory } from "../helpers/sortByMealCategory";
+import { convertAmount, defaultAmount, defaultAmountUnit } from "../helpers/serving";
 
 export function useRecipeIngredientPicker(products: PantryProduct[]) {
   const [search, setSearch] = useState("");
@@ -39,14 +40,10 @@ export function useRecipeIngredientPicker(products: PantryProduct[]) {
         return next;
       }
 
-      const unit: "grams" | "servings" = product.servingSizeG
-        ? "servings"
-        : "grams";
-
       next.set(product.id, {
         product,
-        quantity: product.servingSizeG ? "1" : "100",
-        unit,
+        quantity: defaultAmount(product),
+        unit: defaultAmountUnit(product),
       });
 
       return next;
@@ -75,10 +72,12 @@ export function useRecipeIngredientPicker(products: PantryProduct[]) {
       const draft = next.get(id);
 
       if (draft) {
+        const nextUnit = draft.unit === "grams" ? "servings" : "grams";
+
         next.set(id, {
           ...draft,
-          unit: draft.unit === "grams" ? "servings" : "grams",
-          quantity: "",
+          unit: nextUnit,
+          quantity: convertAmount(draft.product, draft.quantity, draft.unit, nextUnit),
         });
       }
 

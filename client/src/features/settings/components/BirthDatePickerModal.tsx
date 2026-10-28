@@ -10,6 +10,7 @@ import {
   getBirthDatePickerDirectionStyles,
   useBirthDatePickerModalStyles,
 } from "./styles/BirthDatePickerModal.styles";
+import { getLocale } from "../../../shared/i18n";
 
 type Props = {
   visible: boolean;
@@ -67,7 +68,7 @@ export function BirthDatePickerModal({
             display="spinner"
             maximumDate={new Date()}
             onChange={onChange}
-            locale={i18n.language === "he" ? "he-IL" : "en-US"}
+            locale={getLocale(i18n.language)}
             textColor={colors.textPrimary}
             themeVariant={resolvedTheme === "dark" ? "dark" : "light"}
           />

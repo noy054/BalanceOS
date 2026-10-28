@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, typography, useThemedStyles } from "../../../../shared/theme";
+import { radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -25,6 +25,22 @@ export const useStyles = () =>
         ...typography.callout,
         color: colors.textSecondary,
         paddingHorizontal: spacing.xs,
+      },
+
+      barcodeChip: {
+        alignItems: "center",
+        alignSelf: "flex-start",
+        gap: spacing.xs,
+        backgroundColor: colors.surfaceMuted,
+        borderRadius: radius.sm,
+        paddingHorizontal: spacing.sm,
+        paddingVertical: spacing.xs,
+      },
+
+      barcodeText: {
+        ...typography.footnote,
+        ...typography.number,
+        color: colors.textSecondary,
       },
     }),
   );

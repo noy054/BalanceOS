@@ -81,77 +81,61 @@ export const useStyles = () =>
       },
 
       cartScroll: {
-        maxHeight: 128,
+        maxHeight: 148,
       },
 
       cartRow: {
         alignItems: 'center',
         gap: spacing.sm,
-        minHeight: 40,
+        minHeight: 44,
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: colors.border,
       },
 
       cartItemName: {
-        flex: 1,
         ...typography.callout,
         color: colors.textPrimary,
       },
 
       cartItemQty: {
+        ...typography.caption,
+        ...typography.number,
+        fontWeight: '400',
+        color: colors.textSecondary,
+      },
+
+      quickActions: {
+        gap: spacing.sm,
+      },
+
+      quickAction: {
+        flex: 1,
+      },
+
+      cartHeader: {
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: spacing.sm,
+      },
+
+      cartTotal: {
+        ...typography.footnote,
+        ...typography.number,
+        fontWeight: '600',
+        color: colors.textPrimary,
+      },
+
+      cartText: {
+        flex: 1,
+        minWidth: 0,
+        gap: 1,
+      },
+
+      cartItemCalories: {
         ...typography.footnote,
         ...typography.number,
         fontWeight: '600',
         color: colors.textSecondary,
-      },
-
-      selectionSection: {
-        gap: spacing.sm,
-      },
-
-      selectionName: {
-        ...typography.bodyStrong,
-        color: colors.textPrimary,
-      },
-
-      selectionRow: {
-        alignItems: 'center',
-        gap: spacing.sm,
-      },
-
-      quantityField: {
-        flex: 1,
-        alignItems: 'center',
-        gap: spacing.sm,
-      },
-
-      quantityInput: {
-        width: 88,
-        minHeight: 48,
-        borderRadius: radius.md,
-        borderWidth: 1,
-        borderColor: colors.accent,
-        backgroundColor: colors.surface,
-        ...typography.headline,
-        ...typography.number,
-        color: colors.textPrimary,
-        textAlign: 'center',
-      },
-
-      quantityUnit: {
-        flexShrink: 1,
-        ...typography.callout,
-        color: colors.textSecondary,
-      },
-
-      wholeMeal: {
-        flex: 1,
-        ...typography.callout,
-        color: colors.textSecondary,
-      },
-
-      addToListButton: {
-        minWidth: 132,
       },
     }),
   );

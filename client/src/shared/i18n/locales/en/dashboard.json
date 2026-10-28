@@ -17,7 +17,7 @@
     "fat": "Fat",
     "fiber": "Fiber",
     "gramsUnit": "g",
-    "ofTarget": "of {{target}}g"
+    "ofTarget": "of {{target}} g"
   },
   "actions": {
     "addMeal": "Add Meal"
@@ -42,11 +42,11 @@
     "andMore": "+{{count}} more",
     "copyToMoreDays": "Add to more days",
     "sectionTitle": "Meals",
-    "summary": "{{calories}} kcal · {{protein}} g protein",
+    "summary": "{{calories}} kcal · {{protein}} g protein",
     "emptyMeal": "Nothing logged yet",
     "addToMeal": "Add to {{meal}}",
-    "itemCalories": "{{calories}} kcal",
-    "itemProtein": "{{protein}} g protein",
+    "itemCalories": "{{calories}} kcal",
+    "itemProtein": "{{protein}} g protein",
     "itemsCount_one": "{{count}} item",
     "itemsCount_other": "{{count}} items",
     "addFood": "Add food",
@@ -85,6 +85,7 @@
     "noSavedMeals": "No saved meals",
     "loadError": "Failed to load",
     "logError": "Failed to log item",
+    "logPartialError": "{{count}} items were logged. The rest are still in the list. Try saving again.",
     "wholeMeal": "Add whole meal",
     "selectItem": "Select an item from the list above",
     "done": "Done",
@@ -113,7 +114,19 @@
     "scanBarcode": "Scan barcode",
     "searchProducts": "Search products",
     "searchRecipes": "Search recipes",
-    "searchSavedMeals": "Search saved meals"
+    "searchSavedMeals": "Search saved meals",
+    "selectionPreview": "{{grams}} g · {{calories}} kcal",
+    "createProduct": "Create product",
+    "deselect": "Clear selection of {{name}}",
+    "tapToDeselect": "Tap again to clear the selection",
+    "decrease": "Decrease amount",
+    "increase": "Increase amount",
+    "gramsAmount": "{{grams}} g",
+    "caloriesAmount": "{{calories}} kcal",
+    "recipeAmount": "×{{count}} recipe",
+    "invalidAmount": "Enter an amount greater than zero",
+    "cartItems_one": "{{count}} item to add",
+    "cartItems_other": "{{count}} items to add"
   },
   "header": {
     "today": "Today"
@@ -122,5 +135,18 @@
     "loadFailed": "Couldn't load today's summary",
     "retry": "Try again",
     "mealsLoadFailed": "Couldn't load today's meals"
+  },
+  "remove": {
+    "itemTitle": "Remove {{name}} from {{meal}}?",
+    "itemMessage": "{{calories}} kcal will be removed from today's totals.",
+    "mealTitle": "Remove everything from {{meal}}?",
+    "mealMessage_one": "{{count}} item ({{calories}} kcal) will be removed from today's totals.",
+    "mealMessage_other": "{{count}} items ({{calories}} kcal) will be removed from today's totals.",
+    "confirm": "Remove",
+    "cancel": "Cancel",
+    "failed": "Couldn't remove it. Try again.",
+    "itemA11y": "Remove {{name}}",
+    "mealMenuA11y": "More options for {{meal}}",
+    "removeMeal": "Remove meal"
   }
 }

@@ -1,19 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { RecipesRepository, RecipeRow } from './recipes.repository';
-import { CreateRecipeDto } from './dto/create-recipe.dto';
+import { CreateRecipeDto, RecipeItemDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import {
   NutritionTotals,
-  calcProductNutrition,
+  calcItemNutrition,
   sumNutrition,
 } from './nutrition.utils';
+import { PantryItemValidator } from './pantry-item.validator';
 
 export type { NutritionTotals };
 
 function enrichRecipe(recipe: NonNullable<RecipeRow>) {
   const enrichedItems = recipe.items.map((item) => ({
     ...item,
-    nutrition: calcProductNutrition(item.product, item.grams),
+    nutrition: calcItemNutrition(item.product, item),
   }));
   return {
     ...recipe,
@@ -24,7 +25,10 @@ function enrichRecipe(recipe: NonNullable<RecipeRow>) {
 
 @Injectable()
 export class RecipesService {
-  constructor(private readonly repo: RecipesRepository) {}
+  constructor(
+    private readonly repo: RecipesRepository,
+    private readonly validator: PantryItemValidator,
+  ) {}
 
   async list(userId: string) {
     const recipes = await this.repo.findAllByUserId(userId);
@@ -38,12 +42,14 @@ export class RecipesService {
   }
 
   async create(userId: string, dto: CreateRecipeDto) {
+    await this.validateItems(userId, dto.items);
     const recipe = await this.repo.create(userId, dto);
     return enrichRecipe(recipe);
   }
 
   async update(userId: string, id: string, dto: UpdateRecipeDto) {
     await this.getById(userId, id);
+    if (dto.items) await this.validateItems(userId, dto.items);
     const updated = await this.repo.updateWithItems(
       id,
       dto.name,
@@ -57,5 +63,16 @@ export class RecipesService {
   async delete(userId: string, id: string): Promise<void> {
     await this.getById(userId, id);
     await this.repo.delete(id);
+  }
+
+  private validateItems(userId: string, items: RecipeItemDto[]) {
+    return this.validator.validateProductAmounts(
+      userId,
+      items.map((item) => ({
+        productId: item.productId,
+        grams: item.grams,
+        servings: item.servings,
+      })),
+    );
   }
 }

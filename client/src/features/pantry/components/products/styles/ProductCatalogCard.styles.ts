@@ -45,6 +45,28 @@ export const useStyles = () =>
         paddingVertical: spacing.sm2,
       },
 
+      servingLine: {
+        ...typography.footnote,
+        color: colors.textSecondary,
+        paddingHorizontal: spacing.xs,
+        marginTop: -spacing.sm,
+      },
+
+      missingNotice: {
+        alignItems: "flex-start",
+        gap: spacing.sm,
+        backgroundColor: colors.warningSoft,
+        borderRadius: radius.md,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.ms,
+      },
+
+      missingNoticeText: {
+        flex: 1,
+        ...typography.footnote,
+        color: colors.textPrimary,
+      },
+
       offBannerText: {
         flex: 1,
         ...typography.footnote,
@@ -85,24 +107,9 @@ export const useStyles = () =>
         gap: spacing.ms,
       },
 
-      servingInputs: {
-        gap: spacing.ms,
-      },
 
-      servingSizeField: {
-        width: 116,
-      },
 
-      servingLabelField: {
-        flex: 1,
-      },
 
-      fieldLabel: {
-        ...typography.label,
-        fontWeight: "500",
-        color: colors.textSecondary,
-        marginBottom: spacing.xs + 2,
-      },
 
       inputFrame: {
         minHeight: 46,
@@ -114,9 +121,6 @@ export const useStyles = () =>
         paddingHorizontal: spacing.ms,
       },
 
-      inputFrameError: {
-        borderColor: colors.danger,
-      },
 
       input: {
         flex: 1,
@@ -125,15 +129,7 @@ export const useStyles = () =>
         color: colors.textPrimary,
       },
 
-      inputUnit: {
-        ...typography.footnote,
-        color: colors.textMuted,
-      },
 
-      errorText: {
-        ...typography.caption,
-        color: colors.danger,
-      },
 
       previewBox: {
         backgroundColor: colors.surfaceMuted,
@@ -143,10 +139,6 @@ export const useStyles = () =>
         gap: 2,
       },
 
-      previewLabel: {
-        ...typography.caption,
-        color: colors.textSecondary,
-      },
 
       previewText: {
         ...typography.callout,

@@ -1,13 +1,10 @@
-import { I18nManager, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Stack, usePathname } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { useAppTheme } from '../../src/shared/theme';
 import { BottomTabBar } from '../../src/shared/components/BottomTabBar';
-
-// Computed once at module load. I18nManager.isRTL is set during the startup
-// effect in the root layout and never changes within a session — language
-// switches trigger a full reload via Updates.reloadAsync().
-const slideAnimation = I18nManager.isRTL ? 'slide_from_left' : 'slide_from_right';
+import { NutritionDisplayProvider } from '../../src/features/settings/components/NutritionDisplayProvider';
 
 type TabId = 'home' | 'pantry' | 'statistics' | 'settings';
 
@@ -22,30 +19,34 @@ export default function AppLayout() {
   const { colors } = useAppTheme();
   const pathname = usePathname();
   const activeTab = TAB_ROUTES[pathname] ?? null;
+  const { i18n } = useTranslation();
+  const slideAnimation = i18n.dir(i18n.language) === 'rtl' ? 'slide_from_left' : 'slide_from_right';
 
   return (
-    <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <View style={styles.stack}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            gestureEnabled: true,
-            animation: slideAnimation,
-            contentStyle: { backgroundColor: colors.background },
-          }}
-        >
-          {/* Tab root screens — instant switch; gestures disabled because animation:'none'
-              + gestureEnabled:true causes snapping/jumping on swipe. Swipe-back works
-              normally on any screen pushed on top of a tab. */}
-          <Stack.Screen name="dashboard" options={{ animation: 'none', gestureEnabled: false }} />
-          <Stack.Screen name="statistics" options={{ animation: 'none', gestureEnabled: false }} />
-          <Stack.Screen name="pantry" options={{ animation: 'none', gestureEnabled: false }} />
-          <Stack.Screen name="settings" options={{ animation: 'none', gestureEnabled: false }} />
-        </Stack>
-      </View>
+    <NutritionDisplayProvider>
+      <View style={[styles.root, { backgroundColor: colors.background }]}>
+        <View style={styles.stack}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              gestureEnabled: true,
+              animation: slideAnimation,
+              contentStyle: { backgroundColor: colors.background },
+            }}
+          >
+            {/* Tab root screens — instant switch; gestures disabled because animation:'none'
+                + gestureEnabled:true causes snapping/jumping on swipe. Swipe-back works
+                normally on any screen pushed on top of a tab. */}
+            <Stack.Screen name="dashboard" options={{ animation: 'none', gestureEnabled: false }} />
+            <Stack.Screen name="statistics" options={{ animation: 'none', gestureEnabled: false }} />
+            <Stack.Screen name="pantry" options={{ animation: 'none', gestureEnabled: false }} />
+            <Stack.Screen name="settings" options={{ animation: 'none', gestureEnabled: false }} />
+          </Stack>
+        </View>
 
-      {activeTab !== null && <BottomTabBar activeTab={activeTab} />}
-    </View>
+        {activeTab !== null && <BottomTabBar activeTab={activeTab} />}
+      </View>
+    </NutritionDisplayProvider>
   );
 }
 

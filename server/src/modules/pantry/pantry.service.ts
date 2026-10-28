@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -21,6 +20,13 @@ import {
   toPage,
 } from '../../common/pagination/page.types';
 import { ProductCatalogService } from '../product-catalog/product-catalog.service';
+import { CatalogReviewService } from '../product-catalog/catalog-review.service';
+import {
+  pickNutritionFields,
+  resolveNutrition,
+} from './product-nutrition.normalizer';
+import { fromCatalogRow } from '../product-catalog/catalog-data';
+import { PantryItemValidator } from './pantry-item.validator';
 
 const DUPLICATE_BARCODE_MESSAGE =
   'A product with this barcode already exists in your pantry';
@@ -36,6 +42,8 @@ export class PantryService {
   constructor(
     private readonly repo: PantryRepository,
     private readonly catalogService: ProductCatalogService,
+    private readonly catalogReview: CatalogReviewService,
+    private readonly itemValidator: PantryItemValidator,
   ) {}
 
   async list(
@@ -87,8 +95,15 @@ export class PantryService {
       );
       if (existing) throw new ConflictException(DUPLICATE_BARCODE_MESSAGE);
     }
+    const nutrition = resolveNutrition(null, dto);
     try {
-      return await this.repo.create(userId, dto, normalized?.canonical ?? null);
+      const created = await this.repo.create(
+        userId,
+        { ...dto, ...nutrition },
+        normalized?.canonical ?? null,
+      );
+      await this.catalogReview.recordProductChange(created);
+      return created;
     } catch (err: unknown) {
       if (isUniqueViolation(err))
         throw new ConflictException(DUPLICATE_BARCODE_MESSAGE);
@@ -111,42 +126,33 @@ export class PantryService {
             item.normalizedBarcode,
           )
         : null);
-    if (existing) return existing;
-
-    const caloriesPer100g = dto.caloriesPer100g ?? item.caloriesPer100g;
-    const proteinPer100g = dto.proteinPer100g ?? item.proteinPer100g;
-    const carbsPer100g = dto.carbsPer100g ?? item.carbsPer100g;
-    const fatPer100g = dto.fatPer100g ?? item.fatPer100g;
-
-    if (
-      caloriesPer100g == null ||
-      proteinPer100g == null ||
-      carbsPer100g == null ||
-      fatPer100g == null
-    ) {
-      throw new BadRequestException(
-        'This product is missing nutrition values. Provide calories, protein, carbs and fat per 100g.',
-      );
+    if (existing) {
+      const hasOverrides = Object.values(dto).some((v) => v !== undefined);
+      return hasOverrides ? this.update(userId, existing.id, dto) : existing;
     }
 
+    const catalogData = fromCatalogRow(item);
+    const nutrition = resolveNutrition(pickNutritionFields(catalogData), dto);
+    const keepsPer100g = nutrition.caloriesPer100g !== null;
+
     try {
-      return await this.repo.createFromCatalog({
+      const created = await this.repo.createFromCatalog({
         userId,
         catalogItemId: item.id,
-        name: item.name,
-        brand: item.brand,
+        name: dto.name?.trim() || item.name,
+        brand: dto.brand !== undefined ? dto.brand?.trim() || null : item.brand,
         barcode: item.barcode,
         normalizedBarcode: item.normalizedBarcode,
-        imageUrl: item.imageUrl,
-        caloriesPer100g,
-        proteinPer100g,
-        carbsPer100g,
-        fatPer100g,
-        fiberPer100g: dto.fiberPer100g ?? item.fiberPer100g,
-        servingSizeG: dto.servingSizeG ?? item.servingSizeGrams,
-        servingSizeText: dto.servingSizeText ?? item.servingSizeText,
+        imageUrl: dto.imageUrl !== undefined ? dto.imageUrl : item.imageUrl,
+        ...nutrition,
+        nutrients:
+          keepsPer100g && catalogData.nutrients
+            ? catalogData.nutrients
+            : undefined,
         mealCategories: dto.mealCategories ?? [],
       });
+      await this.catalogReview.recordProductChange(created);
+      return created;
     } catch (err: unknown) {
       if (isUniqueViolation(err)) {
         const recovered =
@@ -168,7 +174,7 @@ export class PantryService {
     id: string,
     dto: UpdatePantryProductDto,
   ): Promise<PantryProductModel> {
-    await this.getById(userId, id);
+    const existing = await this.getById(userId, id);
     let normalizedBarcodeUpdate: string | null | undefined = undefined;
     if (dto.barcode !== undefined) {
       const normalized = normalizeBarcode(dto.barcode);
@@ -183,8 +189,22 @@ export class PantryService {
       }
       normalizedBarcodeUpdate = normalized?.canonical ?? null;
     }
+    const nutrition = resolveNutrition(pickNutritionFields(existing), dto);
+    await this.itemValidator.validateNutritionChange(id, nutrition);
     try {
-      return await this.repo.update(id, dto, normalizedBarcodeUpdate);
+      const updated = await this.repo.update(
+        id,
+        {
+          ...dto,
+          ...nutrition,
+          ...(nutrition.caloriesPer100g === null
+            ? { nutrients: Prisma.DbNull }
+            : {}),
+        },
+        normalizedBarcodeUpdate,
+      );
+      await this.catalogReview.recordProductChange(updated);
+      return updated;
     } catch (err: unknown) {
       if (isUniqueViolation(err))
         throw new ConflictException(DUPLICATE_BARCODE_MESSAGE);

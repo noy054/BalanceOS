@@ -8,19 +8,43 @@ import { NormalizedBarcode } from '../../common/barcode/barcode.utils';
 import {
   ExternalLookupResult,
   NormalizedProductData,
+  NutrientMap,
 } from './types/external-product.types';
 
-// Nutrient IDs from the USDA FDC branded-food dataset (values are per 100g)
-const NUTRIENT_CALORIES = 1008; // Energy (kcal)
-const NUTRIENT_PROTEIN = 1003; // Protein
-const NUTRIENT_CARBS = 1005; // Carbohydrate, by difference
-const NUTRIENT_FAT = 1004; // Total lipid (fat)
-const NUTRIENT_FIBER = 1079; // Fiber, total dietary
+const NUTRIENT_CALORIES = 1008;
+const NUTRIENT_PROTEIN = 1003;
+const NUTRIENT_CARBS = 1005;
+const NUTRIENT_FAT = 1004;
+const NUTRIENT_FIBER = 1079;
+const NUTRIENT_SUGARS = 2000;
+const NUTRIENT_SATURATED_FAT = 1258;
+const NUTRIENT_SODIUM = 1093;
+
+const MASS_TO_GRAMS: Record<string, number> = { G: 1, MG: 0.001, UG: 0.000001 };
 
 interface FDCFoodNutrient {
   nutrientId: number;
+  nutrientName?: string;
   unitName?: string;
   value?: number;
+}
+
+function nutrientKey(name: string, unit: string): string {
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  if (unit === 'KCAL') return 'energy-kcal';
+  if (unit === 'KJ') return 'energy-kj';
+  if (MASS_TO_GRAMS[unit] !== undefined) return slug;
+  return `${slug}-${unit.toLowerCase()}`;
+}
+
+function nutrientValue(nutrient: FDCFoodNutrient): number | null {
+  if (nutrient.value == null || !Number.isFinite(nutrient.value)) return null;
+  const unit = nutrient.unitName?.toUpperCase() ?? '';
+  const factor = MASS_TO_GRAMS[unit];
+  return factor !== undefined ? nutrient.value * factor : nutrient.value;
 }
 
 interface FDCFood {
@@ -111,8 +135,19 @@ export class UsdaFoodDataCentralClient {
   ): NormalizedProductData {
     const findNutrient = (id: number): number | null => {
       const n = food.foodNutrients.find((fn) => fn.nutrientId === id);
-      return n?.value != null ? n.value : null;
+      return n ? nutrientValue(n) : null;
     };
+
+    const nutrients: NutrientMap = {};
+    for (const nutrient of food.foodNutrients) {
+      const value = nutrientValue(nutrient);
+      if (value === null || !nutrient.nutrientName) continue;
+      const key = nutrientKey(
+        nutrient.nutrientName,
+        nutrient.unitName?.toUpperCase() ?? '',
+      );
+      if (key && nutrients[key] === undefined) nutrients[key] = value;
+    }
 
     const name = food.description?.trim() || barcode.digits;
     const brand = food.brandOwner?.trim() || food.brandName?.trim() || null;
@@ -132,12 +167,17 @@ export class UsdaFoodDataCentralClient {
       normalizedBarcode: barcode.canonical,
       name,
       brand,
-      imageUrl: null, // USDA FDC does not provide product images
+      imageUrl: null,
       caloriesPer100g: findNutrient(NUTRIENT_CALORIES),
       proteinPer100g: findNutrient(NUTRIENT_PROTEIN),
       carbsPer100g: findNutrient(NUTRIENT_CARBS),
       fatPer100g: findNutrient(NUTRIENT_FAT),
       fiberPer100g: findNutrient(NUTRIENT_FIBER),
+      sugarPer100g: findNutrient(NUTRIENT_SUGARS),
+      saturatedFatPer100g: findNutrient(NUTRIENT_SATURATED_FAT),
+      sodiumPer100g: findNutrient(NUTRIENT_SODIUM),
+      saltPer100g: null,
+      nutrients: Object.keys(nutrients).length > 0 ? nutrients : null,
       servingSizeGrams,
       servingSizeText,
       source: ProductSource.USDA_FDC,

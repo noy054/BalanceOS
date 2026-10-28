@@ -1,4 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import {
+  MacroValues,
+  ProductAmount,
+  ProductNutritionSource,
+  rawProductNutrition,
+  round1,
+  roundTotals,
+} from './product-nutrition';
 
 export type MacrosSnapshot = {
   name: string;
@@ -9,62 +17,57 @@ export type MacrosSnapshot = {
   fiber: number;
 };
 
-type ProductLike = {
-  caloriesPer100g: number;
-  proteinPer100g: number;
-  carbsPer100g: number;
-  fatPer100g: number;
-  fiberPer100g: number | null;
-};
+type RecipeItemLike = ProductAmount & { product: ProductNutritionSource };
 
-function r1(v: number): number {
-  return Math.round(v * 10) / 10;
+export function rawRecipeTotals(items: RecipeItemLike[]): MacroValues {
+  return items.reduce<MacroValues>(
+    (acc, item) => {
+      const values = rawProductNutrition(item.product, item);
+      if (!values) return acc;
+      return {
+        calories: acc.calories + values.calories,
+        protein: acc.protein + values.protein,
+        carbs: acc.carbs + values.carbs,
+        fat: acc.fat + values.fat,
+        fiber: acc.fiber + values.fiber,
+      };
+    },
+    { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+  );
+}
+
+export function scaledRecipeTotals(
+  items: RecipeItemLike[],
+  servings: number,
+): Omit<MacrosSnapshot, 'name'> {
+  const sum = rawRecipeTotals(items);
+  return {
+    calories: Math.round(sum.calories * servings),
+    protein: round1(sum.protein * servings),
+    carbs: round1(sum.carbs * servings),
+    fat: round1(sum.fat * servings),
+    fiber: round1(sum.fiber * servings),
+  };
 }
 
 @Injectable()
 export class NutritionCalculatorService {
   productSnapshot(
-    product: ProductLike & { name: string },
-    grams: number,
-  ): MacrosSnapshot {
-    const f = grams / 100;
-    return {
-      name: product.name,
-      calories: Math.round(product.caloriesPer100g * f),
-      protein: r1(product.proteinPer100g * f),
-      carbs: r1(product.carbsPer100g * f),
-      fat: r1(product.fatPer100g * f),
-      fiber: r1((product.fiberPer100g ?? 0) * f),
-    };
+    product: ProductNutritionSource & { name: string },
+    amount: ProductAmount,
+  ): MacrosSnapshot | null {
+    const values = rawProductNutrition(product, amount);
+    if (!values) return null;
+    return { name: product.name, ...roundTotals(values) };
   }
 
   recipeSnapshot(
-    recipe: {
-      name: string;
-      items: Array<{ grams: number; product: ProductLike }>;
-    },
+    recipe: { name: string; items: RecipeItemLike[] },
     servings: number,
   ): MacrosSnapshot {
-    const sum = recipe.items.reduce(
-      (acc, item) => {
-        const f = item.grams / 100;
-        return {
-          calories: acc.calories + item.product.caloriesPer100g * f,
-          protein: acc.protein + item.product.proteinPer100g * f,
-          carbs: acc.carbs + item.product.carbsPer100g * f,
-          fat: acc.fat + item.product.fatPer100g * f,
-          fiber: acc.fiber + (item.product.fiberPer100g ?? 0) * f,
-        };
-      },
-      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-    );
     return {
       name: recipe.name,
-      calories: Math.round(sum.calories * servings),
-      protein: r1(sum.protein * servings),
-      carbs: r1(sum.carbs * servings),
-      fat: r1(sum.fat * servings),
-      fiber: r1(sum.fiber * servings),
+      ...scaledRecipeTotals(recipe.items, servings),
     };
   }
 
@@ -81,10 +84,10 @@ export class NutritionCalculatorService {
     return items.reduce(
       (acc, s) => ({
         calories: acc.calories + s.calories,
-        protein: r1(acc.protein + s.protein),
-        carbs: r1(acc.carbs + s.carbs),
-        fat: r1(acc.fat + s.fat),
-        fiber: r1(acc.fiber + s.fiber),
+        protein: round1(acc.protein + s.protein),
+        carbs: round1(acc.carbs + s.carbs),
+        fat: round1(acc.fat + s.fat),
+        fiber: round1(acc.fiber + s.fiber),
       }),
       { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
     );

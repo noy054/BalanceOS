@@ -6,6 +6,7 @@ import { IconButton } from "../../../../shared/components/ui/IconButton";
 import { SegmentedControl } from "../../../../shared/components/ui/SegmentedControl";
 import { CalculatedNutrition } from "../../types";
 import { CalculatorUnit } from "../../hooks/useProductCalculator";
+import { canUseGrams, getServing, ServingSource } from "../../helpers/serving";
 import { NutritionRow } from "../nutrition/NutritionRow";
 import { getDirectionStyles } from "../../screens/styles/ProductDetailScreen.styles";
 import { useStyles } from "./styles/ProductCalculatorCard.styles";
@@ -13,7 +14,7 @@ import { useStyles } from "./styles/ProductCalculatorCard.styles";
 type Props = {
   quantity: string;
   unit: CalculatorUnit;
-  servingSizeG?: number | null;
+  serving?: ServingSource | null;
   calcResult: CalculatedNutrition | null;
   gramsResult: number | null;
   isRTL: boolean;
@@ -27,7 +28,7 @@ type Props = {
 export function ProductCalculatorCard({
   quantity,
   unit,
-  servingSizeG,
+  serving,
   calcResult,
   gramsResult,
   isRTL,
@@ -41,19 +42,30 @@ export function ProductCalculatorCard({
   const styles = useStyles();
   const dir = getDirectionStyles(isRTL);
 
-  const hasServing = servingSizeG != null && servingSizeG > 0;
+  const servingInfo = serving ? getServing(serving) : null;
+  const hasServing = servingInfo !== null;
+  const servingUnit = servingInfo?.unit ?? null;
 
   const placeholder =
     unit === "servings"
-      ? t("productDetail.calculatorPlaceholderServings")
+      ? servingUnit
+        ? t("serving.quantityOf", { unit: servingUnit })
+        : t("productDetail.calculatorPlaceholderServings")
       : unit === "calories"
         ? t("productDetail.calculatorPlaceholderCalories")
         : t("productDetail.calculatorPlaceholder");
 
   const unitOptions: { value: CalculatorUnit; label: string }[] = [
-    { value: "grams", label: t("productDetail.calculatorByGrams") },
+    ...(!serving || canUseGrams(serving)
+      ? [{ value: "grams" as CalculatorUnit, label: t("productDetail.calculatorByGrams") }]
+      : []),
     ...(hasServing
-      ? [{ value: "servings" as CalculatorUnit, label: t("productDetail.calculatorByServings") }]
+      ? [
+          {
+            value: "servings" as CalculatorUnit,
+            label: servingUnit ?? t("productDetail.calculatorByServings"),
+          },
+        ]
       : []),
     { value: "calories", label: t("productDetail.calculatorByCalories") },
   ];
