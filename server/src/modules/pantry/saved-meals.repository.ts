@@ -67,7 +67,7 @@ export class SavedMealsRepository {
       data: {
         userId,
         name: dto.name,
-        mealType: dto.mealType,
+        mealTypes: dto.mealTypes ?? [],
         items: {
           create: dto.items.map((item) => ({
             productId: item.productId,
@@ -84,13 +84,13 @@ export class SavedMealsRepository {
   updateHeader(
     id: string,
     name: string | undefined,
-    mealType: string | undefined,
+    mealTypes: string[] | undefined,
   ) {
     return this.prisma.savedMeal.update({
       where: { id },
       data: {
         ...(name !== undefined ? { name } : {}),
-        ...(mealType !== undefined ? { mealType } : {}),
+        ...(mealTypes !== undefined ? { mealTypes } : {}),
       },
       include: SAVED_MEAL_INCLUDE,
     });
@@ -99,7 +99,7 @@ export class SavedMealsRepository {
   async updateWithItems(
     id: string,
     name: string | undefined,
-    mealType: string | undefined,
+    mealTypes: string[] | undefined,
     items: SavedMealItemDto[] | undefined,
   ) {
     return this.prisma.$transaction(async (tx) => {
@@ -121,7 +121,7 @@ export class SavedMealsRepository {
         where: { id },
         data: {
           ...(name !== undefined ? { name } : {}),
-          ...(mealType !== undefined ? { mealType } : {}),
+          ...(mealTypes !== undefined ? { mealTypes } : {}),
         },
         include: SAVED_MEAL_INCLUDE,
       });

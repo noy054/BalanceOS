@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView, Alert, KeyboardAvoidingView } from "react-native";
+import { ScrollView, Alert, KeyboardAvoidingView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { confirmAction } from "../../../shared/helpers/confirm";
@@ -7,14 +7,14 @@ import { router } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { StateView } from "../../../shared/components/ui/StateView";
-import { ActionSheet } from "../../../shared/components/ui/ActionSheet";
+import { IconButton } from "../../../shared/components/ui/IconButton";
 import { BottomSheet } from "../../../shared/components/ui/BottomSheet";
 import { AddToMealPanel } from "../../meals/components/AddToMealPanel";
 import { usePantryProduct, useDeletePantryProduct } from "../hooks/usePantry";
 import { useProductCalculator } from "../hooks/useProductCalculator";
 import { NutritionFactsCard } from "../components/nutrition/NutritionFactsCard";
 import { ProductCalculatorCard } from "../components/products/ProductCalculatorCard";
-import { useStyles } from "./styles/ProductDetailScreen.styles";
+import { getDirectionStyles, useStyles } from "./styles/ProductDetailScreen.styles";
 import { keyboardBehavior } from "../../../shared/components/ui/KeyboardAvoider";
 
 type Props = {
@@ -25,8 +25,6 @@ export function ProductDetailScreen({ id }: Props) {
   const { t, i18n } = useTranslation("pantry");
   const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === "rtl";
-
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { data: product, isLoading } = usePantryProduct(id);
   const deleteProduct = useDeletePantryProduct();
@@ -93,9 +91,23 @@ export function ProductDetailScreen({ id }: Props) {
       <ScreenHeader
         title={t("productDetail.title")}
         fallbackRoute="/(app)/pantry"
-        rightIconName="dots-vertical"
-        rightAccessibilityLabel={t("common.moreOptionsFor", { name: product.name })}
-        onRightPress={() => setIsMenuOpen(true)}
+        rightElement={
+          <View style={[styles.headerActions, getDirectionStyles(isRTL).row]}>
+            <IconButton
+              icon="pencil-outline"
+              iconSize={22}
+              accessibilityLabel={t("common.editItem", { name: product.name })}
+              onPress={handleEdit}
+            />
+            <IconButton
+              icon="trash-can-outline"
+              iconSize={22}
+              accessibilityLabel={t("common.deleteItem", { name: product.name })}
+              onPress={handleDelete}
+              disabled={deleteProduct.isPending}
+            />
+          </View>
+        }
       />
 
       <KeyboardAvoidingView
@@ -142,28 +154,6 @@ export function ProductDetailScreen({ id }: Props) {
           </ScrollView>
         ) : null}
       </BottomSheet>
-
-      <ActionSheet
-        visible={isMenuOpen}
-        title={product.name}
-        onClose={() => setIsMenuOpen(false)}
-        actions={[
-          {
-            key: "edit",
-            label: t("common.edit"),
-            icon: "pencil-outline",
-            onPress: handleEdit,
-          },
-          {
-            key: "delete",
-            label: t("common.delete"),
-            icon: "trash-can-outline",
-            destructive: true,
-            disabled: deleteProduct.isPending,
-            onPress: handleDelete,
-          },
-        ]}
-      />
     </SafeAreaView>
   );
 }

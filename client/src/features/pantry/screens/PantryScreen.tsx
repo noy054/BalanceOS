@@ -280,8 +280,8 @@ export function PantryScreen() {
 
   const tabOptions = [
     { value: "products" as PantryTab, label: t("tabs.products") },
-    { value: "recipes" as PantryTab, label: t("tabs.recipes") },
     { value: "savedMeals" as PantryTab, label: t("tabs.savedMeals") },
+    { value: "recipes" as PantryTab, label: t("tabs.recipes") },
   ];
 
   return (

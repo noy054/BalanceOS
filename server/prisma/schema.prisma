@@ -340,10 +340,10 @@ model PantryRecipeItem {
 }
 
 model SavedMeal {
-  id       String  @id @default(cuid())
-  userId   String
-  name     String
-  mealType String?
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  mealTypes String[] @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -111,17 +111,17 @@ export function ProductCalculatorCard({
           </Text>
 
           <NutritionRow label={t("macros.calories")} value={nutrition.calories} unit={t("product.calUnit")} highlight isRTL={isRTL} />
-          <NutritionRow label={t("macros.protein")} value={nutrition.protein} unit={t("product.gramsUnit")} isRTL={isRTL} />
-          <NutritionRow label={t("macros.carbs")} value={nutrition.carbs} unit={t("product.gramsUnit")} isRTL={isRTL} />
+          <NutritionRow label={t("macros.protein")} macro="protein" value={nutrition.protein} unit={t("product.gramsUnit")} isRTL={isRTL} />
+          <NutritionRow label={t("macros.carbs")} macro="carbs" value={nutrition.carbs} unit={t("product.gramsUnit")} isRTL={isRTL} />
           <NutritionRow
-            label={t("macros.fat")}
+            label={t("macros.fat")} macro="fat"
             value={nutrition.fat}
             unit={t("product.gramsUnit")}
             last={nutrition.fiber == null}
             isRTL={isRTL}
           />
           {nutrition.fiber != null ? (
-            <NutritionRow label={t("macros.fiber")} value={nutrition.fiber} unit={t("product.gramsUnit")} last isRTL={isRTL} />
+            <NutritionRow label={t("macros.fiber")} macro="fiber" value={nutrition.fiber} unit={t("product.gramsUnit")} last isRTL={isRTL} />
           ) : null}
         </View>
       ) : null}

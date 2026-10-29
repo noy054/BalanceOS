@@ -18,6 +18,11 @@ export const useStyles = () =>
         flex: 1,
       },
 
+      headerActions: {
+        alignItems: "center",
+        gap: spacing.xs,
+      },
+
       content: {
         paddingHorizontal: spacing.md,
         paddingTop: spacing.xs,

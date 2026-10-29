@@ -56,12 +56,13 @@ export function AddSavedMealScreen() {
 
   const form = useAddSavedMealForm(existingMeal, isEditMode);
 
+  const firstMealType = form.mealTypes[0] ?? null;
   const mealCategory: ProductCategory | null =
-    !form.mealType
+    !firstMealType
       ? null
-      : form.mealType === "SNACK_1" || form.mealType === "SNACK_2"
+      : firstMealType === "SNACK_1" || firstMealType === "SNACK_2"
         ? "SNACK"
-        : (form.mealType as ProductCategory);
+        : (firstMealType as ProductCategory);
 
   const isSaving = createSavedMeal.isPending || updateSavedMeal.isPending;
 
@@ -79,7 +80,7 @@ export function AddSavedMealScreen() {
     const payload = {
       name: form.name.trim(),
       imageUrl: form.imageUrl.trim() || undefined,
-      mealType: form.mealType ?? undefined,
+      mealTypes: form.mealTypes,
       items: form.validItems,
     };
 
@@ -148,10 +149,10 @@ export function AddSavedMealScreen() {
           <SavedMealBasicInfoCard
             name={form.name}
             nameError={form.nameError}
-            mealType={form.mealType}
+            mealTypes={form.mealTypes}
             isRTL={isRTL}
             onChangeName={form.handleNameChange}
-            onChangeMealType={form.setMealType}
+            onToggleMealType={form.toggleMealType}
           />
 
           <SavedMealItemsCard

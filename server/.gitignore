@@ -5,3 +5,7 @@ node_modules
 /generated/prisma
 
 /storage
+
+# Catalog import data
+/openfoodfacts-products.jsonl.gz
+/import-results

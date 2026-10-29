@@ -4,8 +4,8 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "../../../shared/components/ui/Button";
+import { showToast } from "../../../shared/helpers/toast";
 import { ChoiceChips } from "../../../shared/components/ui/ChoiceChips";
-import { formatGrams } from "../../../shared/helpers/formatNumber";
 import { useDirection } from "../../../shared/hooks/useDirection";
 import { radius, spacing, typography, useAppTheme, useThemedStyles } from "../../../shared/theme";
 import { DayCalendar } from "../../day-log/components/DayCalendar";
@@ -34,54 +34,24 @@ export function AddToMealPanel({ product, result, onDone, onBack }: Props) {
 
   const amountLabel = servingFormat.amount(product, result.amount);
   const dayLabel = (key: string) => labels.relative(key) ?? labels.full(key);
-  const { nutrition } = result;
 
-  if (flow.saved) {
-    return (
-      <View style={styles.success} accessibilityLiveRegion="polite">
-        <View style={styles.successIcon}>
-          <MaterialCommunityIcons name="check" size={28} color={colors.success} />
-        </View>
-        <Text style={styles.successTitle}>{t("calculatorMeal.savedTitle")}</Text>
-        <Text style={styles.successText}>
-          {t("calculatorMeal.savedText", {
-            amount: amountLabel,
-            meal: t(`mealTypes.${flow.saved.mealType}`),
-            date: dayLabel(flow.saved.date),
-          })}
-        </Text>
-        <View style={[styles.actions, dir.row]}>
-          <Button
-            label={t("calculatorMeal.viewDay")}
-            variant="secondary"
-            onPress={() => {
-              onDone();
-              flow.viewDay();
-            }}
-            style={styles.action}
-          />
-          <Button label={t("calculatorMeal.done")} onPress={onDone} style={styles.action} />
-        </View>
-      </View>
-    );
+  async function handleSave() {
+    const target = await flow.save();
+    if (!target) return;
+    showToast({
+      message: t("calculatorMeal.savedText", {
+        amount: amountLabel,
+        meal: t(`mealTypes.${target.mealType}`),
+        date: dayLabel(target.date),
+      }),
+      actionLabel: t("calculatorMeal.viewDay"),
+      onAction: () => flow.viewDay(target),
+    });
+    onDone();
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.summary}>
-        <Text style={[styles.summaryAmount, dir.text]}>{amountLabel}</Text>
-        <Text style={[styles.summaryCalories, dir.text]}>
-          {t("calculatorMeal.calories", { value: formatGrams(nutrition.calories) })}
-        </Text>
-        <Text style={[styles.summaryMacros, dir.text]}>
-          {t("calculatorMeal.macros", {
-            protein: formatGrams(nutrition.protein),
-            carbs: formatGrams(nutrition.carbs),
-            fat: formatGrams(nutrition.fat),
-          })}
-        </Text>
-      </View>
-
       <View style={styles.field}>
         <Text style={[styles.label, dir.text]}>{t("calculatorMeal.dateLabel")}</Text>
         <Pressable
@@ -125,7 +95,7 @@ export function AddToMealPanel({ product, result, onDone, onBack }: Props) {
       <Button
         label={t("calculatorMeal.save", { meal: t(`mealTypes.${flow.mealType}`) })}
         icon="plus"
-        onPress={flow.save}
+        onPress={handleSave}
         loading={flow.isSaving}
         disabled={!flow.canSave}
         fullWidth
@@ -141,15 +111,6 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       container: { gap: spacing.md },
-      summary: {
-        gap: spacing.xxs,
-        borderRadius: radius.md,
-        backgroundColor: colors.surfaceMuted,
-        padding: spacing.ms,
-      },
-      summaryAmount: { ...typography.headline, color: colors.textPrimary },
-      summaryCalories: { ...typography.bodyStrong, ...typography.number, color: colors.textPrimary },
-      summaryMacros: { ...typography.footnote, ...typography.number, color: colors.textSecondary },
       field: { gap: spacing.sm },
       label: { ...typography.label, color: colors.textSecondary },
       dateButton: {
@@ -170,18 +131,5 @@ const useStyles = () =>
         borderColor: colors.border,
         padding: spacing.sm,
       },
-      success: { alignItems: "center", gap: spacing.sm, paddingVertical: spacing.sm },
-      successIcon: {
-        width: 56,
-        height: 56,
-        borderRadius: 12,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.successSoft,
-      },
-      successTitle: { ...typography.headline, color: colors.textPrimary, textAlign: "center" },
-      successText: { ...typography.callout, color: colors.textSecondary, textAlign: "center" },
-      actions: { gap: spacing.sm, alignSelf: "stretch", marginTop: spacing.sm },
-      action: { flex: 1 },
     }),
   );

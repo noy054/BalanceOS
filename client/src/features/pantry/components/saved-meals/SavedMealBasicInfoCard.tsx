@@ -13,19 +13,19 @@ import {
 type Props = {
   name: string;
   nameError: string;
-  mealType: MealType | null;
+  mealTypes: MealType[];
   isRTL: boolean;
   onChangeName: (value: string) => void;
-  onChangeMealType: (value: MealType | null) => void;
+  onToggleMealType: (value: MealType) => void;
 };
 
 export function SavedMealBasicInfoCard({
   name,
   nameError,
-  mealType,
+  mealTypes,
   isRTL,
   onChangeName,
-  onChangeMealType,
+  onToggleMealType,
 }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
@@ -48,9 +48,9 @@ export function SavedMealBasicInfoCard({
         </Text>
 
         <SavedMealTypeSelector
-          selectedMealType={mealType}
+          selectedMealTypes={mealTypes}
           isRTL={isRTL}
-          onSelect={onChangeMealType}
+          onToggle={onToggleMealType}
         />
       </View>
     </FormSection>

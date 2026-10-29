@@ -68,7 +68,7 @@ export class SavedMealsService {
     const updated = await this.repo.updateWithItems(
       id,
       dto.name,
-      dto.mealType,
+      dto.mealTypes,
       dto.items,
     );
     return enrichSavedMeal(updated);

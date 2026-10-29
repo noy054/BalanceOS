@@ -58,9 +58,9 @@ export function RecipeBasicInfoCard({
         </Text>
 
         <SavedMealTypeSelector
-          selectedMealType={mealType}
+          selectedMealTypes={mealType ? [mealType] : []}
           isRTL={isRTL}
-          onSelect={onChangeMealType}
+          onToggle={(type) => onChangeMealType(mealType === type ? null : type)}
         />
       </View>
     </FormSection>

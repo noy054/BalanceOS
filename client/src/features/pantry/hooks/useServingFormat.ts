@@ -37,6 +37,26 @@ export function useServingFormat() {
         : t("serving.perServingPlain");
     }
 
+    function basis(product: ServingSource) {
+      const serving = getServing(product);
+
+      if (!serving) {
+        return t("serving.basisShort.per100g");
+      }
+
+      const quantity = formatAmount(serving.quantity);
+
+      if (serving.unit) {
+        return serving.grams
+          ? t("serving.basisShort.unit", { quantity, unit: serving.unit, grams: formatGrams(serving.grams) })
+          : t("serving.basisShort.unitNoWeight", { quantity, unit: serving.unit });
+      }
+
+      return serving.grams
+        ? t("serving.basisShort.servingGrams", { grams: formatGrams(serving.grams) })
+        : t("serving.basisShort.serving");
+    }
+
     function amount(product: ServingSource, stored: StoredAmount) {
       const serving = getServing(product);
 
@@ -80,6 +100,6 @@ export function useServingFormat() {
         : t("serving.servingWeight", { grams: formatGrams(serving.grams) });
     }
 
-    return { unitName, perServing, amount, unitWeight };
+    return { unitName, perServing, basis, amount, unitWeight };
   }, [t]);
 }

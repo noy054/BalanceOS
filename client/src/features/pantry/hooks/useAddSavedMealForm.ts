@@ -10,6 +10,7 @@ import {
   SavedMealDraftItem,
 } from "../helpers/savedMealDraft";
 import { MealType, PantryProduct, PantryRecipe, SavedMeal } from "../types";
+import { MEAL_TYPES } from "../constants";
 import { convertAmount } from "../helpers/serving";
 
 export function useAddSavedMealForm(
@@ -20,7 +21,7 @@ export function useAddSavedMealForm(
 
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [mealType, setMealType] = useState<MealType | null>(null);
+  const [mealTypes, setMealTypes] = useState<MealType[]>([]);
   const [items, setItems] = useState<SavedMealDraftItem[]>([]);
   const [nameError, setNameError] = useState("");
   const [productPickerVisible, setProductPickerVisible] = useState(false);
@@ -39,7 +40,9 @@ export function useAddSavedMealForm(
 
     setName(existingMeal.name);
     setImageUrl(existingMeal.imageUrl ?? "");
-    setMealType((existingMeal.mealType as MealType | null) ?? null);
+    setMealTypes(
+      MEAL_TYPES.filter((type) => existingMeal.mealTypes.includes(type)),
+    );
     setNameError("");
 
     setItems(
@@ -129,6 +132,14 @@ export function useAddSavedMealForm(
     );
   }
 
+  function toggleMealType(type: MealType) {
+    setMealTypes((prev) =>
+      prev.includes(type)
+        ? prev.filter((value) => value !== type)
+        : MEAL_TYPES.filter((value) => value === type || prev.includes(value)),
+    );
+  }
+
   function removeItem(key: string) {
     setItems((prev) => prev.filter((item) => item.key !== key));
   }
@@ -136,7 +147,7 @@ export function useAddSavedMealForm(
   return {
     name,
     imageUrl,
-    mealType,
+    mealTypes,
     items,
     nameError,
     productPickerVisible,
@@ -149,7 +160,7 @@ export function useAddSavedMealForm(
 
     setNameError,
     setImageUrl,
-    setMealType,
+    toggleMealType,
     setProductPickerVisible,
     setRecipePickerVisible,
 

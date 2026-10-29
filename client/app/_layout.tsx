@@ -29,6 +29,7 @@ import {
 } from "../src/shared/theme";
 import { PaperThemeBridge } from "../src/shared/theme/PaperThemeBridge";
 import { ConfirmDialogHost } from "../src/shared/components/ui/ConfirmDialogHost";
+import { ToastHost } from "../src/shared/components/ui/ToastHost";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -103,6 +104,7 @@ export default function RootLayout() {
         <PaperThemeBridge>
           <RootStack />
           <ConfirmDialogHost />
+          <ToastHost />
         </PaperThemeBridge>
       </AppThemeProvider>
     </QueryClientProvider>

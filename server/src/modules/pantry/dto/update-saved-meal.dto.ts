@@ -1,4 +1,6 @@
 import {
+  ArrayMaxSize,
+  ArrayUnique,
   IsArray,
   IsIn,
   IsNotEmpty,
@@ -26,9 +28,11 @@ export class UpdateSavedMealDto {
   name?: string;
 
   @IsOptional()
-  @IsString()
-  @IsIn(MEAL_TYPES)
-  mealType?: string;
+  @IsArray()
+  @ArrayMaxSize(MEAL_TYPES.length)
+  @ArrayUnique()
+  @IsIn(MEAL_TYPES, { each: true })
+  mealTypes?: string[];
 
   @IsOptional()
   @IsArray()

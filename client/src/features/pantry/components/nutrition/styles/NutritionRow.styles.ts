@@ -18,6 +18,18 @@ export const useRowStyles = () =>
         borderBottomColor: colors.border,
       },
 
+      labelRow: {
+        flex: 1,
+        alignItems: "center",
+        gap: spacing.sm,
+      },
+
+      dot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+      },
+
       label: {
         flex: 1,
         ...typography.callout,

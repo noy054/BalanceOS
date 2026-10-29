@@ -8,15 +8,15 @@ import { MealType } from "../../types";
 import { useStyles } from "./styles/SavedMealTypeSelector.styles";
 
 type Props = {
-  selectedMealType: MealType | null;
+  selectedMealTypes: MealType[];
   isRTL: boolean;
-  onSelect: (mealType: MealType | null) => void;
+  onToggle: (mealType: MealType) => void;
 };
 
 export function SavedMealTypeSelector({
-  selectedMealType,
+  selectedMealTypes,
   isRTL,
-  onSelect,
+  onToggle,
 }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
@@ -53,7 +53,7 @@ export function SavedMealTypeSelector({
       }}
     >
       {MEAL_TYPES.map((type) => {
-        const isActive = selectedMealType === type;
+        const isActive = selectedMealTypes.includes(type);
 
         return (
           <Pressable
@@ -63,7 +63,9 @@ export function SavedMealTypeSelector({
               isActive && styles.mealTypeChipActive,
               pressed && styles.chipPressed,
             ]}
-            onPress={() => onSelect(isActive ? null : type)}
+            onPress={() => onToggle(type)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: isActive }}
           >
             <Text
               style={[

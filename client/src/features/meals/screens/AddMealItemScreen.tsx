@@ -59,12 +59,12 @@ function mealTypeToCategory(mealType: string): ProductCategory | null {
   return null;
 }
 
-function matchesMealType<T extends { mealType: string | null }>(items: T[], mealType: string) {
+function matchesMealType<T>(items: T[], mealType: string, typesOf: (item: T) => readonly string[]) {
   if (!mealType) return items;
   return items.filter((item) => {
-    if (!item.mealType) return true;
-    if (isSnack(mealType) && isSnack(item.mealType)) return true;
-    return item.mealType === mealType;
+    const types = typesOf(item);
+    if (types.length === 0) return true;
+    return types.some((type) => type === mealType || (isSnack(mealType) && isSnack(type)));
   });
 }
 
@@ -138,11 +138,11 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
     [products, activeMealType],
   );
   const filteredRecipes = useMemo(
-    () => matchesSearch(matchesMealType(recipes, activeMealType), search),
+    () => matchesSearch(matchesMealType(recipes, activeMealType, (recipe) => (recipe.mealType ? [recipe.mealType] : [])), search),
     [recipes, search, activeMealType],
   );
   const filteredMeals = useMemo(
-    () => matchesSearch(matchesMealType(savedMeals, activeMealType), search),
+    () => matchesSearch(matchesMealType(savedMeals, activeMealType, (meal) => meal.mealTypes), search),
     [savedMeals, search, activeMealType],
   );
 
@@ -200,8 +200,8 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
 
   const tabs: Array<{ value: Tab; label: string }> = [
     { value: 'products', label: t('addItem.tabProducts') },
-    { value: 'recipes', label: t('addItem.tabRecipes') },
     { value: 'savedMeals', label: t('addItem.tabSavedMeals') },
+    { value: 'recipes', label: t('addItem.tabRecipes') },
   ];
 
   const mealTypeOptions = MEAL_SHORTCUTS.map((s) => ({

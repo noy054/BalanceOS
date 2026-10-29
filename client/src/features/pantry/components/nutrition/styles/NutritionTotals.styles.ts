@@ -15,11 +15,15 @@ export const useStyles = () =>
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
         padding: spacing.md,
-        gap: spacing.sm,
+        gap: spacing.md,
+      },
+
+      caloriesBlock: {
+        gap: spacing.xxs,
       },
 
       label: {
-        ...typography.caption,
+        ...typography.footnote,
         color: colors.textSecondary,
       },
 
@@ -30,8 +34,8 @@ export const useStyles = () =>
 
       caloriesValue: {
         ...typography.display,
-        fontSize: 30,
-        lineHeight: 36,
+        fontSize: 34,
+        lineHeight: 40,
         color: colors.textPrimary,
       },
 
@@ -43,34 +47,53 @@ export const useStyles = () =>
       macrosRow: {
         borderTopWidth: StyleSheet.hairlineWidth,
         borderTopColor: colors.border,
-        paddingTop: spacing.ms,
+        paddingTop: spacing.md,
         gap: spacing.sm,
       },
 
       macroCell: {
         flex: 1,
-        gap: 2,
+        minWidth: 0,
+        gap: spacing.xs,
+      },
+
+      macrosGrid: {
+        flexWrap: "wrap",
+        rowGap: spacing.md,
+      },
+
+      macroCellHalf: {
+        flexBasis: "45%",
+      },
+
+      macroHead: {
         alignItems: "center",
+        gap: spacing.xs + 2,
+      },
+
+      macroDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+      },
+
+      macroLabel: {
+        ...typography.caption,
+        flexShrink: 1,
+        fontFamily: fonts.regular,
+        color: colors.textSecondary,
       },
 
       macroValue: {
-        ...typography.bodyStrong,
-        ...typography.number,
-        color: colors.textPrimary,
-        textAlign: "center",
+        ...typography.value,
+        fontSize: 18,
+        lineHeight: 24,
       },
 
       macroUnit: {
         ...typography.caption,
         fontFamily: fonts.regular,
         color: colors.textMuted,
-      },
-
-      macroLabel: {
-        ...typography.caption,
-        fontFamily: fonts.regular,
-        color: colors.textSecondary,
-        textAlign: "center",
       },
     }),
   );

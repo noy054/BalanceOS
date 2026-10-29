@@ -40,19 +40,17 @@ const useStyles = () =>
     StyleSheet.create({
       row: {
         flexWrap: "wrap",
-        gap: spacing.xs,
+        gap: spacing.xs + 2,
       },
       chip: {
-        paddingHorizontal: spacing.sm - 2,
-        paddingVertical: 2,
-        borderRadius: radius.xs,
-        backgroundColor: colors.surfaceMuted,
+        paddingHorizontal: spacing.sm + 2,
+        paddingVertical: 3,
+        borderRadius: radius.round,
+        backgroundColor: colors.accentSoft,
       },
       chipText: {
         ...typography.caption,
-        fontSize: 11,
-        lineHeight: 14,
-        color: colors.textSecondary,
+        color: colors.accent,
       },
     }),
   );

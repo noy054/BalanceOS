@@ -1,12 +1,10 @@
 import { Text, View } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TFunction } from "i18next";
 
-import { useAppTheme } from "../../../../shared/theme";
 import { CategoryChips } from "../../../../shared/components/CategoryChips";
 import { PantryProduct } from "../../types";
 import { NutritionRow } from "../nutrition/NutritionRow";
-import { FoodThumb } from "../food/FoodThumb";
+import { ZoomableThumb } from "../food/ZoomableThumb";
 import { FOOD_ICONS } from "../../hooks/useFoodCardModels";
 import { useServingFormat } from "../../hooks/useServingFormat";
 import { getServing } from "../../helpers/serving";
@@ -21,7 +19,6 @@ type Props = {
 };
 
 export function NutritionFactsCard({ product, t, isRTL }: Props) {
-  const { colors } = useAppTheme();
   const styles = useStyles();
   const dir = getDirectionStyles(isRTL);
   const format = useServingFormat();
@@ -41,15 +38,12 @@ export function NutritionFactsCard({ product, t, isRTL }: Props) {
     : t("productDetail.nutritionSection");
   const unitWeight = serving?.unit ? format.unitWeight(product) : null;
 
-  const hasMeta =
-    Boolean(product.brand) ||
-    Boolean(product.barcode) ||
-    (product.mealCategories ?? []).length > 0;
+  const hasCategories = (product.mealCategories ?? []).length > 0;
 
   return (
     <View style={styles.wrapper}>
       <View style={[styles.identityRow, dir.row]}>
-        {product.imageUrl ? <FoodThumb imageUrl={product.imageUrl} fallbackIcon={FOOD_ICONS.product} size={64} /> : null}
+        <ZoomableThumb imageUrl={product.imageUrl} fallbackIcon={FOOD_ICONS.product} name={product.name} />
 
         <View style={styles.identityText}>
           <Text style={[styles.productName, dir.text]} numberOfLines={3}>
@@ -62,16 +56,7 @@ export function NutritionFactsCard({ product, t, isRTL }: Props) {
             </Text>
           ) : null}
 
-          {product.barcode ? (
-            <View style={[styles.metaRow, dir.row]}>
-              <MaterialCommunityIcons name="barcode" size={14} color={colors.textMuted} />
-              <Text style={styles.metaMuted} numberOfLines={1}>
-                {product.barcode}
-              </Text>
-            </View>
-          ) : null}
-
-          {hasMeta ? (
+          {hasCategories ? (
             <CategoryChips categories={product.mealCategories ?? []} isRTL={isRTL} />
           ) : null}
         </View>
@@ -92,21 +77,21 @@ export function NutritionFactsCard({ product, t, isRTL }: Props) {
         />
 
         <NutritionRow
-          label={t("macros.protein")}
+          label={t("macros.protein")} macro="protein"
           value={displayProtein}
           unit={t("product.gramsUnit")}
           isRTL={isRTL}
         />
 
         <NutritionRow
-          label={t("macros.carbs")}
+          label={t("macros.carbs")} macro="carbs"
           value={displayCarbs}
           unit={t("product.gramsUnit")}
           isRTL={isRTL}
         />
 
         <NutritionRow
-          label={t("macros.fat")}
+          label={t("macros.fat")} macro="fat"
           value={displayFat}
           unit={t("product.gramsUnit")}
           last={displayFiber == null}
@@ -115,7 +100,7 @@ export function NutritionFactsCard({ product, t, isRTL }: Props) {
 
         {displayFiber != null ? (
           <NutritionRow
-            label={t("macros.fiber")}
+            label={t("macros.fiber")} macro="fiber"
             value={displayFiber}
             unit={t("product.gramsUnit")}
             last

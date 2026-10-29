@@ -270,7 +270,7 @@ export type SavedMeal = {
   userId: string;
   name: string;
   imageUrl: string | null;
-  mealType: MealType | string | null;
+  mealTypes: Array<MealType | string>;
   items: SavedMealItem[];
   totals: NutritionTotals;
   createdAt: string;
@@ -279,7 +279,7 @@ export type SavedMeal = {
 
 export type CreateSavedMealPayload = {
   name: string;
-  mealType?: MealType | string;
+  mealTypes?: MealType[];
   items: Array<{
     productId?: string;
     recipeId?: string;
@@ -290,6 +290,6 @@ export type CreateSavedMealPayload = {
 
 export type UpdateSavedMealPayload = {
   name?: string;
-  mealType?: MealType | string;
+  mealTypes?: MealType[];
   items?: CreateSavedMealPayload["items"];
 };

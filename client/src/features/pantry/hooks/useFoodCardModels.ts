@@ -13,6 +13,9 @@ type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 export type FoodCardModel = {
   title: string;
   meta: string;
+  basis: string | null;
+  summary: string;
+  tags: string[];
   imageUrl: string | null;
   fallbackIcon: IconName;
   calories: number;
@@ -53,10 +56,6 @@ function getSavedMealImageUrl(meal: SavedMeal) {
   );
 }
 
-function joinMeta(parts: Array<string | null | undefined | false>) {
-  return parts.filter(Boolean).join(" · ");
-}
-
 export function useFoodCardModels() {
   const { t } = useTranslation("pantry");
   const format = useServingFormat();
@@ -70,8 +69,8 @@ export function useFoodCardModels() {
     return format.perServing(product);
   }
 
-  function mealTypeLabel(mealType: string | null) {
-    return mealType ? t(`mealTypes.${mealType}` as Parameters<typeof t>[0]) : null;
+  function mealTypeLabels(mealTypes: readonly string[]) {
+    return mealTypes.map((type) => t(`mealTypes.${type}` as Parameters<typeof t>[0]));
   }
 
   function product(item: PantryProduct, showBrand = false): FoodCardModel {
@@ -80,7 +79,10 @@ export function useFoodCardModels() {
       nutritionPer100g(item);
     return {
       title: item.name,
-      meta: joinMeta([productBasisLabel(item), showBrand && item.brand]),
+      meta: showBrand && item.brand ? item.brand : "",
+      basis: format.basis(item),
+      summary: "",
+      tags: [],
       imageUrl: item.imageUrl ?? null,
       fallbackIcon: FOOD_ICONS.product,
       calories: values?.calories ?? 0,
@@ -96,11 +98,10 @@ export function useFoodCardModels() {
   function recipe(item: PantryRecipe): FoodCardModel {
     return {
       title: item.name,
-      meta: joinMeta([
-        t("foodCard.recipeTotal"),
-        t("recipeDetail.itemsCount", { count: item.items.length }),
-        mealTypeLabel(item.mealType),
-      ]),
+      meta: "",
+      basis: t("foodCard.recipeTotal"),
+      summary: t("recipeDetail.itemsCount", { count: item.items.length }),
+      tags: mealTypeLabels(item.mealType ? [item.mealType] : []),
       imageUrl: getRecipeImageUrl(item),
       fallbackIcon: FOOD_ICONS.recipe,
       calories: item.totals.calories,
@@ -111,11 +112,10 @@ export function useFoodCardModels() {
   function savedMeal(item: SavedMeal): FoodCardModel {
     return {
       title: item.name,
-      meta: joinMeta([
-        t("foodCard.mealTotal"),
-        t("savedMealDetail.itemsCount", { count: item.items.length }),
-        mealTypeLabel(item.mealType),
-      ]),
+      meta: "",
+      basis: t("foodCard.mealTotal"),
+      summary: t("savedMealDetail.itemsCount", { count: item.items.length }),
+      tags: mealTypeLabels(item.mealTypes),
       imageUrl: getSavedMealImageUrl(item),
       fallbackIcon: FOOD_ICONS.savedMeal,
       calories: item.totals.calories,

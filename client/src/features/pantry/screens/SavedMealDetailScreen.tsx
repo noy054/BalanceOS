@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -14,7 +13,8 @@ import { isAmbiguousName, useDuplicateNames } from "../helpers/duplicateNames";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
 import { StateView } from "../../../shared/components/ui/StateView";
-import { ActionSheet } from "../../../shared/components/ui/ActionSheet";
+import { IconButton } from "../../../shared/components/ui/IconButton";
+import { useDirection } from "../../../shared/hooks/useDirection";
 import { formatGrams } from "../../../shared/helpers/formatNumber";
 import { useStyles } from "./styles/ItemDetailScreen.styles";
 import { useServingFormat } from "../hooks/useServingFormat";
@@ -26,10 +26,10 @@ type Props = {
 export function SavedMealDetailScreen({ id }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
+  const dir = useDirection();
   const models = useFoodCardModels();
   const servingFormat = useServingFormat();
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { data: meal, isLoading } = useSavedMeal(id);
   const duplicateNames = useDuplicateNames(
@@ -91,9 +91,23 @@ export function SavedMealDetailScreen({ id }: Props) {
     <SafeAreaView style={styles.root} edges={["top"]}>
       <ScreenHeader
         title={t("savedMealDetail.title")}
-        rightIconName="dots-vertical"
-        rightAccessibilityLabel={t("common.moreOptionsFor", { name: meal.name })}
-        onRightPress={() => setIsMenuOpen(true)}
+        rightElement={
+          <View style={[styles.headerActions, dir.row]}>
+            <IconButton
+              icon="pencil-outline"
+              iconSize={22}
+              accessibilityLabel={t("common.editItem", { name: meal.name })}
+              onPress={handleEdit}
+            />
+            <IconButton
+              icon="trash-can-outline"
+              iconSize={22}
+              accessibilityLabel={t("common.deleteItem", { name: meal.name })}
+              onPress={confirmDelete}
+              disabled={deleteMeal.isPending}
+            />
+          </View>
+        }
       />
 
       <ScrollView
@@ -103,7 +117,8 @@ export function SavedMealDetailScreen({ id }: Props) {
       >
         <DetailHero
           title={meal.name}
-          meta={model.meta}
+          meta={model.summary}
+          tags={model.tags}
           imageUrl={model.imageUrl}
           fallbackIcon={FOOD_ICONS.savedMeal}
         />
@@ -131,40 +146,25 @@ export function SavedMealDetailScreen({ id }: Props) {
                 <FoodLineItem
                   key={item.id}
                   title={name}
-                  meta={[detail, product && isAmbiguousName(duplicateNames, product.name) && product.brand]
-                    .filter(Boolean)
-                    .join(" · ")}
+                  basis={detail}
+                  meta={product && isAmbiguousName(duplicateNames, product.name) ? product.brand : null}
                   calories={item.nutrition.calories}
                   macros={item.nutrition}
                   last={index === meal.items.length - 1}
+                  onPress={
+                    product
+                      ? () => router.push(`/(app)/pantry/${product.id}`)
+                      : recipe
+                        ? () => router.push(`/(app)/pantry/recipes/${recipe.id}`)
+                        : undefined
+                  }
+                  accessibilityHint={t("common.openDetailsHint")}
                 />
               );
             })}
           </View>
         </View>
       </ScrollView>
-
-      <ActionSheet
-        visible={isMenuOpen}
-        title={meal.name}
-        onClose={() => setIsMenuOpen(false)}
-        actions={[
-          {
-            key: "edit",
-            label: t("common.edit"),
-            icon: "pencil-outline",
-            onPress: handleEdit,
-          },
-          {
-            key: "delete",
-            label: t("common.delete"),
-            icon: "trash-can-outline",
-            destructive: true,
-            disabled: deleteMeal.isPending,
-            onPress: confirmDelete,
-          },
-        ]}
-      />
     </SafeAreaView>
   );
 }

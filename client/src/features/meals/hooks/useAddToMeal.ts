@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { AccessibilityInfo, Alert } from "react-native";
+import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
@@ -20,38 +20,34 @@ export function useAddToMeal(productId: string, amount: AmountPayload) {
 
   const [date, setDate] = useState<DateKey>(selected.date);
   const [mealType, setMealType] = useState<LoggableMealType>(() => mealTypeForTime(new Date()));
-  const [saved, setSaved] = useState<SavedMealTarget | null>(null);
   const inFlight = useRef(false);
 
-  const canSave = !add.isPending && !saved && date <= selected.maxDate;
+  const canSave = !add.isPending && date <= selected.maxDate;
 
   function chooseDate(next: DateKey) {
     if (next > selected.maxDate) return;
     setDate(next);
   }
 
-  async function save() {
-    if (!canSave || inFlight.current) return;
+  async function save(): Promise<SavedMealTarget | null> {
+    if (!canSave || inFlight.current) return null;
     inFlight.current = true;
     try {
       await add.mutateAsync({
         date,
         payload: { mealType, pantryProductId: productId, ...amount },
       });
-      setSaved({ date, mealType });
-      AccessibilityInfo.announceForAccessibility(
-        t("calculatorMeal.savedAnnouncement", { meal: t(`mealTypes.${mealType}`) }),
-      );
+      return { date, mealType };
     } catch {
       Alert.alert("", t("calculatorMeal.saveFailed"));
+      return null;
     } finally {
       inFlight.current = false;
     }
   }
 
-  function viewDay() {
-    if (!saved) return;
-    setSelectedDate(saved.date === selected.today ? null : saved.date);
+  function viewDay(target: SavedMealTarget) {
+    setSelectedDate(target.date === selected.today ? null : target.date);
     router.navigate("/(app)/dashboard");
   }
 
@@ -61,7 +57,6 @@ export function useAddToMeal(productId: string, amount: AmountPayload) {
     maxDate: selected.maxDate,
     mealType,
     mealTypes: LOGGABLE_MEAL_TYPES,
-    saved,
     isSaving: add.isPending,
     canSave,
     chooseDate,

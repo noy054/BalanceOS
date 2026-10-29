@@ -309,7 +309,10 @@
     "cancel": "ביטול",
     "close": "סגירה",
     "moreOptionsFor": "אפשרויות נוספות עבור {{name}}",
-    "editItem": "עריכת {{name}}"
+    "editItem": "עריכת {{name}}",
+    "deleteItem": "מחיקת {{name}}",
+    "viewImage": "הצגת התמונה של {{name}}",
+    "openDetailsHint": "פתיחת הפרטים"
   },
   "macrosShort": {
     "protein": "חלבון",
@@ -371,7 +374,14 @@
     "perServingPlain": "למנה",
     "amountNoWeight": "{{count}} {{unit}}",
     "weightLabelServing": "משקל בגרמים (לא חובה)",
-    "hintServing": "הזינו את הערכים למנה הזו, למשל ביצה גדולה אחת או 2 פרוסות. הוסיפו משקל רק אם הוא ידוע; הוא מאפשר רישום בגרמים."
+    "hintServing": "הזינו את הערכים למנה הזו, למשל ביצה גדולה אחת או 2 פרוסות. הוסיפו משקל רק אם הוא ידוע; הוא מאפשר רישום בגרמים.",
+    "basisShort": {
+      "per100g": "100 גרם",
+      "unit": "{{quantity}} {{unit}} ({{grams}} גרם)",
+      "unitNoWeight": "{{quantity}} {{unit}}",
+      "servingGrams": "מנה ({{grams}} גרם)",
+      "serving": "מנה"
+    }
   },
   "strip": {
     "gramsUnit": "ג׳",
@@ -386,15 +396,10 @@
     "dateLabel": "יום",
     "chooseDate": "יום: {{date}}. בחירת יום אחר",
     "mealLabel": "ארוחה",
-    "calories": "{{value}} קק״ל",
-    "macros": "חלבון {{protein}} גר׳ · פחמימות {{carbs}} גר׳ · שומן {{fat}} גר׳",
     "save": "הוספה ל{{meal}}",
     "changeAmount": "שינוי הכמות",
-    "savedTitle": "נוסף",
     "savedText": "{{amount}} נוסף ל{{meal}} · {{date}}",
-    "savedAnnouncement": "נוסף ל{{meal}}",
     "viewDay": "מעבר ליום",
-    "done": "סיום",
     "saveFailed": "לא ניתן היה להוסיף את הפריט. כדאי לבדוק את החיבור ולנסות שוב."
   }
 }

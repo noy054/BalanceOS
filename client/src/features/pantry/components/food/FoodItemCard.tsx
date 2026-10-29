@@ -18,6 +18,7 @@ import { FoodCardValues } from "./FoodCardValues";
 type Props = {
   title: string;
   meta?: string | null;
+  basis?: string | null;
   calories: number;
   macros: MacroValues;
   onPress: () => void;
@@ -32,6 +33,7 @@ type Props = {
 export function FoodItemCard({
   title,
   meta,
+  basis,
   calories,
   macros,
   onPress,
@@ -55,7 +57,7 @@ export function FoodItemCard({
       onLongPress={onLongPress}
       delayLongPress={350}
       accessibilityRole="button"
-      accessibilityLabel={[title, meta, `${calorieText} ${unit}`].filter(Boolean).join(", ")}
+      accessibilityLabel={[title, basis, meta, `${calorieText} ${unit}`].filter(Boolean).join(", ")}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ selected }}
       style={({ pressed }) => [
@@ -77,6 +79,21 @@ export function FoodItemCard({
           ) : null}
         </View>
 
+        {basis ? (
+          <Text
+            style={[styles.basis, { textAlign: dir.isRTL ? "left" : "right" }]}
+            numberOfLines={2}
+          >
+            {basis}
+          </Text>
+        ) : null}
+      </View>
+
+      <View style={[styles.footer, dir.row]}>
+        <View style={styles.values}>
+          <FoodCardValues calories={calories} macros={macros} />
+        </View>
+
         {selected ? (
           <View style={styles.end}>
             <MaterialCommunityIcons name="check-circle" size={24} color={colors.accent} />
@@ -87,8 +104,6 @@ export function FoodItemCard({
           <View style={styles.end}>{trailing}</View>
         ) : null}
       </View>
-
-      <FoodCardValues calories={calories} macros={macros} />
     </Pressable>
   );
 }
@@ -97,13 +112,13 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       card: {
-        gap: spacing.ms,
+        gap: spacing.md,
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
         borderWidth: 1.5,
         borderColor: "transparent",
-        paddingVertical: spacing.ms + 2,
-        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.md,
+        paddingHorizontal: spacing.md + 2,
       },
       cardHighlighted: {
         borderColor: colors.accentBorder,
@@ -115,23 +130,39 @@ const useStyles = () =>
         opacity: 0.85,
       },
       header: {
-        alignItems: "center",
-        gap: spacing.sm,
+        alignItems: "flex-start",
+        gap: spacing.md,
       },
       body: {
         flex: 1,
         minWidth: 0,
-        gap: 2,
+        gap: spacing.xxs,
       },
       title: {
         ...typography.bodyStrong,
-        fontSize: 16,
-        lineHeight: 22,
+        fontSize: 17,
+        lineHeight: 24,
         color: colors.textPrimary,
       },
       meta: {
         ...typography.footnote,
         color: colors.textSecondary,
+      },
+      basis: {
+        ...typography.footnote,
+        ...typography.number,
+        lineHeight: 22,
+        maxWidth: "45%",
+        color: colors.textSecondary,
+      },
+      footer: {
+        alignItems: "center",
+        gap: spacing.md,
+        minHeight: 40,
+      },
+      values: {
+        flex: 1,
+        minWidth: 0,
       },
       actions: {
         alignItems: "center",
@@ -139,7 +170,7 @@ const useStyles = () =>
       },
       end: {
         width: 32,
-        height: 22,
+        height: 32,
         alignItems: "center",
         justifyContent: "center",
       },

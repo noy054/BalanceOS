@@ -37,11 +37,6 @@ export const useStyles = () =>
         color: colors.textSecondary,
       },
 
-      metaRow: {
-        alignItems: "center",
-        gap: spacing.xs,
-      },
-
       metaMuted: {
         ...typography.caption,
         ...typography.number,

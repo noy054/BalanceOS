@@ -1,5 +1,7 @@
 import {
+  ArrayMaxSize,
   ArrayMinSize,
+  ArrayUnique,
   IsArray,
   IsIn,
   IsNotEmpty,
@@ -51,9 +53,11 @@ export class CreateSavedMealDto {
   name: string;
 
   @IsOptional()
-  @IsString()
-  @IsIn(MEAL_TYPES)
-  mealType?: string;
+  @IsArray()
+  @ArrayMaxSize(MEAL_TYPES.length)
+  @ArrayUnique()
+  @IsIn(MEAL_TYPES, { each: true })
+  mealTypes?: string[];
 
   @IsArray()
   @ArrayMinSize(1)

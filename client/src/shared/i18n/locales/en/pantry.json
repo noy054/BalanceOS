@@ -309,7 +309,10 @@
     "cancel": "Cancel",
     "close": "Close",
     "moreOptionsFor": "More options for {{name}}",
-    "editItem": "Edit {{name}}"
+    "editItem": "Edit {{name}}",
+    "deleteItem": "Delete {{name}}",
+    "viewImage": "View image of {{name}}",
+    "openDetailsHint": "Opens the details"
   },
   "macrosShort": {
     "protein": "P",
@@ -367,7 +370,14 @@
     "perServingPlain": "per serving",
     "amountNoWeight": "{{count}} {{unit}}",
     "weightLabelServing": "Weight in grams (optional)",
-    "hintServing": "Enter the values for this serving, for example 1 large egg or 2 slices. Add the weight only if you know it; it enables logging in grams."
+    "hintServing": "Enter the values for this serving, for example 1 large egg or 2 slices. Add the weight only if you know it; it enables logging in grams.",
+    "basisShort": {
+      "per100g": "100 g",
+      "unit": "{{quantity}} {{unit}} ({{grams}} g)",
+      "unitNoWeight": "{{quantity}} {{unit}}",
+      "servingGrams": "serving ({{grams}} g)",
+      "serving": "serving"
+    }
   },
   "strip": {
     "gramsUnit": "g",
@@ -382,15 +392,10 @@
     "dateLabel": "Day",
     "chooseDate": "Day: {{date}}. Choose another day",
     "mealLabel": "Meal",
-    "calories": "{{value}} kcal",
-    "macros": "Protein {{protein}} g · Carbs {{carbs}} g · Fat {{fat}} g",
     "save": "Add to {{meal}}",
     "changeAmount": "Change amount",
-    "savedTitle": "Added",
     "savedText": "{{amount}} was added to {{meal}} · {{date}}",
-    "savedAnnouncement": "Added to {{meal}}",
     "viewDay": "View day",
-    "done": "Done",
     "saveFailed": "The item could not be added. Check your connection and try again."
   }
 }
