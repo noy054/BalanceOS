@@ -10,6 +10,7 @@ import { useDeleteAccount } from '../hooks/useSettings';
 import { useLogout } from '../../auth/hooks/useAuth';
 import { useAuthStore } from '../../auth/hooks/useAuthStore';
 import { useStyles } from './styles/AccountSecurityScreen.styles';
+import { confirmAction } from '../../../shared/helpers/confirm';
 
 export function AccountSecurityScreen() {
   const { t } = useTranslation('settings');
@@ -20,22 +21,18 @@ export function AccountSecurityScreen() {
 
   const isGoogleUser = user?.provider === 'google';
 
-  function handleDeleteAccount() {
-    Alert.alert(
-      t('deleteAccount.confirmTitle'),
-      t('deleteAccount.confirmMessage'),
-      [
-        { text: t('deleteAccount.confirmNo'), style: 'cancel' },
-        {
-          text: t('deleteAccount.confirmYes'),
-          style: 'destructive',
-          onPress: () =>
-            deleteAccount.mutate(undefined, {
-              onError: () => Alert.alert('', t('errors.deleteAccountFailed')),
-            }),
-        },
-      ],
-    );
+  async function handleDeleteAccount() {
+    const confirmed = await confirmAction({
+      title: t('deleteAccount.confirmTitle'),
+      message: t('deleteAccount.confirmMessage'),
+      confirmLabel: t('deleteAccount.confirmYes'),
+      cancelLabel: t('deleteAccount.confirmNo'),
+      destructive: true,
+    });
+    if (!confirmed) return;
+    deleteAccount.mutate(undefined, {
+      onError: () => Alert.alert('', t('errors.deleteAccountFailed')),
+    });
   }
 
   return (

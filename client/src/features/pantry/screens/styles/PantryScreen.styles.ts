@@ -10,10 +10,13 @@ export const useStyles = () =>
         backgroundColor: colors.background,
       },
 
-      controls: {
+      tabs: {
+        marginHorizontal: spacing.md,
+      },
+
+      toolbar: {
         paddingHorizontal: spacing.md,
-        gap: spacing.ms,
-        paddingBottom: spacing.ms,
+        paddingVertical: spacing.ms,
       },
 
       content: {
@@ -22,8 +25,7 @@ export const useStyles = () =>
 
       listContent: {
         paddingHorizontal: spacing.md,
-        paddingTop: spacing.xs,
-        paddingBottom: spacing.lg,
+        paddingBottom: spacing.xl,
       },
     }),
   );

@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { radius, spacing, states, typography, useThemedStyles } from "../../theme";
+import { fonts, radius, spacing, states, typography, useThemedStyles } from "../../theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -11,18 +11,18 @@ export const useStyles = () =>
 
       label: {
         ...typography.label,
-        fontWeight: "500",
+        fontFamily: fonts.medium,
         color: colors.textSecondary,
         marginBottom: spacing.xs + 2,
       },
 
       frame: {
+        borderRadius: radius.md,
         alignItems: "center",
         minHeight: 48,
         backgroundColor: colors.inputBackground,
         borderWidth: 1,
-        borderColor: colors.border,
-        borderRadius: radius.md,
+        borderColor: colors.borderStrong,
       },
 
       frameFocused: {
@@ -74,7 +74,7 @@ export const useStyles = () =>
 
       hint: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
         marginTop: spacing.xs + 2,
       },

@@ -13,6 +13,7 @@ type DirectionStyles = ReturnType<
 
 type Props = {
   product: PantryProduct;
+  showBrand?: boolean;
   isSelected: boolean;
   dir: DirectionStyles;
   onPress: () => void;
@@ -20,6 +21,7 @@ type Props = {
 
 export function RecipeIngredientPickerProductRow({
   product,
+  showBrand = false,
   isSelected,
   onPress,
 }: Props) {
@@ -29,7 +31,7 @@ export function RecipeIngredientPickerProductRow({
 
   return (
     <FoodItemCard
-      {...models.product(product)}
+      {...models.product(product, showBrand)}
       selected={isSelected}
       onPress={onPress}
       trailing={

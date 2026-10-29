@@ -7,6 +7,7 @@ import { PickerDraft } from "../../helpers/recipeIngredientPickerDraft";
 import { RecipeIngredientPickerProductRow } from "./RecipeIngredientPickerProductRow";
 import { useStyles } from "./styles/RecipeIngredientPickerProductList.styles";
 import { ListGap } from "../../../../shared/components/ui/ListGap";
+import { isAmbiguousName, useDuplicateNames } from "../../helpers/duplicateNames";
 
 type DirectionStyles = ReturnType<
   typeof import("./styles/RecipeIngredientPickerModal.styles").getDirectionStyles
@@ -29,6 +30,7 @@ export function RecipeIngredientPickerProductList({
 }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
+  const duplicateNames = useDuplicateNames(products.map((product) => product.name));
 
   if (products.length === 0) {
     return <StateView variant="empty" icon="magnify" title={t("picker.noResults")} />;
@@ -47,6 +49,7 @@ export function RecipeIngredientPickerProductList({
       renderItem={({ item }) => (
         <RecipeIngredientPickerProductRow
           product={item}
+          showBrand={isAmbiguousName(duplicateNames, item.name)}
           isSelected={drafts.has(item.id)}
           dir={dir}
           onPress={() => onToggleProduct(item)}

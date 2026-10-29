@@ -8,6 +8,7 @@ import enDashboard from "./locales/en/dashboard.json";
 import enPantry from "./locales/en/pantry.json";
 import enSettings from "./locales/en/settings.json";
 import enStatistics from "./locales/en/statistics.json";
+import enProgress from "./locales/en/progress.json";
 
 import heAuth from "./locales/he/auth.json";
 import heOnboarding from "./locales/he/onboarding.json";
@@ -16,6 +17,7 @@ import heDashboard from "./locales/he/dashboard.json";
 import hePantry from "./locales/he/pantry.json";
 import heSettings from "./locales/he/settings.json";
 import heStatistics from "./locales/he/statistics.json";
+import heProgress from "./locales/he/progress.json";
 
 const resources = {
   he: {
@@ -26,6 +28,7 @@ const resources = {
     pantry: hePantry,
     settings: heSettings,
     statistics: heStatistics,
+    progress: heProgress,
   },
   en: {
     auth: enAuth,
@@ -35,6 +38,7 @@ const resources = {
     pantry: enPantry,
     settings: enSettings,
     statistics: enStatistics,
+    progress: enProgress,
   },
 };
 
@@ -63,7 +67,7 @@ i18n.use(initReactI18next).init({
   resources,
   lng: DEFAULT_LANGUAGE,
   fallbackLng: "en",
-  ns: ["auth", "onboarding", "common", "dashboard", "pantry", "settings", "statistics"],
+  ns: ["auth", "onboarding", "common", "dashboard", "pantry", "settings", "statistics", "progress"],
   defaultNS: "common",
   interpolation: {
     escapeValue: false,

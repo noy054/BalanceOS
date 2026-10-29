@@ -1,6 +1,6 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 
-import { useThemedStyles } from "../theme";
+import { fonts, useThemedStyles } from "../theme";
 
 type Props = {
   size?: number;
@@ -30,12 +30,12 @@ const useStyles = () =>
         alignItems: "baseline",
       },
       balance: {
-        fontWeight: "700",
+        fontFamily: fonts.bold,
         letterSpacing: -0.4,
         color: colors.textPrimary,
       },
       os: {
-        fontWeight: "700",
+        fontFamily: fonts.bold,
         letterSpacing: -0.4,
         color: colors.accent,
       },

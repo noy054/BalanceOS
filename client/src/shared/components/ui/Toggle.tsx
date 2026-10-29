@@ -19,8 +19,9 @@ export function Toggle({ value, onValueChange, disabled, accessibilityLabel }: P
       disabled={disabled}
       accessibilityLabel={accessibilityLabel}
       trackColor={{ false: colors.borderStrong, true: colors.accent }}
-      thumbColor={Platform.OS === "android" ? colors.surface : undefined}
+      thumbColor={Platform.OS === "ios" ? undefined : colors.surface}
       ios_backgroundColor={colors.borderStrong}
+      {...(Platform.OS === "web" ? { activeThumbColor: colors.surface } : {})}
     />
   );
 }

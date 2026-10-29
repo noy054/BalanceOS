@@ -14,91 +14,117 @@ export const spacing = {
 };
 
 export const radius = {
-  xs: 6,
+  none: 0,
+  xs: 4,
   sm: 8,
-  md: 12,
+  md: 10,
   lg: 16,
-  xl: 20,
-  xxl: 24,
-  full: 999,
+  xl: 16,
+  xxl: 20,
+  full: 8,
+  round: 999,
+};
+
+export const fonts = {
+  regular: "Heebo_400Regular",
+  medium: "Heebo_500Medium",
+  semibold: "Heebo_600SemiBold",
+  bold: "Heebo_700Bold",
+  headingMedium: "Rubik_500Medium",
+  headingSemibold: "Rubik_600SemiBold",
+  headingBold: "Rubik_700Bold",
 };
 
 const tabularNums: TextStyle["fontVariant"] = ["tabular-nums"];
 
 export const typography = {
   display: {
+    fontFamily: fonts.semibold,
     fontSize: 34,
     lineHeight: 40,
-    fontWeight: "700",
-    letterSpacing: -0.6,
+    letterSpacing: -0.4,
     fontVariant: tabularNums,
   },
   title: {
-    fontSize: 24,
-    lineHeight: 30,
-    fontWeight: "700",
-    letterSpacing: -0.3,
+    fontFamily: fonts.headingSemibold,
+    fontSize: 22,
+    lineHeight: 28,
+    letterSpacing: -0.2,
   },
   headline: {
+    fontFamily: fonts.headingMedium,
     fontSize: 17,
-    lineHeight: 22,
-    fontWeight: "600",
+    lineHeight: 24,
   },
   body: {
+    fontFamily: fonts.regular,
     fontSize: 15,
-    lineHeight: 21,
-    fontWeight: "400",
+    lineHeight: 22,
   },
   bodyStrong: {
+    fontFamily: fonts.medium,
     fontSize: 15,
-    lineHeight: 21,
-    fontWeight: "600",
+    lineHeight: 22,
   },
   callout: {
+    fontFamily: fonts.regular,
     fontSize: 14,
-    lineHeight: 19,
-    fontWeight: "400",
+    lineHeight: 20,
   },
   footnote: {
+    fontFamily: fonts.regular,
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: "400",
   },
   label: {
+    fontFamily: fonts.medium,
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: "600",
   },
   caption: {
+    fontFamily: fonts.medium,
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "500",
+  },
+  overline: {
+    fontFamily: fonts.medium,
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.3,
+  },
+  value: {
+    fontFamily: fonts.semibold,
+    fontSize: 17,
+    lineHeight: 24,
+    fontVariant: tabularNums,
   },
   number: {
     fontVariant: tabularNums,
   },
 } satisfies Record<string, TextStyle>;
 
+const flatShadow = {
+  shadowColor: "transparent",
+  shadowOffset: { width: 0, height: 0 },
+  shadowOpacity: 0,
+  shadowRadius: 0,
+  elevation: 0,
+};
+
 export const shadows = {
-  sm: {
-    shadowColor: "#1F2328",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 1,
-  },
+  sm: flatShadow,
   md: {
-    shadowColor: "#1F2328",
+    shadowColor: "#191C26",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.1,
     shadowRadius: 12,
-    elevation: 4,
+    elevation: 6,
   },
   lg: {
-    shadowColor: "#1F2328",
+    shadowColor: "#191C26",
     shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
     elevation: 12,
   },
 } satisfies Record<string, ViewStyle>;
@@ -111,15 +137,16 @@ export const states = {
 export const layout = {
   screenGutter: spacing.md,
   touchTarget: 44,
-  headerHeight: 56,
+  headerHeight: 52,
   tabBarHeight: 58,
-  thumbSize: 48,
+  thumbSize: 40,
+  contentMaxWidth: 640,
 };
 
 export const cameraColors = {
-  surface: "#111317",
-  overlay: "rgba(17, 19, 23, 0.72)",
+  surface: "#0F121A",
+  overlay: "rgba(15, 18, 26, 0.72)",
   foreground: "#FFFFFF",
   corner: "rgba(255, 255, 255, 0.92)",
-  scanLine: "#84A5DF",
+  scanLine: "#5271FF",
 };

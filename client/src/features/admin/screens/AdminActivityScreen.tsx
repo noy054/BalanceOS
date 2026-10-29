@@ -7,7 +7,7 @@ import { spacing, useThemedStyles } from "../../../shared/theme";
 import { useIsAdmin } from "../../admin-catalog/hooks/useAdminCatalog";
 import { AdminHistoryList } from "../components/AdminHistoryList";
 import { AdminScaffold } from "../components/AdminScaffold";
-import { FilterChips } from "../components/FilterChips";
+import { ChoiceChips } from "../../../shared/components/ui/ChoiceChips";
 import { openHistoryEntity } from "../helpers/navigation";
 import { useAdminActivity } from "../hooks/useAdmin";
 import { AdminEntityType, AdminHistoryEntry } from "../types";
@@ -34,7 +34,7 @@ export function AdminActivityScreen() {
   return (
     <AdminScaffold title={t("admin.activity.title")}>
       <View style={styles.controls}>
-        <FilterChips options={options} value={filter} onChange={setFilter} />
+        <ChoiceChips options={options} value={filter} onChange={setFilter} />
       </View>
       {isLoading ? (
         <StateView variant="loading" />

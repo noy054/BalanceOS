@@ -16,6 +16,7 @@ import { FoodInsightsCard } from "../components/FoodInsightsCard";
 import { MacroAccuracyCard } from "../components/MacroAccuracyCard";
 import { MealDistributionCard } from "../components/MealDistributionCard";
 import { RangeSummaryCard } from "../components/RangeSummaryCard";
+import { ProgressEntryCard } from "../../progress/components/ProgressEntryCard";
 import { useStyles } from "./styles/StatisticsScreen.styles";
 
 export function StatisticsScreen() {
@@ -55,46 +56,51 @@ export function StatisticsScreen() {
           <SegmentedControl options={rangeOptions} value={range} onChange={setRange} />
         </View>
 
-        {shouldShowLoading ? (
-          <StateView variant="loading" />
-        ) : isError ? (
-          <StateView variant="error" message={t("errors.loadFailed")} />
-        ) : hasNoData || !data ? (
-          <StateView
-            variant="empty"
-            icon="chart-bar"
-            title={t("empty.title")}
-            message={t("empty.subtitle")}
-          />
-        ) : (
-          <ScrollView
-            style={styles.scroll}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <RangeSummaryCard summary={data.summary} isRTL={isRTL} />
-
-            <CaloriesTrendCard trend={data.dailyTrend} isRTL={isRTL} />
-
-            <MacroAccuracyCard
-              accuracy={data.macroAccuracy}
-              isRTL={isRTL}
-              loggedDays={data.summary.loggedDays}
-              rangeDays={data.summary.rangeDays}
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {shouldShowLoading ? (
+            <StateView variant="loading" compact />
+          ) : isError ? (
+            <StateView variant="error" compact message={t("errors.loadFailed")} />
+          ) : hasNoData || !data ? (
+            <StateView
+              variant="empty"
+              compact
+              icon="chart-bar"
+              title={t("empty.title")}
+              message={t("empty.subtitle")}
             />
+          ) : (
+            <>
+              <RangeSummaryCard summary={data.summary} isRTL={isRTL} />
 
-            <MealDistributionCard
-              distribution={data.mealDistribution}
-              isRTL={isRTL}
-            />
+              <CaloriesTrendCard trend={data.dailyTrend} isRTL={isRTL} />
 
-            <FoodInsightsCard
-              topCalorieSources={data.topCalorieSources}
-              mostUsedFoods={data.mostUsedFoods}
-              isRTL={isRTL}
-            />
-          </ScrollView>
-        )}
+              <MacroAccuracyCard
+                accuracy={data.macroAccuracy}
+                isRTL={isRTL}
+                loggedDays={data.summary.loggedDays}
+                rangeDays={data.summary.rangeDays}
+              />
+
+              <MealDistributionCard
+                distribution={data.mealDistribution}
+                isRTL={isRTL}
+              />
+
+              <FoodInsightsCard
+                topCalorieSources={data.topCalorieSources}
+                mostUsedFoods={data.mostUsedFoods}
+                isRTL={isRTL}
+              />
+            </>
+          )}
+
+          <ProgressEntryCard />
+        </ScrollView>
       </View>
     </TabScreenLayout>
   );

@@ -77,69 +77,58 @@ export function BottomTabBar({ activeTab = "home", onTabPress }: Props) {
   }
 
   return (
-    <View
-      style={[
-        styles.container,
-        dir.row,
-        { paddingBottom: Math.max(insets.bottom, spacing.sm) },
-      ]}
-      accessibilityRole="tablist"
-    >
-      {TABS.map((tab) => {
-        const isActive = tab.id === activeTab;
-        const label = t(`nav.${tab.labelKey}`);
+    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
+      <View style={[styles.bar, dir.row]} accessibilityRole="tablist">
+        <View pointerEvents="none" style={styles.barHighlight} />
+        {TABS.map((tab) => {
+          const isActive = tab.id === activeTab;
+          const label = t(`nav.${tab.labelKey}`);
 
-        if (tab.id === "add") {
+          if (tab.id === "add") {
+            return (
+              <View key={tab.id} style={styles.addSlot}>
+                <View pointerEvents="none" style={styles.addHalo} />
+                <Pressable
+                  onPress={() => handlePress(tab)}
+                  accessibilityRole="button"
+                  accessibilityLabel={label}
+                  style={({ pressed }) => [styles.addButton, pressed && styles.addButtonPressed]}
+                >
+                  <MaterialCommunityIcons name="plus" size={30} color={colors.onAccent} />
+                </Pressable>
+              </View>
+            );
+          }
+
           return (
             <Pressable
               key={tab.id}
-              style={styles.tabItem}
+              style={({ pressed }) => [styles.tabItem, pressed && styles.tabPressed]}
               onPress={() => handlePress(tab)}
-              accessibilityRole="button"
+              accessibilityRole="tab"
               accessibilityLabel={label}
+              accessibilityState={{ selected: isActive }}
             >
-              {({ pressed }) => (
-                <>
-                  <View style={[styles.addButton, pressed && styles.addButtonPressed]}>
-                    <MaterialCommunityIcons name="plus" size={24} color={colors.onAccent} />
-                  </View>
-                  <Text style={styles.tabLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
-                    {label}
-                  </Text>
-                </>
-              )}
+              <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
+                <MaterialCommunityIcons
+                  name={isActive ? tab.activeIcon : tab.icon}
+                  size={22}
+                  color={isActive ? colors.accent : colors.textMuted}
+                />
+              </View>
+
+              <Text
+                style={[styles.tabLabel, isActive && styles.tabLabelActive]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.8}
+              >
+                {label}
+              </Text>
             </Pressable>
           );
-        }
-
-        return (
-          <Pressable
-            key={tab.id}
-            style={({ pressed }) => [styles.tabItem, pressed && styles.tabPressed]}
-            onPress={() => handlePress(tab)}
-            accessibilityRole="tab"
-            accessibilityLabel={label}
-            accessibilityState={{ selected: isActive }}
-          >
-            <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
-              <MaterialCommunityIcons
-                name={isActive ? tab.activeIcon : tab.icon}
-                size={22}
-                color={isActive ? colors.accent : colors.textMuted}
-              />
-            </View>
-
-            <Text
-              style={[styles.tabLabel, isActive && styles.tabLabelActive]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.8}
-            >
-              {label}
-            </Text>
-          </Pressable>
-        );
-      })}
+        })}
+      </View>
     </View>
   );
 }

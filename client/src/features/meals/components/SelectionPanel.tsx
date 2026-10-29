@@ -5,8 +5,8 @@ import { IconButton } from '../../../shared/components/ui/IconButton';
 import { SegmentedControl } from '../../../shared/components/ui/SegmentedControl';
 import { useDirection } from '../../../shared/hooks/useDirection';
 import { formatGrams } from '../../../shared/helpers/formatNumber';
-import { radius, spacing, typography, useThemedStyles } from '../../../shared/theme';
-import { NutritionStrip } from '../../pantry/components/food/NutritionStrip';
+import { fonts, spacing, typography, useThemedStyles, radius } from '../../../shared/theme';
+import { NutritionGrid } from '../../pantry/components/food/NutritionGrid';
 import { AmountUnit, amountToGrams, getServing } from '../../pantry/helpers/serving';
 import { useServingFormat } from '../../pantry/hooks/useServingFormat';
 import { CalculatedNutrition } from '../../pantry/types';
@@ -79,15 +79,14 @@ export function SelectionPanel({
 
         <IconButton
           icon="close"
-          size={32}
-          iconSize={18}
-          variant="tonal"
+          size={40}
+          iconSize={20}
           accessibilityLabel={t('addItem.deselect', { name: selected.item.name })}
           onPress={onDeselect}
         />
       </View>
 
-      <NutritionStrip
+      <NutritionGrid
         calories={values.calories}
         macros={values}
         style={!nutrition ? styles.nutritionMuted : undefined}
@@ -149,10 +148,10 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       panel: {
-        gap: spacing.md,
+        gap: spacing.ms,
       },
       headerRow: {
-        alignItems: 'flex-start',
+        alignItems: 'center',
         gap: spacing.sm,
       },
       headerText: {
@@ -182,13 +181,14 @@ const useStyles = () =>
         gap: spacing.xs,
       },
       quantityInput: {
-        width: 72,
-        height: 44,
         borderRadius: radius.md,
+        width: 80,
+        height: 44,
+        borderWidth: 1,
+        borderColor: colors.borderStrong,
         backgroundColor: colors.inputBackground,
-        ...typography.headline,
-        ...typography.number,
-        fontWeight: '700',
+        ...typography.value,
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
         textAlign: 'center',
         paddingHorizontal: spacing.xs,

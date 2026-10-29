@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
+import { fonts, radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -39,7 +39,7 @@ export const useStyles = () =>
       },
       barValue: {
         fontSize: 10,
-        fontWeight: '600',
+        fontFamily: fonts.semibold,
         fontVariant: ['tabular-nums'],
       },
 
@@ -87,7 +87,7 @@ export const useStyles = () =>
       },
       dayInitial: {
         fontSize: 11,
-        fontWeight: '600',
+        fontFamily: fonts.semibold,
         color: colors.textSecondary,
       },
       dateNum: {
@@ -118,7 +118,7 @@ export const useStyles = () =>
       },
       legendText: {
         ...typography.caption,
-        fontWeight: '400',
+        fontFamily: fonts.regular,
         color: colors.textSecondary,
       },
       summary: {

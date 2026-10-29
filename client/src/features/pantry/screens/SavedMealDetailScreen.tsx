@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import { confirmAction } from "../../../shared/helpers/confirm";
 import { router } from "expo-router";
 
 import { useDeleteSavedMeal, useSavedMeal } from "../hooks/useSavedMeals";
@@ -9,6 +10,7 @@ import { useFoodCardModels, FOOD_ICONS } from "../hooks/useFoodCardModels";
 import { NutritionTotals } from "../components/nutrition/NutritionTotals";
 import { DetailHero } from "../components/food/DetailHero";
 import { FoodLineItem } from "../components/food/FoodLineItem";
+import { isAmbiguousName, useDuplicateNames } from "../helpers/duplicateNames";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
 import { StateView } from "../../../shared/components/ui/StateView";
@@ -30,6 +32,9 @@ export function SavedMealDetailScreen({ id }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { data: meal, isLoading } = useSavedMeal(id);
+  const duplicateNames = useDuplicateNames(
+    meal?.items.map((item) => item.product?.name ?? item.recipe?.name ?? "") ?? [],
+  );
   const deleteMeal = useDeleteSavedMeal();
 
   function handleEdit() {
@@ -51,22 +56,15 @@ export function SavedMealDetailScreen({ id }: Props) {
     }
   }
 
-  function confirmDelete() {
-    Alert.alert(
-      t("savedMeal.deleteTitle"),
-      t("savedMeal.deleteMessage"),
-      [
-        {
-          text: t("common.cancel"),
-          style: "cancel",
-        },
-        {
-          text: t("common.delete"),
-          style: "destructive",
-          onPress: handleDelete,
-        },
-      ],
-    );
+  async function confirmDelete() {
+    const confirmed = await confirmAction({
+      title: t("savedMeal.deleteTitle"),
+      message: t("savedMeal.deleteMessage"),
+      confirmLabel: t("common.delete"),
+      cancelLabel: t("common.cancel"),
+      destructive: true,
+    });
+    if (confirmed) handleDelete();
   }
 
   if (isLoading) {
@@ -120,7 +118,6 @@ export function SavedMealDetailScreen({ id }: Props) {
 
           <View style={styles.itemsCard}>
             {meal.items.map((item, index) => {
-              const isProduct = Boolean(item.product);
               const product = item.product;
               const recipe = item.recipe;
 
@@ -134,9 +131,9 @@ export function SavedMealDetailScreen({ id }: Props) {
                 <FoodLineItem
                   key={item.id}
                   title={name}
-                  meta={[detail, product?.brand].filter(Boolean).join(" · ")}
-                  imageUrl={product?.imageUrl ?? null}
-                  fallbackIcon={isProduct ? FOOD_ICONS.product : FOOD_ICONS.recipe}
+                  meta={[detail, product && isAmbiguousName(duplicateNames, product.name) && product.brand]
+                    .filter(Boolean)
+                    .join(" · ")}
                   calories={item.nutrition.calories}
                   macros={item.nutrition}
                   last={index === meal.items.length - 1}

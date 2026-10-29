@@ -10,6 +10,7 @@ import {
   defaultAmountUnit,
   formatAmount,
   hasServing,
+  isAmountPayloadValid,
   toAmountPayload,
 } from '../../pantry/helpers/serving';
 import { AddMealItemPayload } from '../../day-log/types';
@@ -101,10 +102,12 @@ export function useMealSelection() {
   let amount: SelectedAmount | null = null;
   let nutrition: CalculatedNutrition | null = null;
 
-  if (selected?.kind === 'product' && parsed) {
-    const payload = toAmountPayload(selected.item, parsed, unit);
-    amount = { kind: 'product', product: selected.item, ...payload };
-    nutrition = nutritionForAmount(selected.item, payload);
+  const productPayload =
+    selected?.kind === 'product' && parsed ? toAmountPayload(selected.item, parsed, unit) : null;
+
+  if (selected?.kind === 'product' && productPayload && isAmountPayloadValid(productPayload)) {
+    amount = { kind: 'product', product: selected.item, ...productPayload };
+    nutrition = nutritionForAmount(selected.item, productPayload);
   } else if (selected?.kind === 'recipe' && parsed) {
     amount = { kind: 'recipe', servings: parsed };
     nutrition = scaleTotals(selected.item.totals, parsed);

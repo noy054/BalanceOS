@@ -60,8 +60,6 @@ export function BottomSheet({
         />
 
         <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
-          <View style={styles.handle} />
-
           {title ? (
             <View style={[styles.header, dir.row]}>
               <View style={styles.headerText}>
@@ -79,9 +77,9 @@ export function BottomSheet({
                 icon="close"
                 accessibilityLabel={t("actions.close")}
                 onPress={onClose}
-                size={36}
-                iconSize={20}
-                variant="tonal"
+                size={40}
+                iconSize={22}
+                variant="plain"
               />
             </View>
           ) : null}
@@ -115,22 +113,15 @@ const useStyles = () =>
         borderTopLeftRadius: radius.xxl,
         borderTopRightRadius: radius.xxl,
         paddingHorizontal: spacing.md,
-        paddingTop: spacing.sm,
+        paddingTop: spacing.md,
         maxHeight: "88%",
         ...shadows.lg,
       },
-      handle: {
-        width: 36,
-        height: 4,
-        borderRadius: 2,
-        backgroundColor: colors.borderStrong,
-        alignSelf: "center",
-        marginBottom: spacing.ms,
-      },
       header: {
-        alignItems: "flex-start",
+        alignItems: "center",
         gap: spacing.ms,
-        marginBottom: spacing.md,
+        marginBottom: spacing.ms,
+        marginTop: -spacing.xs,
       },
       headerText: {
         flex: 1,

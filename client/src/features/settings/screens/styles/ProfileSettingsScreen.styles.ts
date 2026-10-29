@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, typography, useThemedStyles } from "../../../../shared/theme";
+import { fonts, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -32,7 +32,7 @@ export const useStyles = () =>
 
       readonlyLabel: {
         ...typography.label,
-        fontWeight: "500",
+        fontFamily: fonts.medium,
         color: colors.textSecondary,
         marginBottom: spacing.xs,
       },
@@ -44,7 +44,7 @@ export const useStyles = () =>
 
       emailNote: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
       },
 

@@ -9,11 +9,12 @@ import { dayLogApi } from '../api/dayLogApi';
 import { DAY_LOG_QUERY_KEYS } from '../constants';
 import {
   AddMealItemPayload,
-  CopyMealPayload,
+  CopyToDaysPayload,
   DayLogMealsResponse,
   DayLogResponse,
   DayLogSummary,
   MealMacros,
+  UpdateMealItemPayload,
 } from '../types';
 
 function toDayLogSummary(r: DayLogResponse): DayLogSummary {
@@ -30,14 +31,11 @@ function toDayLogSummary(r: DayLogResponse): DayLogSummary {
   };
 }
 
-function refreshDayLog(queryClient: QueryClient, date?: string) {
+function refreshDayLog(queryClient: QueryClient, dates: string[]) {
   return Promise.all([
-    ...(date
-      ? [
-          queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.day(date), refetchType: 'all' }),
-          queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.meals(date), refetchType: 'all' }),
-        ]
-      : []),
+    ...dates.map((date) =>
+      queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.day(date), refetchType: 'all' }),
+    ),
     queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.all }),
     queryClient.invalidateQueries({ queryKey: ['statistics'] }),
   ]);
@@ -176,7 +174,24 @@ export function useAddMealItems(date: string) {
         throw new PartialAddMealItemsError(savedCount, err);
       }
     },
-    onSettled: () => refreshDayLog(queryClient, date),
+    onSettled: () => refreshDayLog(queryClient, [date]),
+  });
+}
+
+export function useAddMealItemOnDate() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ date, payload }: { date: string; payload: AddMealItemPayload }) =>
+      dayLogApi.addMealItem(date, payload),
+    onSettled: (_data, _error, variables) => refreshDayLog(queryClient, [variables.date]),
+  });
+}
+
+export function useUpdateMealItem(date: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: UpdateMealItemPayload) => dayLogApi.updateMealItem(payload),
+    onSettled: () => refreshDayLog(queryClient, [date]),
   });
 }
 
@@ -207,38 +222,14 @@ export function useRemoveMealItem(date: string) {
       );
     },
     onError: (_error, _itemId, snapshot) => restore(queryClient, snapshot),
-    onSettled: () => refreshDayLog(queryClient, date),
+    onSettled: () => refreshDayLog(queryClient, [date]),
   });
 }
 
-export function useRemoveMealEntry(date: string) {
+export function useCopyToDays() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (mealEntryId: string) => dayLogApi.removeMealEntry(mealEntryId),
-    onMutate: async (mealEntryId: string) => {
-      await cancelDayLogQueries(queryClient, date);
-      const meals = queryClient.getQueryData<DayLogMealsResponse>(DAY_LOG_QUERY_KEYS.meals(date));
-      const entry = meals?.meals.find((meal) => meal.id === mealEntryId);
-      return applyRemoval(
-        queryClient,
-        date,
-        entry ?? ZERO_MACROS,
-        (data) => ({ meals: data.meals.filter((meal) => meal.id !== mealEntryId) }),
-      );
-    },
-    onError: (_error, _id, snapshot) => restore(queryClient, snapshot),
-    onSettled: () => refreshDayLog(queryClient, date),
-  });
-}
-
-export function useCopyMealEntry() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (payload: CopyMealPayload) => dayLogApi.copyMealEntry(payload),
-    onSuccess: (_data, payload) =>
-      Promise.all([
-        refreshDayLog(queryClient),
-        ...payload.targetDates.map((date) => refreshDayLog(queryClient, date)),
-      ]),
+    mutationFn: (payload: CopyToDaysPayload) => dayLogApi.copyToDays(payload),
+    onSuccess: (_data, payload) => refreshDayLog(queryClient, payload.targetDates),
   });
 }

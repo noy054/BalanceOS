@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 import {
+  fonts,
   radius,
   spacing,
   typography,
@@ -143,7 +144,7 @@ export const useStyles = () =>
       previewText: {
         ...typography.callout,
         ...typography.number,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
       },
 

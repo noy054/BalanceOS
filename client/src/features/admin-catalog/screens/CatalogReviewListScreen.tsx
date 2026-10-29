@@ -12,7 +12,7 @@ import { FoodThumb } from "../../pantry/components/food/FoodThumb";
 import { FOOD_ICONS } from "../../pantry/hooks/useFoodCardModels";
 import { AdminScaffold } from "../../admin/components/AdminScaffold";
 import { AdminListRow } from "../../admin/components/AdminListRow";
-import { FilterChips } from "../../admin/components/FilterChips";
+import { ChoiceChips } from "../../../shared/components/ui/ChoiceChips";
 import { StatusBadge } from "../../admin/components/StatusBadge";
 import { ADMIN_ROUTES } from "../../admin/constants";
 import { formatShortDate, personName } from "../../admin/helpers/format";
@@ -50,7 +50,7 @@ export function CatalogReviewListScreen() {
     return (
       <AdminListRow
         title={proposed?.name ?? "—"}
-        leading={<FoodThumb imageUrl={proposed?.imageUrl ?? null} fallbackIcon={FOOD_ICONS.product} size={44} />}
+        leading={proposed?.imageUrl ? <FoodThumb imageUrl={proposed?.imageUrl ?? null} fallbackIcon={FOOD_ICONS.product} size={44} /> : undefined}
         lines={[
           [proposed?.brand, item.normalizedBarcode ?? t("admin.submissions.noBarcode")].filter(Boolean).join(" · "),
           t("catalogReview.submittedBy", {
@@ -86,7 +86,7 @@ export function CatalogReviewListScreen() {
           onChange={setKind}
         />
         <SearchField value={search} onChangeText={setSearch} placeholder={t("admin.submissions.search")} />
-        <FilterChips
+        <ChoiceChips
           options={STATUSES.map((value) => ({ value, label: t(`catalogReview.status.${value}`) }))}
           value={status}
           onChange={setStatus}

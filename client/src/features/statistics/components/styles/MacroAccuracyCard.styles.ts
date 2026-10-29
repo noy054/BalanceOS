@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, typography, useThemedStyles } from "../../../../shared/theme";
+import { fonts, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -12,7 +12,7 @@ export const useStyles = () =>
 
       rangeMeta: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
         marginTop: 2,
         marginBottom: spacing.xs,
@@ -36,32 +36,32 @@ export const useStyles = () =>
 
       macroName: {
         ...typography.callout,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
       },
 
       macroNumbers: {
         ...typography.callout,
         ...typography.number,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
       },
 
       macroTarget: {
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
       },
 
       track: {
         height: 6,
-        borderRadius: 3,
+        borderRadius: 4,
         backgroundColor: colors.progressTrack,
         overflow: "hidden",
       },
 
       fill: {
         height: "100%",
-        borderRadius: 3,
+        borderRadius: 4,
       },
 
       pctLabel: {

@@ -1,20 +1,17 @@
 import { StyleSheet } from "react-native";
 
 import {
-  radius,
+  fonts,
   spacing,
   typography,
-  useThemedStyles,
-} from "../../../../../shared/theme";
+  useThemedStyles, radius } from "../../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       calculatorCard: {
-        backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
+        backgroundColor: colors.surface,
         padding: spacing.md,
         gap: spacing.ms,
       },
@@ -38,33 +35,50 @@ export const useStyles = () =>
       },
 
       calcRow: {
+        borderRadius: radius.md,
         alignItems: "center",
-        gap: spacing.sm,
+        gap: spacing.ms,
+        minHeight: 48,
+        backgroundColor: colors.inputBackground,
+        borderWidth: 1,
+        borderColor: colors.borderStrong,
+        paddingHorizontal: spacing.ms,
       },
 
       calcInput: {
         flex: 1,
-        minHeight: 48,
-        backgroundColor: colors.inputBackground,
-        borderWidth: 1,
-        borderColor: colors.border,
-        borderRadius: radius.md,
-        paddingHorizontal: spacing.ms,
-        ...typography.body,
+        minWidth: 0,
+        minHeight: 46,
+        ...typography.value,
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
       },
 
+      calcUnit: {
+        ...typography.callout,
+        color: colors.textSecondary,
+        maxWidth: 140,
+      },
+
       calcResultCard: {
-        borderRadius: radius.md,
-        backgroundColor: colors.surfaceMuted,
-        paddingHorizontal: spacing.ms,
+        borderTopWidth: 1,
+        borderTopColor: colors.border,
         paddingTop: spacing.ms,
-        paddingBottom: spacing.xs,
       },
 
       calcResultTitle: {
-        ...typography.caption,
+        ...typography.overline,
         color: colors.textSecondary,
+        marginBottom: spacing.xxs,
+      },
+
+      quantityText: {
+        ...typography.bodyStrong,
+        ...typography.number,
+        fontFamily: fonts.semibold,
+        fontSize: 17,
+        lineHeight: 24,
+        color: colors.textPrimary,
         marginBottom: spacing.xs,
       },
     }),

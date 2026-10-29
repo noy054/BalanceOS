@@ -102,18 +102,10 @@ function sameText(a: string | null, b: string | null): boolean {
   );
 }
 
-export function catalogDataDiffers(
+export function nutritionDiffers(
   proposed: CatalogProductData,
   current: CatalogProductData,
 ): boolean {
-  if (!sameText(proposed.name, current.name)) return true;
-  if (!sameText(proposed.brand, current.brand)) return true;
-  if (
-    isShareableImage(proposed.imageUrl) &&
-    proposed.imageUrl !== current.imageUrl
-  ) {
-    return true;
-  }
   for (const key of NUTRITION_FIELD_KEYS) {
     const a = proposed[key];
     const b = current[key];
@@ -124,6 +116,13 @@ export function catalogDataDiffers(
     }
   }
   return false;
+}
+
+export function withNutritionOf(
+  base: CatalogProductData,
+  source: CatalogProductData,
+): CatalogProductData {
+  return { ...base, ...pickNutritionFields(source) };
 }
 
 export function toJson(data: CatalogProductData): Prisma.InputJsonObject {

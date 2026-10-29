@@ -25,11 +25,12 @@ import { AuditService } from '../audit/audit.service';
 import { AUDIT_ENTITY, AuditLogRow } from '../audit/audit.types';
 import {
   CatalogProductData,
-  catalogDataDiffers,
   fromCatalogRow,
   fromProductRow,
+  nutritionDiffers,
   parseCatalogData,
   toJson,
+  withNutritionOf,
 } from './catalog-data';
 import {
   ApproveCatalogSubmissionDto,
@@ -141,7 +142,8 @@ export class CatalogReviewService {
         product.catalogItemId,
       );
       if (!catalogItem) return;
-      if (!catalogDataDiffers(proposed, fromCatalogRow(catalogItem))) {
+      const current = fromCatalogRow(catalogItem);
+      if (!nutritionDiffers(proposed, current)) {
         if (pending?.kind === CatalogSubmissionKind.CORRECTION) {
           await this.repo.deleteSubmission(pending.id);
         }
@@ -153,8 +155,8 @@ export class CatalogReviewService {
         pantryProductId: product.id,
         catalogItemId: catalogItem.id,
         normalizedBarcode: catalogItem.normalizedBarcode,
-        productName: proposed.name,
-        proposedData: toJson(proposed),
+        productName: current.name,
+        proposedData: toJson(withNutritionOf(current, proposed)),
       });
       return;
     }
@@ -283,7 +285,7 @@ export class CatalogReviewService {
         submissionId: row.id,
         adminId,
         data,
-        normalizedBarcode: target ? null : (normalized?.canonical ?? null),
+        normalizedBarcode: normalized?.canonical ?? null,
         targetCatalogItemId: target,
         submitterId: row.userId,
         pantryProductId: row.pantryProductId,

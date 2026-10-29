@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { useDirection } from "../../../shared/hooks/useDirection";
 import { formatGrams } from "../../../shared/helpers/formatNumber";
-import { radius, spacing, typography, useThemedStyles } from "../../../shared/theme";
+import { fonts, radius, spacing, typography, useThemedStyles } from "../../../shared/theme";
 import { useServingFormat } from "../../pantry/hooks/useServingFormat";
 import { CatalogProductData } from "../types";
 
@@ -126,7 +126,7 @@ const useStyles = () =>
       },
       headerText: {
         ...typography.caption,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textSecondary,
       },
       highlightText: { color: colors.accent },
@@ -145,7 +145,7 @@ const useStyles = () =>
       },
       changedCell: {
         color: colors.accent,
-        fontWeight: "700",
+        fontFamily: fonts.bold,
       },
     }),
   );

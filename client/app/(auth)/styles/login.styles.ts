@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { radius, spacing, typography, useThemedStyles } from '../../../src/shared/theme';
+import { fonts, radius, spacing, typography, useThemedStyles } from '../../../src/shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -20,7 +20,7 @@ export const useStyles = () =>
       field: { marginBottom: spacing.md },
       fieldLabel: {
         ...typography.label,
-        fontWeight: '500',
+        fontFamily: fonts.medium,
         color: colors.textSecondary,
         marginBottom: spacing.xs + 2,
       },
@@ -37,7 +37,7 @@ export const useStyles = () =>
       dividerLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: colors.borderStrong },
       dividerText: { ...typography.caption, color: colors.textMuted },
       googleBtn: { borderRadius: radius.md, borderColor: colors.borderStrong, borderWidth: 1 },
-      googleLabel: { ...typography.bodyStrong, fontWeight: '500', letterSpacing: 0 },
+      googleLabel: { ...typography.bodyStrong, fontFamily: fonts.medium, letterSpacing: 0 },
       footer: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -45,7 +45,7 @@ export const useStyles = () =>
         gap: spacing.xs,
       },
       footerText: { ...typography.callout, color: colors.textSecondary },
-      link: { ...typography.callout, fontWeight: '600', color: colors.accent, paddingVertical: spacing.xs },
+      link: { ...typography.callout, fontFamily: fonts.semibold, color: colors.accent, paddingVertical: spacing.xs },
       forgotLink: { ...typography.footnote, color: colors.accent, marginTop: spacing.sm, paddingVertical: spacing.xs },
       errorBox: {
         backgroundColor: colors.dangerSoft,

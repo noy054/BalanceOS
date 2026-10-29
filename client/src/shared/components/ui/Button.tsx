@@ -12,17 +12,16 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import {
   AppColors,
-  radius,
+  fonts,
   spacing,
   typography,
   useAppTheme,
-  useThemedStyles,
-} from "../../theme";
+  useThemedStyles, radius } from "../../theme";
 import { useDirection } from "../../hooks/useDirection";
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
-export type ButtonVariant = "primary" | "secondary" | "tonal" | "ghost" | "danger";
+export type ButtonVariant = "primary" | "secondary" | "tonal" | "ghost" | "danger" | "destructive";
 export type ButtonSize = "md" | "sm";
 
 type Props = {
@@ -42,7 +41,7 @@ type Props = {
 function getVariantColors(colors: AppColors, variant: ButtonVariant) {
   switch (variant) {
     case "primary":
-      return { bg: colors.accent, pressedBg: colors.accentStrong, fg: colors.onAccent, border: "transparent" };
+      return { bg: colors.accentFill, pressedBg: colors.accentFillPressed, fg: colors.onAccent, border: "transparent" };
     case "secondary":
       return { bg: colors.surface, pressedBg: colors.surfaceMuted, fg: colors.textPrimary, border: colors.borderStrong };
     case "tonal":
@@ -50,7 +49,9 @@ function getVariantColors(colors: AppColors, variant: ButtonVariant) {
     case "ghost":
       return { bg: "transparent", pressedBg: colors.accentSoft, fg: colors.accent, border: "transparent" };
     case "danger":
-      return { bg: colors.dangerSoft, pressedBg: colors.dangerSoft, fg: colors.danger, border: "transparent" };
+      return { bg: colors.surface, pressedBg: colors.dangerSoft, fg: colors.danger, border: colors.danger };
+    case "destructive":
+      return { bg: colors.dangerFill, pressedBg: colors.dangerFillPressed, fg: colors.onAccent, border: "transparent" };
   }
 }
 
@@ -94,7 +95,6 @@ export function Button({
               ? palette.pressedBg
               : palette.bg,
           borderColor: disabled ? "transparent" : palette.border,
-          opacity: pressed && variant === "danger" ? 0.75 : 1,
         },
         style,
       ]}
@@ -122,7 +122,7 @@ const useStyles = () =>
     StyleSheet.create({
       base: {
         borderRadius: radius.md,
-        borderWidth: StyleSheet.hairlineWidth,
+        borderWidth: 1,
         alignItems: "center",
         justifyContent: "center",
       },
@@ -131,9 +131,9 @@ const useStyles = () =>
         paddingHorizontal: spacing.md,
       },
       sm: {
+        borderRadius: radius.sm,
         minHeight: 36,
         paddingHorizontal: spacing.ms,
-        borderRadius: radius.sm,
       },
       fullWidth: {
         alignSelf: "stretch",
@@ -145,9 +145,11 @@ const useStyles = () =>
       },
       label: {
         ...typography.bodyStrong,
+        fontFamily: fonts.semibold,
       },
       labelSm: {
         ...typography.label,
+        fontFamily: fonts.semibold,
       },
     }),
   );

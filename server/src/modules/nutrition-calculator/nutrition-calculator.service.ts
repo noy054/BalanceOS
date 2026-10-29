@@ -36,6 +36,12 @@ export function rawRecipeTotals(items: RecipeItemLike[]): MacroValues {
   );
 }
 
+export function isRecipeCalculable(items: RecipeItemLike[]): boolean {
+  return items.every(
+    (item) => rawProductNutrition(item.product, item) !== null,
+  );
+}
+
 export function scaledRecipeTotals(
   items: RecipeItemLike[],
   servings: number,
@@ -64,10 +70,24 @@ export class NutritionCalculatorService {
   recipeSnapshot(
     recipe: { name: string; items: RecipeItemLike[] },
     servings: number,
-  ): MacrosSnapshot {
+  ): MacrosSnapshot | null {
+    if (!isRecipeCalculable(recipe.items)) return null;
     return {
       name: recipe.name,
       ...scaledRecipeTotals(recipe.items, servings),
+    };
+  }
+
+  scaleSnapshot(snapshot: MacrosSnapshot, ratio: number): MacrosSnapshot {
+    return {
+      name: snapshot.name,
+      ...roundTotals({
+        calories: snapshot.calories * ratio,
+        protein: snapshot.protein * ratio,
+        carbs: (snapshot.carbs ?? 0) * ratio,
+        fat: (snapshot.fat ?? 0) * ratio,
+        fiber: (snapshot.fiber ?? 0) * ratio,
+      }),
     };
   }
 

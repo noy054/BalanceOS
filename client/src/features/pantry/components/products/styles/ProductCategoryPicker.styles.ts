@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 import {
+  fonts,
   radius,
   spacing,
   typography,
@@ -45,7 +46,7 @@ export const useStyles = () =>
       },
 
       chipTextActive: {
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.accent,
       },
     }),

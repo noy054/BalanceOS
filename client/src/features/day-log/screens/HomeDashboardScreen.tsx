@@ -1,17 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ComponentProps } from "react";
 import { RefreshControl, ScrollView, View } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
-import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
 import { StateView } from "../../../shared/components/ui/StateView";
 import { DailySummaryCard } from "../components/DailySummaryCard";
 import { MealSectionCard } from "../components/MealSectionCard";
+import { MealsSectionHeader } from "../components/MealsSectionHeader";
 import { CopyMealModal } from "../components/CopyMealModal";
+import { MealItemSheet } from "../components/MealItemSheet";
 import { MEAL_SHORTCUTS } from "../../meals/constants/mealShortcuts";
 import { DayHeader } from "../components/DayHeader";
 import { DayPickerSheet } from "../components/DayPickerSheet";
@@ -20,12 +19,10 @@ import { useSelectedDate } from "../hooks/useSelectedDate";
 import { HomeAnnouncements } from "../../announcements/components/HomeAnnouncements";
 import { addDays } from "../../../shared/helpers/dateKey";
 import { useMealRemoval } from "../hooks/useMealRemoval";
-import { DayLogSummary, MealEntrySummary } from "../types";
+import { CopyTarget, DayLogSummary, MealEntrySummary, MealItemSummary } from "../types";
 import { useNutritionSettings } from "../../settings/hooks/useSettings";
 import { useAppTheme } from "../../../shared/theme";
 import { useStyles } from "./styles/HomeDashboardScreen.styles";
-
-type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
 const EMPTY_SUMMARY: DayLogSummary = {
   date: "",
@@ -37,12 +34,6 @@ const EMPTY_SUMMARY: DayLogSummary = {
     { key: "fat", current: 0, target: 0 },
     { key: "fiber", current: 0, target: 0 },
   ],
-};
-
-const MEAL_ICONS: Record<string, IconName> = {
-  BREAKFAST: "coffee-outline",
-  LUNCH: "silverware-fork-knife",
-  DINNER: "food-outline",
 };
 
 type MealSection = {
@@ -57,7 +48,7 @@ export function HomeDashboardScreen() {
   const styles = useStyles();
   const { colors } = useAppTheme();
   const queryClient = useQueryClient();
-  const { date, today, isToday, setDate, goToToday } = useSelectedDate();
+  const { date, today, maxDate, isToday, setDate, goToToday } = useSelectedDate();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const {
@@ -138,7 +129,11 @@ export function HomeDashboardScreen() {
     return [...base, ...extras];
   }, [meals]);
 
-  const [copyingMeal, setCopyingMeal] = useState<MealEntrySummary | null>(null);
+  const [copyTarget, setCopyTarget] = useState<CopyTarget | null>(null);
+  const [mealsExpanded, setMealsExpanded] = useState(true);
+  const [editing, setEditing] = useState<{ item: MealItemSummary; mealLabel: string } | null>(
+    null,
+  );
   const removal = useMealRemoval(date);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -177,68 +172,71 @@ export function HomeDashboardScreen() {
             today={today}
             onPrevious={() => setDate(addDays(date, -1))}
             onNext={() => setDate(addDays(date, 1))}
+            canGoNext={date < maxDate}
             onToday={goToToday}
             onOpenCalendar={() => setIsCalendarOpen(true)}
           />
 
           <View
-            style={[styles.body, isSwitchingDay && styles.bodySwitching]}
+            style={[styles.content, isSwitchingDay && styles.bodySwitching]}
             pointerEvents={isSwitchingDay ? "none" : "auto"}
           >
-            <HomeAnnouncements />
+            <View style={styles.body}>
+              <HomeAnnouncements />
 
-            {isSummaryLoading ? (
-              <StateView variant="loading" compact style={styles.stateCard} />
-            ) : isSummaryError ? (
-              <StateView
-                variant="error"
-                compact
-                style={styles.stateCard}
-                message={t("errors.loadFailed")}
-                actionLabel={t("errors.retry")}
-                onAction={() => refetchSummary()}
-              />
-            ) : (
-              <DailySummaryCard
-                eaten={summary.caloriesEaten}
-                target={summary.caloriesTarget}
-                macros={visibleMacros}
-                showPercentages={settings?.showProgressPercentages ?? true}
-                isToday={isToday}
-              />
-            )}
+              {isSummaryLoading ? (
+                <StateView variant="loading" compact />
+              ) : isSummaryError ? (
+                <StateView
+                  variant="error"
+                  compact
+                  message={t("errors.loadFailed")}
+                  actionLabel={t("errors.retry")}
+                  onAction={() => refetchSummary()}
+                />
+              ) : (
+                <DailySummaryCard
+                  eaten={summary.caloriesEaten}
+                  target={summary.caloriesTarget}
+                  macros={visibleMacros}
+                  showPercentages={settings?.showProgressPercentages ?? true}
+                  isToday={isToday}
+                />
+              )}
+            </View>
 
-            <View>
-              <SectionHeader title={t("meals.sectionTitle")} />
+            <View style={styles.meals}>
+              <MealsSectionHeader
+                expanded={mealsExpanded}
+                canToggle={sections.some((section) => (section.meal?.items.length ?? 0) > 0)}
+                onToggle={() => setMealsExpanded((value) => !value)}
+              />
 
               {isMealsLoading ? (
-                <StateView variant="loading" compact style={styles.stateCard} />
+                <StateView variant="loading" compact />
               ) : isMealsError ? (
                 <StateView
                   variant="error"
                   compact
-                  style={styles.stateCard}
                   message={t("errors.mealsLoadFailed")}
                   actionLabel={t("errors.retry")}
                   onAction={() => refetchMeals()}
                 />
               ) : (
-                <View style={styles.mealsList}>
-                  {sections.map((section) => (
-                    <MealSectionCard
-                      key={section.key}
-                      mealType={section.mealType}
-                      labelKey={section.labelKey}
-                      icon={MEAL_ICONS[section.mealType] ?? "food-apple-outline"}
-                      meal={section.meal}
-                      pendingIds={removal.pendingIds}
-                      onAdd={handleMealTypeSelect}
-                      onCopy={setCopyingMeal}
-                      onRemoveItem={removal.removeItem}
-                      onRemoveMeal={removal.removeMeal}
-                    />
-                  ))}
-                </View>
+                sections.map((section) => (
+                  <MealSectionCard
+                    key={section.key}
+                    mealType={section.mealType}
+                    labelKey={section.labelKey}
+                    meal={section.meal}
+                    expanded={mealsExpanded}
+                    pendingIds={removal.pendingIds}
+                    onAdd={handleMealTypeSelect}
+                    onCopy={setCopyTarget}
+                    onEditItem={(item, mealLabel) => setEditing({ item, mealLabel })}
+                    onRemoveItem={(item, mealLabel) => void removal.removeItem(item, mealLabel)}
+                  />
+                ))
               )}
             </View>
           </View>
@@ -246,15 +244,24 @@ export function HomeDashboardScreen() {
       </View>
 
       <CopyMealModal
-        meal={copyingMeal}
+        target={copyTarget}
         sourceDate={date}
-        onClose={() => setCopyingMeal(null)}
+        onClose={() => setCopyTarget(null)}
+      />
+
+      <MealItemSheet
+        date={date}
+        item={editing?.item ?? null}
+        mealLabel={editing?.mealLabel ?? ""}
+        onClose={() => setEditing(null)}
+        onRemove={removal.removeItem}
       />
 
       <DayPickerSheet
         visible={isCalendarOpen}
         date={date}
         today={today}
+        maxDate={maxDate}
         onSelect={setDate}
         onClose={() => setIsCalendarOpen(false)}
       />

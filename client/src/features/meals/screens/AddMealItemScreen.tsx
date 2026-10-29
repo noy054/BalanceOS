@@ -11,6 +11,7 @@ import { SearchField } from '../../../shared/components/ui/SearchField';
 import { SegmentedControl } from '../../../shared/components/ui/SegmentedControl';
 import { StateView } from '../../../shared/components/ui/StateView';
 import { ListGap } from '../../../shared/components/ui/ListGap';
+import { isAmbiguousName, useDuplicateNames } from '../../pantry/helpers/duplicateNames';
 import { KeyboardAvoider } from '../../../shared/components/ui/KeyboardAvoider';
 import { usePantryProducts } from '../../pantry/hooks/usePantry';
 import { useRecipes } from '../../pantry/hooks/useRecipes';
@@ -211,6 +212,8 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
   const isLoading =
     activeTab === 'products' ? loadingProducts : activeTab === 'recipes' ? loadingRecipes : loadingSavedMeals;
 
+  const duplicateNames = useDuplicateNames(products.map((product) => product.name));
+
   const listData: ListItem[] =
     activeTab === 'products' ? filteredProducts : activeTab === 'recipes' ? filteredRecipes : filteredMeals;
 
@@ -230,7 +233,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
       const isSelected = selection.isSelected('product', product.id);
       return (
         <FoodItemCard
-          {...models.product(product)}
+          {...models.product(product, isAmbiguousName(duplicateNames, product.name))}
           selected={isSelected}
           accessibilityHint={isSelected ? t('addItem.tapToDeselect') : undefined}
           onPress={() => selection.select({ kind: 'product', item: product })}
@@ -290,7 +293,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
             </View>
           ) : null}
 
-          <SegmentedControl options={tabs} value={activeTab} onChange={handleTabPress} />
+          <SegmentedControl variant="tabs" options={tabs} value={activeTab} onChange={handleTabPress} />
 
           <SearchField
             value={search}
@@ -305,7 +308,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
                   <IconButton
                     icon="barcode-scan"
                     variant="tonal"
-                    size={48}
+                    size={44}
                     iconSize={22}
                     accessibilityLabel={t('addItem.scanBarcode')}
                     onPress={() => router.push('/(app)/pantry/barcode?returnTo=meal')}
@@ -313,7 +316,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
                   <IconButton
                     icon="plus"
                     variant="tonal"
-                    size={48}
+                    size={44}
                     iconSize={24}
                     accessibilityLabel={t('addItem.createProduct')}
                     onPress={() => router.push('/(app)/pantry/add-product?returnTo=meal')}
@@ -331,7 +334,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
           <FlatList
             data={listData}
             keyExtractor={(item) => item.id}
-            style={styles.flex}
+            style={styles.list}
             contentContainerStyle={styles.listContent}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
@@ -390,8 +393,8 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
                     <Text style={styles.cartItemCalories}>{formatCalories(entry.calories)}</Text>
                     <IconButton
                       icon="close"
-                      size={32}
-                      iconSize={16}
+                      size={36}
+                      iconSize={18}
                       accessibilityLabel={t('addItem.removeFromList', { name: entry.name })}
                       onPress={() => setCart((prev) => prev.filter((e) => e.key !== entry.key))}
                     />

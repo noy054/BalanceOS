@@ -32,8 +32,6 @@ export const useStyles = () =>
       itemsCard: {
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
         paddingHorizontal: spacing.md,
       },
     }),

@@ -1,6 +1,6 @@
 import { StyleSheet, Text } from "react-native";
 
-import { AppColors, radius, spacing, typography, useAppTheme } from "../../../shared/theme";
+import { fonts, AppColors, radius, spacing, typography, useAppTheme } from "../../../shared/theme";
 
 export type BadgeTone = "accent" | "success" | "warning" | "danger" | "neutral";
 
@@ -36,7 +36,7 @@ export function StatusBadge({ label, tone }: Props) {
 const styles = StyleSheet.create({
   badge: {
     ...typography.caption,
-    fontWeight: "600",
+    fontFamily: fonts.semibold,
     borderRadius: radius.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,

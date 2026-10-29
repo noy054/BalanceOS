@@ -5,6 +5,7 @@ import { FormSection } from "../../../../shared/components/ui/FormSection";
 import { Button } from "../../../../shared/components/ui/Button";
 import { RecipeIngredientDraft } from "../../helpers/recipeDraft";
 import { RecipeIngredientDraftRow } from "./RecipeIngredientDraftRow";
+import { isAmbiguousName, useDuplicateNames } from "../../helpers/duplicateNames";
 import { useStyles } from "./styles/RecipeIngredientsCard.styles";
 
 type Props = {
@@ -26,6 +27,9 @@ export function RecipeIngredientsCard({
 }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
+  const duplicateNames = useDuplicateNames(
+    ingredients.map((ingredient) => ingredient.product.name),
+  );
 
   return (
     <FormSection title={t("recipe.ingredientsSection")} contentStyle={styles.card}>
@@ -34,6 +38,7 @@ export function RecipeIngredientsCard({
           key={ingredient.key}
           ingredient={ingredient}
           isRTL={isRTL}
+          showBrand={isAmbiguousName(duplicateNames, ingredient.product.name)}
           onChangeAmount={onChangeAmount}
           onToggleUnit={onToggleUnit}
           onRemove={onRemoveIngredient}

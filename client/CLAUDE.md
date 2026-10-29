@@ -2,166 +2,147 @@
 
 ## Stack
 
-Use:
+Expo, React Native, TypeScript, Expo Router, TanStack Query, Zustand, Axios, React Native Paper, Expo SecureStore.
 
-- Expo
-- React Native
-- TypeScript
-- Expo Router
-- TanStack Query
-- Zustand
-- Axios
-- React Native Paper
-- Expo SecureStore
+## Product
 
-## Product UX
+BalanceOS is a smart nutrition calculator and daily management tool for people who already track calories and macros independently and consistently.
 
-BalanceOS is expert-first, guided-friendly.
+The core promise: the same precision and control, with less effort.
 
-Expert users need:
+Users repeat familiar products, meals and recipes, adjusting quantities over time. Prioritize:
 
-- fast logging
-- numbers first
-- manual control
-- advanced macros
-- templates
-- weekly balance
-- minimal guidance
+- Fast logging and calculations.
+- Reusing saved meals, recipes and previous calculations.
+- Quick quantity adjustments with immediate nutrition updates.
+- Manual control and reliable, readable numbers.
+- Managing past, present and future days.
+- Minimal steps and mental effort.
 
-Guided users may get:
+The initial audience is experienced trainees, but the product must work regardless of training or body goals.
 
-- suggestions
-- explanations
-- meal ideas
-- mature guidance
+Respect existing `experienceMode` behavior. Keep guided features optional and secondary. Do not build separate apps or add unsolicited coaching, motivation or meal advice.
 
-Do not build two separate apps.
-Use `experienceMode` to show/hide guided or advanced UI.
+## Working Rules
 
-## Communication
-
-- Explain before editing.
-- Make small, safe changes.
-- Do not rewrite unrelated files.
-- Avoid `any`.
+- Briefly explain the intended change before editing.
+- Make focused, safe changes and preserve unrelated work.
+- Review existing implementations before adding new components.
+- Preserve functionality, user data, settings and historical nutrition.
+- Do not add code comments.
+- Avoid `any` and unnecessary dependencies.
+- Do not commit or push unless requested.
 
 ## Architecture
 
-Use feature-based structure:
+Follow the existing feature-based structure; do not rename folders to match an example.
 
-```txt
-src/
-  features/
-    auth/
-    user-settings/
-    day-log/
-    meals/
-    food/
-    templates/
-    reports/
-  shared/
-    api/
-    components/
-    hooks/
-    utils/
-    types/
-    constants/
-    theme/
-```
+Each feature may contain:
 
-Each feature can include:
+- `api/`
+- `hooks/`
+- `types/`
+- `components/`
+- `helpers/`
+- `constants.ts`
 
-```txt
-api/
-hooks/
-types/
-components/
-constants.ts
-helpers/
-```
+Keep shared infrastructure in `shared/`. Create folders only when needed.
 
-Only create folders when needed.
+Screens should compose components, call hooks and handle navigation. Keep API calls, complex business logic and nutrition calculations outside screens.
 
-## Screen Rules
+## API and State
 
-Screens should stay thin.
+- Access Axios only through the typed API layer.
+- Keep feature request/response types in the feature.
+- Update types and hooks whenever API contracts change.
+- Use TanStack Query for server data.
+- Use Zustand for local UI state such as selected date, dialogs and drafts.
+- Do not duplicate server data in Zustand.
+- Refresh all affected queries after mutations.
+- Home totals and lists must update immediately after successful changes.
+- Prevent duplicate submissions and handle loading, errors and retries.
+- Search must cover all server records, not only loaded pages.
 
-Screens may:
+## Nutrition and Dates
 
-- compose components
-- call hooks
-- handle navigation
+- Support nutrition defined per 100 g or per serving.
+- Servings must work without a known gram weight.
+- Default to the product’s saved serving.
+- Convert units only when valid conversion data exists; never guess.
+- Keep unknown nutrients distinct from zero.
+- Reuse centralized calculation helpers and consistent precision.
+- Preserve logged nutrition snapshots when source products change.
+- Calculator results must be addable directly to a selected meal/date.
+- The selected Home date controls meals, totals and related actions.
+- Use local calendar dates consistently; avoid UTC date shifts.
+- Preserve the selected date across navigation.
+- Keep previous/next controls, a date picker and return to Today.
+- Do not add an always-visible week strip unless requested.
+- Keep copying meals to additional days easy to discover.
 
-Screens must not:
+## Authentication and Privacy
 
-- call Axios directly
-- contain complex business logic
-- calculate nutrition totals
-- become huge files
+- Store tokens in Expo SecureStore, never AsyncStorage.
+- Use Axios interceptors for authentication and token refresh.
+- Clear authentication and user-specific caches when refresh fails or users log out.
+- Treat server authorization as authoritative.
+- Keep progress entries and photos private to their owner.
 
-## API Rules
+## Brand and Visual Design
 
-- Use Axios only through the API layer.
-- Keep API functions typed.
-- Keep request/response types in feature `types`.
-- If backend response changes, update client types and hooks.
+The interface should feel smart, clear, precise and effortless.
 
-## State Rules
+Palette:
 
-Use TanStack Query for server state:
+- Cobalt: `#365CF5` — primary actions and selection.
+- Charcoal: `#191C26` — primary text.
+- Cloud white: `#F6F7FA` — light background.
+- White: `#FFFFFF` — light surfaces.
+- Secondary text: `#586176`.
+- Soft mint: `#DDF7ED` — occasional supporting accent.
+- Dark green: `#08775A` — positive feedback.
 
-- day log
-- meals
-- templates
-- user settings
-- food search
-- reports
+Typography:
 
-Use Zustand only for local UI state:
+- Rubik for headings.
+- Heebo for interface text and numbers.
+- Use a restrained range of sizes and weights.
 
-- selected date
-- active tab
-- modal state
-- temporary draft
-- onboarding step
+Use shared theme tokens and components. Support both themes with accessible contrast.
 
-Do not store server data in Zustand.
+References provide inspiration, not exact layouts. Use design judgment and applicable design skills. Current user direction takes precedence over outdated skill styling.
 
-## Types
+Avoid excessive rounding, nested cards, repeated borders, decorative icon tiles and unnecessary shadows. Use restrained corner radii, consistent spacing and clear alignment.
 
-Use strong types:
+Do not turn nutrition screens into dense spreadsheets or long strings of tiny macro text. Keep names, serving basis, calories and secondary values easy to distinguish.
 
-```ts
-export type ExperienceMode = "EXPERT" | "GUIDED";
-export type TargetMode = "AUTO" | "MANUAL";
-export type MealType = "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK_1" | "SNACK_2";
-```
+## UX and Accessibility
 
-Avoid `any`.
+- Preserve existing features when redesigning.
+- Keep frequent actions visible and secondary actions discoverable.
+- Respect macro and percentage visibility settings everywhere.
+- Provide clear selection, deselection, editing and save feedback.
+- Support long names, mixed Hebrew/English text and narrow screens.
+- Use locale and direction settings rather than hard-coded language checks.
+- Verify RTL/LTR, directional icons, and number/unit ordering.
+- Keep content and actions reachable with the keyboard open.
+- Respect safe areas, bottom navigation and larger system text.
+- Provide accessible labels and comfortable touch targets.
+- Keep weight, measurements and photos optional, with neutral wording.
 
-## Auth
+## Validation
 
-- Store tokens in Expo SecureStore.
-- Do not store tokens in AsyncStorage.
-- Use Axios interceptors for access token and refresh token.
-- Logout user if refresh fails.
+Run relevant type, translation, lint and behavior checks.
 
-## UI Rules
+Visually inspect rendered screens in:
 
-The app should feel like a serious nutrition control system.
+- Hebrew and English.
+- Light and dark themes.
+- Narrow and standard phone widths.
+- Loading, empty, error and selected states.
 
-Prefer:
+Test affected calculations, date navigation, logging, editing, copying and refresh behavior.
 
-- clean layout
-- fast actions
-- readable numbers
-- mature tone
-- reusable components
+Distinguish mocked UI checks from real-server and device tests. Never claim device validation without running it.
 
-Avoid:
-
-- childish messages
-- forced motivation
-- clutter
-- hiding advanced data from expert users
-- unnecessary libraries
+Finish with a concise summary of changes, checks and remaining limitations.

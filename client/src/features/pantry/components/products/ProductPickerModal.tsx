@@ -15,6 +15,7 @@ import { useFoodCardModels } from "../../hooks/useFoodCardModels";
 import { useStyles } from "./styles/ProductPickerModal.styles";
 import { ListGap } from "../../../../shared/components/ui/ListGap";
 import { useKeyboardInset } from "../../../../shared/hooks/useKeyboardInset";
+import { isAmbiguousName, useDuplicateNames } from "../../helpers/duplicateNames";
 
 type ProductPickerModalProps = {
   visible: boolean;
@@ -58,6 +59,7 @@ export function ProductPickerModal({
   const [search, setSearch] = useState("");
 
   const filtered = sortByMealCategory(products, mealCategory);
+  const duplicateNames = useDuplicateNames(filtered.map((product) => product.name));
 
   function handleSearchChange(text: string) {
     setSearch(text);
@@ -110,7 +112,7 @@ export function ProductPickerModal({
 
               return (
                 <FoodItemCard
-                  {...models.product(item)}
+                  {...models.product(item, isAmbiguousName(duplicateNames, item.name))}
                   selected={isAdded}
                   onPress={() => handleSelect(item)}
                   trailing={<AddIndicator added={isAdded} />}

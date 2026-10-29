@@ -34,7 +34,7 @@ export function StateView({
   if (variant === "loading") {
     return (
       <View style={[styles.container, compact ? styles.compact : styles.fill, style]}>
-        <ActivityIndicator size="large" color={colors.accent} />
+        <ActivityIndicator size="small" color={colors.textMuted} />
         {message ? <Text style={styles.message}>{message}</Text> : null}
       </View>
     );
@@ -48,13 +48,12 @@ export function StateView({
       style={[styles.container, compact ? styles.compact : styles.fill, style]}
       accessibilityRole={isError ? "alert" : undefined}
     >
-      <View style={[styles.iconWrap, isError && styles.iconWrapError]}>
-        <MaterialCommunityIcons
-          name={resolvedIcon}
-          size={26}
-          color={isError ? colors.danger : colors.textSecondary}
-        />
-      </View>
+      <MaterialCommunityIcons
+        name={resolvedIcon}
+        size={28}
+        color={isError ? colors.danger : colors.textMuted}
+        style={styles.icon}
+      />
 
       {title ? <Text style={styles.title}>{title}</Text> : null}
       {message ? <Text style={styles.message}>{message}</Text> : null}
@@ -88,17 +87,8 @@ const useStyles = () =>
       compact: {
         paddingVertical: spacing.lg,
       },
-      iconWrap: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: colors.surfaceMuted,
-        alignItems: "center",
-        justifyContent: "center",
+      icon: {
         marginBottom: spacing.xs,
-      },
-      iconWrapError: {
-        backgroundColor: colors.dangerSoft,
       },
       title: {
         ...typography.headline,

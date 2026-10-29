@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, typography, useThemedStyles } from "../../../../../shared/theme";
+import { fonts, spacing, typography, useThemedStyles } from "../../../../../shared/theme";
 
 export const useRowStyles = () =>
   useThemedStyles((colors) =>
@@ -42,13 +42,12 @@ export const useRowStyles = () =>
       },
 
       valueHighlight: {
-        ...typography.headline,
-        ...typography.number,
+        ...typography.value,
       },
 
       unit: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
       },
     }),

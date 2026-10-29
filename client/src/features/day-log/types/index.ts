@@ -42,9 +42,28 @@ export type MealMacros = {
   fiber: number;
 };
 
+export type MealItemSource = "PRODUCT" | "RECIPE" | "SAVED_MEAL";
+
+export type MealItemServing = {
+  nutritionBasis: "PER_100G" | "PER_SERVING";
+  servingSizeG: number | null;
+  servingQuantity: number | null;
+  servingUnit: string | null;
+};
+
 export type MealItemSummary = MealMacros & {
   id: string;
   name: string;
+  source?: MealItemSource | null;
+  grams?: number | null;
+  servings?: number | null;
+  serving?: MealItemServing | null;
+};
+
+export type UpdateMealItemPayload = {
+  itemId: string;
+  grams?: number;
+  servings?: number;
 };
 
 export type MealEntrySummary = MealMacros & {
@@ -76,7 +95,13 @@ export type AddMealItemPayload = {
   savedMealId?: string;
 };
 
-export type CopyMealPayload = {
-  mealEntryId: string;
+export type CopyTarget = {
+  kind: "meal" | "item";
+  id: string;
+  name: string;
+};
+
+export type CopyToDaysPayload = {
+  target: CopyTarget;
   targetDates: string[];
 };

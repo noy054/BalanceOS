@@ -63,7 +63,7 @@ export const useStyles = () =>
         width: 12,
         height: 12,
         borderRadius: 6,
-        backgroundColor: colors.accent,
+        backgroundColor: colors.accentFill,
       },
       cardDescription: {
         ...typography.callout,

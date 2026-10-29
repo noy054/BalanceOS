@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 import {
+  fonts,
   radius,
   shadows,
   spacing,
@@ -33,23 +34,25 @@ export const useStyles = () =>
       controlLabel: {
         ...typography.caption,
         color: colors.textSecondary,
-        paddingHorizontal: spacing.xs,
+      },
+
+      list: {
+        flex: 1,
       },
 
       listContent: {
         paddingHorizontal: spacing.md,
-        paddingTop: spacing.xs,
         paddingBottom: spacing.lg,
         flexGrow: 1,
       },
 
       dock: {
         backgroundColor: colors.surface,
-        borderTopLeftRadius: radius.xl,
-        borderTopRightRadius: radius.xl,
+        borderTopLeftRadius: radius.xxl,
+        borderTopRightRadius: radius.xxl,
         paddingHorizontal: spacing.md,
-        paddingTop: spacing.md,
-        gap: spacing.md,
+        paddingTop: spacing.ms,
+        gap: spacing.ms,
         ...shadows.lg,
       },
 
@@ -76,22 +79,21 @@ export const useStyles = () =>
       },
 
       cartItemName: {
-        ...typography.callout,
-        fontWeight: '600',
+        ...typography.bodyStrong,
         color: colors.textPrimary,
       },
 
       cartItemQty: {
-        ...typography.caption,
+        ...typography.footnote,
         ...typography.number,
-        fontWeight: '400',
+        fontFamily: fonts.regular,
         color: colors.textSecondary,
       },
 
       cartItemCalories: {
         ...typography.callout,
         ...typography.number,
-        fontWeight: '600',
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
       },
 
@@ -111,8 +113,7 @@ export const useStyles = () =>
       },
 
       barCalories: {
-        ...typography.headline,
-        ...typography.number,
+        ...typography.value,
         color: colors.textPrimary,
       },
 

@@ -100,6 +100,34 @@ describe('CatalogReviewService.recordProductChange', () => {
     expect(repo.approve).not.toHaveBeenCalled();
   });
 
+  it('keeps personal names, brands and images private on catalog-linked products', async () => {
+    const { service, repo } = setup();
+    await service.recordProductChange(
+      product({
+        name: "Mom's yogurt",
+        brand: 'Home',
+        imageUrl: 'https://example.com/me.jpg',
+      }),
+    );
+    expect(repo.createSubmission).not.toHaveBeenCalled();
+  });
+
+  it('submits nutrition corrections under the catalog name, not the personal one', async () => {
+    const { service, repo } = setup();
+    await service.recordProductChange(
+      product({ name: "Mom's yogurt", proteinPer100g: 9 }),
+    );
+    expect(repo.createSubmission).toHaveBeenCalledWith(
+      expect.objectContaining({
+        productName: catalogItem.name,
+        proposedData: expect.objectContaining({
+          name: catalogItem.name,
+          proteinPer100g: 9,
+        }),
+      }),
+    );
+  });
+
   it('updates the existing pending submission instead of duplicating it', async () => {
     const { service, repo } = setup({ id: 's1', kind: 'CORRECTION' });
     await service.recordProductChange(product({ proteinPer100g: 9 }));
@@ -273,11 +301,33 @@ describe('CatalogReviewService.approve', () => {
     expect(repo.approve).toHaveBeenCalledWith(
       expect.objectContaining({
         targetCatalogItemId: 'c1',
-        normalizedBarcode: null,
+        normalizedBarcode: '7290000066318',
         data: expect.objectContaining({
           caloriesPerServing: 150,
           servingUnit: 'slices',
         }),
+      }),
+    );
+  });
+
+  it('passes a corrected barcode through when approving a correction', async () => {
+    const { service, repo } = setup();
+    repo.findById.mockResolvedValue({
+      ...pendingRow,
+      kind: 'CORRECTION',
+      catalogItemId: 'c1',
+    });
+    repo.findCatalogItem.mockResolvedValue({ id: 'c1', archivedAt: null });
+    repo.approve.mockResolvedValue({ ...pendingRow, status: 'APPROVED' });
+    await service.approve('admin', 's1', {
+      name: 'Rye bread',
+      barcode: '7290000066325',
+    });
+    expect(repo.approve).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targetCatalogItemId: 'c1',
+        normalizedBarcode: '7290000066325',
+        data: expect.objectContaining({ barcode: '7290000066325' }),
       }),
     );
   });

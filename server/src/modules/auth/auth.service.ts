@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { UsersService } from '../users/users.service';
+import { ProgressService } from '../progress/progress.service';
 import { AuthRepository } from './auth.repository';
 import { MailerService } from './mailer.service';
 import { RegisterDto } from './dto/register.dto';
@@ -41,6 +42,7 @@ export class AuthService {
     private readonly mailerService: MailerService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly progressService: ProgressService,
   ) {}
 
   private getGoogleClient(): OAuth2Client {
@@ -170,6 +172,7 @@ export class AuthService {
 
   async deleteAccount(userId: string): Promise<void> {
     await this.usersService.deleteById(userId);
+    await this.progressService.removeUserFiles(userId);
   }
 
   async forgotPassword(dto: ForgotPasswordDto): Promise<void> {

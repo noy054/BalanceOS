@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { radius, spacing, useThemedStyles } from "../../../../shared/theme";
+import { spacing, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -15,30 +15,28 @@ export const useStyles = () =>
       },
 
       scrollContent: {
-        paddingBottom: spacing.lg,
+        paddingBottom: spacing.xl,
         width: "100%",
         maxWidth: 640,
         alignSelf: "center",
       },
 
-      body: {
+      content: {
         paddingHorizontal: spacing.md,
-        gap: spacing.lg,
+        paddingTop: spacing.ml,
+        gap: spacing.xl,
+      },
+
+      body: {
+        gap: spacing.md,
       },
 
       bodySwitching: {
         opacity: 0.55,
       },
 
-      stateCard: {
-        backgroundColor: colors.surface,
-        borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
-      },
-
-      mealsList: {
-        gap: spacing.ms,
+      meals: {
+        gap: spacing.sm2,
       },
     }),
   );

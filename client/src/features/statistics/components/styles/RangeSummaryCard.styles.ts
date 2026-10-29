@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
+import { fonts, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -44,22 +44,21 @@ export const useStyles = () =>
 
       heroSub: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
       },
 
       statsRow: {
         marginTop: spacing.md,
-        gap: spacing.sm,
+        paddingTop: spacing.ms,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: colors.border,
+        gap: spacing.md,
       },
 
       statCell: {
         flex: 1,
         minWidth: 0,
-        backgroundColor: colors.surfaceMuted,
-        borderRadius: radius.md,
-        paddingHorizontal: spacing.sm2,
-        paddingVertical: spacing.sm2,
         gap: 2,
       },
 
@@ -78,7 +77,7 @@ export const useStyles = () =>
         ...typography.caption,
         fontSize: 11,
         lineHeight: 14,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
       },
 
@@ -109,7 +108,7 @@ export const useStyles = () =>
 
       gapSub: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
       },
 
@@ -120,11 +119,11 @@ export const useStyles = () =>
       },
 
       valueGood: {
-        color: colors.success,
+        color: colors.textPrimary,
       },
 
       valueAttention: {
-        color: colors.warning,
+        color: colors.textPrimary,
       },
     }),
   );

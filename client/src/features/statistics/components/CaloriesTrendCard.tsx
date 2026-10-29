@@ -31,7 +31,7 @@ export function CaloriesTrendCard({ trend, isRTL }: Props) {
     (p) => Math.abs(p.calories - p.target) / p.target <= 0.15,
   ).length;
 
-  const onTargetColor = colors.accent;
+  const onTargetColor = colors.accentFill;
   const overColor = colors.warning;
   const underColor = colors.accentBorder;
 

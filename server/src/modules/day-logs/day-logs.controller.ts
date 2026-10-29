@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -12,6 +13,7 @@ import {
 import { DayLogsService } from './day-logs.service';
 import { AddMealItemDto } from './dto/add-meal-item.dto';
 import { CopyMealDto } from './dto/copy-meal.dto';
+import { UpdateMealItemDto } from './dto/update-meal-item.dto';
 import { JwtGuard } from '../../common/guards/jwt.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { UserPublic } from '../users/types/user.types';
@@ -90,6 +92,25 @@ export class DayLogsController {
     @Param('mealEntryId') mealEntryId: string,
   ): Promise<void> {
     return this.service.removeMealEntry(user.id, mealEntryId);
+  }
+
+  @Post('meal-items/:itemId/copy')
+  @HttpCode(204)
+  async copyMealItem(
+    @CurrentUser() user: UserPublic,
+    @Param('itemId') itemId: string,
+    @Body() dto: CopyMealDto,
+  ): Promise<void> {
+    return this.service.copyMealItem(user.id, itemId, dto);
+  }
+
+  @Patch('meal-items/:itemId')
+  updateMealItem(
+    @CurrentUser() user: UserPublic,
+    @Param('itemId') itemId: string,
+    @Body() dto: UpdateMealItemDto,
+  ) {
+    return this.service.updateMealItem(user.id, itemId, dto);
   }
 
   @Delete('meal-items/:itemId')

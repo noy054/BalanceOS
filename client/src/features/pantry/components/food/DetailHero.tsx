@@ -23,7 +23,7 @@ export function DetailHero({ title, meta, description, imageUrl, fallbackIcon }:
   return (
     <View style={styles.wrapper}>
       <View style={[styles.row, dir.row]}>
-        <FoodThumb imageUrl={imageUrl} fallbackIcon={fallbackIcon} size={64} />
+        {imageUrl ? <FoodThumb imageUrl={imageUrl} fallbackIcon={fallbackIcon} size={64} /> : null}
 
         <View style={styles.text}>
           <Text style={[styles.title, dir.text]} numberOfLines={3}>

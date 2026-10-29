@@ -10,7 +10,9 @@
     "targetReachedLabel": "Target reached",
     "unitShort": "kcal",
     "progressA11y": "{{eaten}} of {{target}} calories eaten",
-    "remainingDayLabel": "Remaining"
+    "remainingDayLabel": "Remaining",
+    "eatenOfTarget": "Eaten / target",
+    "percentOfTarget": "{{percent}}% of target"
   },
   "macros": {
     "protein": "Protein",
@@ -18,7 +20,10 @@
     "fat": "Fat",
     "fiber": "Fiber",
     "gramsUnit": "g",
-    "ofTarget": "of {{target}} g"
+    "ofTarget": "of {{target}} g",
+    "overValue": "{{value}} over",
+    "rowA11y": "{{name}}: {{eaten}} of {{target}} grams, {{left}} left",
+    "ofTargetShort": "{{target}} g"
   },
   "actions": {
     "addMeal": "Add Meal"
@@ -41,7 +46,7 @@
     "calUnit": "cal",
     "proUnit": "g pro",
     "andMore": "+{{count}} more",
-    "copyToMoreDays": "Add to more days",
+    "copyToMoreDays": "Copy to other days",
     "sectionTitle": "Meals",
     "summary": "{{calories}} kcal · {{protein}} g protein",
     "emptyMeal": "Nothing logged yet",
@@ -51,10 +56,16 @@
     "itemsCount_one": "{{count}} item",
     "itemsCount_other": "{{count}} items",
     "addFood": "Add food",
-    "add": "Add"
+    "editItemHint": "Change the amount or remove it",
+    "savedMeal": "Saved meal",
+    "recipeServings_one": "{{count}} serving",
+    "recipeServings_other": "{{count}} servings",
+    "copyItemA11y": "Copy {{name}} to other days",
+    "collapseAll": "Collapse all",
+    "expandAll": "Expand all"
   },
   "copyMeal": {
-    "title": "Add to more days",
+    "title": "Copy to other days",
     "subtitle": "Select days to copy this meal to",
     "confirm_one": "Copy to {{count}} day",
     "confirm_other": "Copy to {{count}} days",
@@ -68,7 +79,8 @@
       "4": "Thu",
       "5": "Fri",
       "6": "Sat"
-    }
+    },
+    "subtitleItem": "Select days to copy {{name}} to"
   },
   "addItem": {
     "title": "Add to {{mealType}}",
@@ -141,15 +153,10 @@
   "remove": {
     "itemTitle": "Remove {{name}} from {{meal}}?",
     "itemMessage": "{{calories}} kcal will be removed from this day's totals.",
-    "mealTitle": "Remove everything from {{meal}}?",
-    "mealMessage_one": "{{count}} item ({{calories}} kcal) will be removed from this day's totals.",
-    "mealMessage_other": "{{count}} items ({{calories}} kcal) will be removed from this day's totals.",
     "confirm": "Remove",
     "cancel": "Cancel",
     "failed": "Couldn't remove it. Try again.",
-    "itemA11y": "Remove {{name}}",
-    "mealMenuA11y": "More options for {{meal}}",
-    "removeMeal": "Remove meal"
+    "itemA11y": "Remove {{name}}"
   },
   "date": {
     "today": "Today",
@@ -177,5 +184,18 @@
     "untitled": "Announcement",
     "dismiss": "Dismiss announcement",
     "gotIt": "Got it"
+  },
+  "itemSheet": {
+    "amountLabel": "Amount",
+    "unitGrams": "g",
+    "unitServings": "servings",
+    "decrease": "Decrease amount",
+    "increase": "Increase amount",
+    "save": "Save amount",
+    "remove": "Remove from {{meal}}",
+    "invalidAmount": "Enter an amount greater than zero",
+    "saveFailed": "Couldn't save the change. Try again.",
+    "fixedAmount": "Saved meals are logged as a whole. To change it, remove it and add the meal again.",
+    "nutritionA11y": "{{calories}} kcal, protein {{protein}} g, carbs {{carbs}} g, fat {{fat}} g"
   }
 }

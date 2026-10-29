@@ -13,6 +13,7 @@ export const useStyles = () =>
       rangeWrap: {
         paddingHorizontal: spacing.md,
         paddingBottom: spacing.ms,
+        gap: spacing.ms,
       },
 
       scroll: {

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import { confirmAction } from "../../../shared/helpers/confirm";
 import { router } from "expo-router";
 
 import { useRecipe, useDeleteRecipe } from "../hooks/useRecipes";
@@ -9,6 +10,7 @@ import { useFoodCardModels, FOOD_ICONS } from "../hooks/useFoodCardModels";
 import { NutritionTotals } from "../components/nutrition/NutritionTotals";
 import { DetailHero } from "../components/food/DetailHero";
 import { FoodLineItem } from "../components/food/FoodLineItem";
+import { isAmbiguousName, useDuplicateNames } from "../helpers/duplicateNames";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
 import { StateView } from "../../../shared/components/ui/StateView";
@@ -30,6 +32,7 @@ export function RecipeDetailScreen({ id }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { data: recipe, isLoading } = useRecipe(id);
+  const duplicateNames = useDuplicateNames(recipe?.items.map((item) => item.product.name) ?? []);
   const deleteRecipe = useDeleteRecipe();
 
   function handleEdit() {
@@ -42,29 +45,21 @@ export function RecipeDetailScreen({ id }: Props) {
     });
   }
 
-  function handleDelete() {
-    Alert.alert(
-      t("recipe.deleteConfirmTitle"),
-      t("recipe.deleteConfirmMessage"),
-      [
-        {
-          text: t("recipe.deleteConfirmNo"),
-          style: "cancel",
-        },
-        {
-          text: t("recipe.deleteConfirmYes"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteRecipe.mutateAsync(id);
-              router.back();
-            } catch {
-              Alert.alert("", t("errors.deleteRecipeFailed"));
-            }
-          },
-        },
-      ],
-    );
+  async function handleDelete() {
+    const confirmed = await confirmAction({
+      title: t("recipe.deleteConfirmTitle"),
+      message: t("recipe.deleteConfirmMessage"),
+      confirmLabel: t("recipe.deleteConfirmYes"),
+      cancelLabel: t("recipe.deleteConfirmNo"),
+      destructive: true,
+    });
+    if (!confirmed) return;
+    try {
+      await deleteRecipe.mutateAsync(id);
+      router.back();
+    } catch {
+      Alert.alert("", t("errors.deleteRecipeFailed"));
+    }
   }
 
   if (isLoading) {
@@ -126,9 +121,9 @@ export function RecipeDetailScreen({ id }: Props) {
                 <FoodLineItem
                   key={item.id}
                   title={product.name}
-                  meta={[quantityText, product.brand].filter(Boolean).join(" · ")}
-                  imageUrl={product.imageUrl}
-                  fallbackIcon={FOOD_ICONS.product}
+                  meta={[quantityText, isAmbiguousName(duplicateNames, product.name) && product.brand]
+                    .filter(Boolean)
+                    .join(" · ")}
                   calories={item.nutrition.calories}
                   macros={item.nutrition}
                   last={index === recipe.items.length - 1}

@@ -35,7 +35,8 @@
     "gramsUnit": "g",
     "changeImage": "Change image",
     "pickFromGallery": "Choose from gallery",
-    "removeImage": "Remove image"
+    "removeImage": "Remove image",
+    "gramsShort": "g"
   },
   "categories": {
     "BREAKFAST": "Breakfast",
@@ -104,7 +105,8 @@
     "calculatorByGrams": "Grams",
     "calculatorByServings": "Servings",
     "calculateAction": "Calculate",
-    "nutritionFor": "Nutrition {{basis}}"
+    "nutritionFor": "Nutrition {{basis}}",
+    "calculatorUnavailable": "This product has no complete nutrition values, so it can't be calculated."
   },
   "recipe": {
     "nameLabel": "Recipe name *",
@@ -306,7 +308,8 @@
     "delete": "Delete",
     "cancel": "Cancel",
     "close": "Close",
-    "moreOptionsFor": "More options for {{name}}"
+    "moreOptionsFor": "More options for {{name}}",
+    "editItem": "Edit {{name}}"
   },
   "macrosShort": {
     "protein": "P",
@@ -330,7 +333,8 @@
     "servingsCount_other": "{{count}} servings"
   },
   "productCalculator": {
-    "quickTitle": "Quick calculation"
+    "quickTitle": "Quick calculation",
+    "quickFor": "Quick calculation for {{name}}"
   },
   "editRecipe": {
     "title": "Edit Recipe",
@@ -371,5 +375,22 @@
     "carbsShort": "Carbs",
     "fatShort": "Fat",
     "fiberShort": "Fiber"
+  },
+  "calculatorMeal": {
+    "addAction": "Add to a meal",
+    "title": "Add to a meal",
+    "dateLabel": "Day",
+    "chooseDate": "Day: {{date}}. Choose another day",
+    "mealLabel": "Meal",
+    "calories": "{{value}} kcal",
+    "macros": "Protein {{protein}} g · Carbs {{carbs}} g · Fat {{fat}} g",
+    "save": "Add to {{meal}}",
+    "changeAmount": "Change amount",
+    "savedTitle": "Added",
+    "savedText": "{{amount}} was added to {{meal}} · {{date}}",
+    "savedAnnouncement": "Added to {{meal}}",
+    "viewDay": "View day",
+    "done": "Done",
+    "saveFailed": "The item could not be added. Check your connection and try again."
   }
 }

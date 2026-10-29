@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 import {
+  fonts,
   radius,
   spacing,
   typography,
@@ -13,8 +14,6 @@ export const useStyles = () =>
       container: {
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
         padding: spacing.md,
         gap: spacing.sm,
       },
@@ -63,13 +62,13 @@ export const useStyles = () =>
 
       macroUnit: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
       },
 
       macroLabel: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textSecondary,
         textAlign: "center",
       },

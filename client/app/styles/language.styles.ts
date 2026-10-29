@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { radius, spacing, typography, useThemedStyles } from '../../src/shared/theme';
+import { fonts, radius, spacing, typography, useThemedStyles } from '../../src/shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -23,7 +23,7 @@ export const useStyles = () =>
       },
       title: {
         ...typography.headline,
-        fontWeight: '500',
+        fontFamily: fonts.headingMedium,
         color: colors.textSecondary,
         textAlign: 'center',
         lineHeight: 26,
@@ -64,7 +64,7 @@ export const useStyles = () =>
       },
       badgeText: {
         ...typography.caption,
-        fontWeight: '600',
+        fontFamily: fonts.semibold,
         color: colors.accent,
       },
     }),

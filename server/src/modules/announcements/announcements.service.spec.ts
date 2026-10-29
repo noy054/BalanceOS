@@ -211,5 +211,28 @@ describe('AnnouncementsService validation', () => {
       appVersion: '1.0.0',
     });
     expect(result.map((item) => item.id)).toEqual(['a2']);
+    expect(repo.findLiveForUser).toHaveBeenCalledWith(
+      'u1',
+      'ios',
+      expect.any(Date),
+    );
+  });
+
+  it('checks the end time against the kept start time of a published announcement', async () => {
+    const { service, repo } = setup();
+    repo.findById.mockResolvedValue({
+      id: 'a1',
+      status: 'PUBLISHED',
+      publishAt: new Date('2026-11-10T10:00:00.000Z'),
+      expiresAt: null,
+    });
+    await expect(
+      service.update(
+        'admin',
+        'a1',
+        dto({ publishAt: null, expiresAt: '2026-11-05T10:00:00.000Z' }),
+      ),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(repo.update).not.toHaveBeenCalled();
   });
 });

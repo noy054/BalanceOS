@@ -1,7 +1,7 @@
 import { StyleProp, StyleSheet, Text, TextStyle } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { typography, useThemedStyles } from "../../../../shared/theme";
+import { fonts, typography, useThemedStyles } from "../../../../shared/theme";
 import { useDirection } from "../../../../shared/hooks/useDirection";
 import { formatGrams } from "../../../../shared/helpers/formatNumber";
 import { useMacroVisibility } from "../../hooks/useMacroVisibility";
@@ -60,7 +60,7 @@ const useStyles = () =>
       line: {
         ...typography.caption,
         ...typography.number,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textSecondary,
       },
     }),

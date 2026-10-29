@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
+import { fonts, radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -46,7 +46,7 @@ export const useStyles = () =>
       rankText: {
         ...typography.caption,
         ...typography.number,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textSecondary,
       },
 
@@ -63,14 +63,14 @@ export const useStyles = () =>
 
       foodMeta: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
       },
 
       foodStat: {
         ...typography.callout,
         ...typography.number,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
       },
 

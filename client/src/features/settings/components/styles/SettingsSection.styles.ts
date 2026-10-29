@@ -12,8 +12,6 @@ export const useStyles = () =>
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
         overflow: 'hidden',
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
       },
       cardDanger: {
         borderColor: colors.dangerSoft,

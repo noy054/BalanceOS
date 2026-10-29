@@ -8,10 +8,11 @@ import { useFoodCardModels } from "../../hooks/useFoodCardModels";
 type Props = {
   recipe: PantryRecipe;
   onPress: (recipe: PantryRecipe) => void;
+  onEdit?: (recipe: PantryRecipe) => void;
   onMore?: (recipe: PantryRecipe) => void;
 };
 
-export function RecipeCard({ recipe, onPress, onMore }: Props) {
+export function RecipeCard({ recipe, onPress, onEdit, onMore }: Props) {
   const { t } = useTranslation("pantry");
   const models = useFoodCardModels();
 
@@ -19,14 +20,16 @@ export function RecipeCard({ recipe, onPress, onMore }: Props) {
     <FoodItemCard
       {...models.recipe(recipe)}
       onPress={() => onPress(recipe)}
-      trailing={
-        onMore ? (
+      onLongPress={onMore ? () => onMore(recipe) : undefined}
+      actions={
+        onEdit ? (
           <IconButton
-            icon="dots-vertical"
-            size={36}
+            icon="pencil-outline"
+            variant="tonal"
+            size={40}
             iconSize={20}
-            accessibilityLabel={t("common.moreOptionsFor", { name: recipe.name })}
-            onPress={() => onMore(recipe)}
+            accessibilityLabel={t("common.editItem", { name: recipe.name })}
+            onPress={() => onEdit(recipe)}
           />
         ) : null
       }

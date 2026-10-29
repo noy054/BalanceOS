@@ -3,8 +3,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
-import { useCopyMealEntry } from "../hooks/useDayLog";
-import { MealEntrySummary } from "../types";
+import { useCopyToDays } from "../hooks/useDayLog";
+import { CopyTarget } from "../types";
+import { MAX_FUTURE_DAYS } from "../constants";
 import {
   radius,
   spacing,
@@ -24,30 +25,32 @@ type DayOption = {
   dayNum: number;
 };
 
-function getNextSixDays(sourceDate: DateKey): DayOption[] {
-  return Array.from({ length: 6 }, (_, index) => {
-    const date = addDays(sourceDate, index + 1);
-    const day = fromDateKey(date);
-    return { date, dayIndex: day.getDay(), dayNum: day.getDate() };
-  });
+function getNextSixDays(sourceDate: DateKey, maxDate: DateKey): DayOption[] {
+  return Array.from({ length: 6 }, (_, index) => addDays(sourceDate, index + 1))
+    .filter((date) => date <= maxDate)
+    .map((date) => {
+      const day = fromDateKey(date);
+      return { date, dayIndex: day.getDay(), dayNum: day.getDate() };
+    });
 }
 
 type Props = {
-  meal: MealEntrySummary | null;
+  target: CopyTarget | null;
   sourceDate: DateKey;
   onClose: () => void;
 };
 
-export function CopyMealModal({ meal, sourceDate, onClose }: Props) {
+export function CopyMealModal({ target, sourceDate, onClose }: Props) {
   const { t } = useTranslation("dashboard");
   const { colors } = useAppTheme();
   const styles = useStyles();
   const dir = useDirection();
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const copyMeal = useCopyMealEntry();
+  const copyMeal = useCopyToDays();
 
-  const days = getNextSixDays(sourceDate);
-  const labels = useDayLabels(todayKey());
+  const today = todayKey();
+  const days = getNextSixDays(sourceDate, addDays(today, MAX_FUTURE_DAYS));
+  const labels = useDayLabels(today);
 
   function toggleDay(date: string) {
     setSelected((prev) => {
@@ -65,14 +68,14 @@ export function CopyMealModal({ meal, sourceDate, onClose }: Props) {
   }
 
   function handleConfirm() {
-    if (!meal || selected.size === 0) return;
+    if (!target || selected.size === 0) return;
     copyMeal.mutate(
-      { mealEntryId: meal.id, targetDates: [...selected] },
+      { target, targetDates: [...selected] },
       { onSuccess: handleClose },
     );
   }
 
-  if (!meal) return null;
+  if (!target) return null;
 
   const confirmLabel = t(`copyMeal.confirm_${selected.size === 1 ? "one" : "other"}`, {
     count: selected.size,
@@ -83,7 +86,11 @@ export function CopyMealModal({ meal, sourceDate, onClose }: Props) {
       visible
       onClose={handleClose}
       title={t("copyMeal.title")}
-      subtitle={t("copyMeal.subtitle")}
+      subtitle={
+        target.kind === "meal"
+          ? t("copyMeal.subtitle")
+          : t("copyMeal.subtitleItem", { name: target.name })
+      }
       footer={
         <View style={[styles.actions, dir.row]}>
           <Button
@@ -171,7 +178,7 @@ const useStyles = () =>
         justifyContent: "center",
       },
       checkboxSelected: {
-        backgroundColor: colors.accent,
+        backgroundColor: colors.accentFill,
         borderColor: colors.accent,
       },
       dayName: {

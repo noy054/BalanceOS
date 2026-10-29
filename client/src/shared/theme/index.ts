@@ -5,6 +5,7 @@ export { useThemedStyles } from "./useThemedStyles";
 export { loadSavedThemeMode, saveThemeMode } from "./themeStorage";
 export {
   spacing,
+  fonts,
   radius,
   typography,
   shadows,

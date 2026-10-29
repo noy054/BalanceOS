@@ -353,13 +353,26 @@ export class CatalogReviewRepository {
       if (catalogItemId) {
         const current = await tx.productCatalogItem.findUniqueOrThrow({
           where: { id: catalogItemId },
-          select: CATALOG_ITEM_REVIEW_SELECT,
+          select: { ...CATALOG_ITEM_REVIEW_SELECT, normalizedBarcode: true },
         });
         const before = fromCatalogRow(current);
+        const replacesBarcode =
+          params.normalizedBarcode !== null &&
+          params.normalizedBarcode !== current.normalizedBarcode;
+        const applied: CatalogProductData = {
+          ...params.data,
+          barcode: replacesBarcode ? params.data.barcode : before.barcode,
+        };
         await tx.productCatalogItem.update({
           where: { id: catalogItemId },
           data: {
-            ...catalogFields(params.data),
+            ...catalogFields(applied),
+            ...(replacesBarcode
+              ? {
+                  barcode: applied.barcode,
+                  normalizedBarcode: params.normalizedBarcode,
+                }
+              : {}),
             originalData: current.originalData ?? toJson(before),
             verificationStatus: ProductVerificationStatus.ADMIN_VERIFIED,
             updatedByUserId: params.adminId,
@@ -373,7 +386,7 @@ export class CatalogReviewRepository {
           summary: params.data.name,
           details: toJsonObject({
             submissionId: params.submissionId,
-            changes: diffFields(before, { ...before, ...params.data }),
+            changes: diffFields(before, { ...before, ...applied }),
           }),
         });
       } else {

@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 import {
+  fonts,
   radius,
   spacing,
   typography,
@@ -44,15 +45,13 @@ export const useStyles = () =>
       metaMuted: {
         ...typography.caption,
         ...typography.number,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
       },
 
       heroCard: {
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
         paddingHorizontal: spacing.md,
         paddingTop: spacing.ms,
         paddingBottom: spacing.xs,

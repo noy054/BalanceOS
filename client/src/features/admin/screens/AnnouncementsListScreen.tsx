@@ -11,7 +11,7 @@ import { spacing, useThemedStyles } from "../../../shared/theme";
 import { useIsAdmin } from "../../admin-catalog/hooks/useAdminCatalog";
 import { AdminListRow } from "../components/AdminListRow";
 import { AdminScaffold } from "../components/AdminScaffold";
-import { FilterChips } from "../components/FilterChips";
+import { ChoiceChips } from "../../../shared/components/ui/ChoiceChips";
 import { StatusBadge } from "../components/StatusBadge";
 import { ADMIN_ROUTES } from "../constants";
 import { formatDateTime } from "../helpers/format";
@@ -75,7 +75,7 @@ export function AnnouncementsListScreen() {
     >
       <View style={styles.controls}>
         <SearchField value={search} onChangeText={setSearch} placeholder={t("admin.announcements.search")} />
-        <FilterChips<Filter>
+        <ChoiceChips<Filter>
           options={[
             { value: "ALL", label: t("admin.activity.all") },
             ...STATES.map((value) => ({ value, label: t(`admin.announcementStates.${value}`) })),

@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Alert, FlatList, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { confirmAction } from "../../../shared/helpers/confirm";
 import { router } from "expo-router";
 
 import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
 import { TabHeader } from "../../../shared/components/TabHeader";
-import { Button } from "../../../shared/components/ui/Button";
 import { IconButton } from "../../../shared/components/ui/IconButton";
 import { SearchField } from "../../../shared/components/ui/SearchField";
 import { SegmentedControl } from "../../../shared/components/ui/SegmentedControl";
@@ -25,6 +25,7 @@ import { useSavedMeals, useDeleteSavedMeal } from "../hooks/useSavedMeals";
 import { PantryProduct, PantryRecipe, PantryTab, SavedMeal } from "../types";
 import { useStyles } from "./styles/PantryScreen.styles";
 import { ListGap } from "../../../shared/components/ui/ListGap";
+import { isAmbiguousName, useDuplicateNames } from "../helpers/duplicateNames";
 
 type MenuTarget =
   | { kind: "product"; item: PantryProduct }
@@ -70,6 +71,8 @@ export function PantryScreen() {
     isLoading: loadingSavedMeals,
     isError: errorSavedMeals,
   } = useSavedMeals();
+
+  const duplicateNames = useDuplicateNames(products.map((product) => product.name));
 
   const filteredRecipes = useMemo(() => {
     if (!search.trim()) {
@@ -152,76 +155,52 @@ export function PantryScreen() {
     router.push(`/(app)/pantry/${product.id}`);
   }
 
-  function handleDeleteProduct(product: PantryProduct) {
-    Alert.alert(
-      t("productDetail.deleteConfirmTitle"),
-      t("productDetail.deleteConfirmMessage"),
-      [
-        {
-          text: t("productDetail.deleteConfirmNo"),
-          style: "cancel",
-        },
-        {
-          text: t("productDetail.deleteConfirmYes"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteProduct.mutateAsync(product.id);
-            } catch {
-              Alert.alert("", t("errors.deleteFailed"));
-            }
-          },
-        },
-      ],
-    );
+  async function handleDeleteProduct(product: PantryProduct) {
+    const confirmed = await confirmAction({
+      title: t("productDetail.deleteConfirmTitle"),
+      message: t("productDetail.deleteConfirmMessage"),
+      confirmLabel: t("productDetail.deleteConfirmYes"),
+      cancelLabel: t("productDetail.deleteConfirmNo"),
+      destructive: true,
+    });
+    if (!confirmed) return;
+    try {
+      await deleteProduct.mutateAsync(product.id);
+    } catch {
+      Alert.alert("", t("errors.deleteFailed"));
+    }
   }
 
-  function handleDeleteRecipe(recipe: PantryRecipe) {
-    Alert.alert(
-      t("recipe.deleteConfirmTitle"),
-      t("recipe.deleteConfirmMessage"),
-      [
-        {
-          text: t("recipe.deleteConfirmNo"),
-          style: "cancel",
-        },
-        {
-          text: t("recipe.deleteConfirmYes"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteRecipe.mutateAsync(recipe.id);
-            } catch {
-              Alert.alert("", t("errors.deleteFailed"));
-            }
-          },
-        },
-      ],
-    );
+  async function handleDeleteRecipe(recipe: PantryRecipe) {
+    const confirmed = await confirmAction({
+      title: t("recipe.deleteConfirmTitle"),
+      message: t("recipe.deleteConfirmMessage"),
+      confirmLabel: t("recipe.deleteConfirmYes"),
+      cancelLabel: t("recipe.deleteConfirmNo"),
+      destructive: true,
+    });
+    if (!confirmed) return;
+    try {
+      await deleteRecipe.mutateAsync(recipe.id);
+    } catch {
+      Alert.alert("", t("errors.deleteFailed"));
+    }
   }
 
-  function handleDeleteSavedMeal(meal: SavedMeal) {
-    Alert.alert(
-      t("savedMeal.deleteConfirmTitle"),
-      t("savedMeal.deleteConfirmMessage"),
-      [
-        {
-          text: t("savedMeal.deleteConfirmNo"),
-          style: "cancel",
-        },
-        {
-          text: t("savedMeal.deleteConfirmYes"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteSavedMeal.mutateAsync(meal.id);
-            } catch {
-              Alert.alert("", t("errors.deleteFailed"));
-            }
-          },
-        },
-      ],
-    );
+  async function handleDeleteSavedMeal(meal: SavedMeal) {
+    const confirmed = await confirmAction({
+      title: t("savedMeal.deleteConfirmTitle"),
+      message: t("savedMeal.deleteConfirmMessage"),
+      confirmLabel: t("savedMeal.deleteConfirmYes"),
+      cancelLabel: t("savedMeal.deleteConfirmNo"),
+      destructive: true,
+    });
+    if (!confirmed) return;
+    try {
+      await deleteSavedMeal.mutateAsync(meal.id);
+    } catch {
+      Alert.alert("", t("errors.deleteFailed"));
+    }
   }
 
   function addLabel() {
@@ -248,21 +227,23 @@ export function PantryScreen() {
     return t("search.placeholderSavedMeals");
   }
 
+  function openEditor(target: MenuTarget) {
+    const pathname =
+      target.kind === "product"
+        ? "/(app)/pantry/add-product"
+        : target.kind === "recipe"
+          ? "/(app)/pantry/add-recipe"
+          : "/(app)/pantry/add-saved-meal";
+
+    router.push({ pathname, params: { id: target.item.id, mode: "edit" } });
+  }
+
   function getMenuActions(target: MenuTarget): SheetAction[] {
     const editAction: SheetAction = {
       key: "edit",
       label: t("common.edit"),
       icon: "pencil-outline",
-      onPress: () => {
-        const pathname =
-          target.kind === "product"
-            ? "/(app)/pantry/add-product"
-            : target.kind === "recipe"
-              ? "/(app)/pantry/add-recipe"
-              : "/(app)/pantry/add-saved-meal";
-
-        router.push({ pathname, params: { id: target.item.id, mode: "edit" } });
-      },
+      onPress: () => openEditor(target),
     };
 
     const deleteAction: SheetAction = {
@@ -306,43 +287,43 @@ export function PantryScreen() {
   return (
     <TabScreenLayout activeTab="pantry">
       <View key={i18n.language} style={styles.root}>
-        <TabHeader
-          title={t("title")}
+        <TabHeader title={t("title")} />
+
+        <SegmentedControl
+          variant="tabs"
+          options={tabOptions}
+          value={activeTab}
+          onChange={setActiveTab}
+          style={styles.tabs}
+        />
+
+        <SearchField
+          value={search}
+          onChangeText={setSearch}
+          placeholder={searchPlaceholder()}
+          style={styles.toolbar}
           trailing={
             <>
               {activeTab === "products" ? (
                 <IconButton
                   icon="barcode-scan"
                   variant="tonal"
+                  size={44}
                   accessibilityLabel={t("actions.scanBarcode")}
                   onPress={handleScanBarcode}
                 />
               ) : null}
-
-              <Button
-                label={t("actions.new")}
+              <IconButton
                 icon="plus"
-                size="sm"
-                onPress={handleAdd}
+                variant="filled"
+                size={44}
+                iconSize={24}
                 accessibilityLabel={addLabel()}
+                onPress={handleAdd}
               />
             </>
           }
         />
-
-        <View style={styles.controls}>
-          <SegmentedControl
-            options={tabOptions}
-            value={activeTab}
-            onChange={setActiveTab}
-          />
-
-          <SearchField
-            value={search}
-            onChangeText={setSearch}
-            placeholder={searchPlaceholder()}
-          />
-        </View>
 
         <View style={styles.content}>
           {activeTab === "products" ? (
@@ -362,8 +343,11 @@ export function PantryScreen() {
                   <ProductCard
                     product={item}
                     onPress={handleProductPress}
+                    onCalculate={setCalculatorProduct}
+                    onEdit={(product) => openEditor({ kind: "product", item: product })}
                     onMore={(product) => setMenuTarget({ kind: "product", item: product })}
                     isHighlighted={item.id === highlightedProductId}
+                    showBrand={isAmbiguousName(duplicateNames, item.name)}
                   />
                 )}
                 ItemSeparatorComponent={ListGap}
@@ -415,6 +399,7 @@ export function PantryScreen() {
                       onPress={(recipe: PantryRecipe) =>
                         router.push(`/(app)/pantry/recipes/${recipe.id}`)
                       }
+                      onEdit={(recipe) => openEditor({ kind: "recipe", item: recipe })}
                       onMore={(recipe) => setMenuTarget({ kind: "recipe", item: recipe })}
                     />
                   </SwipeDeleteRow>
@@ -452,6 +437,7 @@ export function PantryScreen() {
                       onPress={(meal: SavedMeal) =>
                         router.push(`/(app)/pantry/saved-meals/${meal.id}`)
                       }
+                      onEdit={(meal) => openEditor({ kind: "savedMeal", item: meal })}
                       onMore={(meal) => setMenuTarget({ kind: "savedMeal", item: meal })}
                     />
                   </SwipeDeleteRow>

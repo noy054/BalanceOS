@@ -1,11 +1,13 @@
+export const MAX_FUTURE_DAYS = 365;
+
 export const DAY_LOG_ENDPOINTS = {
   DAY: (date: string) => `/day-logs/date/${date}`,
   DAY_MEALS: (date: string) => `/day-logs/date/${date}/meals`,
   ADD_MEAL_ITEM: (date: string) => `/day-logs/date/${date}/meal-items`,
   CALENDAR: '/day-logs/calendar',
   REMOVE_MEAL_ITEM: (itemId: string) => `/day-logs/meal-items/${itemId}`,
-  REMOVE_MEAL_ENTRY: (mealEntryId: string) => `/day-logs/meal-entries/${mealEntryId}`,
   COPY_MEAL_ENTRY: (mealEntryId: string) => `/day-logs/meal-entries/${mealEntryId}/copy`,
+  COPY_MEAL_ITEM: (itemId: string) => `/day-logs/meal-items/${itemId}/copy`,
 } as const;
 
 export const DAY_LOG_QUERY_KEYS = {

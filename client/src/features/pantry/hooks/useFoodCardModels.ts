@@ -74,17 +74,13 @@ export function useFoodCardModels() {
     return mealType ? t(`mealTypes.${mealType}` as Parameters<typeof t>[0]) : null;
   }
 
-  function product(item: PantryProduct): FoodCardModel {
+  function product(item: PantryProduct, showBrand = false): FoodCardModel {
     const values =
       (hasServing(item) ? nutritionPerServing(item) : nutritionPer100g(item)) ??
       nutritionPer100g(item);
-    const categories = (item.mealCategories ?? [])
-      .map((cat) => t(`categories.${cat}` as Parameters<typeof t>[0]))
-      .join(", ");
-
     return {
       title: item.name,
-      meta: joinMeta([item.brand, productBasisLabel(item), categories]),
+      meta: joinMeta([productBasisLabel(item), showBrand && item.brand]),
       imageUrl: item.imageUrl ?? null,
       fallbackIcon: FOOD_ICONS.product,
       calories: values?.calories ?? 0,

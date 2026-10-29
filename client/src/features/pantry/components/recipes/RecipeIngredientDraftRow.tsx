@@ -11,6 +11,7 @@ import { useDraftRowStyles } from "../shared/styles/DraftItemRow.styles";
 type Props = {
   ingredient: RecipeIngredientDraft;
   isRTL: boolean;
+  showBrand?: boolean;
   onChangeAmount: (key: string, value: string) => void;
   onToggleUnit: (key: string) => void;
   onRemove: (key: string) => void;
@@ -19,6 +20,7 @@ type Props = {
 export function RecipeIngredientDraftRow({
   ingredient,
   isRTL,
+  showBrand = false,
   onChangeAmount,
   onToggleUnit,
   onRemove,
@@ -34,7 +36,7 @@ export function RecipeIngredientDraftRow({
   };
 
   const meta = [
-    ingredient.product.brand,
+    showBrand ? ingredient.product.brand : null,
     hasServing(ingredient.product) ? format.perServing(ingredient.product) : null,
   ]
     .filter(Boolean)

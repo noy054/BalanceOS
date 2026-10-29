@@ -1,168 +1,68 @@
 import { StyleSheet } from "react-native";
 
-import {
-  radius,
-  spacing,
-  typography,
-  useThemedStyles,
-} from "../../../../shared/theme";
+import { fonts, radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      card: {
-        backgroundColor: colors.surface,
-        borderRadius: radius.xl,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
-        padding: spacing.ml,
-        gap: spacing.md,
+      container: {
+        gap: spacing.lg,
       },
 
       hero: {
-        gap: 2,
-      },
-
-      mainLabel: {
-        ...typography.footnote,
-        fontWeight: "500",
-        color: colors.textSecondary,
-      },
-
-      numberRow: {
-        alignItems: "baseline",
-        gap: spacing.xs + 2,
+        alignItems: "center",
+        gap: spacing.md,
+        paddingTop: spacing.sm,
       },
 
       mainNumber: {
         ...typography.display,
-        fontSize: 40,
-        lineHeight: 46,
+        fontSize: 44,
+        lineHeight: 52,
+        maxWidth: "76%",
+        textAlign: "center",
         color: colors.textPrimary,
       },
 
-      mainNumberOver: {
-        color: colors.warning,
+      mainLabel: {
+        ...typography.callout,
+        maxWidth: "70%",
+        textAlign: "center",
+        color: colors.textSecondary,
       },
 
       mainUnit: {
-        ...typography.body,
-        color: colors.textSecondary,
-      },
-
-      progressBlock: {
-        gap: spacing.sm,
-      },
-
-      progressTrack: {
-        height: 10,
-        borderRadius: 5,
-        backgroundColor: colors.progressTrack,
-        overflow: "hidden",
-      },
-
-      progressFill: {
-        height: "100%",
-        borderRadius: 5,
-        backgroundColor: colors.accent,
-      },
-
-      progressFillOver: {
-        backgroundColor: colors.warning,
-      },
-
-      progressCaption: {
-        justifyContent: "space-between",
-        alignItems: "baseline",
-        gap: spacing.sm,
-      },
-
-      captionText: {
-        ...typography.footnote,
-        color: colors.textSecondary,
-      },
-
-      captionValue: {
-        ...typography.number,
-        fontWeight: "600",
-        color: colors.textPrimary,
-      },
-
-      captionPercent: {
-        ...typography.number,
+        ...typography.caption,
+        fontFamily: fonts.regular,
         color: colors.textMuted,
-      },
-
-      captionPercentOver: {
-        ...typography.number,
-        fontWeight: "600",
-        color: colors.warning,
       },
 
       macros: {
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: colors.border,
-        paddingTop: spacing.md,
-        gap: spacing.ms,
+        gap: spacing.md,
       },
 
-      macroRow: {
-        alignItems: "center",
-        gap: spacing.ms,
-      },
-
-      macroBlockCompact: {
-        gap: spacing.xs + 2,
-      },
-
-      macroLabelCompact: {
-        flex: 1,
-        width: undefined,
+      macroHead: {
+        alignItems: "baseline",
+        gap: spacing.sm,
+        marginBottom: spacing.xs + 2,
       },
 
       macroLabel: {
-        width: 72,
-        ...typography.footnote,
-        color: colors.textSecondary,
-      },
-
-      macroTrackInline: {
+        ...typography.bodyStrong,
         flex: 1,
-      },
-
-      macroTrack: {
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: colors.progressTrack,
-        overflow: "hidden",
-      },
-
-      macroFill: {
-        height: "100%",
-        borderRadius: 3,
+        color: colors.textPrimary,
       },
 
       macroValue: {
-        minWidth: 96,
-        ...typography.footnote,
+        ...typography.callout,
         ...typography.number,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
-        textAlign: "center",
       },
 
       macroTarget: {
-        fontWeight: "400",
-        color: colors.textMuted,
-      },
-
-      macroPercent: {
-        width: 38,
-        ...typography.caption,
-        ...typography.number,
-        fontWeight: "400",
-        color: colors.textMuted,
-        textAlign: "center",
+        fontFamily: fonts.regular,
+        color: colors.textSecondary,
       },
     }),
   );

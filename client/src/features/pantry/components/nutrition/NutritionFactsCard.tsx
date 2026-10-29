@@ -49,7 +49,7 @@ export function NutritionFactsCard({ product, t, isRTL }: Props) {
   return (
     <View style={styles.wrapper}>
       <View style={[styles.identityRow, dir.row]}>
-        <FoodThumb imageUrl={product.imageUrl} fallbackIcon={FOOD_ICONS.product} size={64} />
+        {product.imageUrl ? <FoodThumb imageUrl={product.imageUrl} fallbackIcon={FOOD_ICONS.product} size={64} /> : null}
 
         <View style={styles.identityText}>
           <Text style={[styles.productName, dir.text]} numberOfLines={3}>

@@ -8,10 +8,11 @@ import { useFoodCardModels } from "../../hooks/useFoodCardModels";
 type Props = {
   meal: SavedMeal;
   onPress: (meal: SavedMeal) => void;
+  onEdit?: (meal: SavedMeal) => void;
   onMore?: (meal: SavedMeal) => void;
 };
 
-export function SavedMealCard({ meal, onPress, onMore }: Props) {
+export function SavedMealCard({ meal, onPress, onEdit, onMore }: Props) {
   const { t } = useTranslation("pantry");
   const models = useFoodCardModels();
 
@@ -19,14 +20,16 @@ export function SavedMealCard({ meal, onPress, onMore }: Props) {
     <FoodItemCard
       {...models.savedMeal(meal)}
       onPress={() => onPress(meal)}
-      trailing={
-        onMore ? (
+      onLongPress={onMore ? () => onMore(meal) : undefined}
+      actions={
+        onEdit ? (
           <IconButton
-            icon="dots-vertical"
-            size={36}
+            icon="pencil-outline"
+            variant="tonal"
+            size={40}
             iconSize={20}
-            accessibilityLabel={t("common.moreOptionsFor", { name: meal.name })}
-            onPress={() => onMore(meal)}
+            accessibilityLabel={t("common.editItem", { name: meal.name })}
+            onPress={() => onEdit(meal)}
           />
         ) : null
       }

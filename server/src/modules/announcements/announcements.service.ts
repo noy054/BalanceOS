@@ -39,6 +39,7 @@ import {
 } from './dto/announcement.dto';
 
 const DEFAULT_PAGE = 20;
+const LIVE_LIMIT = 20;
 
 type ContentFields = Omit<
   AnnouncementWrite,
@@ -104,7 +105,10 @@ export class AnnouncementsService {
     private readonly audit: AuditService,
   ) {}
 
-  validateContent(dto: UpsertAnnouncementDto): ContentFields {
+  validateContent(
+    dto: UpsertAnnouncementDto,
+    fallbackPublishAt: Date | null = null,
+  ): ContentFields {
     let actionTarget: string | null = null;
     let actionLabelHe: string | null = null;
     let actionLabelEn: string | null = null;
@@ -140,7 +144,7 @@ export class AnnouncementsService {
       );
     }
 
-    const publishAt = parseDate(dto.publishAt);
+    const publishAt = parseDate(dto.publishAt) ?? fallbackPublishAt;
     const expiresAt = parseDate(dto.expiresAt);
     if (publishAt && expiresAt && expiresAt <= publishAt) {
       throw new BadRequestException(
@@ -222,10 +226,12 @@ export class AnnouncementsService {
     if (current.status === AnnouncementStatus.ARCHIVED) {
       throw new ConflictException('Restore the announcement before editing it');
     }
-    const content = this.validateContent(dto);
-    if (current.status === AnnouncementStatus.PUBLISHED && !content.publishAt) {
-      content.publishAt = current.publishAt;
-    }
+    const content = this.validateContent(
+      dto,
+      current.status === AnnouncementStatus.PUBLISHED
+        ? current.publishAt
+        : null,
+    );
     const before = snapshot(current);
     const after = snapshot({ ...current, ...content } as AnnouncementRow);
     return this.transition(
@@ -326,8 +332,15 @@ export class AnnouncementsService {
   }
 
   async activeForUser(userId: string, query: ActiveAnnouncementsQueryDto) {
-    const rows = await this.repo.findLiveForUser(userId, new Date());
-    return rows.filter((row) => matchesAudience(row, query)).map(toPublicView);
+    const rows = await this.repo.findLiveForUser(
+      userId,
+      query.platform ?? null,
+      new Date(),
+    );
+    return rows
+      .filter((row) => matchesAudience(row, query))
+      .slice(0, LIVE_LIMIT)
+      .map(toPublicView);
   }
 
   async markSeen(userId: string, id: string) {

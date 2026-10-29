@@ -10,7 +10,9 @@
     "targetReachedLabel": "היעד הושג",
     "unitShort": "קק״ל",
     "progressA11y": "נאכלו {{eaten}} מתוך {{target}} קלוריות",
-    "remainingDayLabel": "נשאר ליום זה"
+    "remainingDayLabel": "נשאר ליום זה",
+    "eatenOfTarget": "נאכל / יעד",
+    "percentOfTarget": "{{percent}}% מהיעד"
   },
   "macros": {
     "protein": "חלבון",
@@ -18,7 +20,10 @@
     "fat": "שומן",
     "fiber": "סיבים",
     "gramsUnit": "גרם",
-    "ofTarget": "מתוך {{target}} ג׳"
+    "ofTarget": "מתוך {{target}} ג׳",
+    "overValue": "{{value}} מעל",
+    "rowA11y": "{{name}}: {{eaten}} מתוך {{target}} גרם, נותרו {{left}}",
+    "ofTargetShort": "{{target}} ג׳"
   },
   "actions": {
     "addMeal": "הוסף ארוחה"
@@ -41,7 +46,7 @@
     "calUnit": "קל'",
     "proUnit": "גר' חלב'",
     "andMore": "+{{count}} עוד",
-    "copyToMoreDays": "הוסף לימים נוספים",
+    "copyToMoreDays": "העתקה לימים אחרים",
     "sectionTitle": "ארוחות",
     "summary": "{{calories}} קק״ל · {{protein}} ג׳ חלבון",
     "emptyMeal": "עדיין לא נרשם דבר",
@@ -53,10 +58,18 @@
     "itemsCount_many": "{{count}} פריטים",
     "itemsCount_other": "{{count}} פריטים",
     "addFood": "הוספת מזון",
-    "add": "הוספה"
+    "editItemHint": "שינוי כמות או הסרה",
+    "savedMeal": "ארוחה שמורה",
+    "recipeServings_one": "מנה אחת",
+    "recipeServings_two": "{{count}} מנות",
+    "recipeServings_many": "{{count}} מנות",
+    "recipeServings_other": "{{count}} מנות",
+    "copyItemA11y": "העתקת {{name}} לימים אחרים",
+    "collapseAll": "כיווץ הכול",
+    "expandAll": "הרחבת הכול"
   },
   "copyMeal": {
-    "title": "הוסף לימים נוספים",
+    "title": "העתקה לימים אחרים",
     "subtitle": "בחר ימים להעתקת הארוחה",
     "confirm_one": "העתק ליום {{count}}",
     "confirm_other": "העתק ל-{{count}} ימים",
@@ -70,7 +83,8 @@
       "4": "חמישי",
       "5": "שישי",
       "6": "שבת"
-    }
+    },
+    "subtitleItem": "בחר ימים להעתקת {{name}}"
   },
   "addItem": {
     "title": "הוסף ל{{mealType}}",
@@ -145,17 +159,10 @@
   "remove": {
     "itemTitle": "להסיר את {{name}} מ{{meal}}?",
     "itemMessage": "{{calories}} קק״ל יוסרו מהסיכום היומי.",
-    "mealTitle": "להסיר את כל הפריטים מ{{meal}}?",
-    "mealMessage_one": "פריט אחד ({{calories}} קק״ל) יוסר מהסיכום היומי.",
-    "mealMessage_two": "{{count}} פריטים ({{calories}} קק״ל) יוסרו מהסיכום היומי.",
-    "mealMessage_many": "{{count}} פריטים ({{calories}} קק״ל) יוסרו מהסיכום היומי.",
-    "mealMessage_other": "{{count}} פריטים ({{calories}} קק״ל) יוסרו מהסיכום היומי.",
     "confirm": "הסרה",
     "cancel": "ביטול",
     "failed": "לא ניתן היה להסיר. נסו שוב.",
-    "itemA11y": "הסרת {{name}}",
-    "mealMenuA11y": "אפשרויות נוספות עבור {{meal}}",
-    "removeMeal": "הסרת הארוחה"
+    "itemA11y": "הסרת {{name}}"
   },
   "date": {
     "today": "היום",
@@ -185,5 +192,18 @@
     "untitled": "הודעה",
     "dismiss": "סגירת ההודעה",
     "gotIt": "הבנתי"
+  },
+  "itemSheet": {
+    "amountLabel": "כמות",
+    "unitGrams": "ג׳",
+    "unitServings": "מנות",
+    "decrease": "הפחתת כמות",
+    "increase": "הגדלת כמות",
+    "save": "שמירת כמות",
+    "remove": "הסרה מ{{meal}}",
+    "invalidAmount": "יש להזין כמות גדולה מאפס",
+    "saveFailed": "לא ניתן היה לשמור את השינוי. נסו שוב.",
+    "fixedAmount": "ארוחה שמורה נרשמת כיחידה אחת. כדי לשנות אותה, הסירו אותה והוסיפו את הארוחה מחדש.",
+    "nutritionA11y": "{{calories}} קק״ל, חלבון {{protein}} ג׳, פחמימות {{carbs}} ג׳, שומן {{fat}} ג׳"
   }
 }

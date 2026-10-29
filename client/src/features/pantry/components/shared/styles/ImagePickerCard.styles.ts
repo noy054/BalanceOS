@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 import {
+  fonts,
   radius,
   spacing,
   typography,
@@ -15,8 +16,6 @@ export const useStyles = () =>
         gap: spacing.md,
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
         padding: spacing.md,
       },
 
@@ -46,7 +45,7 @@ export const useStyles = () =>
 
       title: {
         ...typography.callout,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
       },
 

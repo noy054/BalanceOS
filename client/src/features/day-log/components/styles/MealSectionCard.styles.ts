@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 import {
+  fonts,
   radius,
   spacing,
   states,
@@ -8,7 +9,7 @@ import {
   useThemedStyles,
 } from "../../../../shared/theme";
 
-const VALUE_COLUMN = 56;
+export const ITEM_CALORIES_WIDTH = 48;
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -16,139 +17,97 @@ export const useStyles = () =>
       card: {
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
+        paddingHorizontal: spacing.md,
         overflow: "hidden",
       },
 
-      headerRow: {
-        alignItems: "center",
-        gap: spacing.sm,
-        paddingVertical: spacing.ms,
-        paddingHorizontal: spacing.md,
-      },
-
-      headerMain: {
-        flex: 1,
-        alignItems: "center",
-        gap: spacing.ms,
-        minHeight: 44,
-      },
-
-      pressed: {
-        opacity: states.pressedOpacity,
-      },
-
       pending: {
-        opacity: states.disabledOpacity,
+        opacity: 0.5,
       },
 
-      iconWrap: {
-        width: 40,
-        height: 40,
-        borderRadius: radius.md,
-        backgroundColor: colors.surfaceMuted,
+      header: {
         alignItems: "center",
-        justifyContent: "center",
+        gap: spacing.xs,
+        minHeight: 60,
       },
 
-      iconWrapActive: {
-        backgroundColor: colors.accentSoft,
-      },
-
-      titleBlock: {
+      titleRow: {
         flex: 1,
-        minWidth: 0,
-        gap: 1,
+        alignItems: "baseline",
+        gap: spacing.sm,
       },
 
       mealLabel: {
         ...typography.headline,
+        flexShrink: 1,
         color: colors.textPrimary,
       },
 
-      meta: {
+      total: {
         ...typography.footnote,
         ...typography.number,
         color: colors.textSecondary,
       },
 
-      metaEmpty: {
-        color: colors.textMuted,
+      iconSpacer: {
+        width: 40,
       },
 
-      totalBlock: {
-        minWidth: VALUE_COLUMN,
-        alignItems: "center",
-      },
-
-      totalValue: {
-        ...typography.headline,
-        ...typography.number,
-        color: colors.textPrimary,
-      },
-
-      totalUnit: {
-        ...typography.caption,
-        fontWeight: "400",
-        color: colors.textMuted,
+      endAction: {
+        marginEnd: -spacing.xs,
       },
 
       items: {
         borderTopWidth: StyleSheet.hairlineWidth,
         borderTopColor: colors.border,
-        marginStart: spacing.md,
-        marginEnd: spacing.md,
       },
 
       itemRow: {
         alignItems: "center",
-        gap: spacing.sm,
-        minHeight: 48,
-        paddingVertical: spacing.sm,
+        gap: spacing.xs,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: colors.border,
       },
 
-      itemRowBorder: {
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: colors.border,
+      itemRowLast: {
+        borderBottomWidth: 0,
+      },
+
+      itemMain: {
+        flex: 1,
+        alignItems: "center",
+        gap: spacing.md,
+        minHeight: 60,
+        paddingVertical: spacing.sm2,
       },
 
       itemText: {
         flex: 1,
         minWidth: 0,
-        gap: 1,
       },
 
       itemName: {
-        ...typography.callout,
+        ...typography.bodyStrong,
         color: colors.textPrimary,
       },
 
-      itemProtein: {
-        ...typography.caption,
+      itemDetail: {
+        ...typography.footnote,
         ...typography.number,
-        fontWeight: "400",
-        color: colors.textMuted,
+        color: colors.textSecondary,
+        marginTop: 2,
       },
 
       itemCalories: {
-        minWidth: VALUE_COLUMN,
-        ...typography.callout,
+        ...typography.body,
         ...typography.number,
-        fontWeight: "600",
-        color: colors.textSecondary,
-        textAlign: "center",
+        fontFamily: fonts.semibold,
+        color: colors.textPrimary,
+        minWidth: ITEM_CALORIES_WIDTH,
       },
 
-      footer: {
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: spacing.xs,
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: colors.border,
-        paddingHorizontal: spacing.xs,
-        paddingVertical: spacing.xs,
+      actionPressed: {
+        opacity: states.pressedOpacity,
       },
     }),
   );

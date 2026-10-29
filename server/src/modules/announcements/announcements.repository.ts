@@ -180,18 +180,21 @@ export class AnnouncementsRepository {
     });
   }
 
-  findLiveForUser(userId: string, now: Date) {
+  findLiveForUser(userId: string, platform: string | null, now: Date) {
     return this.prisma.announcement.findMany({
       where: {
         ...liveWhere(now),
         receipts: { none: { userId, dismissedAt: { not: null } } },
+        OR: [
+          { platforms: { isEmpty: true } },
+          ...(platform ? [{ platforms: { has: platform } }] : []),
+        ],
       },
       select: {
         ...ANNOUNCEMENT_SELECT,
         receipts: { where: { userId }, select: { seenAt: true } },
       },
       orderBy: [{ publishAt: 'desc' }, { createdAt: 'desc' }],
-      take: 20,
     });
   }
 

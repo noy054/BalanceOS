@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
+import { fonts, radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -30,14 +30,14 @@ export const useStyles = () =>
 
       mealName: {
         ...typography.callout,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
       },
 
       mealSubText: {
         ...typography.caption,
         ...typography.number,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textSecondary,
       },
 
@@ -58,15 +58,15 @@ export const useStyles = () =>
 
       track: {
         height: 6,
-        borderRadius: 3,
+        borderRadius: 4,
         backgroundColor: colors.progressTrack,
         overflow: "hidden",
       },
 
       fill: {
         height: "100%",
-        borderRadius: 3,
-        backgroundColor: colors.accent,
+        borderRadius: 4,
+        backgroundColor: colors.accentFill,
       },
 
       emptyBox: {

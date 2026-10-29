@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useDirection } from "../../../shared/hooks/useDirection";
-import { radius, spacing, states, typography, useThemedStyles } from "../../../shared/theme";
+import { useDirection } from "../../hooks/useDirection";
+import { fonts, radius, spacing, states, typography, useThemedStyles } from "../../theme";
 
 type Option<T extends string> = {
   value: T;
@@ -14,7 +14,7 @@ type Props<T extends string> = {
   onChange: (value: T) => void;
 };
 
-export function FilterChips<T extends string>({ options, value, onChange }: Props<T>) {
+export function ChoiceChips<T extends string>({ options, value, onChange }: Props<T>) {
   const styles = useStyles();
   const dir = useDirection();
 
@@ -49,17 +49,20 @@ const useStyles = () =>
     StyleSheet.create({
       row: {
         flexWrap: "wrap",
-        gap: spacing.xs,
+        gap: spacing.sm,
       },
       chip: {
-        minHeight: 34,
+        borderRadius: radius.sm,
+        minHeight: 36,
         justifyContent: "center",
         paddingHorizontal: spacing.ms,
-        borderRadius: radius.full,
-        backgroundColor: colors.surfaceMuted,
+        borderWidth: 1,
+        borderColor: colors.borderStrong,
+        backgroundColor: colors.surface,
       },
       chipSelected: {
-        backgroundColor: colors.textPrimary,
+        borderColor: colors.accent,
+        backgroundColor: colors.accentSoft,
       },
       pressed: { opacity: states.pressedOpacity },
       label: {
@@ -67,7 +70,8 @@ const useStyles = () =>
         color: colors.textSecondary,
       },
       labelSelected: {
-        color: colors.background,
+        fontFamily: fonts.semibold,
+        color: colors.accent,
       },
     }),
   );

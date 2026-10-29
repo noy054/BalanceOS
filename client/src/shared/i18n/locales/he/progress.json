@@ -1,0 +1,118 @@
+{
+  "units": {
+    "kg": "ק״ג",
+    "cm": "ס״מ"
+  },
+  "metrics": {
+    "weightKg": "משקל",
+    "waistCm": "מותניים",
+    "hipsCm": "ירכיים",
+    "chestCm": "חזה",
+    "upperArmCm": "זרוע",
+    "thighCm": "ירך",
+    "withUnit": "{{metric}} ({{unit}})"
+  },
+  "periods": {
+    "30D": "30 יום",
+    "90D": "90 יום",
+    "180D": "חצי שנה",
+    "365D": "שנה",
+    "ALL": "הכול"
+  },
+  "entryCard": {
+    "title": "גוף והתקדמות",
+    "subtitle": "משקל, היקפים ותמונות"
+  },
+  "overview": {
+    "title": "גוף והתקדמות",
+    "add": "הוספה",
+    "addFirst": "הוספת רישום",
+    "emptyTitle": "עדיין אין רישומים",
+    "emptyMessage": "אפשר לרשום משקל, היקפים שמעניינים אותך או תמונה. הכול אופציונלי ונשמר רק עבורך.",
+    "loadFailed": "לא ניתן היה לטעון את נתוני ההתקדמות.",
+    "retry": "ניסיון חוזר",
+    "noDataInPeriod": "לא נרשם {{metric}} בתקופה הזו.",
+    "chartLabel_one": "{{metric}}: מדידה אחת, {{end}} ב־{{endDate}}",
+    "chartLabel_two": "{{metric}}: {{count}} מדידות, מ־{{start}} ב־{{startDate}} עד {{end}} ב־{{endDate}}",
+    "chartLabel_many": "{{metric}}: {{count}} מדידות, מ־{{start}} ב־{{startDate}} עד {{end}} ב־{{endDate}}",
+    "chartLabel_other": "{{metric}}: {{count}} מדידות, מ־{{start}} ב־{{startDate}} עד {{end}} ב־{{endDate}}",
+    "lastRecorded": "נרשם לאחרונה {{date}}",
+    "changeSince": "מאז {{date}}",
+    "lowest": "הנמוך ביותר {{value}}",
+    "highest": "הגבוה ביותר {{value}}",
+    "measurements_one": "מדידה אחת",
+    "measurements_two": "2 מדידות",
+    "measurements_many": "{{count}} מדידות",
+    "measurements_other": "{{count}} מדידות",
+    "latestMeasurements": "מדידות אחרונות"
+  },
+  "history": {
+    "title": "היסטוריה",
+    "emptyInPeriod": "אין רישומים בתקופה הזו.",
+    "noMeasurements": "תמונה או הערה בלבד",
+    "photoCount_one": "תמונה אחת",
+    "photoCount_two": "2 תמונות",
+    "photoCount_many": "{{count}} תמונות",
+    "photoCount_other": "{{count}} תמונות",
+    "hasNote": "יש הערה"
+  },
+  "entry": {
+    "newTitle": "רישום חדש",
+    "editTitle": "עריכת רישום",
+    "loadFailed": "לא ניתן היה לטעון את הרישום.",
+    "date": "תאריך",
+    "chooseDate": "תאריך: {{date}}. בחירת תאריך אחר",
+    "chooseDateTitle": "תאריך הרישום",
+    "weightSection": "משקל",
+    "measurementsSection": "היקפים",
+    "measurementsHint": "הכול אופציונלי. אפשר לרשום רק את מה שמעניין אותך.",
+    "photosSection": "תמונות התקדמות",
+    "noteSection": "הערה",
+    "noteLabel": "הערה (אופציונלי)",
+    "save": "שמירת הרישום",
+    "delete": "מחיקת הרישום",
+    "deleteTitle": "למחוק את הרישום?",
+    "deleteMessage": "הרישום יוסר מההיסטוריה.",
+    "deleteMessageWithPhotos": "הרישום והתמונות שלו יימחקו לצמיתות.",
+    "deleteFailed": "לא ניתן היה למחוק את הרישום. כדאי לנסות שוב.",
+    "cancel": "ביטול"
+  },
+  "form": {
+    "invalidNumber": "יש להזין מספר",
+    "outOfRange": "יש להזין ערך בין {{min}} ל־{{max}}",
+    "noteTooLong": "ההערה ארוכה מדי",
+    "empty": "יש להוסיף משקל, היקף, תמונה או הערה.",
+    "saveFailed": "לא ניתן היה לשמור את הרישום. כדאי לבדוק את החיבור ולנסות שוב."
+  },
+  "photos": {
+    "privacy": "התמונות פרטיות וגלויות רק לך.",
+    "add": "הוספת תמונה",
+    "photo": "תמונת התקדמות",
+    "photoNumber": "תמונה {{number}}",
+    "photoHint": "פותח אפשרויות לצפייה, החלפה או הסרה",
+    "view": "צפייה",
+    "replaceCamera": "החלפה בצילום",
+    "replaceLibrary": "החלפה מהגלריה",
+    "remove": "הסרת התמונה",
+    "pending": "טרם נשמרה",
+    "limit": "עד {{count}} תמונות לרישום.",
+    "loading": "טוען תמונה",
+    "loadFailed": "לא ניתן היה לטעון את התמונה",
+    "closeViewer": "סגירת התמונה",
+    "partialFailure_one": "הרישום נשמר, אבל שינוי אחד בתמונות לא נשמר.",
+    "partialFailure_two": "הרישום נשמר, אבל 2 שינויים בתמונות לא נשמרו.",
+    "partialFailure_many": "הרישום נשמר, אבל {{count}} שינויים בתמונות לא נשמרו.",
+    "partialFailure_other": "הרישום נשמר, אבל {{count}} שינויים בתמונות לא נשמרו.",
+    "uploadFailed": "לא ניתן היה להעלות את התמונה, ולכן לא נשמר דבר. כדאי לנסות שוב."
+  },
+  "profileWeight": {
+    "title": "משקל בפרופיל",
+    "notSet": "לא הוגדר",
+    "explanation": "משמש את מחשבון היעדים. רישומים כאן לא משנים אותו, אלא אם בוחרים בכך.",
+    "useLatest": "שימוש ב־{{value}} מ־{{date}}",
+    "confirmTitle": "לעדכן את המשקל בפרופיל?",
+    "confirmMessage": "המשקל בפרופיל יעודכן ל־{{value}}. היעדים היומיים לא מחושבים מחדש אוטומטית, וימים קודמים שומרים על היעדים שנשמרו בהם.",
+    "confirm": "עדכון",
+    "failed": "לא ניתן היה לעדכן את המשקל בפרופיל."
+  }
+}

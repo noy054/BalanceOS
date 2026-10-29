@@ -12,6 +12,7 @@ import { useServingFormat } from "../../hooks/useServingFormat";
 type Props = {
   item: SavedMealDraftItem;
   isRTL: boolean;
+  showBrand?: boolean;
   onChangeAmount: (key: string, value: string) => void;
   onToggleUnit: (key: string) => void;
   onRemove: (key: string) => void;
@@ -20,6 +21,7 @@ type Props = {
 export function SavedMealDraftItemRow({
   item,
   isRTL,
+  showBrand = false,
   onChangeAmount,
   onToggleUnit,
   onRemove,
@@ -40,7 +42,7 @@ export function SavedMealDraftItemRow({
   const itemSubtitle =
     item.kind === "product"
       ? [
-          item.product.brand,
+          showBrand ? item.product.brand : null,
           hasServing(item.product)
             ? format.perServing(item.product)
             : `${formatCalories(item.product.caloriesPer100g)} ${t("product.calUnit")} · ${t("product.per100g")}`,

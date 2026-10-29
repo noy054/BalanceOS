@@ -8,8 +8,6 @@ export const useStyles = () =>
       card: {
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
         padding: spacing.md,
       },
       cardTitle: {

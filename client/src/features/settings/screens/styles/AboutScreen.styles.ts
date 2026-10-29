@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
+import { fonts, radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -22,8 +22,6 @@ export const useStyles = () =>
         paddingHorizontal: spacing.lg,
         paddingVertical: spacing.lg,
         alignItems: "center",
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
         marginBottom: spacing.lg,
         gap: spacing.sm,
       },
@@ -35,14 +33,14 @@ export const useStyles = () =>
 
       logoBalance: {
         fontSize: 26,
-        fontWeight: "700",
+        fontFamily: fonts.bold,
         color: colors.textPrimary,
         letterSpacing: -0.5,
       },
 
       logoOS: {
         fontSize: 26,
-        fontWeight: "700",
+        fontFamily: fonts.bold,
         color: colors.accent,
         letterSpacing: -0.5,
       },
@@ -68,7 +66,7 @@ export const useStyles = () =>
 
       footerText: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
         paddingHorizontal: spacing.xs,
       },

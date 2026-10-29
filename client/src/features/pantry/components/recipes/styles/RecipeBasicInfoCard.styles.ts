@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 import {
+  fonts,
   spacing,
   typography,
   useThemedStyles,
@@ -15,7 +16,7 @@ export const useStyles = () =>
 
       fieldLabel: {
         ...typography.label,
-        fontWeight: "500",
+        fontFamily: fonts.medium,
         color: colors.textSecondary,
         marginBottom: spacing.xs + 2,
       },

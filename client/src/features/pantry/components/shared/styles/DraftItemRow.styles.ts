@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 import {
+  fonts,
   radius,
   spacing,
   typography,
@@ -26,13 +27,13 @@ export const useDraftRowStyles = () =>
 
       name: {
         ...typography.callout,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
       },
 
       meta: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textSecondary,
       },
 
@@ -51,7 +52,7 @@ export const useDraftRowStyles = () =>
         paddingHorizontal: spacing.xs,
         ...typography.callout,
         ...typography.number,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
         textAlign: "center",
       },
@@ -90,7 +91,7 @@ export const useDraftRowStyles = () =>
 
       unitToggleTextActive: {
         color: colors.accent,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
       },
     }),
   );

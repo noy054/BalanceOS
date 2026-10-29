@@ -3,6 +3,18 @@ import { I18nManager } from "react-native";
 import * as Updates from "expo-updates";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
+import { useFonts } from "expo-font";
+import {
+  Heebo_400Regular,
+  Heebo_500Medium,
+  Heebo_600SemiBold,
+  Heebo_700Bold,
+} from "@expo-google-fonts/heebo";
+import {
+  Rubik_500Medium,
+  Rubik_600SemiBold,
+  Rubik_700Bold,
+} from "@expo-google-fonts/rubik";
 
 import "../src/shared/i18n/i18n";
 
@@ -16,6 +28,7 @@ import {
   useAppTheme,
 } from "../src/shared/theme";
 import { PaperThemeBridge } from "../src/shared/theme/PaperThemeBridge";
+import { ConfirmDialogHost } from "../src/shared/components/ui/ConfirmDialogHost";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,6 +59,15 @@ function RootStack() {
 export default function RootLayout() {
   const setLanguageReady = useAuthStore((state) => state.setLanguageReady);
   const [startupReady, setStartupReady] = useState(false);
+  const [fontsLoaded, fontError] = useFonts({
+    Heebo_400Regular,
+    Heebo_500Medium,
+    Heebo_600SemiBold,
+    Heebo_700Bold,
+    Rubik_500Medium,
+    Rubik_600SemiBold,
+    Rubik_700Bold,
+  });
   const [initialThemeMode, setInitialThemeMode] = useState<AppThemeMode>("DARK");
 
   useEffect(() => {
@@ -71,7 +93,7 @@ export default function RootLayout() {
     );
   }, [setLanguageReady]);
 
-  if (!startupReady) {
+  if (!startupReady || (!fontsLoaded && !fontError)) {
     return null;
   }
 
@@ -80,6 +102,7 @@ export default function RootLayout() {
       <AppThemeProvider initialThemeMode={initialThemeMode}>
         <PaperThemeBridge>
           <RootStack />
+          <ConfirmDialogHost />
         </PaperThemeBridge>
       </AppThemeProvider>
     </QueryClientProvider>

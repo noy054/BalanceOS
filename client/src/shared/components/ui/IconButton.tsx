@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import { Pressable, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-import { AppColors, radius, states, useAppTheme, useThemedStyles } from "../../theme";
+import { AppColors, states, useAppTheme, useThemedStyles, radius } from "../../theme";
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
@@ -30,7 +30,7 @@ function getPalette(colors: AppColors, variant: IconButtonVariant) {
     case "accent":
       return { bg: colors.accentSoft, pressedBg: colors.accentBorder, fg: colors.accent };
     case "filled":
-      return { bg: colors.accent, pressedBg: colors.accentStrong, fg: colors.onAccent };
+      return { bg: colors.accentFill, pressedBg: colors.accentFillPressed, fg: colors.onAccent };
   }
 }
 

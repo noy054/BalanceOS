@@ -3,6 +3,8 @@ const DAY_KEY_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 const MIN_YEAR = 2000;
 const MAX_YEAR = 2100;
 
+export const MAX_FUTURE_DAYS = 365;
+
 export function isDayKey(value: unknown): value is string {
   if (typeof value !== 'string') return false;
   const match = DAY_KEY_PATTERN.exec(value);
@@ -21,4 +23,15 @@ export function daysBetween(from: string, to: string): number {
   const start = Date.parse(`${from}T00:00:00Z`);
   const end = Date.parse(`${to}T00:00:00Z`);
   return Math.round((end - start) / 86_400_000);
+}
+
+export function utcDayKey(now: Date = new Date()): string {
+  return now.toISOString().split('T')[0];
+}
+
+export function isWithinFutureLimit(
+  date: string,
+  now: Date = new Date(),
+): boolean {
+  return daysBetween(utcDayKey(now), date) <= MAX_FUTURE_DAYS + 1;
 }

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
+import { fonts, radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
 
 export const useSubScreenStyles = () =>
   useThemedStyles((colors) =>
@@ -53,7 +53,7 @@ export const useSubScreenStyles = () =>
       successText: {
         flex: 1,
         ...typography.callout,
-        fontWeight: '600',
+        fontFamily: fonts.semibold,
         color: colors.success,
       },
     }),

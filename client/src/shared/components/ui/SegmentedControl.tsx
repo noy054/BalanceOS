@@ -1,6 +1,6 @@
 import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 
-import { radius, shadows, spacing, states, typography, useThemedStyles } from "../../theme";
+import { fonts, radius, spacing, states, typography, useThemedStyles } from "../../theme";
 import { useDirection } from "../../hooks/useDirection";
 
 export type SegmentOption<T extends string> = {
@@ -15,6 +15,7 @@ type Props<T extends string> = {
   onChange: (value: T) => void;
   onDeselect?: () => void;
   size?: "md" | "sm";
+  variant?: "segmented" | "tabs";
   style?: StyleProp<ViewStyle>;
 };
 
@@ -24,10 +25,12 @@ export function SegmentedControl<T extends string>({
   onChange,
   onDeselect,
   size = "md",
+  variant = "segmented",
   style,
 }: Props<T>) {
   const styles = useStyles();
   const dir = useDirection();
+  const isTabs = variant === "tabs";
 
   return (
     <View style={[styles.track, dir.row, style]} accessibilityRole="tablist">
@@ -51,13 +54,13 @@ export function SegmentedControl<T extends string>({
               styles.segment,
               size === "sm" && styles.segmentSm,
               isSelected && styles.segmentSelected,
-              pressed && !isSelected && styles.segmentPressed,
-              option.disabled && styles.segmentDisabled,
+              pressed && !isSelected && styles.pressed,
+              option.disabled && styles.disabled,
             ]}
           >
             <Text
               style={[styles.label, isSelected && styles.labelSelected]}
-              numberOfLines={1}
+              numberOfLines={isTabs ? 2 : 1}
               adjustsFontSizeToFit
               minimumFontScale={0.85}
             >
@@ -74,41 +77,40 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       track: {
-        backgroundColor: colors.surfaceMuted,
-        borderRadius: radius.md,
         padding: 3,
-        gap: 2,
+        gap: 3,
+        borderRadius: radius.md + 2,
+        backgroundColor: colors.surfaceMuted,
       },
       segment: {
         flex: 1,
-        minHeight: 36,
-        paddingHorizontal: spacing.sm,
-        borderRadius: radius.sm + 1,
+        minHeight: 40,
+        paddingHorizontal: spacing.xs,
         alignItems: "center",
         justifyContent: "center",
+        borderRadius: radius.md - 1,
       },
       segmentSm: {
-        minHeight: 32,
+        minHeight: 34,
       },
       segmentSelected: {
-        backgroundColor: colors.surfaceElevated,
-        ...shadows.sm,
+        backgroundColor: colors.accentFill,
       },
-      segmentPressed: {
+      pressed: {
         opacity: states.pressedOpacity,
       },
-      segmentDisabled: {
+      disabled: {
         opacity: states.disabledOpacity,
       },
       label: {
         ...typography.label,
-        fontWeight: "500",
+        fontSize: 14,
         color: colors.textSecondary,
         textAlign: "center",
       },
       labelSelected: {
-        fontWeight: "600",
-        color: colors.textPrimary,
+        fontFamily: fonts.semibold,
+        color: colors.onAccent,
       },
     }),
   );

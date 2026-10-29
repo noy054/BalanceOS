@@ -3,7 +3,7 @@ import { Pressable, StyleProp, StyleSheet, TextInput, View, ViewStyle } from "re
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
-import { radius, spacing, typography, useAppTheme, useThemedStyles } from "../../theme";
+import { spacing, typography, useAppTheme, useThemedStyles, radius } from "../../theme";
 import { useDirection } from "../../hooks/useDirection";
 
 type Props = {
@@ -54,7 +54,7 @@ export function SearchField({
             accessibilityRole="button"
             accessibilityLabel={t("actions.clearSearch")}
           >
-            <MaterialCommunityIcons name="close-circle" size={18} color={colors.textMuted} />
+            <MaterialCommunityIcons name="close" size={18} color={colors.textMuted} />
           </Pressable>
         ) : null}
       </View>
@@ -72,19 +72,19 @@ const useStyles = () =>
         gap: spacing.sm,
       },
       field: {
+        borderRadius: radius.md,
         flex: 1,
         minHeight: 44,
         alignItems: "center",
         gap: spacing.sm,
         paddingHorizontal: spacing.ms,
-        borderRadius: radius.md,
-        backgroundColor: colors.surface,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
+        backgroundColor: colors.inputBackground,
+        borderWidth: 1,
+        borderColor: colors.borderStrong,
       },
       fieldMuted: {
         backgroundColor: colors.surfaceMuted,
-        borderColor: "transparent",
+        borderColor: colors.border,
       },
       input: {
         flex: 1,

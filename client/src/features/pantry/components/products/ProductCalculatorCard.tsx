@@ -2,11 +2,11 @@ import { Text, TextInput, View } from "react-native";
 import { TFunction } from "i18next";
 
 import { useAppTheme } from "../../../../shared/theme";
-import { IconButton } from "../../../../shared/components/ui/IconButton";
+import { Button } from "../../../../shared/components/ui/Button";
 import { SegmentedControl } from "../../../../shared/components/ui/SegmentedControl";
-import { CalculatedNutrition } from "../../types";
-import { CalculatorUnit } from "../../hooks/useProductCalculator";
-import { canUseGrams, getServing, ServingSource } from "../../helpers/serving";
+import { CalculatorResult, CalculatorUnit } from "../../hooks/useProductCalculator";
+import { useServingFormat } from "../../hooks/useServingFormat";
+import { getServing, ServingSource } from "../../helpers/serving";
 import { NutritionRow } from "../nutrition/NutritionRow";
 import { getDirectionStyles } from "../../screens/styles/ProductDetailScreen.styles";
 import { useStyles } from "./styles/ProductCalculatorCard.styles";
@@ -14,37 +14,36 @@ import { useStyles } from "./styles/ProductCalculatorCard.styles";
 type Props = {
   quantity: string;
   unit: CalculatorUnit;
-  serving?: ServingSource | null;
-  calcResult: CalculatedNutrition | null;
-  gramsResult: number | null;
+  units: CalculatorUnit[];
+  serving: ServingSource;
+  result: CalculatorResult | null;
   isRTL: boolean;
   t: TFunction<"pantry">;
   onChangeQuantity: (value: string) => void;
   onSelectUnit: (unit: CalculatorUnit) => void;
-  onCalculate: () => void;
+  onAddToMeal?: () => void;
   plain?: boolean;
 };
 
 export function ProductCalculatorCard({
   quantity,
   unit,
+  units,
   serving,
-  calcResult,
-  gramsResult,
+  result,
   isRTL,
   t,
   onChangeQuantity,
   onSelectUnit,
-  onCalculate,
+  onAddToMeal,
   plain = false,
 }: Props) {
   const { colors } = useAppTheme();
   const styles = useStyles();
   const dir = getDirectionStyles(isRTL);
+  const servingFormat = useServingFormat();
 
-  const servingInfo = serving ? getServing(serving) : null;
-  const hasServing = servingInfo !== null;
-  const servingUnit = servingInfo?.unit ?? null;
+  const servingUnit = getServing(serving)?.unit ?? null;
 
   const placeholder =
     unit === "servings"
@@ -55,127 +54,80 @@ export function ProductCalculatorCard({
         ? t("productDetail.calculatorPlaceholderCalories")
         : t("productDetail.calculatorPlaceholder");
 
-  const unitOptions: { value: CalculatorUnit; label: string }[] = [
-    ...(!serving || canUseGrams(serving)
-      ? [{ value: "grams" as CalculatorUnit, label: t("productDetail.calculatorByGrams") }]
-      : []),
-    ...(hasServing
-      ? [
-          {
-            value: "servings" as CalculatorUnit,
-            label: servingUnit ?? t("productDetail.calculatorByServings"),
-          },
-        ]
-      : []),
-    { value: "calories", label: t("productDetail.calculatorByCalories") },
-  ];
+  const labels: Record<CalculatorUnit, string> = {
+    grams: t("productDetail.calculatorByGrams"),
+    servings: servingUnit ?? t("productDetail.calculatorByServings"),
+    calories: t("productDetail.calculatorByCalories"),
+  };
+
+  const nutrition = result?.nutrition;
 
   return (
     <View style={plain ? styles.plain : styles.calculatorCard}>
       {plain ? null : (
         <View style={styles.headerBlock}>
-          <Text style={[styles.sectionTitle, dir.text]}>
-            {t("productDetail.calculator")}
-          </Text>
+          <Text style={[styles.sectionTitle, dir.text]}>{t("productDetail.calculator")}</Text>
+          <Text style={[styles.sectionHint, dir.text]}>{t("productDetail.calculatorHint")}</Text>
+        </View>
+      )}
 
-          <Text style={[styles.sectionHint, dir.text]}>
-            {t("productDetail.calculatorHint")}
+      {units.length > 1 ? (
+        <SegmentedControl
+          options={units.map((value) => ({ value, label: labels[value] }))}
+          value={unit}
+          size="sm"
+          onChange={(next) => onSelectUnit(next)}
+        />
+      ) : null}
+
+      {units.length === 0 ? (
+        <Text style={[styles.sectionHint, dir.text]}>{t("productDetail.calculatorUnavailable")}</Text>
+      ) : (
+        <View style={[styles.calcRow, dir.row]}>
+          <TextInput
+            style={[
+              styles.calcInput,
+              { textAlign: isRTL ? "right" : "left", writingDirection: isRTL ? "rtl" : "ltr" },
+            ]}
+            value={quantity}
+            onChangeText={onChangeQuantity}
+            placeholder={placeholder}
+            placeholderTextColor={colors.textMuted}
+            keyboardType="decimal-pad"
+            returnKeyType="done"
+            accessibilityLabel={placeholder}
+          />
+          <Text style={styles.calcUnit} numberOfLines={1}>
+            {labels[unit]}
           </Text>
         </View>
       )}
 
-      <SegmentedControl
-        options={unitOptions}
-        value={unit}
-        size="sm"
-        onChange={(next) => onSelectUnit(next)}
-      />
-
-      <View style={[styles.calcRow, dir.row]}>
-        <TextInput
-          style={[
-            styles.calcInput,
-            {
-              textAlign: isRTL ? "right" : "left",
-              writingDirection: isRTL ? "rtl" : "ltr",
-            },
-          ]}
-          value={quantity}
-          onChangeText={onChangeQuantity}
-          placeholder={placeholder}
-          placeholderTextColor={colors.textMuted}
-          keyboardType="decimal-pad"
-          returnKeyType="done"
-          onSubmitEditing={onCalculate}
-          accessibilityLabel={placeholder}
-        />
-
-        <IconButton
-          icon="calculator-variant-outline"
-          variant="filled"
-          size={48}
-          iconSize={22}
-          accessibilityLabel={t("productDetail.calculateAction")}
-          onPress={onCalculate}
-        />
-      </View>
-
-      {calcResult ? (
+      {result && nutrition ? (
         <View style={styles.calcResultCard}>
-          <Text style={[styles.calcResultTitle, dir.text]}>
-            {t("productDetail.calculatorResult")}
+          <Text style={[styles.calcResultTitle, dir.text]}>{t("productDetail.calculatorResult")}</Text>
+          <Text style={[styles.quantityText, dir.text]} accessibilityLabel={t("productDetail.calculatorQuantity")}>
+            {servingFormat.amount(serving, result.amount)}
           </Text>
 
-          {gramsResult != null && (
-            <NutritionRow
-              label={t("productDetail.calculatorQuantity")}
-              value={gramsResult}
-              unit={t("product.gramsUnit")}
-              highlight
-              isRTL={isRTL}
-            />
-          )}
-
-          <NutritionRow
-            label={t("macros.calories")}
-            value={calcResult.calories}
-            unit={t("product.calUnit")}
-            highlight={gramsResult == null}
-            isRTL={isRTL}
-          />
-
-          <NutritionRow
-            label={t("macros.protein")}
-            value={calcResult.protein}
-            unit={t("product.gramsUnit")}
-            isRTL={isRTL}
-          />
-
-          <NutritionRow
-            label={t("macros.carbs")}
-            value={calcResult.carbs}
-            unit={t("product.gramsUnit")}
-            isRTL={isRTL}
-          />
-
+          <NutritionRow label={t("macros.calories")} value={nutrition.calories} unit={t("product.calUnit")} highlight isRTL={isRTL} />
+          <NutritionRow label={t("macros.protein")} value={nutrition.protein} unit={t("product.gramsUnit")} isRTL={isRTL} />
+          <NutritionRow label={t("macros.carbs")} value={nutrition.carbs} unit={t("product.gramsUnit")} isRTL={isRTL} />
           <NutritionRow
             label={t("macros.fat")}
-            value={calcResult.fat}
+            value={nutrition.fat}
             unit={t("product.gramsUnit")}
-            last={calcResult.fiber == null}
+            last={nutrition.fiber == null}
             isRTL={isRTL}
           />
-
-          {calcResult.fiber != null ? (
-            <NutritionRow
-              label={t("macros.fiber")}
-              value={calcResult.fiber}
-              unit={t("product.gramsUnit")}
-              last
-              isRTL={isRTL}
-            />
+          {nutrition.fiber != null ? (
+            <NutritionRow label={t("macros.fiber")} value={nutrition.fiber} unit={t("product.gramsUnit")} last isRTL={isRTL} />
           ) : null}
         </View>
+      ) : null}
+
+      {result && onAddToMeal ? (
+        <Button label={t("calculatorMeal.addAction")} icon="plus" onPress={onAddToMeal} fullWidth />
       ) : null}
     </View>
   );

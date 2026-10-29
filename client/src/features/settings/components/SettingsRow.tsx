@@ -41,7 +41,7 @@ export function SettingsRow({
           <MaterialCommunityIcons
             name={icon}
             size={20}
-            color={destructive ? colors.danger : colors.textSecondary}
+            color={destructive ? colors.danger : colors.accent}
           />
         </View>
       ) : null}

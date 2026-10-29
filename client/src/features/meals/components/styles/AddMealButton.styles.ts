@@ -1,6 +1,6 @@
 import { Platform, StyleSheet } from "react-native";
 
-import { radius, spacing, useThemedStyles } from "../../../../shared/theme";
+import { fonts, radius, spacing, useThemedStyles } from "../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -36,7 +36,7 @@ export const useStyles = () =>
       iconCircle: {
         width: 34,
         height: 34,
-        borderRadius: 17,
+        borderRadius: 12,
         backgroundColor: colors.accentSoft,
         borderWidth: 1,
         borderColor: colors.accentBorder,
@@ -54,7 +54,7 @@ export const useStyles = () =>
 
       label: {
         fontSize: 17,
-        fontWeight: "900",
+        fontFamily: fonts.bold,
         color: colors.textPrimary,
         letterSpacing: 0.1,
         textAlign: "center",

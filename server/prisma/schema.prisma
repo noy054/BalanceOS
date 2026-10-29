@@ -37,6 +37,8 @@ model User {
   createdAnnouncements Announcement[]        @relation("AnnouncementCreatedBy")
   updatedAnnouncements Announcement[]        @relation("AnnouncementUpdatedBy")
   announcementReceipts AnnouncementReceipt[]
+  bodyEntries          BodyEntry[]
+  progressPhotos       ProgressPhoto[]
 
   @@index([email])
 }
@@ -549,4 +551,42 @@ model AnnouncementReceipt {
 
   @@unique([userId, announcementId])
   @@index([announcementId])
+}
+
+model BodyEntry {
+  id         String  @id @default(cuid())
+  userId     String
+  date       String
+  weightKg   Float?
+  waistCm    Float?
+  hipsCm     Float?
+  chestCm    Float?
+  upperArmCm Float?
+  thighCm    Float?
+  note       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photos ProgressPhoto[]
+
+  @@index([userId, date])
+}
+
+model ProgressPhoto {
+  id         String @id @default(cuid())
+  entryId    String
+  userId     String
+  storageKey String @unique
+  mimeType   String
+  sizeBytes  Int
+
+  createdAt DateTime @default(now())
+
+  entry BodyEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([entryId])
+  @@index([userId])
 }

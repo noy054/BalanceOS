@@ -98,4 +98,19 @@ describe('NutritionCalculatorService.recipeSnapshot', () => {
       fiber: 0,
     });
   });
+
+  it('returns null when an ingredient cannot be calculated', () => {
+    const service = new NutritionCalculatorService();
+    const snapshot = service.recipeSnapshot(
+      {
+        name: 'Toast',
+        items: [
+          { grams: 60, servings: null, product: per100 },
+          { grams: null, servings: 1, product: per100 },
+        ],
+      },
+      1,
+    );
+    expect(snapshot).toBeNull();
+  });
 });

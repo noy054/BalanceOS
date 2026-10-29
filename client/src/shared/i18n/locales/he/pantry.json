@@ -49,7 +49,8 @@
     "gramsUnit": "גרם",
     "changeImage": "החלפת תמונה",
     "pickFromGallery": "בחירה מהגלריה",
-    "removeImage": "הסרת תמונה"
+    "removeImage": "הסרת תמונה",
+    "gramsShort": "ג׳"
   },
   "categories": {
     "BREAKFAST": "בוקר",
@@ -104,7 +105,8 @@
     "calculatorByGrams": "גרמים",
     "calculatorByServings": "מנות",
     "calculateAction": "חישוב",
-    "nutritionFor": "ערכי תזונה {{basis}}"
+    "nutritionFor": "ערכי תזונה {{basis}}",
+    "calculatorUnavailable": "למוצר הזה אין ערכים תזונתיים מלאים, ולכן אי אפשר לחשב אותו."
   },
   "recipe": {
     "nameLabel": "שם המתכון *",
@@ -306,7 +308,8 @@
     "delete": "מחיקה",
     "cancel": "ביטול",
     "close": "סגירה",
-    "moreOptionsFor": "אפשרויות נוספות עבור {{name}}"
+    "moreOptionsFor": "אפשרויות נוספות עבור {{name}}",
+    "editItem": "עריכת {{name}}"
   },
   "macrosShort": {
     "protein": "חלבון",
@@ -334,7 +337,8 @@
     "servingsCount_other": "{{count}} מנות"
   },
   "productCalculator": {
-    "quickTitle": "חישוב מהיר"
+    "quickTitle": "חישוב מהיר",
+    "quickFor": "חישוב מהיר עבור {{name}}"
   },
   "editRecipe": {
     "title": "עריכת מתכון",
@@ -375,5 +379,22 @@
     "carbsShort": "פחמ׳",
     "fatShort": "שומן",
     "fiberShort": "סיבים"
+  },
+  "calculatorMeal": {
+    "addAction": "הוספה לארוחה",
+    "title": "הוספה לארוחה",
+    "dateLabel": "יום",
+    "chooseDate": "יום: {{date}}. בחירת יום אחר",
+    "mealLabel": "ארוחה",
+    "calories": "{{value}} קק״ל",
+    "macros": "חלבון {{protein}} גר׳ · פחמימות {{carbs}} גר׳ · שומן {{fat}} גר׳",
+    "save": "הוספה ל{{meal}}",
+    "changeAmount": "שינוי הכמות",
+    "savedTitle": "נוסף",
+    "savedText": "{{amount}} נוסף ל{{meal}} · {{date}}",
+    "savedAnnouncement": "נוסף ל{{meal}}",
+    "viewDay": "מעבר ליום",
+    "done": "סיום",
+    "saveFailed": "לא ניתן היה להוסיף את הפריט. כדאי לבדוק את החיבור ולנסות שוב."
   }
 }

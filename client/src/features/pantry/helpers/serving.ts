@@ -21,6 +21,14 @@ export type AmountPayload = {
   servings?: number;
 };
 
+const MIN_PAYLOAD_GRAMS = 0.1;
+const MIN_PAYLOAD_SERVINGS = 0.0001;
+
+export function isAmountPayloadValid(payload: AmountPayload): boolean {
+  if (payload.grams != null) return payload.grams >= MIN_PAYLOAD_GRAMS;
+  return payload.servings != null && payload.servings >= MIN_PAYLOAD_SERVINGS;
+}
+
 function roundPayload(value: number) {
   return Math.round(value * 10000) / 10000;
 }

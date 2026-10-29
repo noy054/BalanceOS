@@ -13,8 +13,6 @@ export const useStyles = () =>
         alignItems: 'center',
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
         padding: spacing.md,
         marginBottom: spacing.lg,
         gap: spacing.ms,
@@ -22,7 +20,7 @@ export const useStyles = () =>
       avatar: {
         width: 48,
         height: 48,
-        borderRadius: 24,
+        borderRadius: 12,
         backgroundColor: colors.accentSoft,
         alignItems: 'center',
         justifyContent: 'center',

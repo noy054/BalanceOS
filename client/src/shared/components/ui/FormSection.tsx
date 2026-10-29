@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 
-import { radius, spacing, typography, useThemedStyles } from "../../theme";
+import { fonts, spacing, typography, useThemedStyles, radius } from "../../theme";
 import { useDirection } from "../../hooks/useDirection";
 import { SectionHeader } from "./SectionHeader";
 
@@ -33,19 +33,16 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       card: {
-        backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
+        backgroundColor: colors.surface,
         paddingHorizontal: spacing.md,
         paddingTop: spacing.md,
       },
       hint: {
         ...typography.caption,
-        fontWeight: "400",
+        fontFamily: fonts.regular,
         color: colors.textMuted,
         marginTop: spacing.sm,
-        paddingHorizontal: spacing.xs,
       },
     }),
   );

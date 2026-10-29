@@ -1,9 +1,12 @@
 import { Text, useWindowDimensions, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { AppColors, useAppTheme } from "../../../shared/theme";
+import { ProgressRing } from "../../../shared/components/ui/ProgressRing";
 import { useDirection } from "../../../shared/hooks/useDirection";
-import { formatGrams } from "../../../shared/helpers/formatNumber";
+import { useAppTheme } from "../../../shared/theme";
+import { formatCalories, formatGrams } from "../../../shared/helpers/formatNumber";
+import { progressGradient } from "../../../shared/helpers/progressColor";
+import { GradientBar } from "../../../shared/components/ui/GradientBar";
 import { MacroItem } from "../types";
 import { MACRO_CONFIG } from "../constants/macros";
 import { useStyles } from "./styles/DailySummaryCard.styles";
@@ -16,17 +19,8 @@ type Props = {
   isToday?: boolean;
 };
 
-function macroColor(colors: AppColors, key: MacroItem["key"]) {
-  switch (key) {
-    case "protein":
-      return colors.macroProtein;
-    case "carbs":
-      return colors.macroCarbs;
-    case "fat":
-      return colors.macroFat;
-    case "fiber":
-      return colors.macroFiber;
-  }
+function percentOf(current: number, target: number) {
+  return target > 0 ? Math.min(Math.round((current / target) * 100), 999) : 0;
 }
 
 export function DailySummaryCard({
@@ -37,23 +31,16 @@ export function DailySummaryCard({
   isToday = true,
 }: Props) {
   const { t } = useTranslation("dashboard");
-  const { colors } = useAppTheme();
   const styles = useStyles();
   const dir = useDirection();
+  const { colors, resolvedTheme } = useAppTheme();
   const { width } = useWindowDimensions();
-  const isCompact = width < 380;
-  const endAlign = { textAlign: dir.isRTL ? ("left" as const) : ("right" as const) };
+  const ringSize = Math.round(Math.min(Math.max(width * 0.56, 176), 228));
 
-  const remaining = Math.max(target - eaten, 0);
-  const exceeded = Math.max(eaten - target, 0);
+  const isOverTarget = target > 0 && Math.round(eaten) > Math.round(target);
+  const isTargetReached = target > 0 && Math.round(eaten) === Math.round(target);
   const progress = target > 0 ? Math.min(eaten / target, 1) : 0;
-  const progressPercent = Math.min(
-    target > 0 ? Math.round((eaten / target) * 100) : 0,
-    999,
-  );
-
-  const isOverTarget = target > 0 && eaten > target;
-  const isTargetReached = target > 0 && eaten === target;
+  const percent = percentOf(eaten, target);
 
   const mainLabel = isOverTarget
     ? t("calories.overTargetLabel")
@@ -62,119 +49,93 @@ export function DailySummaryCard({
       : isToday
         ? t("calories.remainingLabel")
         : t("calories.remainingDayLabel");
-
-  const mainNumber = isOverTarget ? exceeded : remaining;
+  const mainNumber = isOverTarget ? eaten - target : Math.max(target - eaten, 0);
   const unit = t("calories.unitShort");
-  const gramsUnit = t("macros.gramsUnit");
 
   return (
-    <View style={styles.card}>
-      <View style={[styles.hero, dir.alignStart]}>
-        <Text style={[styles.mainLabel, dir.text]}>{mainLabel}</Text>
-
-        <View style={[styles.numberRow, dir.row]}>
+    <View style={styles.container}>
+      <View
+        style={styles.hero}
+        accessible
+        accessibilityRole="progressbar"
+        accessibilityLabel={`${mainLabel}: ${formatCalories(mainNumber)} ${unit}. ${t(
+          "calories.progressA11y",
+          { eaten: formatCalories(eaten), target: formatCalories(target) },
+        )}`}
+        accessibilityValue={{ min: 0, max: 100, now: Math.min(percent, 100) }}
+      >
+        <ProgressRing
+          size={ringSize}
+          thickness={14}
+          progress={progress}
+          gradient={progressGradient(progress, colors, isOverTarget)}
+          trackColor={colors.progressTrack}
+          halo={resolvedTheme === "dark"}
+          mirrored={dir.isRTL}
+        >
           <Text
-            style={[styles.mainNumber, isOverTarget && styles.mainNumberOver]}
+            style={styles.mainNumber}
             numberOfLines={1}
             adjustsFontSizeToFit
             minimumFontScale={0.6}
           >
-            {mainNumber}
+            {formatCalories(mainNumber)}
           </Text>
-          <Text style={styles.mainUnit}>{unit}</Text>
-        </View>
-      </View>
-
-      <View
-        style={styles.progressBlock}
-        accessible
-        accessibilityRole="progressbar"
-        accessibilityLabel={t("calories.progressA11y", { eaten, target })}
-        accessibilityValue={{ min: 0, max: 100, now: Math.min(progressPercent, 100) }}
-      >
-        <View style={[styles.progressTrack, dir.row]}>
-          <View
-            style={[
-              styles.progressFill,
-              isOverTarget && styles.progressFillOver,
-              { width: `${progress * 100}%` },
-            ]}
-          />
-        </View>
-
-        <View style={[styles.progressCaption, dir.row]}>
-          <Text style={[styles.captionText, dir.text]} numberOfLines={1}>
-            {t("calories.eaten")}{" "}
-            <Text style={styles.captionValue}>{eaten}</Text>
-            {showPercentages ? (
-              <Text style={isOverTarget ? styles.captionPercentOver : styles.captionPercent}>
-                {"  ·  "}
-                {progressPercent}%
-              </Text>
-            ) : null}
+          <Text style={styles.mainLabel} numberOfLines={2}>
+            {mainLabel}
           </Text>
-
-          <Text style={styles.captionText} numberOfLines={1}>
-            {t("calories.target")}{" "}
-            <Text style={styles.captionValue}>{target}</Text>
+          <Text style={styles.mainUnit} numberOfLines={1}>
+            {unit}
           </Text>
-        </View>
+        </ProgressRing>
       </View>
 
       {macros.length > 0 ? (
         <View style={styles.macros}>
           {macros.map((macro) => {
-            const color = macroColor(colors, macro.key);
             const label = t(`macros.${MACRO_CONFIG[macro.key].labelKey}`);
-            const macroProgress =
-              macro.target > 0 ? Math.min(macro.current / macro.target, 1) : 0;
-            const macroPercent =
-              macro.target > 0 ? Math.round((macro.current / macro.target) * 100) : 0;
-
-            const track = (
-              <View style={[styles.macroTrack, !isCompact && styles.macroTrackInline, dir.row]}>
-                <View
-                  style={[
-                    styles.macroFill,
-                    { width: `${macroProgress * 100}%`, backgroundColor: color },
-                  ]}
-                />
-              </View>
-            );
+            const left = macro.target - macro.current;
+            const isOver = macro.target > 0 && left < 0;
+            const leftText = isOver
+              ? t("macros.overValue", { value: formatGrams(-left) })
+              : formatGrams(Math.max(left, 0));
+            const ratio = macro.target > 0 ? macro.current / macro.target : 0;
+            const macroProgress = Math.min(ratio, 1);
 
             return (
               <View
                 key={macro.key}
-                style={isCompact ? styles.macroBlockCompact : undefined}
                 accessible
-                accessibilityLabel={`${label}: ${formatGrams(macro.current)} / ${formatGrams(macro.target)} ${gramsUnit}`}
+                accessibilityLabel={t("macros.rowA11y", {
+                  name: label,
+                  eaten: formatGrams(macro.current),
+                  target: formatGrams(macro.target),
+                  left: leftText,
+                })}
               >
-                <View style={[styles.macroRow, dir.row]}>
-                  <Text
-                    style={[styles.macroLabel, isCompact && styles.macroLabelCompact, dir.text]}
-                    numberOfLines={1}
-                  >
+                <View style={[styles.macroHead, dir.row]}>
+                  <Text style={[styles.macroLabel, dir.text]} numberOfLines={1}>
                     {label}
                   </Text>
-
-                  {isCompact ? null : track}
-
-                  <Text style={[styles.macroValue, endAlign]} numberOfLines={1}>
-                    {formatGrams(macro.current)}
-                    <Text style={styles.macroTarget}>
-                      {" / "}
-                      {formatGrams(macro.target)} {gramsUnit}
-                    </Text>
-                  </Text>
-
                   {showPercentages ? (
-                    <Text style={[styles.macroPercent, endAlign]} numberOfLines={1}>
-                      {macroPercent}%
+                    <Text style={styles.macroValue} numberOfLines={1}>
+                      {percentOf(macro.current, macro.target)}%
                     </Text>
-                  ) : null}
+                  ) : (
+                    <Text style={styles.macroValue} numberOfLines={1}>
+                      {formatGrams(macro.current)}
+                      <Text style={styles.macroTarget}>
+                        {" / "}
+                        {t("macros.ofTargetShort", { target: formatGrams(macro.target) })}
+                      </Text>
+                    </Text>
+                  )}
                 </View>
-
-                {isCompact ? track : null}
+                <GradientBar
+                  progress={macroProgress}
+                  gradient={progressGradient(ratio, colors, isOver)}
+                  mirrored={dir.isRTL}
+                />
               </View>
             );
           })}

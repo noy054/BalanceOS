@@ -1,0 +1,110 @@
+{
+  "units": {
+    "kg": "kg",
+    "cm": "cm"
+  },
+  "metrics": {
+    "weightKg": "Weight",
+    "waistCm": "Waist",
+    "hipsCm": "Hips",
+    "chestCm": "Chest",
+    "upperArmCm": "Upper arm",
+    "thighCm": "Thigh",
+    "withUnit": "{{metric}} ({{unit}})"
+  },
+  "periods": {
+    "30D": "30 days",
+    "90D": "90 days",
+    "180D": "6 months",
+    "365D": "1 year",
+    "ALL": "All"
+  },
+  "entryCard": {
+    "title": "Body & progress",
+    "subtitle": "Weight, measurements and photos"
+  },
+  "overview": {
+    "title": "Body & progress",
+    "add": "Add",
+    "addFirst": "Add an entry",
+    "emptyTitle": "Nothing recorded yet",
+    "emptyMessage": "Record your weight, any measurements you track, or a photo. Everything is optional and private to you.",
+    "loadFailed": "Progress could not be loaded.",
+    "retry": "Try again",
+    "noDataInPeriod": "No {{metric}} recorded in this period.",
+    "chartLabel_one": "{{metric}}: one measurement, {{end}} on {{endDate}}",
+    "chartLabel_other": "{{metric}}: {{count}} measurements, from {{start}} on {{startDate}} to {{end}} on {{endDate}}",
+    "lastRecorded": "Last recorded {{date}}",
+    "changeSince": "since {{date}}",
+    "lowest": "Lowest {{value}}",
+    "highest": "Highest {{value}}",
+    "measurements_one": "1 measurement",
+    "measurements_other": "{{count}} measurements",
+    "latestMeasurements": "Latest measurements"
+  },
+  "history": {
+    "title": "History",
+    "emptyInPeriod": "No entries in this period.",
+    "noMeasurements": "Photo or note only",
+    "photoCount_one": "1 photo",
+    "photoCount_other": "{{count}} photos",
+    "hasNote": "Has a note"
+  },
+  "entry": {
+    "newTitle": "New entry",
+    "editTitle": "Edit entry",
+    "loadFailed": "This entry could not be loaded.",
+    "date": "Date",
+    "chooseDate": "Date: {{date}}. Choose another date",
+    "chooseDateTitle": "Entry date",
+    "weightSection": "Weight",
+    "measurementsSection": "Measurements",
+    "measurementsHint": "All optional. Record only what you track.",
+    "photosSection": "Progress photos",
+    "noteSection": "Note",
+    "noteLabel": "Note (optional)",
+    "save": "Save entry",
+    "delete": "Delete entry",
+    "deleteTitle": "Delete this entry?",
+    "deleteMessage": "The entry will be removed from your history.",
+    "deleteMessageWithPhotos": "The entry and its photos will be removed permanently.",
+    "deleteFailed": "The entry could not be deleted. Try again.",
+    "cancel": "Cancel"
+  },
+  "form": {
+    "invalidNumber": "Enter a number",
+    "outOfRange": "Enter a value between {{min}} and {{max}}",
+    "noteTooLong": "The note is too long",
+    "empty": "Add a weight, a measurement, a photo or a note.",
+    "saveFailed": "The entry could not be saved. Check your connection and try again."
+  },
+  "photos": {
+    "privacy": "Photos are private. Only you can see them.",
+    "add": "Add photo",
+    "photo": "Progress photo",
+    "photoNumber": "Photo {{number}}",
+    "photoHint": "Opens options to view, replace or remove",
+    "view": "View",
+    "replaceCamera": "Replace with camera",
+    "replaceLibrary": "Replace from library",
+    "remove": "Remove photo",
+    "pending": "Not saved yet",
+    "limit": "Up to {{count}} photos per entry.",
+    "loading": "Loading photo",
+    "loadFailed": "Photo could not be loaded",
+    "closeViewer": "Close photo",
+    "partialFailure_one": "The entry was saved, but one photo change could not be saved.",
+    "partialFailure_other": "The entry was saved, but {{count}} photo changes could not be saved.",
+    "uploadFailed": "The photo could not be uploaded, so nothing was saved. Try again."
+  },
+  "profileWeight": {
+    "title": "Profile weight",
+    "notSet": "Not set",
+    "explanation": "Used by the target calculator. Entries here never change it unless you choose to.",
+    "useLatest": "Use {{value}} from {{date}}",
+    "confirmTitle": "Update profile weight?",
+    "confirmMessage": "Your profile weight will be set to {{value}}. Your daily targets are not recalculated automatically, and past days keep their saved targets.",
+    "confirm": "Update",
+    "failed": "Profile weight could not be updated."
+  }
+}

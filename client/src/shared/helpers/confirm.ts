@@ -1,6 +1,6 @@
-import { Alert, Platform } from "react-native";
+import { create } from "zustand";
 
-type ConfirmOptions = {
+export type ConfirmOptions = {
   title: string;
   message?: string;
   confirmLabel: string;
@@ -8,36 +8,26 @@ type ConfirmOptions = {
   destructive?: boolean;
 };
 
-type BrowserGlobal = {
-  confirm?: (message?: string) => boolean;
+type ConfirmRequest = ConfirmOptions & {
+  resolve: (confirmed: boolean) => void;
 };
 
-export function confirmAction({
-  title,
-  message,
-  confirmLabel,
-  cancelLabel,
-  destructive = false,
-}: ConfirmOptions): Promise<boolean> {
-  if (Platform.OS === "web") {
-    const browser = globalThis as BrowserGlobal;
-    const text = [title, message].filter(Boolean).join("\n\n");
-    return Promise.resolve(browser.confirm ? browser.confirm(text) : false);
-  }
+type ConfirmState = {
+  request: ConfirmRequest | null;
+};
 
+export const useConfirmStore = create<ConfirmState>(() => ({ request: null }));
+
+export function confirmAction(options: ConfirmOptions): Promise<boolean> {
   return new Promise((resolve) => {
-    Alert.alert(
-      title,
-      message,
-      [
-        { text: cancelLabel, style: "cancel", onPress: () => resolve(false) },
-        {
-          text: confirmLabel,
-          style: destructive ? "destructive" : "default",
-          onPress: () => resolve(true),
-        },
-      ],
-      { cancelable: true, onDismiss: () => resolve(false) },
-    );
+    useConfirmStore.getState().request?.resolve(false);
+    useConfirmStore.setState({ request: { ...options, resolve } });
   });
+}
+
+export function settleConfirm(confirmed: boolean) {
+  const { request } = useConfirmStore.getState();
+  if (!request) return;
+  useConfirmStore.setState({ request: null });
+  request.resolve(confirmed);
 }

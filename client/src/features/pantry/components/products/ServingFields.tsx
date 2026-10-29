@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { FormInput } from "../../../../shared/components/FormInput";
 import { useDirection } from "../../../../shared/hooks/useDirection";
-import { radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
+import { fonts, radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 import { ServingFormState } from "../../helpers/productForm";
 import { parsePositiveNumber } from "../../helpers/savedMealDraft";
 import { useServingFormat } from "../../hooks/useServingFormat";
@@ -102,7 +102,7 @@ const useStyles = () =>
       },
       title: {
         ...typography.footnote,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: colors.textSecondary,
         marginBottom: spacing.xs,
       },

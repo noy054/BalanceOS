@@ -11,6 +11,7 @@ import { StatisticsModule } from './modules/statistics/statistics.module';
 import { BarcodeModule } from './modules/barcode/barcode.module';
 import { AnnouncementsModule } from './modules/announcements/announcements.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { ProgressModule } from './modules/progress/progress.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AdminModule } from './modules/admin/admin.module';
     BarcodeModule,
     AnnouncementsModule,
     AdminModule,
+    ProgressModule,
   ],
 })
 export class AppModule {}

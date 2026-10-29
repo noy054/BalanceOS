@@ -12,7 +12,7 @@ import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
 import { KeyboardAvoider } from "../../../shared/components/ui/KeyboardAvoider";
 import { confirmAction } from "../../../shared/helpers/confirm";
 import { useDirection } from "../../../shared/hooks/useDirection";
-import { radius, spacing, typography, useAppTheme, useThemedStyles } from "../../../shared/theme";
+import { fonts, radius, spacing, typography, useAppTheme, useThemedStyles } from "../../../shared/theme";
 import { ProductBasicInfoForm } from "../../pantry/components/products/ProductBasicInfoForm";
 import { ProductNutritionForm } from "../../pantry/components/products/ProductNutritionForm";
 import { ProductFormPrefill, useAddProductForm } from "../../pantry/hooks/useAddProductForm";
@@ -386,7 +386,7 @@ const useStyles = () =>
       badges: { gap: spacing.xs, flexWrap: "wrap" },
       metaTitle: { ...typography.headline, color: colors.textPrimary, marginTop: spacing.xs },
       metaText: { ...typography.footnote, color: colors.textSecondary },
-      metaStrong: { ...typography.footnote, fontWeight: "600", color: colors.textPrimary },
+      metaStrong: { ...typography.footnote, fontFamily: fonts.semibold, color: colors.textPrimary },
       privacyNote: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
       stack: { gap: spacing.sm },
       sectionIntro: {

@@ -207,6 +207,19 @@ export class DayLogsRepository {
               select: {
                 id: true,
                 macrosSnapshot: true,
+                grams: true,
+                servings: true,
+                pantryProductId: true,
+                pantryRecipeId: true,
+                savedMealId: true,
+                pantryProduct: {
+                  select: {
+                    nutritionBasis: true,
+                    servingSizeG: true,
+                    servingQuantity: true,
+                    servingUnit: true,
+                  },
+                },
               },
               orderBy: { createdAt: 'asc' },
             },
@@ -232,6 +245,53 @@ export class DayLogsRepository {
           },
         },
       },
+    });
+  }
+
+  findMealItemForCopy(itemId: string, userId: string) {
+    return this.prisma.mealItem.findFirst({
+      where: { id: itemId, mealEntry: { dayLog: { userId } } },
+      select: {
+        pantryProductId: true,
+        pantryRecipeId: true,
+        savedMealId: true,
+        grams: true,
+        servings: true,
+        macrosSnapshot: true,
+        mealEntry: { select: { mealType: true } },
+      },
+    });
+  }
+
+  findMealItemForUpdate(itemId: string, userId: string) {
+    return this.prisma.mealItem.findFirst({
+      where: { id: itemId, mealEntry: { dayLog: { userId } } },
+      select: {
+        id: true,
+        grams: true,
+        servings: true,
+        macrosSnapshot: true,
+        mealEntry: { select: { dayLog: { select: { id: true } } } },
+      },
+    });
+  }
+
+  updateMealItemAmount(
+    itemId: string,
+    data: {
+      grams: number | null;
+      servings: number | null;
+      macrosSnapshot: MacrosSnapshot;
+    },
+  ) {
+    return this.prisma.mealItem.update({
+      where: { id: itemId },
+      data: {
+        grams: data.grams,
+        servings: data.servings,
+        macrosSnapshot: data.macrosSnapshot as unknown as object,
+      },
+      select: { id: true },
     });
   }
 

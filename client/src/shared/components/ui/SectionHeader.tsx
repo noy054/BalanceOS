@@ -36,12 +36,11 @@ const useStyles = () =>
         alignItems: "center",
         justifyContent: "space-between",
         gap: spacing.sm,
-        paddingHorizontal: spacing.xs,
         marginBottom: spacing.sm,
       },
       title: {
         flex: 1,
-        ...typography.label,
+        ...typography.overline,
         color: colors.textSecondary,
       },
       titleDanger: {

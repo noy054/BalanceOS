@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
+import { fonts, radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -16,8 +16,6 @@ export const useStyles = () =>
       formCard: {
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
         paddingHorizontal: spacing.md,
         paddingTop: spacing.md,
       },
@@ -32,7 +30,7 @@ export const useStyles = () =>
       successText: {
         flex: 1,
         ...typography.callout,
-        fontWeight: '600',
+        fontFamily: fonts.semibold,
         color: colors.success,
       },
     }),

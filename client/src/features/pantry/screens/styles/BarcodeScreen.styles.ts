@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 import {
+  fonts,
   cameraColors,
   radius,
   spacing,
@@ -112,7 +113,7 @@ export const useStyles = () =>
         height: 2,
         backgroundColor: cameraColors.scanLine,
         top: "50%",
-        borderRadius: 1,
+        borderRadius: 16,
       },
 
       loadingOverlay: {
@@ -129,7 +130,7 @@ export const useStyles = () =>
 
       loadingText: {
         ...typography.callout,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
         color: cameraColors.foreground,
       },
 
@@ -163,8 +164,6 @@ export const useStyles = () =>
         gap: spacing.xs,
         backgroundColor: colors.surface,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border,
         paddingHorizontal: spacing.lg,
         paddingVertical: spacing.lg,
       },
@@ -172,7 +171,7 @@ export const useStyles = () =>
       resultIcon: {
         width: 52,
         height: 52,
-        borderRadius: 26,
+        borderRadius: 12,
         backgroundColor: colors.successSoft,
         alignItems: "center",
         justifyContent: "center",

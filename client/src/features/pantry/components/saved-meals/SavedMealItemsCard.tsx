@@ -4,6 +4,7 @@ import { FormSection } from "../../../../shared/components/ui/FormSection";
 import { SavedMealDraftItem } from "../../helpers/savedMealDraft";
 import { SavedMealAddButtons } from "./SavedMealAddButtons";
 import { SavedMealDraftItemRow } from "./SavedMealDraftItemRow";
+import { isAmbiguousName, useDuplicateNames } from "../../helpers/duplicateNames";
 import { useStyles } from "../recipes/styles/RecipeIngredientsCard.styles";
 
 type Props = {
@@ -27,6 +28,9 @@ export function SavedMealItemsCard({
 }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
+  const duplicateNames = useDuplicateNames(
+    items.map((item) => (item.kind === "product" ? item.product.name : item.recipe.name)),
+  );
 
   return (
     <FormSection title={t("savedMeal.itemsSection")} contentStyle={styles.card}>
@@ -35,6 +39,9 @@ export function SavedMealItemsCard({
           key={item.key}
           item={item}
           isRTL={isRTL}
+          showBrand={
+            item.kind === "product" && isAmbiguousName(duplicateNames, item.product.name)
+          }
           onChangeAmount={onChangeAmount}
           onToggleUnit={onToggleUnit}
           onRemove={onRemoveItem}

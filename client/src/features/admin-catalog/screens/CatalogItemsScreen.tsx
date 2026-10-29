@@ -12,7 +12,7 @@ import { FoodThumb } from "../../pantry/components/food/FoodThumb";
 import { FOOD_ICONS } from "../../pantry/hooks/useFoodCardModels";
 import { AdminScaffold } from "../../admin/components/AdminScaffold";
 import { AdminListRow } from "../../admin/components/AdminListRow";
-import { FilterChips } from "../../admin/components/FilterChips";
+import { ChoiceChips } from "../../../shared/components/ui/ChoiceChips";
 import { StatusBadge } from "../../admin/components/StatusBadge";
 import { ADMIN_ROUTES } from "../../admin/constants";
 import { formatShortDate } from "../../admin/helpers/format";
@@ -43,7 +43,7 @@ export function CatalogItemsScreen() {
     return (
       <AdminListRow
         title={item.current.name}
-        leading={<FoodThumb imageUrl={item.current.imageUrl} fallbackIcon={FOOD_ICONS.product} size={44} />}
+        leading={item.current.imageUrl ? <FoodThumb imageUrl={item.current.imageUrl} fallbackIcon={FOOD_ICONS.product} size={44} /> : undefined}
         lines={[
           [item.current.brand, item.normalizedBarcode ?? t("admin.submissions.noBarcode")].filter(Boolean).join(" · "),
           t("admin.catalog.updated", { date: formatShortDate(item.updatedAt, i18n.language) }),
@@ -72,7 +72,7 @@ export function CatalogItemsScreen() {
           onChange={setState}
         />
         <SearchField value={search} onChangeText={setSearch} placeholder={t("admin.catalog.search")} />
-        <FilterChips<SourceFilter>
+        <ChoiceChips<SourceFilter>
           options={[
             { value: "ALL", label: t("admin.catalog.allSources") },
             ...CATALOG_SOURCES.map((value) => ({ value, label: t(`admin.sources.${value}`) })),

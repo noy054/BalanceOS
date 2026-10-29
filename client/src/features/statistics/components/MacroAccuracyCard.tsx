@@ -52,7 +52,7 @@ export function MacroAccuracyCard({
       key: "calories",
       labelKey: "macros.calories",
       unit: t("units.kcal"),
-      color: colors.accent,
+      color: colors.accentFill,
     },
     {
       key: "protein",

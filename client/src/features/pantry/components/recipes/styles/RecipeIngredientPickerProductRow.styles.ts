@@ -8,7 +8,7 @@ export const useStyles = () =>
       checkCircle: {
         width: 22,
         height: 22,
-        borderRadius: 11,
+        borderRadius: 8,
         borderWidth: 1.5,
         borderColor: colors.borderStrong,
         alignItems: "center",
@@ -17,7 +17,7 @@ export const useStyles = () =>
       },
 
       checkCircleActive: {
-        backgroundColor: colors.accent,
+        backgroundColor: colors.accentFill,
         borderColor: colors.accent,
       },
     }),

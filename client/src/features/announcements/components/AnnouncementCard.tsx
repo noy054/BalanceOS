@@ -1,4 +1,3 @@
-import type { ComponentProps } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
@@ -6,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { IconButton } from "../../../shared/components/ui/IconButton";
 import { useDirection } from "../../../shared/hooks/useDirection";
 import {
+  fonts,
   AppColors,
   radius,
   spacing,
@@ -17,20 +17,12 @@ import {
 import { localizeAnnouncement } from "../helpers/announcementContent";
 import { AnnouncementContent, AnnouncementKind } from "../types";
 
-type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
-
 type Props = {
   content: AnnouncementContent;
   language: string;
   variant: "banner" | "popup";
   onAction?: () => void;
   onClose?: () => void;
-};
-
-const KIND_ICONS: Record<AnnouncementKind, IconName> = {
-  UPDATE: "creation-outline",
-  NOTICE: "information-outline",
-  IMPORTANT: "alert-circle-outline",
 };
 
 function kindTone(colors: AppColors, kind: AnnouncementKind) {
@@ -63,9 +55,6 @@ export function AnnouncementCard({ content, language, variant, onAction, onClose
       accessibilityRole={isPopup ? undefined : "summary"}
     >
       <View style={[styles.header, dir.row]}>
-        <View style={[styles.iconBadge, { backgroundColor: tone.bg }]}>
-          <MaterialCommunityIcons name={KIND_ICONS[content.kind]} size={20} color={tone.fg} />
-        </View>
         <View style={styles.headerText}>
           <Text style={[styles.kind, { color: tone.fg }, textDirection]}>
             {t(`announcements.kind.${content.kind}`, { lng })}
@@ -143,13 +132,6 @@ const useStyles = () =>
         alignItems: "flex-start",
         gap: spacing.ms,
       },
-      iconBadge: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        alignItems: "center",
-        justifyContent: "center",
-      },
       headerText: {
         flex: 1,
         minWidth: 0,
@@ -157,7 +139,7 @@ const useStyles = () =>
       },
       kind: {
         ...typography.caption,
-        fontWeight: "600",
+        fontFamily: fonts.semibold,
       },
       title: {
         ...typography.bodyStrong,
@@ -194,7 +176,7 @@ const useStyles = () =>
         justifyContent: "center",
         minHeight: 48,
         borderRadius: radius.md,
-        backgroundColor: colors.accent,
+        backgroundColor: colors.accentFill,
       },
       primaryActionLabel: {
         ...typography.bodyStrong,

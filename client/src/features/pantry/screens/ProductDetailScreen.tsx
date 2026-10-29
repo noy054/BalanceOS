@@ -2,11 +2,14 @@ import { useState } from "react";
 import { ScrollView, Alert, KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import { confirmAction } from "../../../shared/helpers/confirm";
 import { router } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { StateView } from "../../../shared/components/ui/StateView";
 import { ActionSheet } from "../../../shared/components/ui/ActionSheet";
+import { BottomSheet } from "../../../shared/components/ui/BottomSheet";
+import { AddToMealPanel } from "../../meals/components/AddToMealPanel";
 import { usePantryProduct, useDeletePantryProduct } from "../hooks/usePantry";
 import { useProductCalculator } from "../hooks/useProductCalculator";
 import { NutritionFactsCard } from "../components/nutrition/NutritionFactsCard";
@@ -28,8 +31,8 @@ export function ProductDetailScreen({ id }: Props) {
   const { data: product, isLoading } = usePantryProduct(id);
   const deleteProduct = useDeletePantryProduct();
 
-  const { quantity, unit, calcResult, gramsResult, updateQuantity, selectUnit, calculate } =
-    useProductCalculator(product);
+  const [isAddingToMeal, setIsAddingToMeal] = useState(false);
+  const calculator = useProductCalculator(product);
 
   function handleEdit() {
     router.push({
@@ -50,29 +53,21 @@ export function ProductDetailScreen({ id }: Props) {
     router.replace("/(app)/pantry");
   }
 
-  function handleDelete() {
-    Alert.alert(
-      t("productDetail.deleteConfirmTitle"),
-      t("productDetail.deleteConfirmMessage"),
-      [
-        {
-          text: t("productDetail.deleteConfirmNo"),
-          style: "cancel",
-        },
-        {
-          text: t("productDetail.deleteConfirmYes"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteProduct.mutateAsync(id);
-              navigateAfterDelete();
-            } catch {
-              Alert.alert("", t("errors.deleteFailed"));
-            }
-          },
-        },
-      ],
-    );
+  async function handleDelete() {
+    const confirmed = await confirmAction({
+      title: t("productDetail.deleteConfirmTitle"),
+      message: t("productDetail.deleteConfirmMessage"),
+      confirmLabel: t("productDetail.deleteConfirmYes"),
+      cancelLabel: t("productDetail.deleteConfirmNo"),
+      destructive: true,
+    });
+    if (!confirmed) return;
+    try {
+      await deleteProduct.mutateAsync(id);
+      navigateAfterDelete();
+    } catch {
+      Alert.alert("", t("errors.deleteFailed"));
+    }
   }
 
   if (isLoading) {
@@ -116,19 +111,37 @@ export function ProductDetailScreen({ id }: Props) {
           <NutritionFactsCard product={product} t={t} isRTL={isRTL} />
 
           <ProductCalculatorCard
-            quantity={quantity}
-            unit={unit}
+            quantity={calculator.quantity}
+            unit={calculator.unit}
+            units={calculator.units}
             serving={product}
-            calcResult={calcResult}
+            result={calculator.result}
             isRTL={isRTL}
             t={t}
-            gramsResult={gramsResult}
-            onChangeQuantity={updateQuantity}
-            onSelectUnit={selectUnit}
-            onCalculate={calculate}
+            onChangeQuantity={calculator.updateQuantity}
+            onSelectUnit={calculator.selectUnit}
+            onAddToMeal={() => setIsAddingToMeal(true)}
           />
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <BottomSheet
+        visible={isAddingToMeal && calculator.result !== null}
+        onClose={() => setIsAddingToMeal(false)}
+        title={t("calculatorMeal.title")}
+        subtitle={product.name}
+      >
+        {calculator.result ? (
+          <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+            <AddToMealPanel
+              key={`${calculator.result.amount.grams ?? ""}-${calculator.result.amount.servings ?? ""}`}
+              product={product}
+              result={calculator.result}
+              onDone={() => setIsAddingToMeal(false)}
+            />
+          </ScrollView>
+        ) : null}
+      </BottomSheet>
 
       <ActionSheet
         visible={isMenuOpen}

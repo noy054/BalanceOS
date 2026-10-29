@@ -1,6 +1,6 @@
 import { Platform, StyleSheet } from "react-native";
 
-import { spacing, radius, useThemedStyles } from "../../../../../shared/theme";
+import { fonts, spacing, radius, useThemedStyles } from "../../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -8,8 +8,6 @@ export const useStyles = () =>
       formCard: {
         borderRadius: radius.xl,
         backgroundColor: colors.surface,
-        borderWidth: 1,
-        borderColor: colors.border,
         padding: spacing.lg,
         gap: spacing.md,
         ...Platform.select({
@@ -31,7 +29,7 @@ export const useStyles = () =>
 
       fieldLabel: {
         fontSize: 13,
-        fontWeight: "800",
+        fontFamily: fonts.bold,
         color: colors.textSecondary,
       },
 
@@ -43,7 +41,7 @@ export const useStyles = () =>
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm2,
         fontSize: 15,
-        fontWeight: "700",
+        fontFamily: fonts.bold,
         color: colors.textPrimary,
         minHeight: 50,
       },
@@ -54,7 +52,7 @@ export const useStyles = () =>
 
       errorText: {
         fontSize: 12,
-        fontWeight: "700",
+        fontFamily: fonts.bold,
         color: colors.danger,
         marginTop: spacing.xs,
       },

@@ -1,22 +1,14 @@
 import { ReactNode } from "react";
-import type { ComponentProps } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useTranslation } from "react-i18next";
 
 import { spacing, typography, useThemedStyles } from "../../../../shared/theme";
 import { useDirection } from "../../../../shared/hooks/useDirection";
-import { formatCalories } from "../../../../shared/helpers/formatNumber";
-import { FoodThumb } from "./FoodThumb";
-import { MacroValues, NutritionLine } from "./NutritionLine";
-
-type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
+import { MacroValues } from "./NutritionLine";
+import { FoodCardValues } from "./FoodCardValues";
 
 type Props = {
   title: string;
   meta?: string | null;
-  imageUrl?: string | null;
-  fallbackIcon: IconName;
   calories?: number;
   macros?: MacroValues;
   last?: boolean;
@@ -26,43 +18,33 @@ type Props = {
 export function FoodLineItem({
   title,
   meta,
-  imageUrl,
-  fallbackIcon,
   calories,
   macros,
   last = false,
   trailing,
 }: Props) {
-  const { t } = useTranslation("pantry");
   const styles = useStyles();
   const dir = useDirection();
 
   return (
-    <View style={[styles.row, dir.row, !last && styles.rowBorder]}>
-      <FoodThumb imageUrl={imageUrl} fallbackIcon={fallbackIcon} size={40} />
-
-      <View style={styles.body}>
-        <Text style={[styles.title, dir.text]} numberOfLines={2}>
-          {title}
-        </Text>
-
-        {meta ? (
-          <Text style={[styles.meta, dir.text]} numberOfLines={1}>
-            {meta}
+    <View style={[styles.row, !last && styles.rowBorder]}>
+      <View style={[styles.header, dir.row]}>
+        <View style={styles.body}>
+          <Text style={[styles.title, dir.text]} numberOfLines={2}>
+            {title}
           </Text>
-        ) : null}
-
-        {macros ? <NutritionLine macros={macros} /> : null}
+          {meta ? (
+            <Text style={[styles.meta, dir.text]} numberOfLines={1}>
+              {meta}
+            </Text>
+          ) : null}
+        </View>
+        {trailing}
       </View>
 
-      {calories != null ? (
-        <View style={styles.calories}>
-          <Text style={styles.calorieValue}>{formatCalories(calories)}</Text>
-          <Text style={styles.calorieUnit}>{t("product.calUnit")}</Text>
-        </View>
+      {calories != null && macros ? (
+        <FoodCardValues calories={calories} macros={macros} />
       ) : null}
-
-      {trailing}
     </View>
   );
 }
@@ -71,13 +53,16 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       row: {
-        alignItems: "center",
-        gap: spacing.ms,
+        gap: spacing.sm2,
         paddingVertical: spacing.ms,
       },
       rowBorder: {
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: colors.border,
+      },
+      header: {
+        alignItems: "center",
+        gap: spacing.sm,
       },
       body: {
         flex: 1,
@@ -85,27 +70,12 @@ const useStyles = () =>
         gap: 2,
       },
       title: {
-        ...typography.callout,
-        fontWeight: "600",
+        ...typography.bodyStrong,
         color: colors.textPrimary,
       },
       meta: {
         ...typography.footnote,
         color: colors.textSecondary,
-      },
-      calories: {
-        alignItems: "center",
-        minWidth: 44,
-      },
-      calorieValue: {
-        ...typography.bodyStrong,
-        ...typography.number,
-        color: colors.textPrimary,
-      },
-      calorieUnit: {
-        ...typography.caption,
-        fontWeight: "400",
-        color: colors.textMuted,
       },
     }),
   );
