@@ -1,137 +1,162 @@
-import { useState } from "react";
-import { LayoutChangeEvent, StyleSheet, Text, View } from "react-native";
+import { useMemo, useState } from "react";
+import { LayoutChangeEvent, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import Svg, { Circle, Defs, G, Line, LinearGradient, Path, Stop, Text as SvgText } from "react-native-svg";
 
-import { diffDays } from "../../../shared/helpers/dateKey";
-import { spacing, typography, useThemedStyles } from "../../../shared/theme";
+import { diffDays, fromDateKey } from "../../../shared/helpers/dateKey";
+import { fonts, useAppTheme } from "../../../shared/theme";
 import { MetricPoint } from "../types";
+import { axisDateTicks, niceScale } from "../helpers/chartScale";
 
 type Props = {
   points: MetricPoint[];
+  unit: string;
   accessibilityLabel: string;
   formatValue: (value: number) => string;
-  formatDate: (date: string) => string;
 };
 
-const HEIGHT = 150;
-const DOT = 8;
-const LINE = 2;
-const PADDING = DOT;
+const HEIGHT = 196;
+const TOP = 22;
+const BOTTOM = 26;
+const AXIS_WIDTH = 44;
+const END_PAD = 12;
+const DOT = 4;
 
-type Position = { x: number; y: number };
-
-export function ProgressChart({ points, accessibilityLabel, formatValue, formatDate }: Props) {
-  const styles = useStyles();
+export function ProgressChart({ points, unit, accessibilityLabel, formatValue }: Props) {
+  const { colors } = useAppTheme();
+  const { i18n } = useTranslation();
   const [width, setWidth] = useState(0);
 
   function onLayout(event: LayoutChangeEvent) {
-    setWidth(event.nativeEvent.layout.width);
+    setWidth(Math.round(event.nativeEvent.layout.width));
   }
 
-  const values = points.map((point) => point.value);
-  const rawMin = Math.min(...values);
-  const rawMax = Math.max(...values);
-  const spread = rawMax - rawMin;
-  const pad = spread === 0 ? Math.max(1, rawMax * 0.02) : spread * 0.15;
-  const min = rawMin - pad;
-  const max = rawMax + pad;
+  const chart = useMemo(() => {
+    if (width === 0 || points.length === 0) return null;
+    const scale = niceScale(points.map((point) => point.value));
+    const first = points[0].date;
+    const last = points[points.length - 1].date;
+    const span = Math.max(diffDays(first, last), 0);
+    const plotLeft = AXIS_WIDTH;
+    const plotRight = width - END_PAD;
+    const plotWidth = Math.max(plotRight - plotLeft, 1);
+    const plotBottom = HEIGHT - BOTTOM;
+    const plotHeight = plotBottom - TOP;
 
-  const first = points[0]?.date;
-  const totalDays = first ? Math.max(diffDays(first, points[points.length - 1].date), 1) : 1;
-  const plotWidth = Math.max(width - PADDING * 2, 0);
-  const plotHeight = HEIGHT - PADDING * 2;
+    const xOf = (date: string) =>
+      span === 0 ? plotLeft + plotWidth / 2 : plotLeft + (diffDays(first, date) / span) * plotWidth;
+    const yOf = (value: number) => plotBottom - ((value - scale.min) / (scale.max - scale.min)) * plotHeight;
 
-  const positions: Position[] = points.map((point) => ({
-    x: PADDING + (points.length === 1 ? plotWidth / 2 : (diffDays(first, point.date) / totalDays) * plotWidth),
-    y: PADDING + (1 - (point.value - min) / (max - min)) * plotHeight,
-  }));
+    const coords = points.map((point) => ({ x: xOf(point.date), y: yOf(point.value) }));
+    const line = coords.map((c, index) => `${index === 0 ? "M" : "L"} ${c.x.toFixed(1)} ${c.y.toFixed(1)}`).join(" ");
+    const area =
+      coords.length > 1
+        ? `${line} L ${coords[coords.length - 1].x.toFixed(1)} ${plotBottom} L ${coords[0].x.toFixed(1)} ${plotBottom} Z`
+        : null;
+
+    const spansYears = fromDateKey(first).getFullYear() !== fromDateKey(last).getFullYear();
+    const dateFormat = new Intl.DateTimeFormat(i18n.language, {
+      day: "numeric",
+      month: "short",
+      ...(spansYears ? { year: "2-digit" as const } : {}),
+    });
+    const maxTicks = Math.max(2, Math.min(5, Math.floor(plotWidth / 72)));
+    const dateTicks = axisDateTicks(first, last, maxTicks).map((date) => ({
+      x: xOf(date),
+      label: dateFormat.format(fromDateKey(date)),
+    }));
+
+    return { scale, coords, line, area, dateTicks, plotLeft, plotRight, plotBottom, yOf };
+  }, [width, points, i18n.language]);
+
+  const labelColor = colors.textMuted;
 
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
-      <View style={styles.plot} onLayout={onLayout}>
-        <View style={[styles.gridLine, { top: PADDING }]} />
-        <View style={[styles.gridLine, { top: HEIGHT / 2 }]} />
-        <View style={[styles.gridLine, { top: HEIGHT - PADDING }]} />
-        {width > 0
-          ? positions.slice(1).map((end, index) => {
-              const start = positions[index];
-              const dx = end.x - start.x;
-              const dy = end.y - start.y;
-              const length = Math.sqrt(dx * dx + dy * dy);
+    <View accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel} onLayout={onLayout}>
+      <Svg width={width} height={HEIGHT}>
+        {chart ? (
+          <>
+            <Defs>
+              <LinearGradient id="progress-area" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0" stopColor={colors.accent} stopOpacity={0.22} />
+                <Stop offset="1" stopColor={colors.accent} stopOpacity={0} />
+              </LinearGradient>
+            </Defs>
+
+            <SvgText x={0} y={11} fontSize={11} fontFamily={fonts.medium} fill={labelColor}>
+              {unit}
+            </SvgText>
+
+            {chart.scale.ticks.map((tick) => {
+              const y = chart.yOf(tick);
               return (
-                <View
-                  key={`line-${points[index].date}`}
-                  style={[
-                    styles.line,
-                    {
-                      width: length,
-                      left: (start.x + end.x) / 2 - length / 2,
-                      top: (start.y + end.y) / 2 - LINE / 2,
-                      transform: [{ rotate: `${Math.atan2(dy, dx)}rad` }],
-                    },
-                  ]}
+                <G key={`tick-${tick}`}>
+                  <Line
+                    x1={chart.plotLeft}
+                    x2={chart.plotRight}
+                    y1={y}
+                    y2={y}
+                    stroke={colors.border}
+                    strokeWidth={1}
+                    strokeDasharray={tick === chart.scale.min ? undefined : "3 4"}
+                  />
+                  <SvgText
+                    x={chart.plotLeft - 8}
+                    y={y + 4}
+                    fontSize={11}
+                    fontFamily={fonts.regular}
+                    fill={labelColor}
+                    textAnchor="end"
+                  >
+                    {formatValue(tick)}
+                  </SvgText>
+                </G>
+              );
+            })}
+
+            {chart.dateTicks.map((tick, index) => (
+              <SvgText
+                key={`date-${index}`}
+                x={tick.x}
+                y={HEIGHT - 6}
+                fontSize={11}
+                fontFamily={fonts.regular}
+                fill={labelColor}
+                textAnchor={
+                  chart.dateTicks.length === 1
+                    ? "middle"
+                    : index === 0
+                      ? "start"
+                      : index === chart.dateTicks.length - 1
+                        ? "end"
+                        : "middle"
+                }
+              >
+                {tick.label}
+              </SvgText>
+            ))}
+
+            {chart.area ? <Path d={chart.area} fill="url(#progress-area)" /> : null}
+            {chart.coords.length > 1 ? (
+              <Path d={chart.line} fill="none" stroke={colors.accent} strokeWidth={2.2} strokeLinejoin="round" strokeLinecap="round" />
+            ) : null}
+            {chart.coords.map((coord, index) => {
+              const isLast = index === chart.coords.length - 1;
+              return (
+                <Circle
+                  key={`dot-${points[index].date}`}
+                  cx={coord.x}
+                  cy={coord.y}
+                  r={isLast ? DOT + 1 : DOT}
+                  fill={isLast ? colors.accent : colors.surface}
+                  stroke={colors.accent}
+                  strokeWidth={2}
                 />
               );
-            })
-          : null}
-        {width > 0
-          ? positions.map((position, index) => (
-              <View
-                key={`dot-${points[index].date}`}
-                style={[
-                  styles.dot,
-                  index === positions.length - 1 && styles.dotLast,
-                  { left: position.x - DOT / 2, top: position.y - DOT / 2 },
-                ]}
-              />
-            ))
-          : null}
-        <Text style={[styles.axisValue, styles.axisTop]}>{formatValue(rawMax)}</Text>
-        {spread > 0 ? <Text style={[styles.axisValue, styles.axisBottom]}>{formatValue(rawMin)}</Text> : null}
-      </View>
-      {first ? (
-        <View style={styles.dates}>
-          <Text style={styles.dateLabel}>{formatDate(first)}</Text>
-          {points.length > 1 ? <Text style={styles.dateLabel}>{formatDate(points[points.length - 1].date)}</Text> : null}
-        </View>
-      ) : null}
+            })}
+          </>
+        ) : null}
+      </Svg>
     </View>
   );
 }
-
-const useStyles = () =>
-  useThemedStyles((colors) =>
-    StyleSheet.create({
-      plot: { height: HEIGHT, position: "relative" },
-      gridLine: {
-        position: "absolute",
-        left: 0,
-        right: 0,
-        height: StyleSheet.hairlineWidth,
-        backgroundColor: colors.border,
-      },
-      line: { position: "absolute", height: LINE, borderRadius: LINE, backgroundColor: colors.accent },
-      dot: {
-        position: "absolute",
-        width: DOT,
-        height: DOT,
-        borderRadius: DOT / 2,
-        backgroundColor: colors.surface,
-        borderWidth: 2,
-        borderColor: colors.accent,
-      },
-      dotLast: { backgroundColor: colors.accent },
-      axisValue: {
-        position: "absolute",
-        left: 0,
-        ...typography.caption,
-        ...typography.number,
-        color: colors.textMuted,
-        backgroundColor: colors.surface,
-        paddingHorizontal: spacing.xxs,
-      },
-      axisTop: { top: 0 },
-      axisBottom: { bottom: 0 },
-      dates: { flexDirection: "row", justifyContent: "space-between", marginTop: spacing.xs },
-      dateLabel: { ...typography.caption, color: colors.textMuted },
-    }),
-  );

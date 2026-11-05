@@ -13,7 +13,7 @@ import {
   useUpdatePantryProduct,
 } from "../hooks/usePantry";
 import { useRecipeReturn } from "../recipeReturnStore";
-import { useMealReturn } from "../mealReturnStore";
+import { isProductReturnTarget, useMealReturn } from "../mealReturnStore";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { Button } from "../../../shared/components/ui/Button";
 import { StateView } from "../../../shared/components/ui/StateView";
@@ -23,11 +23,16 @@ import { useAppTheme } from "../../../shared/theme";
 import { useDirection } from "../../../shared/hooks/useDirection";
 import { ProductBasicInfoForm } from "../components/products/ProductBasicInfoForm";
 import { ProductCategoryPicker } from "../components/products/ProductCategoryPicker";
-import { ProductImagePicker } from "../components/products/ProductImagePicker";
+import { FormImageHeader } from "../components/form/FormImageHeader";
+import { FormToneProvider } from "../../../shared/components/FormTone";
+import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
+import { FOOD_ICONS } from "../hooks/useFoodCardModels";
 import { ProductNutritionForm } from "../components/products/ProductNutritionForm";
 import { ProductFormPrefill, useAddProductForm } from "../hooks/useAddProductForm";
 import { getProductSaveErrorKey } from "../helpers/barcode";
 import { PantryProduct } from "../types";
+import { prepareFoodImage } from "../helpers/foodImage";
+import { servingReferences } from "../helpers/servingReferences";
 import { useStyles } from "./styles/FormScreen.styles";
 
 function param(value: string | string[] | undefined) {
@@ -55,7 +60,9 @@ export function AddProductScreen() {
   const isEditMode = params.mode === "edit" && Boolean(productId);
   const isCatalogMode = !isEditMode && Boolean(catalogId);
   const fromRecipePicker = params.returnTo === "recipe";
-  const fromMealFlow = params.returnTo === "meal";
+  const fromScan = !isEditMode && (Boolean(barcode) || isCatalogMode);
+  const returnTarget = isProductReturnTarget(params.returnTo) ? params.returnTo : null;
+  const fromMealFlow = returnTarget !== null;
 
   const [isSavingLocal, setIsSavingLocal] = useState(false);
   const isSavingRef = useRef(false);
@@ -85,6 +92,8 @@ export function AddProductScreen() {
     }
     return null;
   }, [isEditMode, isCatalogMode, productToEdit, catalogItem]);
+
+  const servingRefs = useMemo(() => servingReferences(source), [source]);
 
   const form = useAddProductForm({
     source,
@@ -118,7 +127,7 @@ export function AddProductScreen() {
 
   function finish(saved: PantryProduct | null) {
     if (saved && fromRecipePicker) setRecipePending(saved);
-    if (saved && fromMealFlow) setMealPending(saved);
+    if (saved && returnTarget) setMealPending(returnTarget, saved);
 
     if (router.canGoBack()) {
       router.back();
@@ -129,9 +138,9 @@ export function AddProductScreen() {
   }
 
   async function handleSave() {
-    const payload = form.validate();
+    const validated = form.validate();
 
-    if (!payload) {
+    if (!validated || isSavingRef.current) {
       return;
     }
 
@@ -139,6 +148,7 @@ export function AddProductScreen() {
     isSavingRef.current = true;
 
     try {
+      const payload = { ...validated, imageUrl: await prepareFoodImage(validated.imageUrl, productToEdit?.imageUrl) };
       if (isEditMode) {
         await updateProduct.mutateAsync(payload);
         finish(null);
@@ -195,8 +205,19 @@ export function AddProductScreen() {
 
   const shownBarcode = isCatalogMode ? catalogItem?.barcode : barcode;
 
+  const categoryPicker = (
+    <ProductCategoryPicker
+      t={t}
+      isRTL={dir.isRTL}
+      selectedCategories={form.mealCategories}
+      onToggle={form.toggleCategory}
+    />
+  );
+
   return (
+    <FormToneProvider tone="glass">
     <SafeAreaView key={i18n.language} style={styles.root} edges={["top"]}>
+      <AmbientGlow intensity={0.3} />
       <ScreenHeader
         title={title}
         fallbackRoute="/(app)/pantry"
@@ -211,14 +232,6 @@ export function AddProductScreen() {
           keyboardDismissMode="interactive"
           showsVerticalScrollIndicator={false}
         >
-          <Text style={[styles.intro, dir.text]}>
-            {isEditMode
-              ? t("addProduct.editSubtitle")
-              : isCatalogMode
-                ? t("addProduct.reviewSubtitle")
-                : t("addProduct.subtitle")}
-          </Text>
-
           {shownBarcode ? (
             <View style={[styles.barcodeChip, dir.row, dir.alignStart]}>
               <MaterialCommunityIcons name="barcode" size={16} color={colors.textSecondary} />
@@ -226,8 +239,9 @@ export function AddProductScreen() {
             </View>
           ) : null}
 
-          <ProductImagePicker
+          <FormImageHeader
             imageUrl={form.form.imageUrl}
+            fallbackIcon={FOOD_ICONS.product}
             onChangeImage={form.updateImage}
             onRemoveImage={form.removeImage}
           />
@@ -240,12 +254,7 @@ export function AddProductScreen() {
             field={form.field}
           />
 
-          <ProductCategoryPicker
-            t={t}
-            isRTL={dir.isRTL}
-            selectedCategories={form.mealCategories}
-            onToggle={form.toggleCategory}
-          />
+          {fromScan ? null : categoryPicker}
 
           <ProductNutritionForm
             t={t}
@@ -256,10 +265,18 @@ export function AddProductScreen() {
             isPerServing={form.isPerServing}
             serving={form.serving}
             requireCoreValues={isCatalogMode}
+            servingFirst={fromScan}
+            servingReferences={servingRefs}
             onSwitchMode={form.switchMode}
             onChangeServing={form.updateServing}
+            onLinkedFocus={form.beginLinkedEdit}
+            onLinkedBlur={form.endLinkedEdit}
+            onApplyReference={form.applyServingReference}
+            scaledBy={form.scaledBy}
             field={form.field}
           />
+
+          {fromScan ? categoryPicker : null}
         </ScrollView>
 
         <StickyFooter>
@@ -280,5 +297,6 @@ export function AddProductScreen() {
         </StickyFooter>
       </KeyboardAvoider>
     </SafeAreaView>
+    </FormToneProvider>
   );
 }

@@ -19,6 +19,18 @@ export function useLoadMore({ hasNextPage, isFetchingNextPage, fetchNextPage }: 
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 }
 
+export const ANALYTICS_REFRESH_MS = 60_000;
+
+export function useAdminAnalytics(from: string, to: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ADMIN_QUERY_KEYS.analytics(from, to),
+    queryFn: () => adminApi.analytics(from, to),
+    enabled,
+    refetchInterval: ANALYTICS_REFRESH_MS,
+    refetchOnWindowFocus: true,
+  });
+}
+
 export function useAdminOverview(enabled: boolean) {
   return useQuery({
     queryKey: ADMIN_QUERY_KEYS.overview,

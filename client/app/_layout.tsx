@@ -30,8 +30,12 @@ import {
 import { PaperThemeBridge } from "../src/shared/theme/PaperThemeBridge";
 import { ConfirmDialogHost } from "../src/shared/components/ui/ConfirmDialogHost";
 import { ToastHost } from "../src/shared/components/ui/ToastHost";
+import { createAnalyticsMutationCache, startAnalytics } from "../src/features/analytics/analytics";
+
+startAnalytics();
 
 const queryClient = new QueryClient({
+  mutationCache: createAnalyticsMutationCache(),
   defaultOptions: {
     queries: {
       retry: 1,
@@ -59,6 +63,16 @@ function RootStack() {
 
 export default function RootLayout() {
   const setLanguageReady = useAuthStore((state) => state.setLanguageReady);
+
+  useEffect(
+    () =>
+      useAuthStore.subscribe((state, previous) => {
+        if (previous.user && state.user?.id !== previous.user.id) {
+          queryClient.removeQueries();
+        }
+      }),
+    [],
+  );
   const [startupReady, setStartupReady] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
     Heebo_400Regular,

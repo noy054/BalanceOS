@@ -1,9 +1,8 @@
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
-import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { SettingsScreenLayout } from "../components/SettingsScreenLayout";
 import { FormInput } from "../../../shared/components/FormInput";
 import { Button } from "../../../shared/components/ui/Button";
 import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
@@ -27,8 +26,7 @@ export function ProfileSettingsScreen() {
   const form = useProfileSettingsForm();
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={t("profile.screenTitle")} />
+    <SettingsScreenLayout title={t("profile.screenTitle")}>
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -190,6 +188,6 @@ export function ProfileSettingsScreen() {
           />
         </StickyFooter>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </SettingsScreenLayout>
   );
 }

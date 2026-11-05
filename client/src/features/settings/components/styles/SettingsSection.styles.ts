@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 
+import { withAlpha } from '../../../../shared/helpers/progressColor';
 import { radius, spacing, useThemedStyles } from '../../../../shared/theme';
 
 export const useStyles = () =>
@@ -8,13 +9,19 @@ export const useStyles = () =>
       wrapper: {
         marginBottom: spacing.lg,
       },
+      header: {
+        paddingHorizontal: spacing.xs,
+      },
       card: {
-        backgroundColor: colors.surface,
+        backgroundColor: colors.glassCard,
         borderRadius: radius.lg,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
         overflow: 'hidden',
       },
       cardDanger: {
-        borderColor: colors.dangerSoft,
+        borderColor: withAlpha(colors.danger, 0.35),
+        backgroundColor: withAlpha(colors.danger, 0.05),
       },
     }),
   );

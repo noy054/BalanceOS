@@ -1,9 +1,14 @@
 import { useState } from "react";
 import type { ComponentProps } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { layout, radius, useAppTheme, useThemedStyles } from "../../../../shared/theme";
+import { useFoodImage } from "../../hooks/useFoodImage";
+import { thumbnailImageUrl } from "../../helpers/foodImage";
+
+const THUMBNAIL_MAX_SIZE = 72;
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
@@ -16,9 +21,18 @@ type Props = {
 export function FoodThumb({ imageUrl, fallbackIcon, size = layout.thumbSize }: Props) {
   const { colors } = useAppTheme();
   const styles = useStyles();
-  const [failed, setFailed] = useState(false);
+  const image = useFoodImage(imageUrl);
+  const original = image.uri;
+  const small = original && size <= THUMBNAIL_MAX_SIZE ? thumbnailImageUrl(original) : original;
+  const [failure, setFailure] = useState<{ uri: string | null; stage: number }>({ uri: null, stage: 0 });
+  const stage = failure.uri === original ? failure.stage : 0;
+  const uri = stage === 0 ? small : stage === 1 && small !== original ? original : null;
 
-  const showImage = Boolean(imageUrl) && !failed;
+  function handleError() {
+    setFailure({ uri: original, stage: stage === 0 && small !== original ? 1 : 2 });
+  }
+
+  const showImage = Boolean(uri);
 
   return (
     <View
@@ -29,10 +43,13 @@ export function FoodThumb({ imageUrl, fallbackIcon, size = layout.thumbSize }: P
     >
       {showImage ? (
         <Image
-          source={{ uri: imageUrl as string }}
+          source={{ uri: uri as string }}
           style={styles.image}
-          resizeMode="cover"
-          onError={() => setFailed(true)}
+          contentFit="cover"
+          cachePolicy="memory-disk"
+          recyclingKey={uri}
+          transition={120}
+          onError={handleError}
           accessible={false}
         />
       ) : (
@@ -50,7 +67,7 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       box: {
-        backgroundColor: colors.surfaceMuted,
+        backgroundColor: colors.glassBorder,
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",

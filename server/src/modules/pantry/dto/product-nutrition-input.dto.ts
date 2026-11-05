@@ -1,4 +1,4 @@
-import { IsArray, IsEnum, IsOptional } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsEnum, IsOptional } from 'class-validator';
 import {
   NutritionBasis,
   ProductCategory,
@@ -46,6 +46,9 @@ export class ProductNutritionInputDto {
   @OptionalNumber(0.1)
   servingSizeG?: number | null;
 
+  @OptionalNumber(0.1)
+  servingSizeMl?: number | null;
+
   @OptionalText(100)
   servingSizeText?: string | null;
 
@@ -57,6 +60,7 @@ export class ProductNutritionInputDto {
 
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(20)
   @IsEnum(ProductCategory, { each: true })
   mealCategories?: ProductCategory[];
 }

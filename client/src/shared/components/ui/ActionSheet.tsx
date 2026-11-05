@@ -18,6 +18,8 @@ export type SheetAction = {
   disabled?: boolean;
 };
 
+const IOS_DISMISS_FALLBACK_MS = 450;
+
 type Props = {
   visible: boolean;
   title?: string;
@@ -48,10 +50,7 @@ export function ActionSheet({ visible, title, subtitle, actions, onClose }: Prop
   function handleSelect(action: SheetAction) {
     pendingRef.current = action.onPress;
     onClose();
-
-    if (Platform.OS !== "ios") {
-      setTimeout(runPending, 0);
-    }
+    setTimeout(runPending, Platform.OS === "ios" ? IOS_DISMISS_FALLBACK_MS : 0);
   }
 
   return (

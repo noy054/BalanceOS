@@ -5,10 +5,6 @@ import { fonts, radius, spacing, typography, useThemedStyles } from "../../../..
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      root: {
-        flex: 1,
-        backgroundColor: colors.background,
-      },
 
       content: {
         paddingHorizontal: spacing.md,
@@ -17,7 +13,9 @@ export const useStyles = () =>
       },
 
       appCard: {
-        backgroundColor: colors.surface,
+        backgroundColor: colors.glassCard,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
         borderRadius: radius.lg,
         paddingHorizontal: spacing.lg,
         paddingVertical: spacing.lg,
@@ -54,14 +52,14 @@ export const useStyles = () =>
       versionBadge: {
         paddingHorizontal: spacing.sm,
         paddingVertical: 2,
-        borderRadius: radius.xs,
-        backgroundColor: colors.surfaceMuted,
+        borderRadius: radius.round,
+        backgroundColor: colors.accentSoft,
       },
 
       versionText: {
         ...typography.caption,
         ...typography.number,
-        color: colors.textSecondary,
+        color: colors.accent,
       },
 
       footerText: {

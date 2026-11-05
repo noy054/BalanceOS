@@ -14,9 +14,14 @@ type ConfirmRequest = ConfirmOptions & {
 
 type ConfirmState = {
   request: ConfirmRequest | null;
+  openSheets: number;
 };
 
-export const useConfirmStore = create<ConfirmState>(() => ({ request: null }));
+export const useConfirmStore = create<ConfirmState>(() => ({ request: null, openSheets: 0 }));
+
+export function trackOpenSheet(open: boolean) {
+  useConfirmStore.setState((state) => ({ openSheets: Math.max(0, state.openSheets + (open ? 1 : -1)) }));
+}
 
 export function confirmAction(options: ConfirmOptions): Promise<boolean> {
   return new Promise((resolve) => {

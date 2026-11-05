@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { spacing, useThemedStyles } from "../../../../../shared/theme";
+import { radius, spacing, typography, useThemedStyles } from "../../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -9,25 +9,34 @@ export const useStyles = () =>
         marginBottom: spacing.md,
       },
 
-      grid: {
-        flexDirection: "row",
-        gap: spacing.ms,
+      modeTrack: {
+        padding: 4,
+        borderRadius: radius.round,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
       },
 
-      gridCell: {
-        flex: 1,
+      tiles: {
+        gap: spacing.sm,
+      },
+
+      grid: {
+        gap: spacing.sm,
       },
 
       servingFirst: {
-        marginBottom: spacing.md,
+        marginBottom: spacing.xs,
+      },
+
+      scaledNote: {
+        ...typography.footnote,
+        marginTop: spacing.sm,
+        color: colors.accent,
       },
 
       servingLast: {
-        marginTop: spacing.md,
-        marginBottom: spacing.md,
-        paddingTop: spacing.md,
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: colors.border,
+        marginTop: spacing.lg,
       },
     }),
   );

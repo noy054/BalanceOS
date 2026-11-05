@@ -13,6 +13,8 @@ export const useBirthDatePickerModalStyles = () =>
 
       card: {
         backgroundColor: colors.surface,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
         borderTopLeftRadius: radius.xxl,
         borderTopRightRadius: radius.xxl,
         paddingHorizontal: spacing.md,

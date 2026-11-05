@@ -7,6 +7,7 @@ import { finished } from 'node:stream/promises';
 import { resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { PrismaClient, Prisma } from '../generated/prisma/client';
+import { classifyCatalogItem } from '../src/modules/product-catalog/catalog-subcategories';
 
 type SourceProduct = Record<string, unknown>;
 type CatalogInput = Prisma.ProductCatalogItemCreateManyInput;
@@ -75,9 +76,11 @@ function imageUrl(product: SourceProduct): string | null {
   const selected = record(product.selected_images);
   const display = record(record(selected.front).display);
 
-  const candidates = [display.he, product.image_front_url, product.image_url];
-
-  for (const candidate of candidates) {
+  for (const candidate of [
+    display.he,
+    product.image_front_url,
+    product.image_url,
+  ]) {
     const value = text(candidate);
 
     if (!value) {
@@ -90,6 +93,60 @@ function imageUrl(product: SourceProduct): string | null {
       }
     } catch {
       continue;
+    }
+  }
+
+  const code = text(product.code);
+
+  if (!code || !/^\d{13}$/.test(code)) {
+    return null;
+  }
+
+  const folder = code.replace(/^(\d{3})(\d{3})(\d{3})(\d{4})$/, '$1/$2/$3/$4');
+
+  const images = record(product.images);
+  const fronts = record(record(images.selected).front);
+
+  const languages = [
+    ...new Set([
+      'he',
+      text(product.lang) ?? 'en',
+      'en',
+      ...Object.keys(fronts),
+      ...Object.keys(images)
+        .filter((key) => /^front_[a-z]{2}$/.test(key))
+        .map((key) => key.slice(6)),
+    ]),
+  ];
+
+  for (const language of languages) {
+    if (!/^[a-z]{2}$/.test(language)) {
+      continue;
+    }
+
+    const candidates = [
+      record(fronts[language]),
+      record(images[`front_${language}`]),
+    ];
+
+    for (const image of candidates) {
+      const revision = String(image.rev ?? '');
+
+      if (!/^\d+$/.test(revision)) {
+        continue;
+      }
+
+      const sizes = record(image.sizes);
+      const size = ['400', '200', '100'].find((value) => value in sizes);
+
+      if (!size) {
+        continue;
+      }
+
+      return (
+        `https://images.openfoodfacts.org/images/products/` +
+        `${folder}/front_${language}.${revision}.${size}.jpg`
+      );
     }
   }
 
@@ -179,10 +236,6 @@ function mapProduct(
 
   const image = imageUrl(product);
 
-  if (!image) {
-    return skip('missing_image');
-  }
-
   const mapped = {
     barcode: text(product.code),
     gtin: normalizedBarcode,
@@ -190,6 +243,7 @@ function mapProduct(
     name,
     brand: text(product.brands),
     category: categories.join(', ') || null,
+    ...classifyCatalogItem(categories, null, name),
     countryCode: 'IL',
     languageCode: /[\u0590-\u05ff]/.test(name)
       ? 'he'

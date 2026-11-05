@@ -15,7 +15,7 @@ export function useItemAmountLabel() {
         return t("meals.savedMeal");
       }
 
-      if (item.grams == null && item.servings == null) {
+      if (item.grams == null && item.servings == null && item.milliliters == null) {
         return null;
       }
 
@@ -28,6 +28,7 @@ export function useItemAmountLabel() {
       return servingFormat.amount(item.serving ?? {}, {
         grams: item.grams,
         servings: item.servings,
+        milliliters: item.milliliters,
       });
     },
     [t, servingFormat],

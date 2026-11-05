@@ -7,6 +7,7 @@ import {
   AdminEntityType,
   AdminHistoryEntry,
   AdminOverview,
+  AnalyticsDashboard,
   AnnouncementPayload,
   AnnouncementState,
 } from "../types";
@@ -14,6 +15,12 @@ import {
 export const adminApi = {
   overview(): Promise<AdminOverview> {
     return apiClient.get<AdminOverview>(ADMIN_ENDPOINTS.OVERVIEW).then((r) => r.data);
+  },
+
+  analytics(from: string, to: string): Promise<AnalyticsDashboard> {
+    return apiClient
+      .get<AnalyticsDashboard>(ADMIN_ENDPOINTS.ANALYTICS, { params: { from, to } })
+      .then((r) => r.data);
   },
 
   activity(params: { entityType?: AdminEntityType; cursor?: string }): Promise<Page<AdminHistoryEntry>> {

@@ -5,10 +5,6 @@ import { fonts, spacing, typography, useThemedStyles } from "../../../../shared/
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      root: {
-        flex: 1,
-        backgroundColor: colors.background,
-      },
 
       flex: {
         flex: 1,

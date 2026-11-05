@@ -1,0 +1,92 @@
+{
+  "title": "Subscription",
+  "row": "Subscription",
+  "rowFree": "Free plan",
+  "rowPro": "Pro",
+  "plan": {
+    "free": "Free",
+    "pro": "Pro"
+  },
+  "badge": {
+    "pastDue": "Payment issue"
+  },
+  "status": {
+    "free": "You're on the free plan. Logging, pantry and progress stay free.",
+    "renews": "Renews on {{date}} · {{price}} {{period}}",
+    "ending": "Pro ends on {{date}}. You won't be charged again.",
+    "pastDue": "The last payment didn't go through. We'll try again on {{retry}}. Pro stays available until {{grace}}.",
+    "ended": "Pro ended on {{date}}."
+  },
+  "includes": {
+    "title": "Pro includes",
+    "statistics": "Weekly and monthly statistics",
+    "reports": "PDF nutrition reports",
+    "history": "Trends, accuracy and food insights"
+  },
+  "plans": {
+    "title": "Choose a plan",
+    "MONTHLY": "Monthly",
+    "YEARLY": "Yearly",
+    "save": "Save {{percent}}%",
+    "unavailable": "Payments aren't available right now. Try again later.",
+    "terms": "Renews automatically until you cancel. You can cancel anytime and keep Pro until the end of the paid period."
+  },
+  "period": {
+    "MONTHLY": "/ month",
+    "YEARLY": "/ year"
+  },
+  "method": {
+    "title": "Payment method",
+    "card": "{{brand}} •••• {{last4}}",
+    "cardFallback": "Card",
+    "none": "No card on file",
+    "expiry": "Expires {{expiry}}"
+  },
+  "history": {
+    "title": "Payment history",
+    "kind": {
+      "INITIAL": "Subscription",
+      "RENEWAL": "Renewal",
+      "VERIFICATION": "Card update"
+    },
+    "status": {
+      "PAID": "Paid",
+      "FAILED": "Failed"
+    }
+  },
+  "actions": {
+    "subscribe": "Continue to secure payment",
+    "updateCard": "Update payment method",
+    "update": "Update",
+    "resume": "Keep my subscription",
+    "cancel": "Cancel subscription"
+  },
+  "cancel": {
+    "title": "Cancel your subscription?",
+    "message": "You'll keep Pro until {{date}} and won't be charged again.",
+    "confirm": "Cancel subscription",
+    "keep": "Keep Pro"
+  },
+  "waiting": "Confirming your payment…",
+  "toast": {
+    "subscribed": "You're on Pro.",
+    "cardUpdated": "Payment method updated.",
+    "failed": "The payment didn't go through. No charge was made.",
+    "expired": "The payment page expired. Try again.",
+    "canceled": "Subscription canceled. Pro stays active until the end of the period."
+  },
+  "errors": {
+    "loadFailed": "Subscription details couldn't be loaded.",
+    "retry": "Try again",
+    "checkoutFailed": "The payment page couldn't be opened. Try again.",
+    "actionFailed": "That didn't work. Try again."
+  },
+  "paywall": {
+    "title": "Statistics are part of Pro",
+    "message": "Your logs are saved either way. Upgrade to see weekly trends, accuracy and reports.",
+    "action": "See plans",
+    "reportsTitle": "Reports are part of Pro",
+    "reportsMessage": "Upgrade to export PDF nutrition reports for any week or month.",
+    "notNow": "Not now"
+  }
+}

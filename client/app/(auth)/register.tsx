@@ -123,7 +123,7 @@ export default function RegisterScreen() {
         onPress={handleRegister}
         loading={register.isPending}
         disabled={register.isPending || !fullName || !email || !password}
-        buttonColor={colors.accent}
+        buttonColor={colors.accentFill}
         textColor={colors.onAccent}
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}

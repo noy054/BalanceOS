@@ -1,8 +1,7 @@
 import { View, Text, Pressable, ActivityIndicator, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
-import { ScreenHeader } from '../../../shared/components/ScreenHeader';
+import { SettingsScreenLayout, useSettingsBottomPadding } from '../components/SettingsScreenLayout';
 import { useNutritionSettings, useUpdateSettings } from '../hooks/useSettings';
 import { ExperienceMode } from '../types';
 import { useAppTheme } from '../../../shared/theme';
@@ -46,7 +45,7 @@ function ModeCard({ title, description, icon, active, isRTL, onPress }: ModeCard
         <Text style={[styles.cardTitle, dir.text]}>{title}</Text>
 
         <View style={[styles.radio, active && styles.radioActive]}>
-          {active ? <View style={styles.radioDot} /> : null}
+          {active ? <MaterialCommunityIcons name="check" size={15} color={colors.onAccent} /> : null}
         </View>
       </View>
 
@@ -60,6 +59,7 @@ export function ExperienceModeScreen() {
   const { colors } = useAppTheme();
   const styles = useStyles();
   const isRTL = i18n.dir(i18n.language) === 'rtl';
+  const bottomPadding = useSettingsBottomPadding();
 
   const { data: settings } = useNutritionSettings();
   const updateSettings = useUpdateSettings();
@@ -72,17 +72,15 @@ export function ExperienceModeScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      <ScreenHeader
-        title={t('experience.screenTitle')}
-        rightElement={
-          updateSettings.isPending ? (
-            <ActivityIndicator size="small" color={colors.accent} />
-          ) : undefined
-        }
-      />
-
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <SettingsScreenLayout
+      title={t('experience.screenTitle')}
+      rightElement={
+        updateSettings.isPending ? (
+          <ActivityIndicator size="small" color={colors.accent} />
+        ) : undefined
+      }
+    >
+      <ScrollView contentContainerStyle={[styles.content, bottomPadding]} showsVerticalScrollIndicator={false}>
         <ModeCard
           title={t('experience.expert')}
           description={t('experience.expertDescription')}
@@ -100,6 +98,6 @@ export function ExperienceModeScreen() {
           onPress={() => handleSelect('GUIDED')}
         />
       </ScrollView>
-    </SafeAreaView>
+    </SettingsScreenLayout>
   );
 }

@@ -104,7 +104,7 @@ export function createSavedMealDraftFromRecipe(
 export function createSavedMealDraftFromSavedMealItem(
   item: SavedMealItem,
 ): SavedMealDraftItem | null {
-  if (item.product && (item.grams != null || item.servings != null)) {
+  if (item.product && (item.grams != null || item.servings != null || item.milliliters != null)) {
     const stored = amountFromStored(item.product, item);
     return {
       kind: "product",

@@ -10,9 +10,10 @@
     "ios": {
       "supportsTablet": true,
       "userInterfaceStyle": "automatic",
-      "bundleIdentifier": "com.balanceos.app"
+      "bundleIdentifier": "com.balanceos.mobile"
     },
     "android": {
+      "package": "com.balanceos.mobile",
       "userInterfaceStyle": "automatic",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -20,7 +21,10 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,7 +35,7 @@
       [
         "@react-native-google-signin/google-signin",
         {
-          "iosUrlScheme": "com.googleusercontent.apps.REPLACE_WITH_IOS_CLIENT_ID_PREFIX"
+          "iosUrlScheme": "com.googleusercontent.apps.216338591550-om7g46fu9icittfflr36ki7pemah8ovl"
         }
       ],
       "@react-native-community/datetimepicker",
@@ -52,7 +56,20 @@
           "cameraPermission": "Allow BalanceOS to use your camera to scan barcodes and take product photos.",
           "microphonePermission": false
         }
-      ]
-    ]
+      ],
+      "expo-sharing",
+      "expo-image",
+      "expo-web-browser"
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "4e5aa1fd-ddac-40f3-9224-9d8e7474c54e"
+      }
+    }
   }
 }

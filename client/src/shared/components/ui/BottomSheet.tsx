@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import {
   KeyboardAvoidingView,
   Modal,
@@ -14,6 +14,8 @@ import { radius, shadows, spacing, typography, useThemedStyles } from "../../the
 import { useDirection } from "../../hooks/useDirection";
 import { IconButton } from "./IconButton";
 import { keyboardBehavior } from "./KeyboardAvoider";
+import { ConfirmDialogHost } from "./ConfirmDialogHost";
+import { trackOpenSheet } from "../../helpers/confirm";
 
 type Props = {
   visible: boolean;
@@ -38,6 +40,12 @@ export function BottomSheet({
   const styles = useStyles();
   const dir = useDirection();
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (!visible) return;
+    trackOpenSheet(true);
+    return () => trackOpenSheet(false);
+  }, [visible]);
 
   return (
     <Modal
@@ -89,6 +97,7 @@ export function BottomSheet({
           {footer ? <View style={styles.footer}>{footer}</View> : null}
         </View>
       </KeyboardAvoidingView>
+      <ConfirmDialogHost embedded />
     </Modal>
   );
 }

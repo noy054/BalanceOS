@@ -44,7 +44,11 @@
     "measurements_two": "2 מדידות",
     "measurements_many": "{{count}} מדידות",
     "measurements_other": "{{count}} מדידות",
-    "latestMeasurements": "מדידות אחרונות"
+    "latestMeasurements": "מדידות אחרונות",
+    "lowestLabel": "הנמוך ביותר",
+    "highestLabel": "הגבוה ביותר",
+    "entriesLabel": "רישומים",
+    "logWeight": "רישום משקל"
   },
   "history": {
     "title": "היסטוריה",
@@ -56,7 +60,17 @@
     "photoCount_other": "{{count}} תמונות",
     "hasNote": "יש הערה"
   },
+  "reminder": {
+    "title": "תזכורת לשקילה",
+    "off": "כבויה",
+    "summary": "{{days}} · {{time}}"
+  },
   "entry": {
+    "decreaseWeight": "הפחתת המשקל ב־0.1",
+    "increaseWeight": "הגדלת המשקל ב־0.1",
+    "previousValue": "רישום אחרון: {{value}} {{unit}} ב־{{date}}",
+    "changeFromPrevious": "{{change}} {{unit}} מאז {{date}}",
+    "weightOptional": "אופציונלי",
     "newTitle": "רישום חדש",
     "editTitle": "עריכת רישום",
     "loadFailed": "לא ניתן היה לטעון את הרישום.",

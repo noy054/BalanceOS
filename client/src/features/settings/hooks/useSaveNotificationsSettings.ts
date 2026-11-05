@@ -15,6 +15,10 @@ export function useSaveNotificationsSettings(
   const updateSettings = useUpdateSettings();
 
   async function save() {
+    if (form.weighIn && (form.weighInDays.length === 0 || !form.weighInTime)) {
+      throw new Error("WEIGH_IN_INCOMPLETE");
+    }
+
     const waterIntervalValue = form.waterInterval
       ? parseInt(form.waterInterval, 10)
       : undefined;
@@ -48,6 +52,10 @@ export function useSaveNotificationsSettings(
       weeklySummaryDay: weeklyDayValue,
       weeklySummaryTime:
         form.weekly && form.weeklyTime ? form.weeklyTime : undefined,
+
+      weighInReminderEnabled: form.weighIn,
+      weighInReminderDays: form.weighInDays,
+      weighInReminderTime: form.weighInTime || undefined,
     });
 
     await scheduleSettingsNotifications({
@@ -82,6 +90,13 @@ export function useSaveNotificationsSettings(
         title: t("notifications.weeklySummary"),
         body: t("notifications.weeklySummary"),
       },
+      weighIn: {
+        enabled: form.weighIn,
+        days: form.weighInDays,
+        time: form.weighInTime,
+        title: t("notifications.weighInReminder"),
+        body: t("notifications.weighInBody"),
+      },
       water: {
         enabled: form.water,
         intervalMinutes: waterIntervalValue,
@@ -99,6 +114,11 @@ export function useSaveNotificationsSettings(
       error.message === "NOTIFICATIONS_PERMISSION_DENIED"
     ) {
       Alert.alert("", t("notifications.permissionDenied"));
+      return;
+    }
+
+    if (error instanceof Error && error.message === "WEIGH_IN_INCOMPLETE") {
+      Alert.alert("", t("notifications.weighInIncomplete"));
       return;
     }
 

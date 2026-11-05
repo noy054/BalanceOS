@@ -1,6 +1,6 @@
 import { ProductNutritionFields, ProductNutritionPayload } from "../types";
 
-export type NutritionMode = "per100g" | "perServing";
+export type NutritionMode = "per100g" | "per100ml" | "perServing";
 
 export type ProductFormState = {
   name: string;
@@ -17,10 +17,11 @@ export type ServingFormState = {
   quantity: string;
   unit: string;
   grams: string;
+  milliliters: string;
 };
 
 export type ProductFormErrors = Partial<
-  Record<keyof ProductFormState | "servingSizeG" | "servingQuantity", string>
+  Record<keyof ProductFormState | "servingSizeG" | "servingSizeMl" | "servingQuantity", string>
 >;
 
 export type ProductFormSource = ProductNutritionFields & {
@@ -39,6 +40,7 @@ export const INITIAL_SERVING_FORM: ServingFormState = {
   quantity: "1",
   unit: "",
   grams: "",
+  milliliters: "",
 };
 
 export const INITIAL_PRODUCT_FORM: ProductFormState = {
@@ -85,15 +87,20 @@ export function getProductFormFromProduct(
   options: { preferPer100g?: boolean } = {},
 ) {
   const grams = product.servingSizeG != null && product.servingSizeG > 0 ? product.servingSizeG : null;
+  const milliliters =
+    product.servingSizeMl != null && product.servingSizeMl > 0 ? product.servingSizeMl : null;
   const unit = product.servingUnit?.trim() ?? "";
   const isPerServing = product.nutritionBasis === "PER_SERVING";
+  const isVolume = product.nutritionBasis === "PER_100ML";
+  const base = isVolume ? milliliters : grams;
 
   const serving: ServingFormState =
-    grams || isPerServing
+    grams || milliliters || isPerServing
       ? {
           quantity: toFormString(product.servingQuantity ?? 1) || "1",
           unit,
           grams: toFormString(grams),
+          milliliters: toFormString(milliliters),
         }
       : INITIAL_SERVING_FORM;
 
@@ -118,8 +125,8 @@ export function getProductFormFromProduct(
     };
   }
 
-  if (grams && !options.preferPer100g) {
-    const factor = grams / 100;
+  if (base && !options.preferPer100g && !isVolume) {
+    const factor = base / 100;
     return {
       nutritionMode: "perServing" as NutritionMode,
       serving,
@@ -135,7 +142,7 @@ export function getProductFormFromProduct(
   }
 
   return {
-    nutritionMode: "per100g" as NutritionMode,
+    nutritionMode: (isVolume ? "per100ml" : "per100g") as NutritionMode,
     serving,
     form: {
       ...identity,
@@ -159,9 +166,25 @@ type BuildPayloadArgs = {
 
 type ParsedServing = {
   grams: number | null;
+  milliliters: number | null;
   quantity: number | null;
   unit: string | null;
 };
+
+function parseMeasure(
+  value: string,
+  key: "servingSizeG" | "servingSizeMl",
+  invalidNumberError: string,
+  errors: ProductFormErrors,
+): number | null | false {
+  if (!value.trim()) return null;
+  const parsed = parseOptionalNumber(value);
+  if (!parsed || parsed <= 0) {
+    errors[key] = invalidNumberError;
+    return false;
+  }
+  return parsed;
+}
 
 function parseServing(
   serving: ServingFormState,
@@ -170,30 +193,29 @@ function parseServing(
   errors: ProductFormErrors,
 ): ParsedServing {
   const unit = serving.unit.trim() || null;
-  const hasWeight = Boolean(serving.grams.trim());
   const perServing = nutritionMode === "perServing";
-  const empty = { grams: null, quantity: null, unit: null };
+  const empty = { grams: null, milliliters: null, quantity: null, unit: null };
 
-  if (!perServing && !hasWeight && !unit) {
+  const grams = parseMeasure(serving.grams, "servingSizeG", invalidNumberError, errors);
+  const milliliters = parseMeasure(serving.milliliters, "servingSizeMl", invalidNumberError, errors);
+  if (grams === false || milliliters === false) return empty;
+
+  if (!perServing && grams === null && milliliters === null && !unit) {
     return empty;
   }
 
-  let grams: number | null = null;
-
-  if (hasWeight) {
-    const parsed = parseOptionalNumber(serving.grams);
-    if (!parsed || parsed <= 0) {
-      errors.servingSizeG = invalidNumberError;
-      return empty;
-    }
-    grams = parsed;
-  } else if (!perServing) {
+  if (nutritionMode === "per100g" && grams === null) {
     errors.servingSizeG = invalidNumberError;
     return empty;
   }
 
+  if (nutritionMode === "per100ml" && milliliters === null) {
+    errors.servingSizeMl = invalidNumberError;
+    return empty;
+  }
+
   if (!unit && !perServing) {
-    return { grams, quantity: null, unit: null };
+    return { grams, milliliters, quantity: null, unit: null };
   }
 
   const quantity = serving.quantity.trim() ? parseOptionalNumber(serving.quantity) : 1;
@@ -203,7 +225,7 @@ function parseServing(
     return empty;
   }
 
-  return { grams, quantity, unit };
+  return { grams, milliliters, quantity, unit };
 }
 
 function round2(value: number) {
@@ -260,6 +282,7 @@ export function buildProductPayload({
 
   const servingFields = {
     servingSizeG: parsedServing.grams,
+    servingSizeMl: parsedServing.milliliters,
     servingQuantity: parsedServing.quantity,
     servingUnit: parsedServing.unit,
   };
@@ -272,15 +295,17 @@ export function buildProductPayload({
     fiberPerServing: null,
   };
 
-  if (nutritionMode === "perServing" && parsedServing.grams) {
-    const factor = 100 / parsedServing.grams;
+  const servingBase = parsedServing.grams ?? parsedServing.milliliters;
+
+  if (nutritionMode === "perServing" && servingBase) {
+    const factor = 100 / servingBase;
     return {
       errors: null,
       payload: {
         ...identity,
         ...servingFields,
         ...emptyPerServing,
-        nutritionBasis: "PER_100G",
+        nutritionBasis: parsedServing.grams ? "PER_100G" : "PER_100ML",
         caloriesPer100g: round2((calories ?? 0) * factor),
         proteinPer100g: round2((protein ?? 0) * factor),
         carbsPer100g: round2((carbs ?? 0) * factor),
@@ -317,7 +342,7 @@ export function buildProductPayload({
       ...identity,
       ...servingFields,
       ...emptyPerServing,
-      nutritionBasis: "PER_100G",
+      nutritionBasis: nutritionMode === "per100ml" ? "PER_100ML" : "PER_100G",
       caloriesPer100g: calories ?? 0,
       proteinPer100g: protein ?? 0,
       carbsPer100g: carbs ?? 0,

@@ -7,7 +7,7 @@ export const useStyles = () =>
     StyleSheet.create({
       root: {
         flex: 1,
-        backgroundColor: colors.background,
+        backgroundColor: colors.canvas,
       },
 
       flex: {
@@ -18,7 +18,7 @@ export const useStyles = () =>
         paddingHorizontal: spacing.md,
         paddingTop: spacing.xs,
         paddingBottom: spacing.xl,
-        gap: spacing.lg,
+        gap: spacing.xl,
       },
 
       intro: {
@@ -31,7 +31,7 @@ export const useStyles = () =>
         alignItems: "center",
         alignSelf: "flex-start",
         gap: spacing.xs,
-        backgroundColor: colors.surfaceMuted,
+        backgroundColor: colors.glassCard,
         borderRadius: radius.sm,
         paddingHorizontal: spacing.sm,
         paddingVertical: spacing.xs,

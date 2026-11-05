@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { spacing, useThemedStyles } from "../../theme";
+import { useFormTone } from "../FormTone";
 
 type Props = {
   children: ReactNode;
@@ -11,9 +12,16 @@ type Props = {
 export function StickyFooter({ children }: Props) {
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const glass = useFormTone() === "glass";
 
   return (
-    <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
+    <View
+      style={[
+        styles.footer,
+        glass && styles.footerGlass,
+        { paddingBottom: Math.max(insets.bottom, spacing.md) },
+      ]}
+    >
       {children}
     </View>
   );
@@ -29,6 +37,10 @@ const useStyles = () =>
         borderTopWidth: StyleSheet.hairlineWidth,
         borderTopColor: colors.border,
         gap: spacing.sm,
+      },
+      footerGlass: {
+        backgroundColor: colors.canvas,
+        borderTopColor: colors.glassBorder,
       },
     }),
   );

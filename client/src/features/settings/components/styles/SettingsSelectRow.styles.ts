@@ -12,10 +12,10 @@ export const useStyles = () =>
       },
       rowBorder: {
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: colors.border,
+        borderBottomColor: colors.glassBorder,
       },
       label: {
-        ...typography.body,
+        ...typography.bodyStrong,
         color: colors.textPrimary,
       },
     }),

@@ -1,3 +1,4 @@
+import { IsDayKey } from '../../../common/date/is-day-key.validator';
 import {
   ArrayMaxSize,
   ArrayUnique,
@@ -9,6 +10,7 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
+import { MAX_TEMPLATE_ITEMS } from './template-limits';
 import { Type } from 'class-transformer';
 import { SavedMealItemDto } from './create-saved-meal.dto';
 
@@ -35,8 +37,18 @@ export class UpdateSavedMealDto {
   mealTypes?: string[];
 
   @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  imageUrl?: string | null;
+
+  @IsOptional()
   @IsArray()
+  @ArrayMaxSize(MAX_TEMPLATE_ITEMS)
   @ValidateNested({ each: true })
   @Type(() => SavedMealItemDto)
   items?: SavedMealItemDto[];
+
+  @IsOptional()
+  @IsDayKey()
+  logsFrom?: string;
 }

@@ -46,7 +46,7 @@ export function CatalogComparisonTable({ columns, highlightKey }: Props) {
     {
       key: "serving",
       label: t("catalogReview.fields.basis"),
-      value: (d) => (d.nutritionBasis === "PER_SERVING" ? format.perServing(d) : tPantry("product.per100g")),
+      value: (d) => (d.nutritionBasis === "PER_SERVING" ? format.perServing(d) : format.per100(d)),
     },
     { key: "calories", label: tPantry("macros.calories"), value: (d) => macroValue(d, "calories") },
     { key: "protein", label: tPantry("macros.protein"), value: (d) => macroValue(d, "protein") },

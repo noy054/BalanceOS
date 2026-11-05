@@ -5,10 +5,6 @@ import { radius, spacing, typography, useThemedStyles } from "../../../../shared
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      root: {
-        flex: 1,
-        backgroundColor: colors.background,
-      },
 
       flex: {
         flex: 1,
@@ -22,7 +18,9 @@ export const useStyles = () =>
 
       infoBanner: {
         backgroundColor: colors.accentSoft,
-        borderRadius: radius.md,
+        borderWidth: 1,
+        borderColor: colors.accentBorder,
+        borderRadius: radius.lg,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.ms,
         marginBottom: spacing.lg,

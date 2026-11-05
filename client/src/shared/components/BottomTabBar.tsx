@@ -77,7 +77,16 @@ export function BottomTabBar({ activeTab = "home", onTabPress }: Props) {
   }
 
   return (
-    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingBottom: Math.max(insets.bottom, spacing.sm),
+          backgroundColor:
+            activeTab === "add" ? colors.background : colors.canvas,
+        },
+      ]}
+    >
       <View style={[styles.bar, dir.row]} accessibilityRole="tablist">
         <View pointerEvents="none" style={styles.barHighlight} />
         {TABS.map((tab) => {

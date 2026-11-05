@@ -31,12 +31,12 @@ export function useMacroLineText(macros: MacroValues) {
     parts.push(t("nutritionLine.item", { label: t("macrosShort.carbs"), value: formatGrams(macros.carbs) }));
   }
 
-  if (showFat) {
-    parts.push(t("nutritionLine.item", { label: t("macrosShort.fat"), value: formatGrams(macros.fat) }));
+  if (showFiber && macros.fiber != null) {
+    parts.push(t("nutritionLine.item", { label: t("macrosShort.fiber"), value: formatGrams(macros.fiber) }));
   }
 
-  if (showFiber && macros.fiber != null && macros.fiber > 0) {
-    parts.push(t("nutritionLine.item", { label: t("macrosShort.fiber"), value: formatGrams(macros.fiber) }));
+  if (showFat) {
+    parts.push(t("nutritionLine.item", { label: t("macrosShort.fat"), value: formatGrams(macros.fat) }));
   }
 
   return parts.join(" · ");

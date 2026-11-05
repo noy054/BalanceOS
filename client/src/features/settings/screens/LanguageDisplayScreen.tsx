@@ -1,8 +1,7 @@
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
-import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { SettingsScreenLayout, useSettingsBottomPadding } from "../components/SettingsScreenLayout";
 import { SegmentedControl } from "../../../shared/components/ui/SegmentedControl";
 import { SettingsSection } from "../components/SettingsSection";
 import { useNutritionSettings, useUpdateSettings } from "../hooks/useSettings";
@@ -16,6 +15,7 @@ export function LanguageDisplayScreen() {
   const { t } = useTranslation("settings");
   const styles = useSubScreenStyles();
   const dir = useDirection();
+  const bottomPadding = useSettingsBottomPadding();
 
   const { setThemeMode, themeMode } = useAppTheme();
 
@@ -38,12 +38,11 @@ export function LanguageDisplayScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={t("languageDisplay.screenTitle")} />
+    <SettingsScreenLayout title={t("languageDisplay.screenTitle")}>
 
       <ScrollView
         style={styles.flex}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, bottomPadding]}
         showsVerticalScrollIndicator={false}
       >
         <SettingsSection title={t("languageDisplay.languageSection")}>
@@ -57,6 +56,7 @@ export function LanguageDisplayScreen() {
               ]}
               value={currentLang}
               onChange={handleLanguageChange}
+              pill
             />
 
             <Text style={[styles.note, dir.text]}>{t("languageDisplay.rtlNote")}</Text>
@@ -73,10 +73,11 @@ export function LanguageDisplayScreen() {
               ]}
               value={currentTheme}
               onChange={handleThemeChange}
+              pill
             />
           </View>
         </SettingsSection>
       </ScrollView>
-    </SafeAreaView>
+    </SettingsScreenLayout>
   );
 }

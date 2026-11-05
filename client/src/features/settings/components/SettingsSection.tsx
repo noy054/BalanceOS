@@ -14,7 +14,7 @@ export function SettingsSection({ title, children, danger = false }: Props) {
 
   return (
     <View style={styles.wrapper}>
-      <SectionHeader title={title} tone={danger ? 'danger' : 'default'} />
+      <SectionHeader title={title} tone={danger ? 'danger' : 'default'} style={styles.header} />
       <View style={[styles.card, danger && styles.cardDanger]}>{children}</View>
     </View>
   );

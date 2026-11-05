@@ -7,7 +7,7 @@ export const useStyles = () =>
     StyleSheet.create({
       root: {
         flex: 1,
-        backgroundColor: colors.background,
+        backgroundColor: colors.canvas,
       },
 
       scroll: {

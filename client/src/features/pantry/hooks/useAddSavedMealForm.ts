@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { moveItem } from "../helpers/recipeMealTypes";
 
 import {
   buildSavedMealPayloadItems,
@@ -11,7 +12,8 @@ import {
 } from "../helpers/savedMealDraft";
 import { MealType, PantryProduct, PantryRecipe, SavedMeal } from "../types";
 import { MEAL_TYPES } from "../constants";
-import { convertAmount } from "../helpers/serving";
+import { convertAmount, AmountUnit, nextAmountUnit } from "../helpers/serving";
+import { RecipeIngredientSelection } from "../helpers/recipeIngredientPickerDraft";
 
 export function useAddSavedMealForm(
   existingMeal: SavedMeal | undefined,
@@ -67,14 +69,6 @@ export function useAddSavedMealForm(
     [items],
   );
 
-  const selectedProductIds = useMemo(
-    () =>
-      items
-        .filter((item) => item.kind === "product")
-        .map((item) => item.product.id),
-    [items],
-  );
-
   const validItems = useMemo(() => buildSavedMealPayloadItems(items), [items]);
 
   function handleNameChange(value: string) {
@@ -85,6 +79,17 @@ export function useAddSavedMealForm(
   function addProduct(product: PantryProduct) {
     setItems((prev) => [...prev, createSavedMealDraftFromProduct(product)]);
     setProductPickerVisible(false);
+  }
+
+  function addProducts(selections: RecipeIngredientSelection[]) {
+    setItems((prev) => [
+      ...prev,
+      ...selections.map((selection) => ({
+        ...createSavedMealDraftFromProduct(selection.product),
+        grams: selection.quantity,
+        unit: selection.unit,
+      })),
+    ]);
   }
 
   function addRecipe(recipe: PantryRecipe) {
@@ -114,6 +119,15 @@ export function useAddSavedMealForm(
     );
   }
 
+  function setAmount(key: string, amount: string, unit: AmountUnit) {
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.key !== key) return item;
+        return item.kind === "product" ? { ...item, grams: amount, unit } : { ...item, servings: amount };
+      }),
+    );
+  }
+
   function toggleUnit(key: string) {
     setItems((prev) =>
       prev.map((item) => {
@@ -121,7 +135,7 @@ export function useAddSavedMealForm(
           return item;
         }
 
-        const nextUnit = item.unit === "grams" ? "servings" : "grams";
+        const nextUnit = nextAmountUnit(item.product, item.unit);
 
         return {
           ...item,
@@ -140,6 +154,10 @@ export function useAddSavedMealForm(
     );
   }
 
+  function moveItemTo(from: number, to: number) {
+    setItems((prev) => moveItem(prev, from, to));
+  }
+
   function removeItem(key: string) {
     setItems((prev) => prev.filter((item) => item.key !== key));
   }
@@ -155,7 +173,6 @@ export function useAddSavedMealForm(
     liveTotals,
     toggleUnit,
     hasTotals,
-    selectedProductIds,
     validItems,
 
     setNameError,
@@ -166,8 +183,11 @@ export function useAddSavedMealForm(
 
     handleNameChange,
     addProduct,
+    addProducts,
     addRecipe,
     updateAmount,
+    setAmount,
     removeItem,
+    moveItem: moveItemTo,
   };
 }

@@ -8,6 +8,9 @@ export const DAY_LOG_ENDPOINTS = {
   REMOVE_MEAL_ITEM: (itemId: string) => `/day-logs/meal-items/${itemId}`,
   COPY_MEAL_ENTRY: (mealEntryId: string) => `/day-logs/meal-entries/${mealEntryId}/copy`,
   COPY_MEAL_ITEM: (itemId: string) => `/day-logs/meal-items/${itemId}/copy`,
+  ITEM_COMPONENTS: (itemId: string) => `/day-logs/meal-items/${itemId}/components`,
+  ITEM_COMPONENT: (itemId: string, componentId: string) =>
+    `/day-logs/meal-items/${itemId}/components/${componentId}`,
 } as const;
 
 export const DAY_LOG_QUERY_KEYS = {
@@ -15,4 +18,5 @@ export const DAY_LOG_QUERY_KEYS = {
   day: (date: string) => ['day-log', 'day', date] as const,
   meals: (date: string) => ['day-log', 'day', date, 'meals'] as const,
   calendar: (from: string, to: string) => ['day-log', 'calendar', from, to] as const,
+  components: (itemId: string) => ['day-log', 'components', itemId] as const,
 };

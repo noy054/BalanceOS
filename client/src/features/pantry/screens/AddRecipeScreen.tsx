@@ -1,27 +1,29 @@
-import { useEffect, useRef, useState } from "react";
-import { Alert, KeyboardAvoidingView, ScrollView, Text, View } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import { Alert, KeyboardAvoidingView, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { Button } from "../../../shared/components/ui/Button";
 import { StateView } from "../../../shared/components/ui/StateView";
 import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
-import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
-import {
-  useCreateRecipe,
-  useRecipe,
-  useUpdateRecipe,
-} from "../hooks/useRecipes";
+import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
+import { FormToneProvider } from "../../../shared/components/FormTone";
+import { useCreateRecipe, useRecipe, useUpdateRecipe } from "../hooks/useRecipes";
 import { usePantryProducts } from "../hooks/usePantry";
+import { FOOD_ICONS } from "../hooks/useFoodCardModels";
 import { RecipeIngredientPickerModal } from "../components/recipes/RecipeIngredientPickerModal";
 import { NutritionTotals } from "../components/nutrition/NutritionTotals";
 import { RecipeBasicInfoCard } from "../components/recipes/RecipeBasicInfoCard";
 import { RecipeIngredientsCard } from "../components/recipes/RecipeIngredientsCard";
-import { ImagePickerCard } from "../components/shared/ImagePickerCard";
+import { RecipeStepsCard } from "../components/recipes/RecipeStepsCard";
+import { FormImageHeader } from "../components/form/FormImageHeader";
 import { useAddRecipeForm } from "../hooks/useAddRecipeForm";
-import { getDirectionStyles, useStyles } from "./styles/FormScreen.styles";
+import { prepareFoodImage } from "../helpers/foodImage";
+import { AmountUnit } from "../helpers/serving";
+import { useIngredientEdit } from "../ingredientEditStore";
+import { useStyles } from "./styles/FormScreen.styles";
 import { keyboardBehavior } from "../../../shared/components/ui/KeyboardAvoider";
 
 type RouteParams = {
@@ -29,74 +31,82 @@ type RouteParams = {
   mode?: string;
 };
 
-type RecipeWithImage = {
-  imageUrl?: string | null;
-};
-
 export function AddRecipeScreen() {
   const { t, i18n } = useTranslation("pantry");
   const styles = useStyles();
+  const navigation = useNavigation();
 
   const params = useLocalSearchParams<RouteParams>();
   const recipeId = typeof params.id === "string" ? params.id : "";
   const isEditMode = params.mode === "edit" && Boolean(recipeId);
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
-  const dir = getDirectionStyles(isRTL);
 
   const createRecipe = useCreateRecipe();
   const updateRecipe = useUpdateRecipe(recipeId);
-  const { data: existingRecipe, isLoading: isRecipeLoading } =
-    useRecipe(recipeId);
+  const { data: existingRecipe, isLoading: isRecipeLoading } = useRecipe(recipeId);
 
   const [pickerSearch, setPickerSearch] = useState("");
   const { data: products = [], loadMore: loadMoreProducts } = usePantryProducts(pickerSearch);
 
   const form = useAddRecipeForm(existingRecipe, isEditMode);
-  const hydratedRecipeImageIdRef = useRef<string | null>(null);
+  const setAmountRef = useRef(form.setAmount);
+  setAmountRef.current = form.setAmount;
 
-  const [imageUrl, setImageUrl] = useState("");
+  useFocusEffect(
+    useCallback(() => {
+      const edited = useIngredientEdit.getState().take("recipe");
+      if (edited) setAmountRef.current(edited.key, edited.amount, edited.unit);
+    }, []),
+  );
 
-  useEffect(() => {
-    if (!isEditMode || !existingRecipe) {
-      return;
-    }
+  function openProductEditor(key: string, productId: string, amount: string, unit: AmountUnit) {
+    router.push({
+      pathname: "/(app)/pantry/[id]",
+      params: { id: productId, ingredientOf: "recipe", ingredientKey: key, parentName: form.name.trim(), amount, unit },
+    });
+  }
+  const [dragging, setDragging] = useState(false);
 
-    if (hydratedRecipeImageIdRef.current === existingRecipe.id) {
-      return;
-    }
+  const [isPreparing, setIsPreparing] = useState(false);
+  const isSaving = isPreparing || createRecipe.isPending || updateRecipe.isPending;
 
-    hydratedRecipeImageIdRef.current = existingRecipe.id;
-    setImageUrl((existingRecipe as RecipeWithImage).imageUrl ?? "");
-  }, [existingRecipe, isEditMode]);
-
-  const isSaving = createRecipe.isPending || updateRecipe.isPending;
+  function handleDragActive(active: boolean) {
+    setDragging(active);
+    navigation.setOptions({ gestureEnabled: !active });
+  }
 
   async function handleSave() {
+    if (isSaving) return;
+
     if (!form.name.trim()) {
       form.setNameError(t("errors.requiredField"));
       return;
     }
 
-    if (form.ingredients.length === 0) {
+    if (form.ingredients.length === 0 || form.validItems.length === 0) {
       Alert.alert("", t("errors.noIngredients"));
       return;
     }
 
-    if (form.validItems.length === 0) {
-      Alert.alert("", t("errors.noIngredients"));
+    if (form.validItems.length < form.ingredients.length) {
+      Alert.alert("", t("errors.missingAmounts"));
       return;
     }
 
-    const payload = {
-      name: form.name.trim(),
-      description: form.description.trim() || undefined,
-      imageUrl: imageUrl.trim() || undefined,
-      mealType: form.mealType ?? undefined,
-      items: form.validItems,
-    };
-
+    setIsPreparing(true);
     try {
+      const image = await prepareFoodImage(form.imageUrl.trim(), existingRecipe?.imageUrl);
+      const payload = {
+        name: form.name.trim(),
+        description: form.description.trim() || undefined,
+        imageUrl: image || (isEditMode ? null : undefined),
+        mealTypes: form.mealTypes,
+        items: form.validItems,
+        steps: form.stepTexts,
+      };
+      setIsPreparing(false);
+
       if (isEditMode) {
         await updateRecipe.mutateAsync(payload);
       } else {
@@ -105,11 +115,10 @@ export function AddRecipeScreen() {
 
       router.back();
     } catch {
+      setIsPreparing(false);
       Alert.alert(
         "",
-        isEditMode
-          ? t("errors.updateRecipeFailed")
-          : t("errors.saveRecipeFailed"),
+        isEditMode ? t("errors.updateRecipeFailed") : t("errors.saveRecipeFailed"),
       );
     }
   }
@@ -126,90 +135,94 @@ export function AddRecipeScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={title} />
+    <FormToneProvider tone="glass">
+      <SafeAreaView style={styles.root} edges={["top"]}>
+        <AmbientGlow intensity={0.3} />
+        <ScreenHeader title={title} />
 
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={keyboardBehavior}
-      >
-        <ScrollView
-          style={styles.flex}
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="interactive"
-          showsVerticalScrollIndicator={false}
-        >
-          <Text style={[styles.intro, dir.text]}>
-            {isEditMode ? t("editRecipe.subtitle") : t("addRecipe.subtitle")}
-          </Text>
+        <KeyboardAvoidingView style={styles.flex} behavior={keyboardBehavior}>
+          <ScrollView
+            style={styles.flex}
+            contentContainerStyle={styles.content}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            scrollEnabled={!dragging}
+            showsVerticalScrollIndicator={false}
+          >
+            <FormImageHeader
+              imageUrl={form.imageUrl}
+              fallbackIcon={FOOD_ICONS.recipe}
+              onChangeImage={form.setImageUrl}
+              onRemoveImage={() => form.setImageUrl("")}
+            />
 
-          <ImagePickerCard
-            imageUrl={imageUrl}
-            isRTL={isRTL}
-            title={t("recipe.imageTitle")}
-            subtitle={t("recipe.imageSubtitle")}
-            selectedSubtitle={t("recipe.imageSelected")}
-            addLabel={t("recipe.addImage")}
-            changeLabel={t("recipe.changeImage")}
-            removeLabel={t("recipe.removeImage")}
-            placeholderIcon="chef-hat"
-            onChangeImage={setImageUrl}
-            onRemoveImage={() => setImageUrl("")}
-          />
+            <RecipeBasicInfoCard
+              name={form.name}
+              description={form.description}
+              mealTypes={form.mealTypes}
+              nameError={form.nameError}
+              isRTL={isRTL}
+              autoFocus={!isEditMode}
+              onChangeName={form.setName}
+              onChangeDescription={form.setDescription}
+              onToggleMealType={form.toggleMealType}
+            />
 
-          <RecipeBasicInfoCard
-            name={form.name}
-            description={form.description}
-            mealType={form.mealType}
-            nameError={form.nameError}
-            isRTL={isRTL}
-            onChangeName={form.setName}
-            onChangeDescription={form.setDescription}
-            onChangeMealType={form.setMealType}
-          />
+            <RecipeIngredientsCard
+              ingredients={form.ingredients}
+              isRTL={isRTL}
+              onOpenProduct={(ingredient) =>
+                openProductEditor(ingredient.key, ingredient.product.id, ingredient.grams, ingredient.unit)
+              }
+              onChangeAmount={form.updateAmount}
+              onToggleUnit={form.toggleUnit}
+              onRemoveIngredient={form.removeIngredient}
+              onAddIngredient={() => form.setPickerVisible(true)}
+              onMoveIngredient={form.moveIngredient}
+              onDragActiveChange={handleDragActive}
+            />
 
-          <RecipeIngredientsCard
-            ingredients={form.ingredients}
-            isRTL={isRTL}
-            onChangeAmount={form.updateAmount}
-            onToggleUnit={form.toggleUnit}
-            onRemoveIngredient={form.removeIngredient}
-            onAddIngredient={() => form.setPickerVisible(true)}
-          />
+            {form.hasTotals ? (
+              <NutritionTotals totals={form.liveTotals} label={t("recipe.totalsSection")} />
+            ) : null}
 
-          {form.hasTotals ? (
-            <View>
-              <SectionHeader title={t("recipe.totalsSection")} />
-              <NutritionTotals totals={form.liveTotals} label={t("foodCard.recipeTotal")} />
-            </View>
-          ) : null}
-        </ScrollView>
+            <RecipeStepsCard
+              steps={form.steps}
+              onAddStep={form.addStep}
+              onChangeStep={form.updateStep}
+              onRemoveStep={form.removeStep}
+              onMoveStep={form.moveStep}
+              onDragActiveChange={handleDragActive}
+            />
+          </ScrollView>
 
-        <StickyFooter>
-          <Button
-            label={
-              isSaving
-                ? t("recipe.saving")
-                : isEditMode
-                  ? t("recipe.updateButton")
-                  : t("recipe.saveButton")
-            }
-            onPress={handleSave}
-            loading={isSaving}
-            fullWidth
-          />
-        </StickyFooter>
-      </KeyboardAvoidingView>
+          <StickyFooter>
+            <Button
+              label={
+                isSaving
+                  ? t("recipe.saving")
+                  : isEditMode
+                    ? t("recipe.updateButton")
+                    : t("recipe.saveButton")
+              }
+              onPress={handleSave}
+              loading={isSaving}
+              fullWidth
+            />
+          </StickyFooter>
+        </KeyboardAvoidingView>
 
-      <RecipeIngredientPickerModal
-        visible={form.pickerVisible}
-        products={products}
-        onEndReached={loadMoreProducts}
-        onSearchChange={setPickerSearch}
-        onAdd={form.addIngredients}
-        onClose={() => form.setPickerVisible(false)}
-      />
-    </SafeAreaView>
+        <RecipeIngredientPickerModal
+          visible={form.pickerVisible}
+          products={products}
+          onEndReached={loadMoreProducts}
+          onSearchChange={setPickerSearch}
+          onAdd={form.addIngredients}
+          onClose={() => form.setPickerVisible(false)}
+          incoming={form.incomingProduct}
+          onIncomingHandled={form.clearIncomingProduct}
+        />
+      </SafeAreaView>
+    </FormToneProvider>
   );
 }

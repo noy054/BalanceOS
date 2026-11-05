@@ -19,7 +19,7 @@ export function useRegister() {
   return useMutation({
     mutationFn: (payload: RegisterPayload) => authApi.register(payload),
     onSuccess: async (data) => {
-      queryClient.removeQueries({ queryKey: ['nutrition-settings'] });
+      queryClient.removeQueries();
       await tokenStorage.saveTokens(data.accessToken, data.refreshToken);
       setAuthenticated(data.user);
       router.replace('/');
@@ -34,7 +34,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: (payload: LoginPayload) => authApi.login(payload),
     onSuccess: async (data) => {
-      queryClient.removeQueries({ queryKey: ['nutrition-settings'] });
+      queryClient.removeQueries();
       await tokenStorage.saveTokens(data.accessToken, data.refreshToken);
       setAuthenticated(data.user);
       router.replace('/');
@@ -49,7 +49,7 @@ export function useGoogleLogin() {
   return useMutation({
     mutationFn: (payload: GoogleLoginPayload) => authApi.googleLogin(payload),
     onSuccess: async (data) => {
-      queryClient.removeQueries({ queryKey: ['nutrition-settings'] });
+      queryClient.removeQueries();
       await tokenStorage.saveTokens(data.accessToken, data.refreshToken);
       setAuthenticated(data.user);
       router.replace('/');

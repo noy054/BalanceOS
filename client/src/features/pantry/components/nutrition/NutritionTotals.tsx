@@ -5,7 +5,7 @@ import { NutritionTotals as NutritionTotalsType } from "../../types";
 import { formatCalories, formatGrams } from "../../../../shared/helpers/formatNumber";
 import { useAppTheme } from "../../../../shared/theme";
 import { useMacroVisibility } from "../../hooks/useMacroVisibility";
-import { MacroKey, macroColor } from "../../helpers/macroColors";
+import { MacroKey, macroColor } from "../../../../shared/helpers/macroColors";
 import { useStyles, getDirectionStyles } from "./styles/NutritionTotals.styles";
 
 type Props = {
@@ -33,7 +33,7 @@ export function NutritionTotals({ totals, label }: Props) {
     { key: "protein", label: t("macros.protein"), value: totals.protein },
     ...(showCarbs ? [{ key: "carbs" as const, label: t("macros.carbs"), value: totals.carbs }] : []),
     ...(showFat ? [{ key: "fat" as const, label: t("macros.fat"), value: totals.fat }] : []),
-    ...(showFiber && totals.fiber > 0 ? [{ key: "fiber" as const, label: t("macros.fiber"), value: totals.fiber }] : []),
+    ...(showFiber ? [{ key: "fiber" as const, label: t("macros.fiber"), value: totals.fiber }] : []),
   ];
 
   const isCompact = width < 360 && macros.length > 3;
@@ -64,9 +64,14 @@ export function NutritionTotals({ totals, label }: Props) {
                   {macro.label}
                 </Text>
               </View>
-              <Text style={[styles.macroValue, dir.text, { color }]} numberOfLines={1}>
+              <Text
+                style={[styles.macroValue, dir.text, { color }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.8}
+              >
                 {formatGrams(macro.value)}
-                <Text style={styles.macroUnit}> {t("product.gramsUnit")}</Text>
+                <Text style={styles.macroUnit}>{` ${t("product.gramsShort")}`}</Text>
               </Text>
             </View>
           );

@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { ProductCatalogService } from './product-catalog.service';
 import { ProductCatalogRepository } from './product-catalog.repository';
 import { OpenFoodFactsClient } from './open-food-facts.client';
@@ -66,5 +67,137 @@ describe('ProductCatalogService.lookupByBarcode', () => {
 
     await expect(service.lookupByBarcode('u1', BARCODE)).resolves.toBeNull();
     expect(off.fetchByBarcode).not.toHaveBeenCalled();
+  });
+});
+
+describe('ProductCatalogService catalog-first lookup and browsing', () => {
+  function browseSetup() {
+    const repo = {
+      findByNormalizedBarcode: jest.fn(),
+      countByDepartment: jest.fn(),
+      countBySubcategory: jest.fn(),
+      browse: jest.fn(),
+      findPantryMatches: jest.fn(),
+    };
+    const off = { fetchByBarcode: jest.fn() };
+    const usda = { isConfigured: jest.fn(), fetchByBarcode: jest.fn() };
+    const service = new ProductCatalogService(
+      repo as unknown as ProductCatalogRepository,
+      off as unknown as OpenFoodFactsClient,
+      usda as unknown as UsdaFoodDataCentralClient,
+    );
+    return { service, repo, off, usda };
+  }
+
+  it('returns a catalog product without calling external sources', async () => {
+    const { service, repo, off, usda } = browseSetup();
+    repo.findByNormalizedBarcode.mockResolvedValue({ id: 'c1' });
+
+    await expect(service.lookupByBarcode('u1', BARCODE)).resolves.toEqual({
+      id: 'c1',
+    });
+    expect(off.fetchByBarcode).not.toHaveBeenCalled();
+    expect(usda.fetchByBarcode).not.toHaveBeenCalled();
+  });
+
+  it('lists only departments that have products, in shelf order', async () => {
+    const { service, repo } = browseSetup();
+    repo.countByDepartment.mockResolvedValue(
+      new Map([
+        ['BEVERAGES', 3],
+        ['DAIRY_EGGS', 5],
+        ['OTHER', 0],
+      ]),
+    );
+
+    await expect(service.departments()).resolves.toEqual([
+      { department: 'DAIRY_EGGS', count: 5 },
+      { department: 'BEVERAGES', count: 3 },
+    ]);
+  });
+
+  it('lists only subcategories that have products', async () => {
+    const { service, repo } = browseSetup();
+    repo.countBySubcategory.mockResolvedValue(
+      new Map([
+        ['YOGURT', 4],
+        ['EGGS', 2],
+        ['BUTTER_CREAM', 1],
+      ]),
+    );
+
+    await expect(service.subcategories('DAIRY_EGGS')).resolves.toEqual([
+      { key: 'YOGURT', count: 4 },
+      { key: 'EGGS', count: 2 },
+      { key: 'BUTTER_CREAM', count: 1 },
+    ]);
+  });
+
+  it('filters browsing by a subcategory of the department', async () => {
+    const { service, repo } = browseSetup();
+    repo.browse.mockResolvedValue([]);
+    repo.findPantryMatches.mockResolvedValue([]);
+
+    await service.browse('u1', {
+      department: 'DAIRY_EGGS',
+      subcategory: 'EGGS',
+      limit: 20,
+    });
+
+    expect(repo.browse).toHaveBeenCalledWith(
+      expect.objectContaining({
+        department: 'DAIRY_EGGS',
+        subcategory: 'EGGS',
+      }),
+    );
+  });
+
+  it('rejects a subcategory outside the department', async () => {
+    const { service, repo } = browseSetup();
+
+    await expect(
+      service.browse('u1', { department: 'BEVERAGES', subcategory: 'EGGS' }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    await expect(
+      service.browse('u1', { subcategory: 'EGGS' }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(repo.browse).not.toHaveBeenCalled();
+  });
+
+  it('marks products that are already in the pantry', async () => {
+    const { service, repo } = browseSetup();
+    repo.browse.mockResolvedValue([
+      { id: 'c1', normalizedBarcode: '0000000000001' },
+      { id: 'c2', normalizedBarcode: '0000000000002' },
+      { id: 'c3', normalizedBarcode: null },
+    ]);
+    repo.findPantryMatches.mockResolvedValue([
+      { id: 'p1', catalogItemId: 'c1', normalizedBarcode: null },
+      { id: 'p2', catalogItemId: null, normalizedBarcode: '0000000000002' },
+    ]);
+
+    const page = await service.browse('u1', {
+      department: 'DAIRY_EGGS',
+      q: '  yogurt ',
+      limit: 20,
+    });
+
+    expect(repo.browse).toHaveBeenCalledWith({
+      department: 'DAIRY_EGGS',
+      query: 'yogurt',
+      take: 21,
+      cursor: undefined,
+    });
+    expect(repo.findPantryMatches).toHaveBeenCalledWith(
+      'u1',
+      ['c1', 'c2', 'c3'],
+      ['0000000000001', '0000000000002'],
+    );
+    expect(page.items.map((item) => item.pantryProductId)).toEqual([
+      'p1',
+      'p2',
+      null,
+    ]);
+    expect(page.nextCursor).toBeNull();
   });
 });

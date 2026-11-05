@@ -51,7 +51,7 @@ function getVariantColors(colors: AppColors, variant: ButtonVariant) {
     case "danger":
       return { bg: colors.surface, pressedBg: colors.dangerSoft, fg: colors.danger, border: colors.danger };
     case "destructive":
-      return { bg: colors.dangerFill, pressedBg: colors.dangerFillPressed, fg: colors.onAccent, border: "transparent" };
+      return { bg: colors.dangerFill, pressedBg: colors.dangerFillPressed, fg: colors.onDanger, border: "transparent" };
   }
 }
 

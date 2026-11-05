@@ -15,7 +15,7 @@ export const useRowStyles = () =>
 
       rowBorder: {
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: colors.border,
+        borderBottomColor: colors.glassBorder,
       },
 
       labelRow: {

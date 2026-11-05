@@ -85,7 +85,7 @@ export function ProductCatalogCard({ product, onScanAnother, onAdded, onEdit }: 
         fiber: product.fiberPer100g,
       };
 
-  const sectionTitle = isPerServing ? format.perServing(nutritionSource) : t("product.per100g");
+  const sectionTitle = isPerServing ? format.perServing(nutritionSource) : format.per100(nutritionSource);
   const servingLine =
     !isPerServing && product.servingSizeGrams
       ? format.perServing(nutritionSource)

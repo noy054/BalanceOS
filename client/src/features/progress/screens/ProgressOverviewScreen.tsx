@@ -5,6 +5,10 @@ import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
+import { Button } from "../../../shared/components/ui/Button";
+import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
+import { FormToneProvider } from "../../../shared/components/FormTone";
 import { ChoiceChips } from "../../../shared/components/ui/ChoiceChips";
 import { StateView } from "../../../shared/components/ui/StateView";
 import { useDirection } from "../../../shared/hooks/useDirection";
@@ -14,6 +18,7 @@ import { EntryRow } from "../components/EntryRow";
 import { LatestValuesCard } from "../components/LatestValuesCard";
 import { MetricTrendCard } from "../components/MetricTrendCard";
 import { ProfileWeightCard } from "../components/ProfileWeightCard";
+import { WeighInReminderRow } from "../components/WeighInReminderRow";
 import { BODY_METRICS, PROGRESS_PERIODS, PROGRESS_ROUTES } from "../constants";
 import { useBodyEntries, usePeriodRange, useProgressOverview } from "../hooks/useProgress";
 import { BodyEntry, BodyMetric, ProgressPeriod } from "../types";
@@ -44,11 +49,6 @@ export function ProgressOverviewScreen() {
     if (!data) return null;
     return (
       <View style={styles.header}>
-        <ChoiceChips
-          options={PROGRESS_PERIODS.map((value) => ({ value, label: t(`periods.${value}`) }))}
-          value={period}
-          onChange={setPeriod}
-        />
         {trackedMetrics.length > 1 ? (
           <ChoiceChips
             options={trackedMetrics.map((value) => ({ value, label: t(`metrics.${value}`) }))}
@@ -57,6 +57,11 @@ export function ProgressOverviewScreen() {
           />
         ) : null}
         <MetricTrendCard metric={metric} summary={data.metrics[metric]} formatDate={formatDate} />
+        <ChoiceChips
+          options={PROGRESS_PERIODS.map((value) => ({ value, label: t(`periods.${value}`) }))}
+          value={period}
+          onChange={setPeriod}
+        />
         {data.latest.weightKg ? (
           <ProfileWeightCard
             profileWeightKg={data.profileWeightKg}
@@ -65,6 +70,7 @@ export function ProgressOverviewScreen() {
           />
         ) : null}
         <LatestValuesCard latest={data.latest} formatDate={formatDate} />
+        <WeighInReminderRow />
         <Text style={[styles.sectionTitle, dir.text]} accessibilityRole="header">
           {t("history.title")}
         </Text>
@@ -137,33 +143,51 @@ export function ProgressOverviewScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader
-        title={t("overview.title")}
-        {...(data && data.entryCount > 0
-          ? {
-              rightIconName: "plus" as const,
-              rightAccessibilityLabel: t("overview.add"),
-              onRightPress: () => router.push(PROGRESS_ROUTES.newEntry),
-            }
-          : {})}
-      />
-      {body}
-    </SafeAreaView>
+    <FormToneProvider tone="glass">
+      <SafeAreaView style={styles.root} edges={["top"]}>
+        <AmbientGlow intensity={0.45} />
+        <ScreenHeader title={t("overview.title")} />
+        {body}
+        {data && data.entryCount > 0 ? (
+          <StickyFooter>
+            <Button
+              label={t("overview.logWeight")}
+              icon="plus"
+              onPress={() => router.push(PROGRESS_ROUTES.newEntry)}
+              fullWidth
+            />
+          </StickyFooter>
+        ) : null}
+      </SafeAreaView>
+    </FormToneProvider>
   );
 }
 
 const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      root: { flex: 1, backgroundColor: colors.background },
+      root: { flex: 1, backgroundColor: colors.canvas },
       content: { paddingHorizontal: spacing.md, paddingBottom: spacing.xl },
       header: { gap: spacing.md, paddingBottom: spacing.sm },
       sectionTitle: { ...typography.headline, color: colors.textPrimary, marginTop: spacing.sm },
       emptyHistory: { ...typography.callout, color: colors.textSecondary },
-      rowWrap: { backgroundColor: colors.surface, overflow: "hidden" },
-      rowFirst: { borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg },
-      rowLast: { borderBottomLeftRadius: radius.lg, borderBottomRightRadius: radius.lg },
+      rowWrap: {
+        backgroundColor: colors.glassCard,
+        borderLeftWidth: StyleSheet.hairlineWidth,
+        borderRightWidth: StyleSheet.hairlineWidth,
+        borderColor: colors.glassBorder,
+        overflow: "hidden",
+      },
+      rowFirst: {
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopLeftRadius: radius.lg,
+        borderTopRightRadius: radius.lg,
+      },
+      rowLast: {
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomLeftRadius: radius.lg,
+        borderBottomRightRadius: radius.lg,
+      },
       rowDivider: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
     }),
   );

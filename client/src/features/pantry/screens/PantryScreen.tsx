@@ -7,6 +7,7 @@ import { router } from "expo-router";
 
 import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
 import { TabHeader } from "../../../shared/components/TabHeader";
+import { Button } from "../../../shared/components/ui/Button";
 import { IconButton } from "../../../shared/components/ui/IconButton";
 import { SearchField } from "../../../shared/components/ui/SearchField";
 import { SegmentedControl } from "../../../shared/components/ui/SegmentedControl";
@@ -20,12 +21,16 @@ import { RecipeCard } from "../components/recipes/RecipeCard";
 import { SavedMealCard } from "../components/saved-meals/SavedMealCard";
 import { usePantryProducts, useDeletePantryProduct } from "../hooks/usePantry";
 import { usePantryHighlight } from "../pantryHighlightStore";
-import { useRecipes, useDeleteRecipe } from "../hooks/useRecipes";
+import { useRecipes, useDeleteRecipe, useProductUsageWarning } from "../hooks/useRecipes";
 import { useSavedMeals, useDeleteSavedMeal } from "../hooks/useSavedMeals";
 import { PantryProduct, PantryRecipe, PantryTab, SavedMeal } from "../types";
 import { useStyles } from "./styles/PantryScreen.styles";
 import { ListGap } from "../../../shared/components/ui/ListGap";
+import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
+import { useAppTheme } from "../../../shared/theme";
 import { isAmbiguousName, useDuplicateNames } from "../helpers/duplicateNames";
+import { matchesAllTerms } from "../../../shared/helpers/searchTerms";
+import { PANTRY_SORTS, PantrySort, sortPantryItems } from "../helpers/pantrySort";
 
 type MenuTarget =
   | { kind: "product"; item: PantryProduct }
@@ -35,6 +40,7 @@ type MenuTarget =
 export function PantryScreen() {
   const { t, i18n } = useTranslation("pantry");
   const styles = useStyles();
+  const { colors } = useAppTheme();
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
 
@@ -43,11 +49,14 @@ export function PantryScreen() {
   const [calculatorProduct, setCalculatorProduct] =
     useState<PantryProduct | null>(null);
   const [menuTarget, setMenuTarget] = useState<MenuTarget | null>(null);
+  const [sort, setSort] = useState<PantrySort>("newest");
+  const [sortOpen, setSortOpen] = useState(false);
 
   const productListRef = useRef<FlatList>(null);
   const { highlightedProductId, clearHighlight } = usePantryHighlight();
 
   const deleteProduct = useDeletePantryProduct();
+  const recipeWarning = useProductUsageWarning();
   const deleteRecipe = useDeleteRecipe();
   const deleteSavedMeal = useDeleteSavedMeal();
 
@@ -58,7 +67,7 @@ export function PantryScreen() {
     loadMore: loadMoreProducts,
     hasNextPage: hasMoreProducts,
     isFetchingNextPage: isLoadingMoreProducts,
-  } = usePantryProducts(search);
+  } = usePantryProducts(search, sort);
 
   const {
     data: recipes = [],
@@ -75,24 +84,14 @@ export function PantryScreen() {
   const duplicateNames = useDuplicateNames(products.map((product) => product.name));
 
   const filteredRecipes = useMemo(() => {
-    if (!search.trim()) {
-      return recipes;
-    }
-
-    const q = search.toLowerCase();
-
-    return recipes.filter((recipe) => recipe.name.toLowerCase().includes(q));
-  }, [recipes, search]);
+    const matched = search.trim() ? recipes.filter((recipe) => matchesAllTerms(search, recipe.name)) : recipes;
+    return sortPantryItems(matched, sort, i18n.language);
+  }, [recipes, search, sort, i18n.language]);
 
   const filteredMeals = useMemo(() => {
-    if (!search.trim()) {
-      return savedMeals;
-    }
-
-    const q = search.toLowerCase();
-
-    return savedMeals.filter((meal) => meal.name.toLowerCase().includes(q));
-  }, [savedMeals, search]);
+    const matched = search.trim() ? savedMeals.filter((meal) => matchesAllTerms(search, meal.name)) : savedMeals;
+    return sortPantryItems(matched, sort, i18n.language);
+  }, [savedMeals, search, sort, i18n.language]);
 
   useEffect(() => {
     if (!highlightedProductId || !hasMoreProducts || isLoadingMoreProducts) return;
@@ -156,9 +155,10 @@ export function PantryScreen() {
   }
 
   async function handleDeleteProduct(product: PantryProduct) {
+    const warning = await recipeWarning(product.id);
     const confirmed = await confirmAction({
       title: t("productDetail.deleteConfirmTitle"),
-      message: t("productDetail.deleteConfirmMessage"),
+      message: [t("productDetail.deleteConfirmMessage"), warning].filter(Boolean).join("\n\n"),
       confirmLabel: t("productDetail.deleteConfirmYes"),
       cancelLabel: t("productDetail.deleteConfirmNo"),
       destructive: true,
@@ -285,9 +285,22 @@ export function PantryScreen() {
   ];
 
   return (
-    <TabScreenLayout activeTab="pantry">
+    <TabScreenLayout activeTab="pantry" backgroundColor={colors.canvas}>
       <View key={i18n.language} style={styles.root}>
-        <TabHeader title={t("title")} />
+        <AmbientGlow intensity={0.45} />
+        <TabHeader
+          title={t("title")}
+          trailing={
+            <Button
+              label={t("super.title")}
+              icon="storefront-outline"
+              variant="tonal"
+              size="sm"
+              accessibilityHint={t("super.openHint")}
+              onPress={() => router.push("/(app)/pantry/super")}
+            />
+          }
+        />
 
         <SegmentedControl
           variant="tabs"
@@ -301,13 +314,21 @@ export function PantryScreen() {
           value={search}
           onChangeText={setSearch}
           placeholder={searchPlaceholder()}
+          tone="glass"
           style={styles.toolbar}
           trailing={
             <>
+              <IconButton
+                icon="sort"
+                variant="glass"
+                size={44}
+                accessibilityLabel={t("sort.buttonA11y", { sort: t(`sort.options.${sort}`) })}
+                onPress={() => setSortOpen(true)}
+              />
               {activeTab === "products" ? (
                 <IconButton
                   icon="barcode-scan"
-                  variant="tonal"
+                  variant="glass"
                   size={44}
                   accessibilityLabel={t("actions.scanBarcode")}
                   onPress={handleScanBarcode}
@@ -459,6 +480,18 @@ export function PantryScreen() {
         />
 
         <ActionSheet
+          visible={sortOpen}
+          title={t("sort.title")}
+          actions={PANTRY_SORTS.map((option) => ({
+            key: option,
+            label: t(`sort.options.${option}`),
+            icon: option === sort ? "check" : SORT_ICONS[option],
+            onPress: () => setSort(option),
+          }))}
+          onClose={() => setSortOpen(false)}
+        />
+
+        <ActionSheet
           visible={menuTarget !== null}
           title={menuTarget?.item.name}
           actions={menuTarget ? getMenuActions(menuTarget) : []}
@@ -468,6 +501,12 @@ export function PantryScreen() {
     </TabScreenLayout>
   );
 }
+
+const SORT_ICONS = {
+  newest: "clock-plus-outline",
+  updated: "update",
+  name: "sort-alphabetical-ascending",
+} as const satisfies Record<PantrySort, SheetAction["icon"]>;
 
 function TabContent({
   isLoading,

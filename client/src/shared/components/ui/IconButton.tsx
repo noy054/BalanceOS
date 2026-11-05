@@ -6,7 +6,7 @@ import { AppColors, states, useAppTheme, useThemedStyles, radius } from "../../t
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
-export type IconButtonVariant = "plain" | "tonal" | "accent" | "filled";
+export type IconButtonVariant = "plain" | "tonal" | "accent" | "filled" | "glass";
 
 type Props = {
   icon: IconName;
@@ -31,6 +31,8 @@ function getPalette(colors: AppColors, variant: IconButtonVariant) {
       return { bg: colors.accentSoft, pressedBg: colors.accentBorder, fg: colors.accent };
     case "filled":
       return { bg: colors.accentFill, pressedBg: colors.accentFillPressed, fg: colors.onAccent };
+    case "glass":
+      return { bg: colors.glassCard, pressedBg: colors.glassBorder, fg: colors.textPrimary };
   }
 }
 
@@ -67,6 +69,7 @@ export function IconButton({
           backgroundColor: pressed ? palette.pressedBg : palette.bg,
           opacity: disabled ? states.disabledOpacity : 1,
         },
+        variant === "glass" && styles.glass,
         style,
       ]}
     >
@@ -76,12 +79,16 @@ export function IconButton({
 }
 
 const useStyles = () =>
-  useThemedStyles(() =>
+  useThemedStyles((colors) =>
     StyleSheet.create({
       base: {
         borderRadius: radius.md,
         alignItems: "center",
         justifyContent: "center",
+      },
+      glass: {
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: colors.glassBorder,
       },
     }),
   );

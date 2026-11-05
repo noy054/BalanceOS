@@ -119,7 +119,7 @@ export function useSaveBodyEntry() {
       return entry;
     },
     onSettled: (_data, _error, input) => {
-      queryClient.invalidateQueries({ queryKey: PROGRESS_QUERY_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: PROGRESS_QUERY_KEYS.all, refetchType: "all" });
       input.photos.replaced.forEach((item) =>
         queryClient.removeQueries({ queryKey: PROGRESS_QUERY_KEYS.photo(item.id) }),
       );
@@ -135,7 +135,7 @@ export function useDeleteBodyEntry() {
     onSuccess: (_data, entry) => {
       entry.photos.forEach((photo) => queryClient.removeQueries({ queryKey: PROGRESS_QUERY_KEYS.photo(photo.id) }));
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: PROGRESS_QUERY_KEYS.all }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: PROGRESS_QUERY_KEYS.all, refetchType: "all" }),
   });
 }
 
@@ -144,6 +144,6 @@ export function useApplyProfileWeight() {
   const update = useUpdateSettings();
   return useMutation({
     mutationFn: (weightKg: number) => update.mutateAsync({ weightKg }),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: PROGRESS_QUERY_KEYS.all }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: PROGRESS_QUERY_KEYS.all, refetchType: "all" }),
   });
 }

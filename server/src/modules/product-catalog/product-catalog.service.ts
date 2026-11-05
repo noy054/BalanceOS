@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '../../../generated/prisma/client';
 import { NormalizedBarcode } from '../../common/barcode/barcode.utils';
 import { Page, toPage } from '../../common/pagination/page.types';
@@ -10,7 +14,14 @@ import {
   ExternalLookupResult,
   NormalizedProductData,
 } from './types/external-product.types';
-import { ProductCatalogItemDto } from './types/product-catalog.types';
+import {
+  CatalogBrowseItemDto,
+  CatalogDepartmentCountDto,
+  CatalogSubcategoryCountDto,
+  ProductCatalogItemDto,
+} from './types/product-catalog.types';
+import { CATALOG_DEPARTMENTS, CatalogDepartment } from './catalog-departments';
+import { findSubcategory, subcategoriesFor } from './catalog-subcategories';
 
 const MISS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const DEFAULT_SEARCH_LIMIT = 20;
@@ -83,6 +94,72 @@ export class ProductCatalogService {
   ): Promise<Page<ProductCatalogItemDto>> {
     const rows = await this.repo.search(query.trim(), limit + 1, cursor);
     return toPage(rows, limit);
+  }
+
+  async departments(): Promise<CatalogDepartmentCountDto[]> {
+    const counts = await this.repo.countByDepartment();
+    return CATALOG_DEPARTMENTS.map((department) => ({
+      department,
+      count: counts.get(department) ?? 0,
+    })).filter((entry) => entry.count > 0);
+  }
+
+  async subcategories(
+    department: CatalogDepartment,
+  ): Promise<CatalogSubcategoryCountDto[]> {
+    const entries = subcategoriesFor(department);
+    const counts = await this.repo.countBySubcategory(department);
+    return entries
+      .map((entry) => ({ key: entry.key, count: counts.get(entry.key) ?? 0 }))
+      .filter((entry) => entry.count > 0);
+  }
+
+  async browse(
+    userId: string,
+    params: {
+      department?: CatalogDepartment;
+      subcategory?: string;
+      q?: string;
+      limit?: number;
+      cursor?: string;
+    },
+  ): Promise<Page<CatalogBrowseItemDto>> {
+    const limit = params.limit ?? DEFAULT_SEARCH_LIMIT;
+    const subcategory = params.subcategory
+      ? params.department
+        ? findSubcategory(params.department, params.subcategory)
+        : null
+      : undefined;
+    if (subcategory === null) {
+      throw new BadRequestException('Unknown subcategory');
+    }
+    const rows = await this.repo.browse({
+      department: params.department,
+      query: params.q?.trim() || undefined,
+      ...(subcategory ? { subcategory: subcategory.key } : {}),
+      take: limit + 1,
+      cursor: params.cursor,
+    });
+    const page = toPage(rows, limit);
+    const matches = await this.repo.findPantryMatches(
+      userId,
+      page.items.map((item) => item.id),
+      page.items
+        .map((item) => item.normalizedBarcode)
+        .filter((code): code is string => Boolean(code)),
+    );
+    return {
+      nextCursor: page.nextCursor,
+      items: page.items.map((item) => {
+        const match = matches.find(
+          (product) =>
+            product.catalogItemId === item.id ||
+            (item.normalizedBarcode !== null &&
+              product.normalizedBarcode === item.normalizedBarcode),
+        );
+        return { ...item, pantryProductId: match?.id ?? null };
+      }),
+    };
   }
 
   private async lookupExternal(

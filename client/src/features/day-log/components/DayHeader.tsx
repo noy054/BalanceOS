@@ -22,6 +22,7 @@ type Props = {
   canGoNext?: boolean;
   onToday: () => void;
   onOpenCalendar: () => void;
+  greeting: { salutation: string; name: string };
 };
 
 export function DayHeader({
@@ -32,6 +33,7 @@ export function DayHeader({
   canGoNext = true,
   onToday,
   onOpenCalendar,
+  greeting,
 }: Props) {
   const { t } = useTranslation("dashboard");
   const { colors } = useAppTheme();
@@ -41,71 +43,75 @@ export function DayHeader({
 
   const isToday = date === today;
   const fullDate = labels.full(date);
-  const showFullDateAsTitle = labels.relative(date) === null;
+  const relative = isToday ? null : labels.relative(date);
+  const dateLine = relative ? `${relative} · ${labels.dateLine(date)}` : labels.dateLine(date);
 
   return (
-    <View style={[styles.container, dir.row]}>
-      <Pressable
-        onPress={onOpenCalendar}
-        accessibilityRole="button"
-        accessibilityLabel={t("date.openCalendarFor", { date: fullDate })}
-        style={({ pressed }) => [styles.titleBlock, pressed && styles.pressed]}
-      >
-        <Text
-          style={[styles.title, dir.text]}
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          minimumFontScale={0.8}
-          accessibilityRole="header"
-        >
-          {labels.title(date)}
-        </Text>
-        <Text style={[styles.subtitle, dir.text]} numberOfLines={1}>
-          {showFullDateAsTitle ? labels.short(date) : fullDate}
-        </Text>
-      </Pressable>
-
-      {!isToday ? (
+    <View style={styles.root}>
+      <View style={[styles.container, dir.row]}>
         <Pressable
-          onPress={onToday}
-          accessibilityRole="button"
-          accessibilityLabel={t("date.backToTodayA11y")}
-          style={({ pressed }) => [styles.todayButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.todayLabel} numberOfLines={1}>
-            {t("date.backToToday")}
-          </Text>
-        </Pressable>
-      ) : null}
-
-      <View style={[styles.controls, dir.row]}>
-        <IconButton
-          icon={dir.backIcon}
-          variant="tonal"
-          size={40}
-          iconSize={24}
-          color={colors.textPrimary}
-          accessibilityLabel={t("date.previousDay")}
-          onPress={onPrevious}
-        />
-        <IconButton
-          icon="calendar-month-outline"
-          variant="accent"
-          size={40}
-          iconSize={20}
-          accessibilityLabel={t("date.openCalendar")}
           onPress={onOpenCalendar}
-        />
-        <IconButton
-          icon={dir.forwardIcon}
-          variant="tonal"
-          size={40}
-          iconSize={24}
-          color={colors.textPrimary}
-          accessibilityLabel={t("date.nextDay")}
-          onPress={onNext}
-          disabled={!canGoNext}
-        />
+          accessibilityRole="button"
+          accessibilityLabel={t("date.openCalendarFor", { date: fullDate })}
+          style={({ pressed }) => [styles.titleBlock, pressed && styles.pressed]}
+        >
+          <Text style={[styles.dateLine, dir.text]} numberOfLines={1}>
+            {dateLine}
+          </Text>
+          <View accessible accessibilityRole="header">
+            <Text style={[styles.greeting, dir.text]} numberOfLines={2}>
+              {greeting.salutation}
+            </Text>
+            {greeting.name ? (
+              <Text style={[styles.greeting, dir.text]} numberOfLines={1}>
+                {greeting.name}
+              </Text>
+            ) : null}
+          </View>
+        </Pressable>
+
+        {!isToday ? (
+          <Pressable
+            onPress={onToday}
+            accessibilityRole="button"
+            accessibilityLabel={t("date.backToTodayA11y")}
+            style={({ pressed }) => [styles.todayButton, pressed && styles.pressed]}
+          >
+            <Text style={styles.todayLabel} numberOfLines={1}>
+              {t("date.backToToday")}
+            </Text>
+          </Pressable>
+        ) : null}
+
+        <View style={[styles.controls, dir.row]}>
+          <IconButton
+            icon={dir.backIcon}
+            variant="glass"
+            size={40}
+            iconSize={24}
+            color={colors.textPrimary}
+            accessibilityLabel={t("date.previousDay")}
+            onPress={onPrevious}
+          />
+          <IconButton
+            icon="calendar-month-outline"
+            variant="glass"
+            size={40}
+            iconSize={20}
+            accessibilityLabel={t("date.openCalendar")}
+            onPress={onOpenCalendar}
+          />
+          <IconButton
+            icon={dir.forwardIcon}
+            variant="glass"
+            size={40}
+            iconSize={24}
+            color={colors.textPrimary}
+            accessibilityLabel={t("date.nextDay")}
+            onPress={onNext}
+            disabled={!canGoNext}
+          />
+        </View>
       </View>
     </View>
   );
@@ -114,12 +120,14 @@ export function DayHeader({
 const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      container: {
-        alignItems: "center",
-        gap: spacing.xs,
+      root: {
         paddingTop: spacing.sm,
         paddingBottom: spacing.xs,
         paddingHorizontal: spacing.md,
+      },
+      container: {
+        alignItems: "center",
+        gap: spacing.xs,
       },
       titleBlock: {
         flex: 1,
@@ -130,15 +138,17 @@ const useStyles = () =>
       pressed: {
         opacity: states.pressedOpacity,
       },
-      title: {
-        ...typography.title,
-        fontSize: 24,
-        lineHeight: 30,
-        color: colors.textPrimary,
-      },
-      subtitle: {
-        ...typography.footnote,
+      dateLine: {
+        ...typography.callout,
         color: colors.textSecondary,
+        marginBottom: spacing.xs,
+      },
+      greeting: {
+        ...typography.title,
+        fontFamily: fonts.headingBold,
+        fontSize: 26,
+        lineHeight: 32,
+        color: colors.textPrimary,
       },
       todayButton: {
         minHeight: 44,

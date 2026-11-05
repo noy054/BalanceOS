@@ -23,6 +23,7 @@ import {
   PantryProduct,
   UpdatePantryProductPayload,
 } from '../types';
+import { PantrySort } from '../helpers/pantrySort';
 
 type ProductPages = InfiniteData<Page<PantryProduct>, string | undefined>;
 
@@ -68,12 +69,13 @@ function invalidatePantryProducts(queryClient: QueryClient) {
   return Promise.all([
     queryClient.invalidateQueries({ queryKey: PANTRY_QUERY_KEYS.list }),
     queryClient.invalidateQueries({ queryKey: BARCODE_QUERY_KEYS.all }),
-    queryClient.invalidateQueries({ queryKey: RECIPE_QUERY_KEYS.list }),
-    queryClient.invalidateQueries({ queryKey: SAVED_MEAL_QUERY_KEYS.list }),
+    queryClient.invalidateQueries({ queryKey: RECIPE_QUERY_KEYS.list, refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: SAVED_MEAL_QUERY_KEYS.list, refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: CATALOG_QUERY_KEYS.browseAll }),
   ]);
 }
 
-export function usePantryProducts(search?: string) {
+export function usePantryProducts(search?: string, sort: PantrySort = 'newest') {
   const trimmed = (search ?? '').trim();
   const [debouncedSearch, setDebouncedSearch] = useState(trimmed);
 
@@ -87,12 +89,13 @@ export function usePantryProducts(search?: string) {
   }, [trimmed]);
 
   const query = useInfiniteQuery({
-    queryKey: PANTRY_QUERY_KEYS.pages(debouncedSearch),
+    queryKey: PANTRY_QUERY_KEYS.pages(debouncedSearch, sort),
     queryFn: ({ pageParam }) =>
       pantryApi.list({
         search: debouncedSearch || undefined,
         cursor: pageParam,
         limit: PANTRY_PAGE_SIZE,
+        sort,
       }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
@@ -119,6 +122,7 @@ export function usePantryProduct(id: string) {
 export function useCreatePantryProduct() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { analytics: 'product_created' },
     mutationFn: (payload: CreatePantryProductPayload) => pantryApi.create(payload),
     onSuccess: (created) => {
       upsertProduct(queryClient, created);
@@ -138,6 +142,7 @@ export function useCatalogItem(id: string) {
 export function useAddPantryProductFromCatalog() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { analytics: 'product_created' },
     mutationFn: ({
       catalogItemId,
       payload,
@@ -155,6 +160,7 @@ export function useAddPantryProductFromCatalog() {
 export function useUpdatePantryProduct(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { analytics: 'product_updated' },
     mutationFn: (payload: UpdatePantryProductPayload) =>
       pantryApi.update(id, payload),
     onSuccess: (updated) => {
@@ -167,6 +173,7 @@ export function useUpdatePantryProduct(id: string) {
 export function useDeletePantryProduct() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { analytics: 'product_deleted' },
     mutationFn: (id: string) => pantryApi.delete(id),
     onSuccess: (_data, id) => {
       queryClient.removeQueries({ queryKey: PANTRY_QUERY_KEYS.detail(id) });

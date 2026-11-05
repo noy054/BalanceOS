@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { ScrollView, Alert, Text, View, KeyboardAvoidingView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
-import { ScreenHeader } from '../../../shared/components/ScreenHeader';
+import { SettingsScreenLayout, useSettingsBottomPadding } from '../components/SettingsScreenLayout';
 import { FormInput } from '../../../shared/components/FormInput';
 import { Button } from '../../../shared/components/ui/Button';
 import { useChangePassword } from '../hooks/useSettings';
@@ -16,6 +15,7 @@ export function ChangePasswordScreen() {
   const { t, i18n } = useTranslation('settings');
   const { colors } = useAppTheme();
   const styles = useStyles();
+  const bottomPadding = useSettingsBottomPadding();
   const changePassword = useChangePassword();
   const isRTL = i18n.dir(i18n.language) === 'rtl';
 
@@ -49,8 +49,7 @@ export function ChangePasswordScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      <ScreenHeader title={t('changePassword.screenTitle')} />
+    <SettingsScreenLayout title={t('changePassword.screenTitle')}>
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -58,7 +57,7 @@ export function ChangePasswordScreen() {
       >
         <ScrollView
           style={styles.flex}
-          contentContainerStyle={styles.content}
+          contentContainerStyle={[styles.content, bottomPadding]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -112,6 +111,6 @@ export function ChangePasswordScreen() {
           />
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </SettingsScreenLayout>
   );
 }

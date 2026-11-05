@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import type { ComponentProps } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
@@ -14,6 +15,7 @@ import { useDirection } from "../../../../shared/hooks/useDirection";
 import { formatCalories } from "../../../../shared/helpers/formatNumber";
 import { MacroValues } from "./NutritionLine";
 import { FoodCardValues } from "./FoodCardValues";
+import { FoodThumb } from "./FoodThumb";
 
 type Props = {
   title: string;
@@ -24,11 +26,16 @@ type Props = {
   onPress: () => void;
   onLongPress?: () => void;
   actions?: ReactNode;
+  leading?: ReactNode;
   trailing?: ReactNode;
+  imageUrl?: string | null;
+  fallbackIcon?: ComponentProps<typeof MaterialCommunityIcons>["name"];
   selected?: boolean;
   highlighted?: boolean;
   accessibilityHint?: string;
 };
+
+const THUMB_SIZE = 48;
 
 export function FoodItemCard({
   title,
@@ -39,7 +46,10 @@ export function FoodItemCard({
   onPress,
   onLongPress,
   actions,
+  leading,
   trailing,
+  imageUrl,
+  fallbackIcon,
   selected = false,
   highlighted = false,
   accessibilityHint,
@@ -50,61 +60,61 @@ export function FoodItemCard({
   const { colors } = useAppTheme();
   const calorieText = formatCalories(calories);
   const unit = t("product.calUnit");
+  const subline = [basis, meta].filter(Boolean).join(" · ");
+  const thumb =
+    leading ??
+    (fallbackIcon ? (
+      <FoodThumb imageUrl={imageUrl} fallbackIcon={fallbackIcon} size={THUMB_SIZE} />
+    ) : null);
+
+  const end = selected ? (
+    <MaterialCommunityIcons name="check-circle" size={24} color={colors.accent} />
+  ) : actions ? (
+    <View style={[styles.actions, dir.row]}>{actions}</View>
+  ) : (
+    trailing ?? null
+  );
 
   return (
-    <Pressable
-      onPress={onPress}
-      onLongPress={onLongPress}
-      delayLongPress={350}
-      accessibilityRole="button"
-      accessibilityLabel={[title, basis, meta, `${calorieText} ${unit}`].filter(Boolean).join(", ")}
-      accessibilityHint={accessibilityHint}
-      accessibilityState={{ selected }}
-      style={({ pressed }) => [
+    <View
+      style={[
         styles.card,
+        dir.row,
         highlighted && styles.cardHighlighted,
         selected && styles.cardSelected,
-        pressed && !selected && styles.cardPressed,
       ]}
     >
-      <View style={[styles.header, dir.row]}>
+      <Pressable
+        onPress={onPress}
+        onLongPress={onLongPress}
+        delayLongPress={350}
+        accessibilityRole="button"
+        accessibilityLabel={[title, basis, meta, `${calorieText} ${unit}`].filter(Boolean).join(", ")}
+        accessibilityHint={accessibilityHint}
+        accessibilityState={{ selected }}
+        style={({ pressed }) => [styles.main, dir.row, pressed && !selected && styles.cardPressed]}
+      >
+        {thumb}
+
         <View style={styles.body}>
           <Text style={[styles.title, dir.text]} numberOfLines={2}>
             {title}
           </Text>
-          {meta ? (
-            <Text style={[styles.meta, dir.text]} numberOfLines={1}>
-              {meta}
+          {subline ? (
+            <Text style={[styles.subline, dir.text]} numberOfLines={1}>
+              {subline}
             </Text>
           ) : null}
-        </View>
-
-        {basis ? (
-          <Text
-            style={[styles.basis, { textAlign: dir.isRTL ? "left" : "right" }]}
-            numberOfLines={2}
-          >
-            {basis}
-          </Text>
-        ) : null}
-      </View>
-
-      <View style={[styles.footer, dir.row]}>
-        <View style={styles.values}>
-          <FoodCardValues calories={calories} macros={macros} />
-        </View>
-
-        {selected ? (
-          <View style={styles.end}>
-            <MaterialCommunityIcons name="check-circle" size={24} color={colors.accent} />
+          <View style={styles.values}>
+            <FoodCardValues calories={calories} macros={macros} />
           </View>
-        ) : actions ? (
-          <View style={[styles.actions, dir.row]}>{actions}</View>
-        ) : trailing ? (
-          <View style={styles.end}>{trailing}</View>
-        ) : null}
-      </View>
-    </Pressable>
+        </View>
+      </Pressable>
+
+      {end ? (
+        <View style={[styles.end, actions && !selected ? styles.endActions : null]}>{end}</View>
+      ) : null}
+    </View>
   );
 }
 
@@ -112,13 +122,12 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       card: {
-        gap: spacing.md,
-        backgroundColor: colors.surface,
+        alignItems: "stretch",
+        backgroundColor: colors.glassCard,
         borderRadius: radius.lg,
-        borderWidth: 1.5,
-        borderColor: "transparent",
-        paddingVertical: spacing.md,
-        paddingHorizontal: spacing.md + 2,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
+        overflow: "hidden",
       },
       cardHighlighted: {
         borderColor: colors.accentBorder,
@@ -129,50 +138,45 @@ const useStyles = () =>
       cardPressed: {
         opacity: 0.85,
       },
-      header: {
-        alignItems: "flex-start",
-        gap: spacing.md,
+      main: {
+        flex: 1,
+        minWidth: 0,
+        alignItems: "center",
+        gap: spacing.ms,
+        paddingVertical: spacing.ms,
+        paddingHorizontal: spacing.ms,
       },
       body: {
         flex: 1,
         minWidth: 0,
-        gap: spacing.xxs,
+        gap: 2,
       },
       title: {
         ...typography.bodyStrong,
-        fontSize: 17,
-        lineHeight: 24,
+        fontSize: 16,
+        lineHeight: 22,
         color: colors.textPrimary,
       },
-      meta: {
-        ...typography.footnote,
-        color: colors.textSecondary,
-      },
-      basis: {
+      subline: {
         ...typography.footnote,
         ...typography.number,
-        lineHeight: 22,
-        maxWidth: "45%",
         color: colors.textSecondary,
       },
-      footer: {
-        alignItems: "center",
-        gap: spacing.md,
-        minHeight: 40,
-      },
       values: {
-        flex: 1,
-        minWidth: 0,
+        marginTop: 2,
       },
       actions: {
-        alignItems: "center",
-        gap: spacing.sm,
+        gap: spacing.xs,
       },
       end: {
-        width: 32,
-        height: 32,
+        minWidth: 32,
         alignItems: "center",
         justifyContent: "center",
+        paddingHorizontal: spacing.sm,
+      },
+      endActions: {
+        justifyContent: "flex-end",
+        paddingBottom: spacing.sm,
       },
     }),
   );

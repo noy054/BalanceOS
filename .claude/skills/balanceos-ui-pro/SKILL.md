@@ -68,7 +68,7 @@ The interface should feel clear, calm, precise, modern and professional.
 
 Colors:
 
-- Primary actions and selection: #365CF5
+- Primary actions and selection: #C5F87F (dark text and icons on lime fills)
 - Primary text: #191C26
 - Light background: #F6F7FA
 - Light surfaces: #FFFFFF
@@ -76,7 +76,7 @@ Colors:
 - Supporting mint: #DDF7ED
 - Positive feedback: #08775A
 
-Use cobalt as the main accent and mint sparingly.
+Use lime as the main accent and mint sparingly.
 Adapt the palette for dark mode with accessible contrast.
 Never rely on color alone to communicate meaning.
 Avoid guilt-based red/green treatment of nutrition totals.

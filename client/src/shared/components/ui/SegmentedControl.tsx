@@ -2,6 +2,7 @@ import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-n
 
 import { fonts, radius, spacing, states, typography, useThemedStyles } from "../../theme";
 import { useDirection } from "../../hooks/useDirection";
+import { useFormTone } from "../FormTone";
 
 export type SegmentOption<T extends string> = {
   value: T;
@@ -16,6 +17,7 @@ type Props<T extends string> = {
   onDeselect?: () => void;
   size?: "md" | "sm";
   variant?: "segmented" | "tabs";
+  pill?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -26,14 +28,19 @@ export function SegmentedControl<T extends string>({
   onDeselect,
   size = "md",
   variant = "segmented",
+  pill = false,
   style,
 }: Props<T>) {
   const styles = useStyles();
   const dir = useDirection();
   const isTabs = variant === "tabs";
+  const glass = useFormTone() === "glass";
 
   return (
-    <View style={[styles.track, dir.row, style]} accessibilityRole="tablist">
+    <View
+      style={[styles.track, glass && styles.trackGlass, pill && styles.trackPill, dir.row, style]}
+      accessibilityRole="tablist"
+    >
       {options.map((option) => {
         const isSelected = option.value === value;
 
@@ -53,6 +60,7 @@ export function SegmentedControl<T extends string>({
             style={({ pressed }) => [
               styles.segment,
               size === "sm" && styles.segmentSm,
+              pill && styles.segmentPill,
               isSelected && styles.segmentSelected,
               pressed && !isSelected && styles.pressed,
               option.disabled && styles.disabled,
@@ -82,6 +90,14 @@ const useStyles = () =>
         borderRadius: radius.md + 2,
         backgroundColor: colors.surfaceMuted,
       },
+      trackGlass: {
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
+      },
+      trackPill: {
+        borderRadius: radius.round,
+      },
       segment: {
         flex: 1,
         minHeight: 40,
@@ -92,6 +108,9 @@ const useStyles = () =>
       },
       segmentSm: {
         minHeight: 34,
+      },
+      segmentPill: {
+        borderRadius: radius.round,
       },
       segmentSelected: {
         backgroundColor: colors.accentFill,

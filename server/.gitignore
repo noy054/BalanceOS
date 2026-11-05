@@ -9,3 +9,5 @@ node_modules
 # Catalog import data
 /openfoodfacts-products.jsonl.gz
 /import-results
+
+/store-cache.zip

@@ -7,11 +7,14 @@ export const useStyles = () =>
     StyleSheet.create({
       root: {
         flex: 1,
-        backgroundColor: colors.background,
+        backgroundColor: colors.canvas,
       },
 
       tabs: {
         marginHorizontal: spacing.md,
+        backgroundColor: colors.glassCard,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
       },
 
       toolbar: {

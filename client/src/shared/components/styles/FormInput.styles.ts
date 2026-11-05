@@ -25,6 +25,17 @@ export const useStyles = () =>
         borderColor: colors.borderStrong,
       },
 
+      frameGlass: {
+        borderRadius: radius.lg,
+        minHeight: 52,
+        backgroundColor: colors.glassCard,
+        borderColor: colors.glassBorder,
+      },
+
+      frameGlassFocused: {
+        borderColor: colors.accent,
+      },
+
       frameFocused: {
         borderColor: colors.accent,
         backgroundColor: colors.surface,

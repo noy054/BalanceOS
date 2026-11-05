@@ -76,6 +76,17 @@ export function AdminOverviewScreen() {
           </View>
 
           <View>
+            <SectionHeader title={t("admin.overview.usage")} />
+            <Button
+              label={t("admin.analytics.open")}
+              icon="chart-line"
+              variant="tonal"
+              onPress={() => router.push(ADMIN_ROUTES.analytics)}
+              fullWidth
+            />
+          </View>
+
+          <View>
             <SectionHeader title={t("admin.overview.catalog")} />
             <View style={[styles.tiles, dir.row]}>
               <StatTile

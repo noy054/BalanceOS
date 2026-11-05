@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { ImageViewer } from "../../../../shared/components/ui/ImageViewer";
 import { FoodThumb } from "./FoodThumb";
+import { useFoodImage } from "../../hooks/useFoodImage";
 
 type Props = {
   imageUrl?: string | null;
@@ -17,6 +18,7 @@ type Props = {
 export function ZoomableThumb({ imageUrl, fallbackIcon, name, size = 88 }: Props) {
   const { t } = useTranslation("pantry");
   const [isOpen, setIsOpen] = useState(false);
+  const image = useFoodImage(imageUrl);
 
   if (!imageUrl) {
     return <FoodThumb fallbackIcon={fallbackIcon} size={size} />;
@@ -33,7 +35,7 @@ export function ZoomableThumb({ imageUrl, fallbackIcon, name, size = 88 }: Props
         <FoodThumb imageUrl={imageUrl} fallbackIcon={fallbackIcon} size={size} />
       </Pressable>
       <ImageViewer
-        imageUrl={isOpen ? imageUrl : null}
+        imageUrl={isOpen ? image.uri : null}
         accessibilityLabel={name}
         onClose={() => setIsOpen(false)}
       />

@@ -6,11 +6,10 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
-import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { SettingsScreenLayout } from "../components/SettingsScreenLayout";
 import { FormInput } from "../../../shared/components/FormInput";
 import { SettingsSection } from "../components/SettingsSection";
 import { SettingsSelectRow } from "../components/SettingsSelectRow";
@@ -158,8 +157,7 @@ export function NutritionTargetsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={t("nutritionTargets.screenTitle")} />
+    <SettingsScreenLayout title={t("nutritionTargets.screenTitle")}>
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -267,6 +265,6 @@ export function NutritionTargetsScreen() {
           />
         </StickyFooter>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </SettingsScreenLayout>
   );
 }

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import {
   keepPreviousData,
   QueryClient,
@@ -13,9 +14,11 @@ import {
   DayLogMealsResponse,
   DayLogResponse,
   DayLogSummary,
+  MealItemSummary,
   MealMacros,
   UpdateMealItemPayload,
 } from '../types';
+import { AnalyticsAction } from '../../analytics/analytics';
 
 function toDayLogSummary(r: DayLogResponse): DayLogSummary {
   return {
@@ -150,37 +153,17 @@ export function useDayLogCalendar(from: string, to: string, enabled = true) {
   });
 }
 
-/** Thrown when only the first `savedCount` items of a batch were logged. */
-export class PartialAddMealItemsError extends Error {
-  constructor(
-    readonly savedCount: number,
-    readonly originalError: unknown,
-  ) {
-    super('Some meal items were not logged');
-  }
-}
-
-export function useAddMealItems(date: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (payloads: AddMealItemPayload[]) => {
-      let savedCount = 0;
-      try {
-        for (const payload of payloads) {
-          await dayLogApi.addMealItem(date, payload);
-          savedCount += 1;
-        }
-      } catch (err: unknown) {
-        throw new PartialAddMealItemsError(savedCount, err);
-      }
-    },
-    onSettled: () => refreshDayLog(queryClient, [date]),
-  });
+function mealItemAction(variables: unknown): AnalyticsAction {
+  const payload = (variables as { payload?: AddMealItemPayload }).payload;
+  if (payload?.savedMealId) return 'saved_meal_logged';
+  if (payload?.pantryRecipeId) return 'recipe_logged';
+  return 'meal_item_added';
 }
 
 export function useAddMealItemOnDate() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { analytics: mealItemAction },
     mutationFn: ({ date, payload }: { date: string; payload: AddMealItemPayload }) =>
       dayLogApi.addMealItem(date, payload),
     onSettled: (_data, _error, variables) => refreshDayLog(queryClient, [variables.date]),
@@ -190,14 +173,127 @@ export function useAddMealItemOnDate() {
 export function useUpdateMealItem(date: string) {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { analytics: 'meal_item_updated' },
     mutationFn: (payload: UpdateMealItemPayload) => dayLogApi.updateMealItem(payload),
+    onMutate: async (payload: UpdateMealItemPayload) => {
+      await cancelDayLogQueries(queryClient, date);
+      const snapshot = takeSnapshot(queryClient, date);
+      const item = snapshot.meals?.meals.flatMap((meal) => meal.items).find((entry) => entry.id === payload.itemId);
+      const current = item ? storedAmount(item) : null;
+      const next = item ? matchingAmount(item, payload) : null;
+      if (!snapshot.meals || !item || !current || !next) return snapshot;
+
+      const ratio = next / current;
+      const updated: MealItemSummary = {
+        ...scaleAmounts(item, ratio),
+        components: item.components?.map((part) => scaleAmounts(part, ratio)),
+      };
+      applyItemChange(queryClient, snapshot, payload.itemId, (entry) => ({ ...entry, ...updated }), macroDelta(item, updated));
+      return snapshot;
+    },
+    onError: (_error, _payload, snapshot) => restore(queryClient, snapshot),
     onSettled: () => refreshDayLog(queryClient, [date]),
+  });
+}
+
+const MACRO_FIELDS = ['calories', 'protein', 'carbs', 'fat', 'fiber'] as const;
+
+function roundMacro(key: (typeof MACRO_FIELDS)[number], value: number) {
+  return key === 'calories' ? Math.max(0, Math.round(value)) : Math.max(0, Math.round(value * 10) / 10);
+}
+
+function addMacros<T extends MealMacros>(target: T, delta: MealMacros): T {
+  const next = { ...target };
+  for (const key of MACRO_FIELDS) next[key] = roundMacro(key, target[key] + delta[key]);
+  return next;
+}
+
+type StoredAmounts = { grams?: number | null; servings?: number | null; milliliters?: number | null };
+
+function storedAmount(entry: StoredAmounts) {
+  return entry.grams ?? entry.milliliters ?? entry.servings ?? null;
+}
+
+function matchingAmount(entry: StoredAmounts, payload: StoredAmounts) {
+  if (entry.grams != null) return payload.grams ?? null;
+  if (entry.milliliters != null) return payload.milliliters ?? null;
+  return payload.servings ?? null;
+}
+
+function scaleAmounts<T extends MealMacros & StoredAmounts>(entry: T, ratio: number): T {
+  const next = {
+    ...entry,
+    grams: entry.grams != null ? Math.round(entry.grams * ratio * 100) / 100 : entry.grams,
+    servings: entry.servings != null ? Math.round(entry.servings * ratio * 10000) / 10000 : entry.servings,
+    milliliters: entry.milliliters != null ? Math.round(entry.milliliters * ratio * 100) / 100 : entry.milliliters,
+  };
+  for (const key of MACRO_FIELDS) next[key] = roundMacro(key, entry[key] * ratio);
+  return next;
+}
+
+function macroDelta(before: MealMacros, after: MealMacros): MealMacros {
+  const delta = { ...ZERO_MACROS };
+  for (const key of MACRO_FIELDS) delta[key] = after[key] - before[key];
+  return delta;
+}
+
+function takeSnapshot(queryClient: QueryClient, date: string): RemovalSnapshot {
+  return {
+    date,
+    meals: queryClient.getQueryData<DayLogMealsResponse>(DAY_LOG_QUERY_KEYS.meals(date)),
+    summary: queryClient.getQueryData<DayLogSummary>(DAY_LOG_QUERY_KEYS.day(date)),
+  };
+}
+
+function applyItemChange(
+  queryClient: QueryClient,
+  snapshot: RemovalSnapshot,
+  itemId: string,
+  change: (item: MealItemSummary) => MealItemSummary,
+  delta: MealMacros,
+) {
+  if (snapshot.meals) {
+    queryClient.setQueryData<DayLogMealsResponse>(DAY_LOG_QUERY_KEYS.meals(snapshot.date), {
+      meals: snapshot.meals.meals.map((meal) => {
+        if (!meal.items.some((entry) => entry.id === itemId)) return meal;
+        return {
+          ...addMacros(meal, delta),
+          items: meal.items.map((entry) => (entry.id === itemId ? change(entry) : entry)),
+        };
+      }),
+    });
+  }
+  if (snapshot.summary) {
+    queryClient.setQueryData<DayLogSummary>(DAY_LOG_QUERY_KEYS.day(snapshot.date), {
+      ...snapshot.summary,
+      caloriesEaten: roundMacro('calories', snapshot.summary.caloriesEaten + delta.calories),
+      macros: snapshot.summary.macros.map((macro) => ({
+        ...macro,
+        current: roundMacro(macro.key, macro.current + delta[macro.key]),
+      })),
+    });
+  }
+}
+
+export function useMealItemComponents(itemId: string, date: string, enabled: boolean) {
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: DAY_LOG_QUERY_KEYS.components(itemId),
+    queryFn: async () => {
+      const result = await dayLogApi.getMealItemComponents(itemId);
+      void queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.meals(date) });
+      return result.components;
+    },
+    enabled,
+    retry: false,
+    staleTime: Infinity,
   });
 }
 
 export function useRemoveMealItem(date: string) {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { analytics: 'meal_item_removed' },
     mutationFn: (itemId: string) => dayLogApi.removeMealItem(itemId),
     onMutate: async (itemId: string) => {
       await cancelDayLogQueries(queryClient, date);
@@ -229,7 +325,89 @@ export function useRemoveMealItem(date: string) {
 export function useCopyToDays() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { analytics: 'meal_copied' },
     mutationFn: (payload: CopyToDaysPayload) => dayLogApi.copyToDays(payload),
     onSuccess: (_data, payload) => refreshDayLog(queryClient, payload.targetDates),
   });
+}
+
+type AmountTarget = { itemId: string; componentId?: string };
+type AmountPayload = { grams?: number; servings?: number; milliliters?: number };
+
+function findItem(queryClient: QueryClient, date: string, itemId: string) {
+  return queryClient
+    .getQueryData<DayLogMealsResponse>(DAY_LOG_QUERY_KEYS.meals(date))
+    ?.meals.flatMap((meal) => meal.items)
+    .find((entry) => entry.id === itemId);
+}
+
+export function useLiveAmountEdit(date: string, target: AmountTarget) {
+  const queryClient = useQueryClient();
+  const base = useRef<MealItemSummary | null>(null);
+  const pending = useRef(0);
+  const generation = useRef(0);
+
+  function preview(payload: AmountPayload) {
+    void cancelDayLogQueries(queryClient, date);
+    const item = findItem(queryClient, date, target.itemId);
+    if (!item) return;
+    if (!base.current) base.current = item;
+    const original = base.current;
+    generation.current += 1;
+    const snapshot = takeSnapshot(queryClient, date);
+
+    if (target.componentId) {
+      const from = original.components?.find((part) => part.id === target.componentId);
+      const current = item.components?.find((part) => part.id === target.componentId);
+      const before = from ? storedAmount(from) : null;
+      const next = from ? matchingAmount(from, payload) : null;
+      if (!from || !current || !before || !next) return;
+      const updated = scaleAmounts(from, next / before);
+      const delta = macroDelta(current, updated);
+      applyItemChange(
+        queryClient,
+        snapshot,
+        target.itemId,
+        (entry) => ({
+          ...addMacros(entry, delta),
+          components: entry.components?.map((part) => (part.id === target.componentId ? updated : part)),
+        }),
+        delta,
+      );
+      return;
+    }
+
+    const before = storedAmount(original);
+    const next = matchingAmount(original, payload);
+    if (!before || !next) return;
+    const ratio = next / before;
+    const updated: MealItemSummary = {
+      ...scaleAmounts(original, ratio),
+      components: original.components?.map((part) => scaleAmounts(part, ratio)),
+    };
+    applyItemChange(queryClient, snapshot, target.itemId, () => updated, macroDelta(item, updated));
+  }
+
+  const mutation = useMutation({
+    meta: { analytics: 'meal_item_updated' },
+    scope: { id: `meal-item-amount:${target.itemId}` },
+    mutationFn: (payload: AmountPayload) =>
+      target.componentId
+        ? dayLogApi.updateMealItemComponent({ ...payload, itemId: target.itemId, componentId: target.componentId })
+        : dayLogApi.updateMealItem({ ...payload, itemId: target.itemId }),
+    onSettled: async () => {
+      pending.current -= 1;
+      if (pending.current > 0) return;
+      const seen = generation.current;
+      await refreshDayLog(queryClient, [date]);
+      if (pending.current === 0 && generation.current === seen) base.current = null;
+    },
+  });
+
+  function save(payload: AmountPayload, options?: Parameters<typeof mutation.mutate>[1]) {
+    pending.current += 1;
+    mutation.mutate(payload, options);
+  }
+
+  return { preview, save };
 }

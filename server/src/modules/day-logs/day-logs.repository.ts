@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { Prisma } from '../../../generated/prisma/client';
 import { MacrosSnapshot } from '../nutrition-calculator/nutrition-calculator.service';
 import { ProductNutritionSource } from '../nutrition-calculator/product-nutrition';
 import { PRODUCT_NUTRITION_SELECT } from '../pantry/product-select';
@@ -9,12 +10,34 @@ export type PantryProductRow = ProductNutritionSource & {
   name: string;
 };
 
-type AmountRow = { grams: number | null; servings: number | null };
+type AmountRow = {
+  grams: number | null;
+  servings: number | null;
+  milliliters: number | null;
+};
+
+export type TemplateProduct = ProductNutritionSource & {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+  servingQuantity: number | null;
+  servingUnit: string | null;
+};
+
+export type Db = Prisma.TransactionClient;
+
+export type TemplateRebuild = {
+  itemId: string;
+  macrosSnapshot: MacrosSnapshot;
+  components: MealComponentInput[];
+};
+
+const TRANSACTION_OPTIONS = { maxWait: 10_000, timeout: 30_000 };
 
 export type PantryRecipeRow = {
   id: string;
   name: string;
-  items: Array<AmountRow & { product: ProductNutritionSource }>;
+  items: Array<AmountRow & { product: TemplateProduct }>;
 };
 
 export type SavedMealRow = {
@@ -22,13 +45,106 @@ export type SavedMealRow = {
   name: string;
   items: Array<
     AmountRow & {
-      product: ProductNutritionSource | null;
+      product: TemplateProduct | null;
       recipe: {
-        items: Array<AmountRow & { product: ProductNutritionSource }>;
+        id: string;
+        name: string;
+        imageUrl: string | null;
+        items: Array<AmountRow & { product: TemplateProduct }>;
       } | null;
     }
   >;
 };
+
+export type MealComponentInput = {
+  position: number;
+  name: string;
+  imageUrl: string | null;
+  pantryProductId: string | null;
+  pantryRecipeId: string | null;
+  grams: number | null;
+  servings: number | null;
+  milliliters: number | null;
+  serving: Record<string, unknown> | null;
+  macrosSnapshot: MacrosSnapshot;
+};
+
+export type ComponentAmountUpdate = {
+  id: string;
+  grams: number | null;
+  servings: number | null;
+  milliliters: number | null;
+  macrosSnapshot: MacrosSnapshot;
+};
+
+const TEMPLATE_PRODUCT_SELECT = {
+  id: true,
+  name: true,
+  imageUrl: true,
+  ...PRODUCT_NUTRITION_SELECT,
+} as const;
+
+const SAVED_MEAL_TEMPLATE_SELECT = {
+  id: true,
+  name: true,
+  items: {
+    select: {
+      grams: true,
+      servings: true,
+      milliliters: true,
+      product: {
+        select: TEMPLATE_PRODUCT_SELECT,
+      },
+      recipe: {
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+          items: {
+            select: {
+              grams: true,
+              servings: true,
+              milliliters: true,
+              product: {
+                select: TEMPLATE_PRODUCT_SELECT,
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+  },
+} satisfies Prisma.SavedMealSelect;
+
+export const COMPONENT_SELECT = {
+  id: true,
+  position: true,
+  name: true,
+  imageUrl: true,
+  pantryProductId: true,
+  pantryRecipeId: true,
+  grams: true,
+  servings: true,
+  milliliters: true,
+  serving: true,
+  macrosSnapshot: true,
+} as const;
+
+function componentData(component: MealComponentInput) {
+  return {
+    position: component.position,
+    name: component.name,
+    imageUrl: component.imageUrl,
+    pantryProductId: component.pantryProductId,
+    pantryRecipeId: component.pantryRecipeId,
+    grams: component.grams,
+    servings: component.servings,
+    milliliters: component.milliliters,
+    serving: (component.serving ?? undefined) as object | undefined,
+    macrosSnapshot: component.macrosSnapshot as unknown as object,
+  };
+}
 
 const DEFAULT_TARGETS = {
   calories: 2000,
@@ -108,7 +224,9 @@ export class DayLogsRepository {
       savedMealId?: string;
       grams?: number;
       servings?: number;
+      milliliters?: number;
       macrosSnapshot: MacrosSnapshot;
+      components?: MealComponentInput[];
     },
   ) {
     return this.prisma.mealItem.create({
@@ -119,8 +237,105 @@ export class DayLogsRepository {
         savedMealId: data.savedMealId ?? null,
         grams: data.grams ?? null,
         servings: data.servings ?? null,
+        milliliters: data.milliliters ?? null,
         macrosSnapshot: data.macrosSnapshot as unknown as object,
+        ...(data.components && data.components.length > 0
+          ? { components: { create: data.components.map(componentData) } }
+          : {}),
       },
+    });
+  }
+
+  transaction<T>(fn: (db: Db) => Promise<T>): Promise<T> {
+    return this.prisma.$transaction(fn, TRANSACTION_OPTIONS);
+  }
+
+  withMealItemLock<T>(itemId: string, fn: (db: Db) => Promise<T>): Promise<T> {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "MealItem" WHERE id = ${itemId} FOR UPDATE`;
+      return fn(tx);
+    }, TRANSACTION_OPTIONS);
+  }
+
+  async createComponentsIfMissing(
+    mealItemId: string,
+    components: MealComponentInput[],
+    db: Db,
+  ): Promise<void> {
+    const existing = await db.mealItemComponent.count({
+      where: { mealItemId },
+    });
+    if (existing > 0) return;
+    await db.mealItemComponent.createMany({
+      data: components.map((component) => ({
+        mealItemId,
+        ...componentData(component),
+      })),
+    });
+  }
+
+  findMealItemForComponents(itemId: string, userId: string) {
+    return this.prisma.mealItem.findFirst({
+      where: { id: itemId, mealEntry: { dayLog: { userId } } },
+      select: {
+        id: true,
+        pantryRecipeId: true,
+        savedMealId: true,
+        servings: true,
+        macrosSnapshot: true,
+        components: { select: COMPONENT_SELECT, orderBy: { position: 'asc' } },
+      },
+    });
+  }
+
+  findComponentForUpdate(
+    componentId: string,
+    itemId: string,
+    userId: string,
+    db: Db = this.prisma,
+  ) {
+    return db.mealItemComponent.findFirst({
+      where: {
+        id: componentId,
+        mealItemId: itemId,
+        mealItem: { mealEntry: { dayLog: { userId } } },
+      },
+      select: {
+        id: true,
+        grams: true,
+        servings: true,
+        milliliters: true,
+        macrosSnapshot: true,
+        mealItem: {
+          select: {
+            id: true,
+            macrosSnapshot: true,
+            mealEntry: { select: { dayLog: { select: { id: true } } } },
+          },
+        },
+      },
+    });
+  }
+
+  async updateComponentAndItem(
+    component: ComponentAmountUpdate,
+    item: { id: string; macrosSnapshot: MacrosSnapshot },
+    db: Db,
+  ): Promise<void> {
+    await db.mealItemComponent.update({
+      where: { id: component.id },
+      data: {
+        grams: component.grams,
+        servings: component.servings,
+        milliliters: component.milliliters,
+        macrosSnapshot: component.macrosSnapshot as unknown as object,
+      },
+      select: { id: true },
+    });
+    await db.mealItem.update({
+      where: { id: item.id },
+      data: { macrosSnapshot: item.macrosSnapshot as unknown as object },
+      select: { id: true },
     });
   }
 
@@ -141,8 +356,9 @@ export class DayLogsRepository {
   findPantryRecipeForUser(
     recipeId: string,
     userId: string,
+    db: Db = this.prisma,
   ): Promise<PantryRecipeRow | null> {
-    return this.prisma.pantryRecipe.findFirst({
+    return db.pantryRecipe.findFirst({
       where: { id: recipeId, userId },
       select: {
         id: true,
@@ -151,10 +367,12 @@ export class DayLogsRepository {
           select: {
             grams: true,
             servings: true,
+            milliliters: true,
             product: {
-              select: PRODUCT_NUTRITION_SELECT,
+              select: TEMPLATE_PRODUCT_SELECT,
             },
           },
+          orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
         },
       },
     });
@@ -163,35 +381,23 @@ export class DayLogsRepository {
   findSavedMealForUser(
     savedMealId: string,
     userId: string,
+    db: Db = this.prisma,
   ): Promise<SavedMealRow | null> {
-    return this.prisma.savedMeal.findFirst({
+    return db.savedMeal.findFirst({
       where: { id: savedMealId, userId },
-      select: {
-        id: true,
-        name: true,
-        items: {
-          select: {
-            grams: true,
-            servings: true,
-            product: {
-              select: PRODUCT_NUTRITION_SELECT,
-            },
-            recipe: {
-              select: {
-                items: {
-                  select: {
-                    grams: true,
-                    servings: true,
-                    product: {
-                      select: PRODUCT_NUTRITION_SELECT,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      select: SAVED_MEAL_TEMPLATE_SELECT,
+    });
+  }
+
+  findSavedMealsForUser(
+    savedMealIds: string[],
+    userId: string,
+    db: Db = this.prisma,
+  ): Promise<SavedMealRow[]> {
+    if (savedMealIds.length === 0) return Promise.resolve([]);
+    return db.savedMeal.findMany({
+      where: { id: { in: savedMealIds }, userId },
+      select: SAVED_MEAL_TEMPLATE_SELECT,
     });
   }
 
@@ -209,6 +415,7 @@ export class DayLogsRepository {
                 macrosSnapshot: true,
                 grams: true,
                 servings: true,
+                milliliters: true,
                 pantryProductId: true,
                 pantryRecipeId: true,
                 savedMealId: true,
@@ -216,9 +423,14 @@ export class DayLogsRepository {
                   select: {
                     nutritionBasis: true,
                     servingSizeG: true,
+                    servingSizeMl: true,
                     servingQuantity: true,
                     servingUnit: true,
                   },
+                },
+                components: {
+                  select: COMPONENT_SELECT,
+                  orderBy: { position: 'asc' },
                 },
               },
               orderBy: { createdAt: 'asc' },
@@ -241,7 +453,12 @@ export class DayLogsRepository {
             savedMealId: true,
             grams: true,
             servings: true,
+            milliliters: true,
             macrosSnapshot: true,
+            components: {
+              select: COMPONENT_SELECT,
+              orderBy: { position: 'asc' },
+            },
           },
         },
       },
@@ -257,42 +474,62 @@ export class DayLogsRepository {
         savedMealId: true,
         grams: true,
         servings: true,
+        milliliters: true,
         macrosSnapshot: true,
+        components: { select: COMPONENT_SELECT, orderBy: { position: 'asc' } },
         mealEntry: { select: { mealType: true } },
       },
     });
   }
 
-  findMealItemForUpdate(itemId: string, userId: string) {
-    return this.prisma.mealItem.findFirst({
+  findMealItemForUpdate(itemId: string, userId: string, db: Db = this.prisma) {
+    return db.mealItem.findFirst({
       where: { id: itemId, mealEntry: { dayLog: { userId } } },
       select: {
         id: true,
         grams: true,
         servings: true,
+        milliliters: true,
         macrosSnapshot: true,
+        components: { select: COMPONENT_SELECT, orderBy: { position: 'asc' } },
         mealEntry: { select: { dayLog: { select: { id: true } } } },
       },
     });
   }
 
-  updateMealItemAmount(
+  async updateMealItemAmount(
     itemId: string,
     data: {
       grams: number | null;
       servings: number | null;
+      milliliters: number | null;
       macrosSnapshot: MacrosSnapshot;
+      components?: ComponentAmountUpdate[];
     },
-  ) {
-    return this.prisma.mealItem.update({
+    db: Db,
+  ): Promise<void> {
+    await db.mealItem.update({
       where: { id: itemId },
       data: {
         grams: data.grams,
         servings: data.servings,
+        milliliters: data.milliliters,
         macrosSnapshot: data.macrosSnapshot as unknown as object,
       },
       select: { id: true },
     });
+    for (const component of data.components ?? []) {
+      await db.mealItemComponent.update({
+        where: { id: component.id },
+        data: {
+          grams: component.grams,
+          servings: component.servings,
+          milliliters: component.milliliters,
+          macrosSnapshot: component.macrosSnapshot as unknown as object,
+        },
+        select: { id: true },
+      });
+    }
   }
 
   async findMealItemWithOwnership(itemId: string) {
@@ -326,37 +563,114 @@ export class DayLogsRepository {
     return this.prisma.mealItem.delete({ where: { id: itemId } });
   }
 
-  async recalculateAndSaveTotals(dayLogId: string) {
-    const items = await this.prisma.mealItem.findMany({
-      where: { mealEntry: { dayLogId } },
-      select: { macrosSnapshot: true },
+  findTemplateInstances(
+    userId: string,
+    template: { pantryRecipeId: string } | { savedMealId: { in: string[] } },
+    fromDate: string,
+    db: Db = this.prisma,
+  ) {
+    return db.mealItem.findMany({
+      where: {
+        ...template,
+        mealEntry: { dayLog: { userId, date: { gte: fromDate } } },
+      },
+      select: {
+        id: true,
+        savedMealId: true,
+        servings: true,
+        macrosSnapshot: true,
+        components: {
+          select: COMPONENT_SELECT,
+          orderBy: { position: 'asc' },
+        },
+        mealEntry: { select: { dayLog: { select: { id: true } } } },
+      },
     });
+  }
 
-    let calories = 0,
-      protein = 0,
-      carbs = 0,
-      fat = 0,
-      fiber = 0;
+  async findSavedMealIdsWithRecipe(
+    userId: string,
+    recipeId: string,
+    db: Db = this.prisma,
+  ) {
+    const rows = await db.savedMeal.findMany({
+      where: { userId, items: { some: { recipeId } } },
+      select: { id: true },
+    });
+    return rows.map((row) => row.id);
+  }
+
+  async applyTemplateRebuilds(
+    rebuilds: TemplateRebuild[],
+    db: Db,
+  ): Promise<void> {
+    if (rebuilds.length === 0) return;
+    await db.mealItemComponent.deleteMany({
+      where: { mealItemId: { in: rebuilds.map((rebuild) => rebuild.itemId) } },
+    });
+    await db.mealItemComponent.createMany({
+      data: rebuilds.flatMap((rebuild) =>
+        rebuild.components.map((component) => ({
+          mealItemId: rebuild.itemId,
+          ...componentData(component),
+        })),
+      ),
+    });
+    for (const rebuild of rebuilds) {
+      await db.mealItem.update({
+        where: { id: rebuild.itemId },
+        data: { macrosSnapshot: rebuild.macrosSnapshot as unknown as object },
+        select: { id: true },
+      });
+    }
+  }
+
+  async recalculateAndSaveTotals(dayLogId: string, db: Db = this.prisma) {
+    await this.recalculateTotalsForDayLogs([dayLogId], db);
+  }
+
+  async recalculateTotalsForDayLogs(
+    dayLogIds: string[],
+    db: Db = this.prisma,
+  ): Promise<void> {
+    if (dayLogIds.length === 0) return;
+    const items = await db.mealItem.findMany({
+      where: { mealEntry: { dayLogId: { in: dayLogIds } } },
+      select: {
+        macrosSnapshot: true,
+        mealEntry: { select: { dayLogId: true } },
+      },
+    });
+    const totals = new Map(
+      dayLogIds.map((id) => [
+        id,
+        { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+      ]),
+    );
     for (const item of items) {
+      const sum = totals.get(item.mealEntry.dayLogId);
+      if (!sum) continue;
       const s = item.macrosSnapshot as MacrosSnapshot;
-      calories += s.calories;
-      protein += s.protein;
-      carbs += s.carbs;
-      fat += s.fat;
-      fiber += s.fiber;
+      sum.calories += s.calories;
+      sum.protein += s.protein;
+      sum.carbs += s.carbs;
+      sum.fat += s.fat;
+      sum.fiber += s.fiber;
     }
 
     const r1 = (v: number) => Math.round(v * 10) / 10;
-
-    return this.prisma.dayLog.update({
-      where: { id: dayLogId },
-      data: {
-        caloriesTotal: Math.round(calories),
-        proteinTotal: r1(protein),
-        carbsTotal: r1(carbs),
-        fatTotal: r1(fat),
-        fiberTotal: r1(fiber),
-      },
-    });
+    for (const [id, sum] of totals) {
+      await db.dayLog.update({
+        where: { id },
+        data: {
+          caloriesTotal: Math.round(sum.calories),
+          proteinTotal: r1(sum.protein),
+          carbsTotal: r1(sum.carbs),
+          fatTotal: r1(sum.fat),
+          fiberTotal: r1(sum.fiber),
+        },
+        select: { id: true },
+      });
+    }
   }
 }

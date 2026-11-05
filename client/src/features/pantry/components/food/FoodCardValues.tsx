@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
@@ -7,7 +6,7 @@ import { useDirection } from "../../../../shared/hooks/useDirection";
 import { formatCalories, formatGrams } from "../../../../shared/helpers/formatNumber";
 import { useMacroVisibility } from "../../hooks/useMacroVisibility";
 import { MacroValues } from "./NutritionLine";
-import { macroColor } from "../../helpers/macroColors";
+import { macroColor } from "../../../../shared/helpers/macroColors";
 
 type Props = {
   calories: number;
@@ -26,9 +25,7 @@ export function pickMainMacro(
     ...(visible.showFat ? (["fat"] as const) : []),
   ];
 
-  return candidates.reduce((best, key) =>
-    (macros[key] ?? 0) > (macros[best] ?? 0) ? key : best,
-  );
+  return candidates.reduce((best, key) => ((macros[key] ?? 0) > (macros[best] ?? 0) ? key : best));
 }
 
 export function FoodCardValues({ calories, macros }: Props) {
@@ -43,40 +40,37 @@ export function FoodCardValues({ calories, macros }: Props) {
   const label = t(`macros.${key}`);
   const grams = t("product.gramsShort");
   const calorieUnit = t("product.calUnit");
-  const [lineHeight, setLineHeight] = useState(0);
-  const [rowHeight, setRowHeight] = useState(0);
-  const isWrapped = lineHeight > 0 && rowHeight > lineHeight * 1.5;
+  const fiber = key === "carbs" && visibility.showFiber ? (macros.fiber ?? null) : null;
+  const fiberLabel = t("macros.fiber");
 
   return (
     <View
       style={[styles.row, dir.row]}
-      onLayout={(event) => setRowHeight(event.nativeEvent.layout.height)}
+      accessible
+      accessibilityLabel={`${formatCalories(calories)} ${calorieUnit}, ${label} ${
+        value == null ? "—" : `${formatGrams(value)} ${grams}`
+      }${fiber != null ? `, ${fiberLabel} ${formatGrams(fiber)} ${grams}` : ""}`}
     >
-      <Text
-        onLayout={(event) => setLineHeight(event.nativeEvent.layout.height)}
-        style={styles.value}
-        numberOfLines={1}
-        accessibilityLabel={`${formatCalories(calories)} ${calorieUnit}`}
-      >
-        {formatCalories(calories)}
-        <Text style={styles.unit}> {calorieUnit}</Text>
+      <Text style={styles.stat} numberOfLines={1}>
+        <Text style={styles.value}>{formatCalories(calories)}</Text>
+        {` ${calorieUnit}`}
       </Text>
-
-      {isWrapped ? null : <View style={styles.divider} />}
-
-      <Text
-        style={styles.value}
-        numberOfLines={1}
-        accessibilityLabel={`${label} ${value == null ? "—" : `${formatGrams(value)} ${grams}`}`}
-      >
-        <Text style={value == null ? null : { color: macroColor(key, colors) }}>
+      <Text style={styles.separator}>·</Text>
+      <Text style={styles.stat} numberOfLines={1}>
+        <Text style={[styles.value, value == null ? null : { color: macroColor(key, colors) }]}>
           {value == null ? "—" : formatGrams(value)}
         </Text>
-        <Text style={styles.unit}>
-          {value == null ? " " : ` ${grams} `}
-          {label}
-        </Text>
+        {value == null ? ` ${label}` : ` ${grams} ${label}`}
       </Text>
+      {fiber != null ? (
+        <>
+          <Text style={styles.separator}>·</Text>
+          <Text style={styles.stat} numberOfLines={1}>
+            <Text style={[styles.value, { color: macroColor("fiber", colors) }]}>{formatGrams(fiber)}</Text>
+            {` ${grams} ${fiberLabel}`}
+          </Text>
+        </>
+      ) : null}
     </View>
   );
 }
@@ -85,24 +79,23 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       row: {
-        alignItems: "center",
+        alignItems: "baseline",
         flexWrap: "wrap",
-        columnGap: spacing.ms,
-        rowGap: spacing.xxs,
+        columnGap: spacing.xs + 2,
+      },
+      stat: {
+        ...typography.footnote,
+        color: colors.textSecondary,
       },
       value: {
         ...typography.value,
+        fontSize: 15,
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
       },
-      unit: {
-        ...typography.callout,
-        fontFamily: fonts.regular,
-        color: colors.textSecondary,
-      },
-      divider: {
-        width: 1,
-        height: 16,
-        backgroundColor: colors.borderStrong,
+      separator: {
+        ...typography.footnote,
+        color: colors.textMuted,
       },
     }),
   );

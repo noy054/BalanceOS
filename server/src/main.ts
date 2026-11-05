@@ -1,9 +1,20 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { corsOrigins, securityHeaders } from './common/http/security';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    rawBody: true,
+  });
+  const production = process.env.NODE_ENV === 'production';
+
+  app.disable('x-powered-by');
+  if (process.env.TRUST_PROXY) {
+    app.set('trust proxy', Number(process.env.TRUST_PROXY) || 1);
+  }
+  app.use(securityHeaders(production));
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -14,7 +25,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: '*',
+    origin: corsOrigins(process.env.CORS_ORIGINS, production),
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });

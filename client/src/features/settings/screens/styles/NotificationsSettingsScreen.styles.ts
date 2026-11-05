@@ -5,10 +5,6 @@ import { fonts, radius, spacing, typography, useThemedStyles } from "../../../..
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      root: {
-        flex: 1,
-        backgroundColor: colors.background,
-      },
 
       scroll: {
         flex: 1,
@@ -26,7 +22,7 @@ export const useStyles = () =>
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm2,
         borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: colors.border,
+        borderTopColor: colors.glassBorder,
       },
 
       intervalLabel: {
@@ -40,8 +36,8 @@ export const useStyles = () =>
         minHeight: 40,
         borderRadius: radius.sm,
         borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.inputBackground,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
         paddingHorizontal: spacing.sm,
         ...typography.body,
         ...typography.number,
@@ -54,7 +50,7 @@ export const useStyles = () =>
         paddingVertical: spacing.ms,
         gap: spacing.ms,
         borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: colors.border,
+        borderTopColor: colors.glassBorder,
       },
 
       dayChips: {
@@ -67,17 +63,17 @@ export const useStyles = () =>
         flexBasis: 38,
         minHeight: 40,
         paddingHorizontal: spacing.xs,
-        borderRadius: radius.sm,
+        borderRadius: radius.round,
         borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.surface,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
         alignItems: "center",
         justifyContent: "center",
       },
 
       dayChipActive: {
-        borderColor: colors.accent,
-        backgroundColor: colors.accentSoft,
+        borderColor: colors.accentFill,
+        backgroundColor: colors.accentFill,
       },
 
       dayChipText: {
@@ -87,15 +83,15 @@ export const useStyles = () =>
 
       dayChipTextActive: {
         fontFamily: fonts.semibold,
-        color: colors.accent,
+        color: colors.onAccent,
       },
 
       weeklyTimeInputButton: {
         minHeight: 44,
-        borderRadius: radius.md,
+        borderRadius: radius.lg,
         borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.inputBackground,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
         paddingHorizontal: spacing.ms,
         justifyContent: "center",
       },
@@ -104,6 +100,11 @@ export const useStyles = () =>
         ...typography.body,
         ...typography.number,
         color: colors.textPrimary,
+      },
+
+      hint: {
+        ...typography.footnote,
+        color: colors.textSecondary,
       },
 
       weeklyTimeInputPlaceholder: {

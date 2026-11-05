@@ -11,6 +11,13 @@ export class UpdateMealItemDto {
 
   @IsOptional()
   @IsNumber()
+  @Min(0.1)
+  @Max(100000)
+  @Type(() => Number)
+  milliliters?: number;
+
+  @IsOptional()
+  @IsNumber()
   @Min(0.0001)
   @Max(10000)
   @Type(() => Number)

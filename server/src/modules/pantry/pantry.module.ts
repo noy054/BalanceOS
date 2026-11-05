@@ -10,9 +10,11 @@ import { SavedMealsService } from './saved-meals.service';
 import { SavedMealsRepository } from './saved-meals.repository';
 import { ProductCatalogModule } from '../product-catalog/product-catalog.module';
 import { PantryItemValidator } from './pantry-item.validator';
+import { FoodImagesModule } from '../food-images/food-images.module';
+import { DayLogsModule } from '../day-logs/day-logs.module';
 
 @Module({
-  imports: [ProductCatalogModule],
+  imports: [ProductCatalogModule, FoodImagesModule, DayLogsModule],
   controllers: [PantryController, RecipesController, SavedMealsController],
   providers: [
     PantryService,

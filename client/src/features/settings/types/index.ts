@@ -62,6 +62,9 @@ export type NutritionSettings = {
   weeklySummaryEnabled: boolean;
   weeklySummaryDay: number | null;
   weeklySummaryTime: string | null;
+  weighInReminderEnabled: boolean;
+  weighInReminderDays: number[];
+  weighInReminderTime: string | null;
 
   createdAt: string;
   updatedAt: string;

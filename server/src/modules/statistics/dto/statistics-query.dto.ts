@@ -11,4 +11,8 @@ export class StatisticsQueryDto {
   @IsOptional()
   @IsDayKey()
   endDate?: string;
+
+  @IsOptional()
+  @IsDayKey()
+  today?: string;
 }

@@ -2,18 +2,24 @@ import { apiClient } from '../../../shared/api/client';
 import { CATALOG_ENDPOINTS, PANTRY_ENDPOINTS } from '../constants';
 import {
   AddFromCatalogPayload,
+  CatalogBrowseItem,
+  CatalogDepartment,
+  CatalogDepartmentCount,
+  CatalogSubcategoryCount,
   CreatePantryProductPayload,
   Page,
   PantryProduct,
   ProductCatalogProduct,
   UpdatePantryProductPayload,
 } from '../types';
+import { PantrySort } from "../helpers/pantrySort";
 
 export const pantryApi = {
   list(params: {
     search?: string;
     cursor?: string;
     limit?: number;
+    sort?: PantrySort;
   }): Promise<Page<PantryProduct>> {
     return apiClient
       .get<Page<PantryProduct>>(PANTRY_ENDPOINTS.BASE, { params })
@@ -35,6 +41,30 @@ export const pantryApi = {
   getCatalogItem(id: string): Promise<ProductCatalogProduct> {
     return apiClient
       .get<ProductCatalogProduct>(CATALOG_ENDPOINTS.BY_ID(id))
+      .then((r) => r.data);
+  },
+
+  getCatalogDepartments(): Promise<CatalogDepartmentCount[]> {
+    return apiClient
+      .get<CatalogDepartmentCount[]>(CATALOG_ENDPOINTS.DEPARTMENTS)
+      .then((r) => r.data);
+  },
+
+  getCatalogSubcategories(department: CatalogDepartment): Promise<CatalogSubcategoryCount[]> {
+    return apiClient
+      .get<CatalogSubcategoryCount[]>(CATALOG_ENDPOINTS.SUBCATEGORIES(department))
+      .then((r) => r.data);
+  },
+
+  browseCatalog(params: {
+    department?: CatalogDepartment;
+    subcategory?: string;
+    q?: string;
+    cursor?: string;
+    limit?: number;
+  }): Promise<Page<CatalogBrowseItem>> {
+    return apiClient
+      .get<Page<CatalogBrowseItem>>(CATALOG_ENDPOINTS.BROWSE, { params })
       .then((r) => r.data);
   },
 

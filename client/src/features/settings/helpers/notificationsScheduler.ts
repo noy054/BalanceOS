@@ -26,6 +26,14 @@ type WeeklyReminderConfig = {
   body: string;
 };
 
+type WeighInReminderConfig = {
+  enabled: boolean;
+  days: number[];
+  time?: string | null;
+  title: string;
+  body: string;
+};
+
 type ScheduleSettingsNotificationsPayload = {
   breakfast: ReminderConfig;
   lunch: ReminderConfig;
@@ -33,6 +41,7 @@ type ScheduleSettingsNotificationsPayload = {
   dailySummary: ReminderConfig;
   weeklySummary: WeeklyReminderConfig;
   water: WaterReminderConfig;
+  weighIn: WeighInReminderConfig;
 };
 
 Notifications.setNotificationHandler({
@@ -197,6 +206,22 @@ async function scheduleWaterReminder(config: WaterReminderConfig) {
   });
 }
 
+function scheduleWeighInReminders(config: WeighInReminderConfig) {
+  if (!config.enabled) {
+    return [];
+  }
+
+  return config.days.map((day) =>
+    scheduleWeeklyReminder({
+      enabled: true,
+      day,
+      time: config.time,
+      title: config.title,
+      body: config.body,
+    }),
+  );
+}
+
 export async function scheduleSettingsNotifications(
   payload: ScheduleSettingsNotificationsPayload,
 ) {
@@ -216,6 +241,7 @@ export async function scheduleSettingsNotifications(
     scheduleDailyReminder(payload.dailySummary),
     scheduleWeeklyReminder(payload.weeklySummary),
     scheduleWaterReminder(payload.water),
+    ...scheduleWeighInReminders(payload.weighIn),
   ]);
 
   await storeNotificationIds(ids.filter(Boolean) as string[]);

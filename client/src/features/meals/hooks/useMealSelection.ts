@@ -4,12 +4,11 @@ import { CalculatedNutrition, PantryProduct, PantryRecipe, SavedMeal } from '../
 import { nutritionForAmount } from '../../pantry/helpers/nutrition';
 import {
   AmountUnit,
-  canUseGrams,
+  amountUnits,
   convertAmount,
   defaultAmount,
   defaultAmountUnit,
   formatAmount,
-  hasServing,
   isAmountPayloadValid,
   toAmountPayload,
 } from '../../pantry/helpers/serving';
@@ -29,7 +28,7 @@ export type MealCartEntry = {
 };
 
 export type SelectedAmount =
-  | { kind: 'product'; product: PantryProduct; grams?: number; servings?: number }
+  | { kind: 'product'; product: PantryProduct; grams?: number; servings?: number; milliliters?: number }
   | { kind: 'recipe'; servings: number }
   | { kind: 'savedMeal' };
 
@@ -88,7 +87,7 @@ export function useMealSelection() {
 
   function step(direction: 1 | -1) {
     const current = parseQuantity(quantity) ?? 0;
-    const increment = unit === 'grams' && selected?.kind === 'product' ? 10 : current < 1 ? 0.5 : 1;
+    const increment = unit !== 'servings' && selected?.kind === 'product' ? 10 : current < 1 ? 0.5 : 1;
     const next = Math.max(increment, current + direction * increment);
     setQuantity(formatAmount(next));
   }
@@ -96,7 +95,7 @@ export function useMealSelection() {
   const product = selected?.kind === 'product' ? selected.item : null;
   const parsed = parseQuantity(quantity);
   const unitOptions: AmountUnit[] = product
-    ? [...(hasServing(product) ? (['servings'] as const) : []), ...(canUseGrams(product) ? (['grams'] as const) : [])]
+    ? amountUnits(product)
     : [];
 
   let amount: SelectedAmount | null = null;
@@ -124,6 +123,7 @@ export function useMealSelection() {
       payload.pantryProductId = selected.item.id;
       if (amount.grams != null) payload.grams = amount.grams;
       if (amount.servings != null) payload.servings = amount.servings;
+      if (amount.milliliters != null) payload.milliliters = amount.milliliters;
     } else if (amount.kind === 'recipe') {
       payload.pantryRecipeId = selected.item.id;
       payload.servings = amount.servings;

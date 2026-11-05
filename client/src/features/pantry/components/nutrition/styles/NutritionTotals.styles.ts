@@ -12,7 +12,9 @@ export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       container: {
-        backgroundColor: colors.surface,
+        backgroundColor: colors.glassCard,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
         borderRadius: radius.lg,
         padding: spacing.md,
         gap: spacing.md,
@@ -45,9 +47,6 @@ export const useStyles = () =>
       },
 
       macrosRow: {
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: colors.border,
-        paddingTop: spacing.md,
         gap: spacing.sm,
       },
 
@@ -55,6 +54,10 @@ export const useStyles = () =>
         flex: 1,
         minWidth: 0,
         gap: spacing.xs,
+        paddingVertical: spacing.sm2,
+        paddingHorizontal: spacing.xs + 2,
+        borderRadius: radius.md,
+        backgroundColor: colors.glassBorder,
       },
 
       macrosGrid: {
@@ -64,6 +67,7 @@ export const useStyles = () =>
 
       macroCellHalf: {
         flexBasis: "45%",
+        flexGrow: 1,
       },
 
       macroHead: {
@@ -84,17 +88,18 @@ export const useStyles = () =>
         color: colors.textSecondary,
       },
 
+      macroUnit: {
+        ...typography.caption,
+        fontFamily: fonts.regular,
+        color: colors.textMuted,
+      },
+
       macroValue: {
         ...typography.value,
         fontSize: 18,
         lineHeight: 24,
       },
 
-      macroUnit: {
-        ...typography.caption,
-        fontFamily: fonts.regular,
-        color: colors.textMuted,
-      },
     }),
   );
 

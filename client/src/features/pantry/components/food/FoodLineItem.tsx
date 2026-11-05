@@ -1,11 +1,19 @@
 import { ReactNode } from "react";
+import type { ComponentProps } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-import { spacing, states, typography, useAppTheme, useThemedStyles } from "../../../../shared/theme";
+import {
+  spacing,
+  states,
+  typography,
+  useAppTheme,
+  useThemedStyles,
+} from "../../../../shared/theme";
 import { useDirection } from "../../../../shared/hooks/useDirection";
 import { MacroValues } from "./NutritionLine";
 import { FoodCardValues } from "./FoodCardValues";
+import { FoodThumb } from "./FoodThumb";
 
 type Props = {
   title: string;
@@ -15,6 +23,8 @@ type Props = {
   macros?: MacroValues;
   last?: boolean;
   trailing?: ReactNode;
+  imageUrl?: string | null;
+  fallbackIcon?: ComponentProps<typeof MaterialCommunityIcons>["name"];
   onPress?: () => void;
   accessibilityHint?: string;
 };
@@ -27,6 +37,8 @@ export function FoodLineItem({
   macros,
   last = false,
   trailing,
+  imageUrl,
+  fallbackIcon,
   onPress,
   accessibilityHint,
 }: Props) {
@@ -34,41 +46,39 @@ export function FoodLineItem({
   const dir = useDirection();
   const { colors } = useAppTheme();
 
+  const subline = [basis, meta].filter(Boolean).join(" · ");
+
   const content = (
-    <>
-      <View style={[styles.header, dir.row]}>
-        <View style={styles.body}>
+    <View style={[styles.main, dir.row]}>
+      {fallbackIcon ? (
+        <FoodThumb imageUrl={imageUrl} fallbackIcon={fallbackIcon} size={44} />
+      ) : null}
+
+      <View style={styles.body}>
+        <View style={[styles.header, dir.row]}>
           <Text style={[styles.title, dir.text]} numberOfLines={2}>
             {title}
           </Text>
-          {meta ? (
-            <Text style={[styles.meta, dir.text]} numberOfLines={1}>
-              {meta}
-            </Text>
-          ) : null}
+          {trailing}
         </View>
-        {basis ? (
-          <Text
-            style={[styles.basis, { textAlign: dir.isRTL ? "left" : "right" }]}
-            numberOfLines={2}
-          >
-            {basis}
+        {subline ? (
+          <Text style={[styles.subline, dir.text]} numberOfLines={2}>
+            {subline}
           </Text>
         ) : null}
-        {trailing}
-      </View>
 
-      {calories != null && macros ? (
-        <View style={[styles.footer, dir.row]}>
-          <View style={styles.values}>
-            <FoodCardValues calories={calories} macros={macros} />
+        {calories != null && macros ? (
+          <View style={[styles.footer, dir.row]}>
+            <View style={styles.values}>
+              <FoodCardValues calories={calories} macros={macros} />
+            </View>
+            {onPress ? (
+              <MaterialCommunityIcons name={dir.forwardIcon} size={22} color={colors.textMuted} />
+            ) : null}
           </View>
-          {onPress ? (
-            <MaterialCommunityIcons name={dir.forwardIcon} size={22} color={colors.textMuted} />
-          ) : null}
-        </View>
-      ) : null}
-    </>
+        ) : null}
+      </View>
+    </View>
   );
 
   if (!onPress) {
@@ -92,8 +102,11 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       row: {
-        gap: spacing.md,
-        paddingVertical: spacing.md,
+        paddingVertical: spacing.ms,
+      },
+      main: {
+        alignItems: "center",
+        gap: spacing.ms,
       },
       pressed: {
         opacity: states.pressedOpacity,
@@ -101,6 +114,7 @@ const useStyles = () =>
       footer: {
         alignItems: "center",
         gap: spacing.sm,
+        marginTop: 2,
       },
       values: {
         flex: 1,
@@ -108,11 +122,11 @@ const useStyles = () =>
       },
       rowBorder: {
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: colors.border,
+        borderBottomColor: colors.glassBorder,
       },
       header: {
         alignItems: "flex-start",
-        gap: spacing.md,
+        gap: spacing.sm,
       },
       body: {
         flex: 1,
@@ -121,19 +135,14 @@ const useStyles = () =>
       },
       title: {
         ...typography.bodyStrong,
-        fontSize: 17,
-        lineHeight: 24,
+        flex: 1,
+        fontSize: 16,
+        lineHeight: 22,
         color: colors.textPrimary,
       },
-      meta: {
-        ...typography.footnote,
-        color: colors.textSecondary,
-      },
-      basis: {
+      subline: {
         ...typography.footnote,
         ...typography.number,
-        lineHeight: 24,
-        maxWidth: "45%",
         color: colors.textSecondary,
       },
     }),

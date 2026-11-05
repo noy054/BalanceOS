@@ -1,6 +1,7 @@
 import { apiClient } from '../../../shared/api/client';
 import { NutritionSettings, UpdateSettingsPayload, UpdateProfilePayload, ChangePasswordPayload } from '../types';
 import { UserPublic } from '../../auth/types';
+import { tokenStorage } from '../../../shared/api/tokenStorage';
 
 const NUTRITION_SETTINGS_URL = '/nutrition-settings';
 const AUTH_ME_URL = '/auth/me';
@@ -20,8 +21,9 @@ export const settingsApi = {
     return apiClient.patch<UserPublic>(AUTH_ME_URL, payload).then((r) => r.data);
   },
 
-  changePassword(payload: ChangePasswordPayload): Promise<void> {
-    return apiClient.patch(CHANGE_PASSWORD_URL, payload).then(() => undefined);
+  async changePassword(payload: ChangePasswordPayload): Promise<void> {
+    const refreshToken = await tokenStorage.getRefreshToken();
+    await apiClient.patch(CHANGE_PASSWORD_URL, { ...payload, ...(refreshToken ? { refreshToken } : {}) });
   },
 
   deleteAccount(): Promise<void> {

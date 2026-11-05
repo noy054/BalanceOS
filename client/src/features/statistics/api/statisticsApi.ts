@@ -4,9 +4,9 @@ import { StatRange, StatisticsResponse } from '../types';
 import { DateKey } from '../../../shared/helpers/dateKey';
 
 export const statisticsApi = {
-  get(range: StatRange, endDate: DateKey): Promise<StatisticsResponse> {
+  get(range: StatRange, endDate: DateKey, today: DateKey): Promise<StatisticsResponse> {
     return apiClient
-      .get<StatisticsResponse>(STATISTICS_ENDPOINTS.BASE, { params: { range, endDate } })
+      .get<StatisticsResponse>(STATISTICS_ENDPOINTS.BASE, { params: { range, endDate, today } })
       .then((r) => r.data);
   },
 };

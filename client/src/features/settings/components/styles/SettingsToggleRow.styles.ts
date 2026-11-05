@@ -14,17 +14,17 @@ export const useStyles = () =>
       },
       rowBorder: {
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: colors.border,
+        borderBottomColor: colors.glassBorder,
       },
       pressed: {
-        backgroundColor: colors.surfaceMuted,
+        backgroundColor: colors.glassBorder,
       },
       left: {
         flex: 1,
         gap: 2,
       },
       label: {
-        ...typography.body,
+        ...typography.bodyStrong,
         color: colors.textPrimary,
       },
       labelDisabled: {

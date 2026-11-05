@@ -1,55 +1,53 @@
 import { StyleSheet } from 'react-native';
 
-import { radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
+import { fonts, radius, spacing, typography, useThemedStyles } from '../../../../shared/theme';
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      root: { flex: 1, backgroundColor: colors.background },
       scroll: { flex: 1 },
-      content: { paddingBottom: spacing.md },
-      body: { paddingHorizontal: spacing.md },
+      content: { paddingBottom: spacing.xl },
+      body: { paddingHorizontal: spacing.md, paddingTop: spacing.xs },
       userCard: {
         alignItems: 'center',
-        backgroundColor: colors.surface,
+        backgroundColor: colors.glassCard,
         borderRadius: radius.lg,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
         padding: spacing.md,
         marginBottom: spacing.lg,
         gap: spacing.ms,
       },
+      userCardPressed: {
+        backgroundColor: colors.glassBorder,
+      },
       avatar: {
-        width: 48,
-        height: 48,
-        borderRadius: 12,
-        backgroundColor: colors.accentSoft,
+        width: 52,
+        height: 52,
+        borderRadius: radius.round,
+        backgroundColor: colors.accentFill,
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 0,
       },
       avatarInitials: {
         ...typography.headline,
-        color: colors.accent,
+        fontFamily: fonts.headingSemibold,
+        color: colors.onAccent,
       },
-      userInfo: { flex: 1, gap: 2 },
+      userInfo: { flex: 1, minWidth: 0, gap: 1 },
       userName: {
-        ...typography.bodyStrong,
+        ...typography.headline,
         color: colors.textPrimary,
       },
       userEmail: {
         ...typography.footnote,
         color: colors.textSecondary,
       },
+      userAction: {
+        ...typography.label,
+        marginTop: spacing.xxs,
+        color: colors.accent,
+      },
     }),
   );
-
-export function getDirectionStyles(isRTL: boolean) {
-  return {
-    row: {
-      flexDirection: isRTL ? 'row-reverse' as const : 'row' as const,
-    },
-    text: {
-      textAlign: isRTL ? 'right' as const : 'left' as const,
-      writingDirection: isRTL ? 'rtl' as const : 'ltr' as const,
-    },
-  };
-}

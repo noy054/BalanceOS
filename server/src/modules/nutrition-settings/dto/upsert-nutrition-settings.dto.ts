@@ -1,4 +1,7 @@
 import {
+  ArrayMaxSize,
+  ArrayUnique,
+  IsArray,
   IsBoolean,
   IsDateString,
   IsEnum,
@@ -223,4 +226,24 @@ export class UpsertNutritionSettingsDto {
     message: 'Time must be a valid HH:MM value',
   })
   weeklySummaryTime?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  weighInReminderEnabled?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(7)
+  @ArrayUnique()
+  @IsInt({ each: true })
+  @Min(0, { each: true })
+  @Max(6, { each: true })
+  weighInReminderDays?: number[];
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, {
+    message: 'Time must be a valid HH:MM value',
+  })
+  weighInReminderTime?: string;
 }

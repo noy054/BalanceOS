@@ -4,9 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PantryRepository } from './pantry.repository';
+import { FoodImagesService } from '../food-images/food-images.service';
 import {
   ProductNutritionSource,
   supportsGrams,
+  supportsMilliliters,
   supportsServings,
 } from '../nutrition-calculator/product-nutrition';
 
@@ -14,11 +16,19 @@ export type ProductAmountInput = {
   productId: string;
   grams?: number | null;
   servings?: number | null;
+  milliliters?: number | null;
 };
 
 @Injectable()
 export class PantryItemValidator {
-  constructor(private readonly repo: PantryRepository) {}
+  constructor(
+    private readonly repo: PantryRepository,
+    private readonly images: FoodImagesService,
+  ) {}
+
+  validateImage(userId: string, imageUrl: string | null | undefined) {
+    return this.images.assertUsable(userId, imageUrl);
+  }
 
   async validateProductAmounts(
     userId: string,
@@ -33,9 +43,12 @@ export class PantryItemValidator {
     for (const item of items) {
       const hasGrams = item.grams != null;
       const hasServings = item.servings != null;
-      if (hasGrams === hasServings) {
+      const hasMilliliters = item.milliliters != null;
+      if (
+        [hasGrams, hasServings, hasMilliliters].filter(Boolean).length !== 1
+      ) {
         throw new BadRequestException(
-          'Each product item requires either grams or servings',
+          'Each product item requires exactly one of grams, milliliters or servings',
         );
       }
       const product = byId.get(item.productId);
@@ -43,6 +56,11 @@ export class PantryItemValidator {
       if (hasGrams && !supportsGrams(product)) {
         throw new BadRequestException(
           'This product has no weight information. Use servings instead.',
+        );
+      }
+      if (hasMilliliters && !supportsMilliliters(product)) {
+        throw new BadRequestException(
+          'This product has no volume information. Use grams or servings instead.',
         );
       }
       if (hasServings && !supportsServings(product)) {
@@ -61,6 +79,11 @@ export class PantryItemValidator {
     if (usages.byGrams && !supportsGrams(next)) {
       throw new BadRequestException(
         'This product is used by weight in recipes or saved meals. Keep per-100g values or a serving weight.',
+      );
+    }
+    if (usages.byMilliliters && !supportsMilliliters(next)) {
+      throw new BadRequestException(
+        'This product is used by volume in recipes or saved meals. Keep per-100ml values or a serving volume.',
       );
     }
     if (usages.byServings && !supportsServings(next)) {

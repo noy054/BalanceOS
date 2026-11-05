@@ -1,14 +1,9 @@
-import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { FormInput } from "../../../../shared/components/FormInput";
 import { FormSection } from "../../../../shared/components/ui/FormSection";
 import { MealType } from "../../types";
-import { SavedMealTypeSelector } from "./SavedMealTypeSelector";
-import {
-  getDirectionStyles,
-  useStyles,
-} from "../recipes/styles/RecipeBasicInfoCard.styles";
+import { MealTypeBoxes } from "../form/MealTypeBoxes";
 
 type Props = {
   name: string;
@@ -28,11 +23,9 @@ export function SavedMealBasicInfoCard({
   onToggleMealType,
 }: Props) {
   const { t } = useTranslation("pantry");
-  const styles = useStyles();
-  const dir = getDirectionStyles(isRTL);
 
   return (
-    <FormSection title={t("addProduct.detailsSection")}>
+    <FormSection>
       <FormInput
         label={t("savedMeal.nameLabel")}
         value={name}
@@ -42,17 +35,12 @@ export function SavedMealBasicInfoCard({
         returnKeyType="done"
       />
 
-      <View style={styles.fieldGroup}>
-        <Text style={[styles.fieldLabel, dir.text]}>
-          {t("savedMeal.mealTypeLabel")}
-        </Text>
-
-        <SavedMealTypeSelector
-          selectedMealTypes={mealTypes}
-          isRTL={isRTL}
-          onToggle={onToggleMealType}
-        />
-      </View>
+      <MealTypeBoxes
+        label={t("savedMeal.mealTypeLabel")}
+        selected={mealTypes}
+        isRTL={isRTL}
+        onToggle={onToggleMealType}
+      />
     </FormSection>
   );
 }

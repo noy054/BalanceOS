@@ -12,13 +12,13 @@ export class MailerService {
     const host = this.config.get<string>('SMTP_HOST');
 
     if (!host) {
-      const isProduction = this.config.get('NODE_ENV') === 'production';
-      if (isProduction) {
+      const isDevelopment = this.config.get('NODE_ENV') === 'development';
+      if (isDevelopment) {
+        this.logger.debug(`[DEV] Password reset token for ${to}: ${token}`);
+      } else {
         this.logger.error(
           'SMTP_HOST is not configured. Password reset email could not be sent.',
         );
-      } else {
-        this.logger.debug(`[DEV] Password reset token for ${to}: ${token}`);
       }
       return;
     }

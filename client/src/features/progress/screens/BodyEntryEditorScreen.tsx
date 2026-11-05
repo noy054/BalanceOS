@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,6 +17,8 @@ import { radius, spacing, typography, useAppTheme, useThemedStyles } from "../..
 import { DayPickerSheet } from "../../day-log/components/DayPickerSheet";
 import { useDayLabels } from "../../day-log/hooks/useDayLabels";
 import { PhotoSection } from "../components/PhotoSection";
+import { WeightInputCard } from "../components/WeightInputCard";
+import { usePeriodRange, useProgressOverview } from "../hooks/useProgress";
 import { MEASUREMENT_METRICS, PROGRESS_ROUTES } from "../constants";
 import { metricUnitKey } from "../helpers/format";
 import { useBodyEntryEditor } from "../hooks/useBodyEntryEditor";
@@ -31,6 +33,12 @@ export function BodyEntryEditorScreen() {
   const editor = useBodyEntryEditor(typeof params.id === "string" ? params.id : "new");
   const labels = useDayLabels(editor.today);
   const [pickingDate, setPickingDate] = useState(false);
+  const history = useProgressOverview(usePeriodRange("ALL"));
+  const weightPoints = history.data?.metrics.weightKg.points;
+  const previousWeight = useMemo(
+    () => [...(weightPoints ?? [])].reverse().find((point) => point.date < editor.form.date) ?? null,
+    [weightPoints, editor.form.date],
+  );
 
   const title = editor.isNew ? t("entry.newTitle") : t("entry.editTitle");
 
@@ -104,7 +112,16 @@ export function BodyEntryEditorScreen() {
             <MaterialCommunityIcons name="chevron-down" size={22} color={colors.textMuted} />
           </Pressable>
 
-          <FormSection title={t("entry.weightSection")}>{metricInput("weightKg")}</FormSection>
+          <FormSection title={t("entry.weightSection")}>
+            <WeightInputCard
+              value={editor.form.weightKg}
+              onChange={(value) => editor.update("weightKg", value)}
+              previous={previousWeight}
+              formatDate={labels.short}
+              error={editor.errors.weightKg}
+              disabled={editor.busy}
+            />
+          </FormSection>
 
           <FormSection title={t("entry.measurementsSection")} hint={t("entry.measurementsHint")}>
             <View style={styles.grid}>

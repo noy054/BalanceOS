@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { UsersService } from '../users/users.service';
+import { FoodImagesService } from '../food-images/food-images.service';
 import { ProgressService } from '../progress/progress.service';
 import { AuthRepository } from './auth.repository';
 import { MailerService } from './mailer.service';
@@ -30,6 +31,10 @@ const ACCESS_TOKEN_EXPIRES_SECONDS = 15 * 60; // 15 minutes
 const REFRESH_TOKEN_EXPIRES_SECONDS = 7 * 24 * 60 * 60; // 7 days
 const REFRESH_TOKEN_EXPIRES_DAYS = 7;
 const RESET_TOKEN_EXPIRES_MINUTES = 60;
+const TIMING_GUARD_HASH = bcrypt.hashSync(
+  crypto.randomBytes(16).toString('hex'),
+  BCRYPT_ROUNDS,
+);
 
 @Injectable()
 export class AuthService {
@@ -43,6 +48,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly progressService: ProgressService,
+    private readonly foodImages: FoodImagesService,
   ) {}
 
   private getGoogleClient(): OAuth2Client {
@@ -77,6 +83,7 @@ export class AuthService {
   async login(dto: LoginDto): Promise<AuthResponse> {
     const user = await this.usersService.findByEmail(dto.email);
     if (!user || !user.passwordHash) {
+      await bcrypt.compare(dto.password, TIMING_GUARD_HASH);
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -134,11 +141,13 @@ export class AuthService {
     }
 
     const stored = await this.authRepository.findRefreshToken(dto.refreshToken);
-    if (!stored || stored.expiresAt < new Date()) {
+    const consumed =
+      stored !== null &&
+      (await this.authRepository.consumeRefreshToken(dto.refreshToken));
+    if (!stored || !consumed) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
-    await this.authRepository.deleteRefreshToken(dto.refreshToken);
     return this.issueTokenPair(stored.userId);
   }
 
@@ -168,11 +177,16 @@ export class AuthService {
     if (!valid) throw new BadRequestException('Current password is incorrect.');
     const newHash = await bcrypt.hash(dto.newPassword, BCRYPT_ROUNDS);
     await this.usersService.updatePasswordHash(userId, newHash);
+    await this.authRepository.deleteAllUserRefreshTokens(
+      userId,
+      dto.refreshToken,
+    );
   }
 
   async deleteAccount(userId: string): Promise<void> {
     await this.usersService.deleteById(userId);
     await this.progressService.removeUserFiles(userId);
+    await this.foodImages.removeUserFiles(userId);
   }
 
   async forgotPassword(dto: ForgotPasswordDto): Promise<void> {
@@ -222,7 +236,7 @@ export class AuthService {
     );
 
     const refreshToken = this.jwtService.sign(
-      { sub: userId },
+      { sub: userId, jti: crypto.randomUUID() },
       {
         secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
         expiresIn: REFRESH_TOKEN_EXPIRES_SECONDS,

@@ -17,12 +17,13 @@ import {
 import { scaledRecipeTotals } from '../nutrition-calculator/nutrition-calculator.service';
 import { ZERO_TOTALS } from '../nutrition-calculator/product-nutrition';
 import { PantryItemValidator } from './pantry-item.validator';
+import { TemplateLogSyncService } from '../day-logs/template-log-sync.service';
 
 function enrichSavedMeal(meal: NonNullable<SavedMealRow>) {
   const enrichedItems = meal.items.map((item) => {
     let nutrition: NutritionTotals = { ...ZERO_TOTALS };
 
-    if (item.product && (item.grams || item.servings)) {
+    if (item.product && (item.grams || item.servings || item.milliliters)) {
       nutrition = calcItemNutrition(item.product, item);
     } else if (item.recipe && item.servings) {
       nutrition = scaledRecipeTotals(item.recipe.items, item.servings);
@@ -43,6 +44,7 @@ export class SavedMealsService {
   constructor(
     private readonly repo: SavedMealsRepository,
     private readonly validator: PantryItemValidator,
+    private readonly logSync: TemplateLogSyncService,
   ) {}
 
   async list(userId: string) {
@@ -58,6 +60,7 @@ export class SavedMealsService {
 
   async create(userId: string, dto: CreateSavedMealDto) {
     await this.validateItems(userId, dto.items);
+    await this.validator.validateImage(userId, dto.imageUrl);
     const meal = await this.repo.create(userId, dto);
     return enrichSavedMeal(meal);
   }
@@ -65,11 +68,21 @@ export class SavedMealsService {
   async update(userId: string, id: string, dto: UpdateSavedMealDto) {
     await this.getById(userId, id);
     if (dto.items) await this.validateItems(userId, dto.items);
-    const updated = await this.repo.updateWithItems(
+    await this.validator.validateImage(userId, dto.imageUrl);
+    const fromDate = this.logSync.resolveFromDate(dto.logsFrom);
+    const updated = await this.logSync.updateSavedMeal(
+      userId,
       id,
-      dto.name,
-      dto.mealTypes,
-      dto.items,
+      fromDate,
+      (db) =>
+        this.repo.updateWithItems(
+          db,
+          id,
+          dto.name,
+          dto.mealTypes,
+          dto.items,
+          dto.imageUrl,
+        ),
     );
     return enrichSavedMeal(updated);
   }
@@ -100,6 +113,7 @@ export class SavedMealsService {
           productId: item.productId!,
           grams: item.grams,
           servings: item.servings,
+          milliliters: item.milliliters,
         })),
     );
     await this.validator.validateRecipeOwnership(

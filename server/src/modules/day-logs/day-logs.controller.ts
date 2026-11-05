@@ -113,6 +113,29 @@ export class DayLogsController {
     return this.service.updateMealItem(user.id, itemId, dto);
   }
 
+  @Get('meal-items/:itemId/components')
+  getMealItemComponents(
+    @CurrentUser() user: UserPublic,
+    @Param('itemId') itemId: string,
+  ) {
+    return this.service.getMealItemComponents(user.id, itemId);
+  }
+
+  @Patch('meal-items/:itemId/components/:componentId')
+  updateMealItemComponent(
+    @CurrentUser() user: UserPublic,
+    @Param('itemId') itemId: string,
+    @Param('componentId') componentId: string,
+    @Body() dto: UpdateMealItemDto,
+  ) {
+    return this.service.updateMealItemComponent(
+      user.id,
+      itemId,
+      componentId,
+      dto,
+    );
+  }
+
   @Delete('meal-items/:itemId')
   @HttpCode(204)
   async removeMealItem(

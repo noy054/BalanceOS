@@ -2,7 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { savedMealsApi } from "../api/savedMealsApi";
 import { SAVED_MEAL_QUERY_KEYS } from "../constants";
-import { CreateSavedMealPayload, UpdateSavedMealPayload } from "../types";
+import { CreateSavedMealPayload, SavedMeal, UpdateSavedMealPayload } from "../types";
+import { refetchAll, removeFromList, upsertInList } from "../helpers/listCache";
+import { todayKey } from "../../../shared/helpers/dateKey";
+import { DAY_LOG_QUERY_KEYS } from "../../day-log/constants";
 
 export function useSavedMeals() {
   return useQuery({
@@ -24,10 +27,13 @@ export function useCreateSavedMeal() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { analytics: "saved_meal_created" },
     mutationFn: (payload: CreateSavedMealPayload) =>
       savedMealsApi.create(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SAVED_MEAL_QUERY_KEYS.list });
+    onSuccess: (created) => {
+      queryClient.setQueryData(SAVED_MEAL_QUERY_KEYS.detail(created.id), created);
+      upsertInList<SavedMeal>(queryClient, SAVED_MEAL_QUERY_KEYS.list, created);
+      void refetchAll(queryClient, [SAVED_MEAL_QUERY_KEYS.list]);
     },
   });
 }
@@ -36,11 +42,15 @@ export function useUpdateSavedMeal(id: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { analytics: "saved_meal_updated" },
     mutationFn: (payload: UpdateSavedMealPayload) =>
-      savedMealsApi.update(id, payload),
+      savedMealsApi.update(id, { ...payload, logsFrom: todayKey() }),
     onSuccess: (updated) => {
       queryClient.setQueryData(SAVED_MEAL_QUERY_KEYS.detail(id), updated);
-      queryClient.invalidateQueries({ queryKey: SAVED_MEAL_QUERY_KEYS.list });
+      upsertInList<SavedMeal>(queryClient, SAVED_MEAL_QUERY_KEYS.list, updated);
+      void refetchAll(queryClient, [SAVED_MEAL_QUERY_KEYS.list]);
+      void queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.all });
+      void queryClient.invalidateQueries({ queryKey: ["statistics"] });
     },
   });
 }
@@ -52,7 +62,8 @@ export function useDeleteSavedMeal() {
     mutationFn: (id: string) => savedMealsApi.delete(id),
     onSuccess: (_data, id) => {
       queryClient.removeQueries({ queryKey: SAVED_MEAL_QUERY_KEYS.detail(id) });
-      queryClient.invalidateQueries({ queryKey: SAVED_MEAL_QUERY_KEYS.list });
+      removeFromList<SavedMeal>(queryClient, SAVED_MEAL_QUERY_KEYS.list, id);
+      void refetchAll(queryClient, [SAVED_MEAL_QUERY_KEYS.list]);
     },
   });
 }

@@ -40,7 +40,11 @@
     "highest": "Highest {{value}}",
     "measurements_one": "1 measurement",
     "measurements_other": "{{count}} measurements",
-    "latestMeasurements": "Latest measurements"
+    "latestMeasurements": "Latest measurements",
+    "lowestLabel": "Lowest",
+    "highestLabel": "Highest",
+    "entriesLabel": "Entries",
+    "logWeight": "Log weight"
   },
   "history": {
     "title": "History",
@@ -50,7 +54,17 @@
     "photoCount_other": "{{count}} photos",
     "hasNote": "Has a note"
   },
+  "reminder": {
+    "title": "Weigh-in reminder",
+    "off": "Off",
+    "summary": "{{days}} · {{time}}"
+  },
   "entry": {
+    "decreaseWeight": "Decrease weight by 0.1",
+    "increaseWeight": "Increase weight by 0.1",
+    "previousValue": "Last entry: {{value}} {{unit}} on {{date}}",
+    "changeFromPrevious": "{{change}} {{unit}} since {{date}}",
+    "weightOptional": "Optional",
     "newTitle": "New entry",
     "editTitle": "Edit entry",
     "loadFailed": "This entry could not be loaded.",

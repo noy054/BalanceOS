@@ -1,6 +1,13 @@
 import { StyleSheet } from "react-native";
 
-import { fonts, radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
+import {
+  fonts,
+  radius,
+  spacing,
+  typography,
+  useThemedStyles,
+} from "../../../../shared/theme";
+import { withAlpha } from "../../../../shared/helpers/progressColor";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
@@ -11,57 +18,107 @@ export const useStyles = () =>
 
       hero: {
         alignItems: "center",
-        gap: spacing.md,
+        gap: spacing.xs,
         paddingTop: spacing.sm,
-      },
-
-      mainNumber: {
-        ...typography.display,
-        fontSize: 44,
-        lineHeight: 52,
-        maxWidth: "76%",
-        textAlign: "center",
-        color: colors.textPrimary,
       },
 
       mainLabel: {
         ...typography.callout,
-        maxWidth: "70%",
         textAlign: "center",
         color: colors.textSecondary,
       },
 
-      mainUnit: {
-        ...typography.caption,
-        fontFamily: fonts.regular,
-        color: colors.textMuted,
+      mainNumber: {
+        ...typography.display,
+        fontFamily: fonts.bold,
+        fontSize: 56,
+        lineHeight: 64,
+        letterSpacing: -1,
+        maxWidth: "100%",
+        textAlign: "center",
+        color: colors.textPrimary,
+      },
+
+      mainTarget: {
+        ...typography.callout,
+        ...typography.number,
+        textAlign: "center",
+        color: colors.textSecondary,
       },
 
       macros: {
-        gap: spacing.md,
+        flexWrap: "wrap",
+        gap: spacing.sm,
       },
 
-      macroHead: {
-        alignItems: "baseline",
-        gap: spacing.sm,
-        marginBottom: spacing.xs + 2,
+      macroCard: {
+        flexGrow: 1,
+        flexBasis: 64,
+        minWidth: 64,
+        alignItems: "center",
+        gap: spacing.xs,
+        paddingVertical: spacing.ms,
+        paddingHorizontal: spacing.xs,
+        borderRadius: radius.lg,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
+        backgroundImage: `linear-gradient(180deg, ${withAlpha(
+          colors.gloss,
+          0.09,
+        )} 0%, ${withAlpha(colors.gloss, 0)} 55%)`,
       },
 
       macroLabel: {
         ...typography.bodyStrong,
-        flex: 1,
+        fontFamily: fonts.semibold,
+        textAlign: "center",
         color: colors.textPrimary,
       },
 
       macroValue: {
-        ...typography.callout,
+        ...typography.value,
+        fontFamily: fonts.bold,
+      },
+
+      macroAmount: {
+        alignItems: "center",
+      },
+
+      macroTrack: {
+        alignSelf: "stretch",
+        height: 6,
+        marginTop: spacing.xxs,
+        marginHorizontal: spacing.xs,
+        borderRadius: radius.round,
+        overflow: "hidden",
+      },
+
+      macroFill: {
+        height: "100%",
+        borderRadius: radius.round,
+      },
+
+      badgeValue: {
+        ...typography.bodyStrong,
         ...typography.number,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.bold,
+        fontSize: 18,
+        lineHeight: 22,
         color: colors.textPrimary,
       },
 
+      badgeLabel: {
+        ...typography.caption,
+        fontSize: 11,
+        lineHeight: 14,
+        color: colors.textSecondary,
+      },
+
       macroTarget: {
-        fontFamily: fonts.regular,
+        ...typography.footnote,
+        ...typography.number,
+        textAlign: "center",
         color: colors.textSecondary,
       },
     }),

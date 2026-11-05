@@ -15,7 +15,9 @@ export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       card: {
-        backgroundColor: colors.surface,
+        backgroundColor: colors.glassCard,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: colors.glassBorder,
         borderRadius: radius.lg,
         paddingHorizontal: spacing.md,
         overflow: "hidden",
@@ -62,11 +64,14 @@ export const useStyles = () =>
         borderTopColor: colors.border,
       },
 
+      itemBlock: {
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: colors.border,
+      },
+
       itemRow: {
         alignItems: "center",
         gap: spacing.xs,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: colors.border,
       },
 
       itemRowLast: {
@@ -76,7 +81,7 @@ export const useStyles = () =>
       itemMain: {
         flex: 1,
         alignItems: "center",
-        gap: spacing.md,
+        gap: spacing.sm,
         minHeight: 60,
         paddingVertical: spacing.sm2,
       },

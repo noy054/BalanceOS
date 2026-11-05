@@ -8,6 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -22,36 +23,45 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { UserPublic } from '../users/types/user.types';
 import { AuthResponse, TokenPair } from './types/auth.types';
 
+const MINUTE = 60_000;
+
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Throttle({ default: { limit: 5, ttl: 10 * MINUTE } })
   @Post('register')
   register(@Body() dto: RegisterDto): Promise<AuthResponse> {
     return this.authService.register(dto);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 5 * MINUTE } })
   @Post('login')
   login(@Body() dto: LoginDto): Promise<AuthResponse> {
     return this.authService.login(dto);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 5 * MINUTE } })
   @Post('google')
   googleLogin(@Body() dto: GoogleLoginDto): Promise<AuthResponse> {
     return this.authService.googleLogin(dto);
   }
 
+  @Throttle({ default: { limit: 60, ttl: MINUTE } })
   @Post('refresh')
   refresh(@Body() dto: RefreshDto): Promise<TokenPair> {
     return this.authService.refresh(dto);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 15 * MINUTE } })
   @Post('forgot-password')
   @HttpCode(204)
   async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<void> {
     return this.authService.forgotPassword(dto);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 15 * MINUTE } })
   @Post('reset-password')
   @HttpCode(204)
   async resetPassword(@Body() dto: ResetPasswordDto): Promise<void> {
@@ -80,6 +90,7 @@ export class AuthController {
     return this.authService.updateProfile(user.id, dto);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 15 * MINUTE } })
   @UseGuards(JwtGuard)
   @Patch('change-password')
   @HttpCode(204)

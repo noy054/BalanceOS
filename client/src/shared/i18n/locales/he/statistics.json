@@ -1,13 +1,17 @@
 {
   "title": "סטטיסטיקות",
   "subtitle": "תצוגת מומחה של נתוני התזונה שלך",
-
+  "period": {
+    "thisWeek": "השבוע",
+    "lastWeek": "שבוע שעבר",
+    "previousWeek": "השבוע הקודם",
+    "nextWeek": "השבוע הבא"
+  },
   "ranges": {
-    "7D": "7 ימים",
+    "7D": "שבוע",
     "14D": "14 ימים",
     "30D": "30 ימים"
   },
-
   "summary": {
     "title": "סיכום טווח",
     "nutritionAccuracy": "דיוק תזונתי",
@@ -22,50 +26,53 @@
     "proteinGapOver": "מעל יעד החלבון",
     "proteinGapExact": "בול על יעד החלבון",
     "loggedDays": "ימים שתועדו",
-    "loggedDaysSub": "ימים עם נתוני תזונה",
-    "onTarget": "ביעד",
+    "loggedDaysSub": "ימים עם תיעוד",
+    "onTarget": "ימים ביעד",
     "target": "יעד: {{value}}",
     "balanceSub": "עודף / גירעון מצטבר",
-    "onTargetSub": "ימים בטווח ±15% מהיעד",
-
+    "onTargetSub": "±15% מהיעד",
     "onExactTarget": "בול על היעד",
     "aboveDailyTarget": "מעל היעד היומי בממוצע",
     "belowDailyTarget": "מתחת ליעד היומי בממוצע",
     "aboveProteinTarget": "מעל יעד החלבון",
     "belowProteinTarget": "חסר חלבון מול היעד",
     "totalSurplus": "עודף מצטבר בטווח",
-    "totalDeficit": "גירעון מצטבר בטווח"
+    "totalDeficit": "גירעון מצטבר בטווח",
+    "ofTarget": "מתוך {{value}}"
   },
-
   "trend": {
-    "title": "מגמת קלוריות",
+    "title": "מגמת קלוריות יומית",
     "onTarget": "ביעד",
     "under": "מתחת ליעד",
     "over": "מעל היעד",
     "targetLabel": "יעד: {{value}}",
-    "summary": "{{on}} / {{total}} ימים ביעד"
+    "summary": "{{on}} / {{total}} ימים ביעד",
+    "notLogged": "לא תועד",
+    "readout": "{{day}}: {{value}} / {{target}} {{unit}}",
+    "readoutEmpty": "{{day}}: לא תועד",
+    "tapHint": "הקישו על יום לערכים מדויקים"
   },
-
   "accuracy": {
     "title": "דיוק מאקרו",
     "dailyAverage": "ממוצע יומי בטווח שנבחר",
     "loggedDays": "הוזנו {{loggedDays}} מתוך {{rangeDays}} ימים",
     "exactTarget": "בול על היעד",
     "overTarget": "מעל היעד ב־{{value}} {{unit}}",
-    "underTarget": "חסר {{value}} {{unit}}"
+    "underTarget": "חסר {{value}} {{unit}}",
+    "of": "מתוך",
+    "selectHint": "מציג את המגמה של הרכיב בגרף"
   },
-
   "macros": {
     "calories": "קלוריות",
     "protein": "חלבון",
     "carbs": "פחמימות",
-    "fat": "שומן"
+    "fat": "שומן",
+    "fiber": "סיבים"
   },
-
   "distribution": {
-    "title": "התפלגות ארוחות"
+    "title": "התפלגות ארוחות",
+    "subtitle": "ממוצע יומי לפי ארוחה"
   },
-
   "mealTypes": {
     "breakfast": "ארוחת בוקר",
     "lunch": "ארוחת צהריים",
@@ -73,31 +80,29 @@
     "snack1": "חטיף 1",
     "snack2": "חטיף 2"
   },
-
   "foodInsights": {
     "title": "תובנות אוכל",
-    "topCalories": "מקורות קלוריות מובילים",
+    "topCalories": "מזונות מובילים בקלוריות",
     "mostUsed": "מזונות בשימוש תכוף",
     "usedTimes": "נרשם ×{{count}}",
-    "avgCalories": "{{value}} קל׳ בממוצע"
+    "avgCalories": "{{value}} קל׳ בממוצע",
+    "topCaloriesSub": "סך הקלוריות מכל מזון בטווח",
+    "mostUsedSub": "כמה פעמים כל מזון נרשם בטווח",
+    "times": "פעמים"
   },
-
   "empty": {
     "title": "אין נתונים עדיין",
     "subtitle": "התחל לתעד ארוחות כדי לראות את הסטטיסטיקות שלך כאן."
   },
-
   "errors": {
-    "loadFailed": "טעינת סטטיסטיקות נכשלה"
+    "loadFailed": "טעינת סטטיסטיקות נכשלה",
+    "retry": "נסו שוב"
   },
-
   "noData": "אין נתונים לטווח זה",
-
   "units": {
     "kcal": "קק״ל",
     "g": "ג׳"
   },
-
   "weekdaysShort": {
     "0": "א",
     "1": "ב",
@@ -106,5 +111,33 @@
     "4": "ה",
     "5": "ו",
     "6": "ש"
+  },
+  "nutrientTrend": {
+    "title": "מגמת רכיבים",
+    "subtitle": "ערך יומי מול היעד של כל יום",
+    "readout": "{{day}}: {{value}} / {{target}} {{unit}}"
+  },
+  "comparison": {
+    "title": "השוואה ליעדים",
+    "subtitle": "ממוצע יומי בטווח מול היעד הנוכחי",
+    "nutrient": "רכיב",
+    "average": "ממוצע",
+    "target": "יעד",
+    "difference": "הפרש",
+    "proteinGapSub": "ממוצע יומי מול יעד החלבון"
+  },
+  "insights": {
+    "title": "תובנות",
+    "subtitle": "מבוסס על הימים שתועדו בטווח",
+    "coverageTitle": "ימים ללא תיעוד",
+    "coverage": "{{count}} מתוך {{range}} הימים לא תועדו, והממוצעים כוללים אותם כאפס.",
+    "proteinTitle": "חלבון",
+    "protein": "החלבון הגיע ל־90% מהיעד או יותר ב־{{count}} מתוך {{logged}} ימים מתועדים.",
+    "caloriesTitle": "קלוריות בימים מתועדים",
+    "caloriesWithin": "בימים שתועדו, הקלוריות היו בממוצע בטווח של {{pct}}% מהיעד.",
+    "caloriesAbove": "בימים שתועדו, הקלוריות היו בממוצע {{value}} מעל היעד.",
+    "caloriesBelow": "בימים שתועדו, הקלוריות היו בממוצע {{value}} מתחת ליעד.",
+    "topSourceTitle": "מקור הקלוריות המוביל",
+    "topSource": "{{name}} סיפק {{pct}}% מהקלוריות שתועדו."
   }
 }

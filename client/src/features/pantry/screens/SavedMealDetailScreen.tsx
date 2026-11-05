@@ -1,4 +1,4 @@
-import { Alert, ScrollView, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { confirmAction } from "../../../shared/helpers/confirm";
@@ -18,6 +18,9 @@ import { useDirection } from "../../../shared/hooks/useDirection";
 import { formatGrams } from "../../../shared/helpers/formatNumber";
 import { useStyles } from "./styles/ItemDetailScreen.styles";
 import { useServingFormat } from "../hooks/useServingFormat";
+import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
+import { Button } from "../../../shared/components/ui/Button";
+import { amountFromStored } from "../helpers/serving";
 
 type Props = {
   id: string;
@@ -89,24 +92,17 @@ export function SavedMealDetailScreen({ id }: Props) {
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
+      <AmbientGlow intensity={0.35} />
       <ScreenHeader
         title={t("savedMealDetail.title")}
         rightElement={
-          <View style={[styles.headerActions, dir.row]}>
-            <IconButton
-              icon="pencil-outline"
-              iconSize={22}
-              accessibilityLabel={t("common.editItem", { name: meal.name })}
-              onPress={handleEdit}
-            />
-            <IconButton
-              icon="trash-can-outline"
-              iconSize={22}
-              accessibilityLabel={t("common.deleteItem", { name: meal.name })}
-              onPress={confirmDelete}
-              disabled={deleteMeal.isPending}
-            />
-          </View>
+          <IconButton
+            icon="trash-can-outline"
+            iconSize={22}
+            accessibilityLabel={t("common.deleteItem", { name: meal.name })}
+            onPress={confirmDelete}
+            disabled={deleteMeal.isPending}
+          />
         }
       />
 
@@ -123,6 +119,14 @@ export function SavedMealDetailScreen({ id }: Props) {
           fallbackIcon={FOOD_ICONS.savedMeal}
         />
 
+        <Button
+          label={t("savedMealDetail.editButton")}
+          icon="pencil-outline"
+          variant="tonal"
+          onPress={handleEdit}
+          fullWidth
+        />
+
         <View>
           <SectionHeader title={t("savedMealDetail.totalsSection")} />
           <NutritionTotals totals={meal.totals} label={t("foodCard.mealTotal")} />
@@ -130,6 +134,7 @@ export function SavedMealDetailScreen({ id }: Props) {
 
         <View>
           <SectionHeader title={t("savedMealDetail.itemsSection")} />
+          <Text style={[styles.sectionHint, dir.text]}>{t("ingredientEdit.detailHint")}</Text>
 
           <View style={styles.itemsCard}>
             {meal.items.map((item, index) => {
@@ -146,6 +151,8 @@ export function SavedMealDetailScreen({ id }: Props) {
                 <FoodLineItem
                   key={item.id}
                   title={name}
+                  imageUrl={product?.imageUrl ?? null}
+                  fallbackIcon={product ? FOOD_ICONS.product : FOOD_ICONS.recipe}
                   basis={detail}
                   meta={product && isAmbiguousName(duplicateNames, product.name) ? product.brand : null}
                   calories={item.nutrition.calories}
@@ -153,12 +160,26 @@ export function SavedMealDetailScreen({ id }: Props) {
                   last={index === meal.items.length - 1}
                   onPress={
                     product
-                      ? () => router.push(`/(app)/pantry/${product.id}`)
+                      ? () => {
+                          const current = amountFromStored(product, item);
+                          router.push({
+                            pathname: "/(app)/pantry/[id]",
+                            params: {
+                              id: product.id,
+                              ingredientOf: "savedMeal",
+                              parentId: meal.id,
+                              itemId: item.id,
+                              parentName: meal.name,
+                              amount: current.amount,
+                              unit: current.unit,
+                            },
+                          });
+                        }
                       : recipe
                         ? () => router.push(`/(app)/pantry/recipes/${recipe.id}`)
                         : undefined
                   }
-                  accessibilityHint={t("common.openDetailsHint")}
+                  accessibilityHint={product ? t("ingredientEdit.editHint") : t("common.openDetailsHint")}
                 />
               );
             })}

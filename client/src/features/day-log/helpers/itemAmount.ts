@@ -1,7 +1,7 @@
 import { getServing } from "../../pantry/helpers/serving";
 import { MealItemSummary, MealMacros } from "../types";
 
-export type EditableAmountKind = "grams" | "units" | "servings";
+export type EditableAmountKind = "grams" | "milliliters" | "units" | "servings";
 
 export type EditableAmount = {
   kind: EditableAmountKind;
@@ -9,8 +9,10 @@ export type EditableAmount = {
   unit: string | null;
   step: number;
   min: number;
-  toPayload: (value: number) => { grams: number } | { servings: number };
+  toPayload: (value: number) => { grams: number } | { milliliters: number } | { servings: number };
   ratio: (value: number) => number;
+  fromServings?: (servings: number) => number;
+  servingsOf?: (value: number) => number;
 };
 
 function round(value: number, digits: number) {
@@ -18,7 +20,9 @@ function round(value: number, digits: number) {
   return Math.round(value * factor) / factor;
 }
 
-export function editableAmount(item: MealItemSummary): EditableAmount | null {
+export type AmountSource = Pick<MealItemSummary, "grams" | "servings" | "milliliters" | "source" | "serving">;
+
+export function editableAmount(item: AmountSource): EditableAmount | null {
   if (item.grams != null && item.grams > 0) {
     const grams = item.grams;
     return {
@@ -29,6 +33,19 @@ export function editableAmount(item: MealItemSummary): EditableAmount | null {
       min: 0.1,
       toPayload: (value) => ({ grams: round(value, 1) }),
       ratio: (value) => round(value, 1) / grams,
+    };
+  }
+
+  if (item.milliliters != null && item.milliliters > 0) {
+    const milliliters = item.milliliters;
+    return {
+      kind: "milliliters",
+      initial: round(milliliters, 1),
+      unit: null,
+      step: 10,
+      min: 0.1,
+      toPayload: (value) => ({ milliliters: round(value, 1) }),
+      ratio: (value) => round(value, 1) / milliliters,
     };
   }
 
@@ -47,6 +64,8 @@ export function editableAmount(item: MealItemSummary): EditableAmount | null {
         min: 0.01,
         toPayload: (value) => ({ servings: round(value / perServing, 4) }),
         ratio: (value) => round(value / perServing, 4) / servings,
+        fromServings: (count) => round(count * perServing, 2),
+        servingsOf: (value) => value / perServing,
       };
     }
 
@@ -58,6 +77,8 @@ export function editableAmount(item: MealItemSummary): EditableAmount | null {
       min: 0.01,
       toPayload: (value) => ({ servings: round(value, 4) }),
       ratio: (value) => round(value, 4) / servings,
+      fromServings: (count) => count,
+      servingsOf: (value) => value,
     };
   }
 

@@ -61,6 +61,9 @@ export class NutritionSettingsRepository {
       weeklySummaryEnabled: dto.weeklySummaryEnabled,
       weeklySummaryDay: dto.weeklySummaryDay,
       weeklySummaryTime: dto.weeklySummaryTime,
+      weighInReminderEnabled: dto.weighInReminderEnabled,
+      weighInReminderDays: dto.weighInReminderDays,
+      weighInReminderTime: dto.weighInReminderTime,
     };
 
     const createData: Prisma.UserNutritionSettingsUncheckedCreateInput = {
@@ -101,6 +104,9 @@ export class NutritionSettingsRepository {
       weeklySummaryEnabled: dto.weeklySummaryEnabled,
       weeklySummaryDay: dto.weeklySummaryDay,
       weeklySummaryTime: dto.weeklySummaryTime,
+      weighInReminderEnabled: dto.weighInReminderEnabled,
+      weighInReminderDays: dto.weighInReminderDays,
+      weighInReminderTime: dto.weighInReminderTime,
     };
 
     return this.prisma.userNutritionSettings.upsert({

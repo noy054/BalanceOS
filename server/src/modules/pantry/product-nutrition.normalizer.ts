@@ -15,6 +15,7 @@ export type ProductNutritionFields = {
   fatPerServing: number | null;
   fiberPerServing: number | null;
   servingSizeG: number | null;
+  servingSizeMl: number | null;
   servingSizeText: string | null;
   servingQuantity: number | null;
   servingUnit: string | null;
@@ -45,6 +46,7 @@ export const NUTRITION_FIELD_KEYS: Array<keyof ProductNutritionFields> = [
   ...PER_100G_KEYS,
   ...PER_SERVING_KEYS,
   'servingSizeG',
+  'servingSizeMl',
   'servingSizeText',
   'servingQuantity',
   'servingUnit',
@@ -63,6 +65,7 @@ export const EMPTY_NUTRITION: ProductNutritionFields = {
   fatPerServing: null,
   fiberPerServing: null,
   servingSizeG: null,
+  servingSizeMl: null,
   servingSizeText: null,
   servingQuantity: null,
   servingUnit: null,
@@ -99,6 +102,10 @@ export function resolveNutrition(
     next.servingSizeG != null && next.servingSizeG > 0
       ? next.servingSizeG
       : null;
+  const milliliters =
+    next.servingSizeMl != null && next.servingSizeMl > 0
+      ? next.servingSizeMl
+      : null;
   const needsQuantity = Boolean(unit) || basis === NutritionBasis.PER_SERVING;
   const quantity = needsQuantity
     ? next.servingQuantity != null && next.servingQuantity > 0
@@ -111,6 +118,7 @@ export function resolveNutrition(
     nutritionBasis: basis,
     servingUnit: unit,
     servingSizeG: grams,
+    servingSizeMl: milliliters,
     servingQuantity: quantity,
     servingSizeText: next.servingSizeText?.trim() || null,
   };
@@ -123,7 +131,9 @@ export function resolveNutrition(
     throw new BadRequestException(
       basis === NutritionBasis.PER_SERVING
         ? 'Calories, protein, carbs and fat per serving are required'
-        : 'Calories, protein, carbs and fat per 100g are required',
+        : basis === NutritionBasis.PER_100ML
+          ? 'Calories, protein, carbs and fat per 100ml are required'
+          : 'Calories, protein, carbs and fat per 100g are required',
     );
   }
 

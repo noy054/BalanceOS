@@ -3,16 +3,16 @@ import { Platform, ScrollView } from "react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
-import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { SettingsScreenLayout } from "../components/SettingsScreenLayout";
 import { Button } from "../../../shared/components/ui/Button";
 import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
 import { NotificationDailySummarySection } from "../components/NotificationDailySummarySection";
 import { NotificationMealRemindersSection } from "../components/NotificationMealRemindersSection";
 import { NotificationWaterSection } from "../components/NotificationWaterSection";
 import { NotificationWeeklySummarySection } from "../components/NotificationWeeklySummarySection";
+import { NotificationWeighInSection } from "../components/NotificationWeighInSection";
 import { TimePickerModal } from "../components/TimePickerModal";
 import { useNutritionSettings } from "../hooks/useSettings";
 import { useNotificationsSettingsForm } from "../hooks/useNotificationsSettingsForm";
@@ -74,8 +74,7 @@ export function NotificationsSettingsScreen() {
   const timePlaceholder = t("notifications.timePlaceholder");
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={t("notifications.screenTitle")} />
+    <SettingsScreenLayout title={t("notifications.screenTitle")}>
 
       <ScrollView
         style={styles.scroll}
@@ -98,6 +97,12 @@ export function NotificationsSettingsScreen() {
         />
 
         <NotificationWeeklySummarySection
+          form={form}
+          timePlaceholder={timePlaceholder}
+          isRTL={isRTL}
+        />
+
+        <NotificationWeighInSection
           form={form}
           timePlaceholder={timePlaceholder}
           isRTL={isRTL}
@@ -134,6 +139,6 @@ export function NotificationsSettingsScreen() {
         onClose={form.closeTimePicker}
         onConfirm={confirmIosTimePicker}
       />
-    </SafeAreaView>
+    </SettingsScreenLayout>
   );
 }

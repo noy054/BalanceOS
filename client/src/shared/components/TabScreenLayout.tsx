@@ -6,15 +6,17 @@ import { useStyles } from "./styles/TabScreenLayout.styles";
 
 type Props = {
   activeTab?: string;
+  backgroundColor?: string;
   children: ReactNode;
 };
 
-export function TabScreenLayout({ children }: Props) {
+export function TabScreenLayout({ backgroundColor, children }: Props) {
   const styles = useStyles();
+  const background = backgroundColor ? { backgroundColor } : null;
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <View style={styles.content}>{children}</View>
+    <SafeAreaView style={[styles.root, background]} edges={["top"]}>
+      <View style={[styles.content, background]}>{children}</View>
     </SafeAreaView>
   );
 }

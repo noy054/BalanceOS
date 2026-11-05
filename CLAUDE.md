@@ -146,7 +146,7 @@ Use the `balanceos-ui-pro` skill for UI/UX work.
 
 Brand:
 
-- Cobalt #365CF5 for primary actions and selection.
+- Lime #C5F87F for primary actions and selection, with dark text and icons on lime fills.
 - Charcoal #191C26 for primary text.
 - Cloud white #F6F7FA for light backgrounds.
 - White #FFFFFF for light surfaces.

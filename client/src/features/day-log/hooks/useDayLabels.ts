@@ -54,6 +54,20 @@ export function useDayLabels(today: DateKey) {
     [locale, today],
   );
 
+  const dateLine = useCallback(
+    (key: DateKey) => {
+      const date = fromDateKey(key);
+      const sameYear = date.getFullYear() === fromDateKey(today).getFullYear();
+      return format(date, locale, {
+        weekday: "short",
+        day: "numeric",
+        month: "long",
+        ...(sameYear ? {} : { year: "numeric" }),
+      });
+    },
+    [locale, today],
+  );
+
   const title = useCallback(
     (key: DateKey) => relative(key) ?? format(fromDateKey(key), locale, { weekday: "long" }),
     [locale, relative],
@@ -76,5 +90,5 @@ export function useDayLabels(today: DateKey) {
     });
   }, [locale]);
 
-  return { relative, full, short, title, monthTitle, weekdayInitials };
+  return { relative, full, short, dateLine, title, monthTitle, weekdayInitials };
 }

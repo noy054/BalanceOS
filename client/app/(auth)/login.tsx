@@ -131,7 +131,7 @@ export default function LoginScreen() {
         onPress={handleLogin}
         loading={login.isPending}
         disabled={isLoading || !email || !password}
-        buttonColor={colors.accent}
+        buttonColor={colors.accentFill}
         textColor={colors.onAccent}
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}

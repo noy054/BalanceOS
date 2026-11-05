@@ -119,7 +119,7 @@ export default function ExpertTargetsScreen() {
         onPress={handleSave}
         loading={upsert.isPending}
         disabled={!canSubmit}
-        buttonColor={colors.accent}
+        buttonColor={colors.accentFill}
         textColor={colors.onAccent}
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}

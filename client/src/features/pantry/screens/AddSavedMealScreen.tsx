@@ -1,32 +1,39 @@
-import { useState } from "react";
-import { Alert, KeyboardAvoidingView, ScrollView, Text, View } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import { Alert, KeyboardAvoidingView, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { Button } from "../../../shared/components/ui/Button";
 import { StateView } from "../../../shared/components/ui/StateView";
 import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
-import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
+import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
+import { FormToneProvider } from "../../../shared/components/FormTone";
+import { FOOD_ICONS } from "../hooks/useFoodCardModels";
 import {
   useCreateSavedMeal,
   useSavedMeal,
   useUpdateSavedMeal,
 } from "../hooks/useSavedMeals";
 import { usePantryProducts } from "../hooks/usePantry";
-import type { ProductCategory } from "../types";
 import { useRecipes } from "../hooks/useRecipes";
 import { useAddSavedMealForm } from "../hooks/useAddSavedMealForm";
 import {
-  ProductPickerModal,
   RecipePickerModal,
 } from "../components/products/ProductPickerModal";
 import { NutritionTotals } from "../components/nutrition/NutritionTotals";
 import { SavedMealBasicInfoCard } from "../components/saved-meals/SavedMealBasicInfoCard";
 import { SavedMealItemsCard } from "../components/saved-meals/SavedMealItemsCard";
-import { ImagePickerCard } from "../components/shared/ImagePickerCard";
-import { getDirectionStyles, useStyles } from "./styles/FormScreen.styles";
+import { FormImageHeader } from "../components/form/FormImageHeader";
+import { useMealReturn } from "../mealReturnStore";
+import { prepareFoodImage } from "../helpers/foodImage";
+import { AmountUnit } from "../helpers/serving";
+import { RecipeIngredientPickerModal } from "../components/recipes/RecipeIngredientPickerModal";
+import { SavedMealDraftItem } from "../helpers/savedMealDraft";
+import { PantryProduct } from "../types";
+import { useIngredientEdit } from "../ingredientEditStore";
+import { useStyles } from "./styles/FormScreen.styles";
 import { keyboardBehavior } from "../../../shared/components/ui/KeyboardAvoider";
 
 type RouteParams = {
@@ -43,7 +50,13 @@ export function AddSavedMealScreen() {
   const isEditMode = params.mode === "edit" && Boolean(savedMealId);
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
-  const dir = getDirectionStyles(isRTL);
+  const navigation = useNavigation();
+  const [dragging, setDragging] = useState(false);
+
+  function handleDragActive(active: boolean) {
+    setDragging(active);
+    navigation.setOptions({ gestureEnabled: !active });
+  }
 
   const createSavedMeal = useCreateSavedMeal();
   const updateSavedMeal = useUpdateSavedMeal(savedMealId);
@@ -55,18 +68,42 @@ export function AddSavedMealScreen() {
   const { data: recipes = [] } = useRecipes();
 
   const form = useAddSavedMealForm(existingMeal, isEditMode);
+  const [incomingProduct, setIncomingProduct] = useState<PantryProduct | null>(null);
+  const clearIncomingProduct = useCallback(() => setIncomingProduct(null), []);
+  const openProductPickerRef = useRef(form.setProductPickerVisible);
+  openProductPickerRef.current = form.setProductPickerVisible;
+  const setAmountRef = useRef(form.setAmount);
+  setAmountRef.current = form.setAmount;
 
-  const firstMealType = form.mealTypes[0] ?? null;
-  const mealCategory: ProductCategory | null =
-    !firstMealType
-      ? null
-      : firstMealType === "SNACK_1" || firstMealType === "SNACK_2"
-        ? "SNACK"
-        : (firstMealType as ProductCategory);
+  function openProductEditor(key: string, productId: string, amount: string, unit: AmountUnit) {
+    router.push({
+      pathname: "/(app)/pantry/[id]",
+      params: { id: productId, ingredientOf: "savedMeal", ingredientKey: key, parentName: form.name.trim(), amount, unit },
+    });
+  }
 
-  const isSaving = createSavedMeal.isPending || updateSavedMeal.isPending;
+  function handleEditItem(item: SavedMealDraftItem) {
+    if (item.kind === "product") openProductEditor(item.key, item.product.id, item.grams, item.unit);
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      const pending = useMealReturn.getState().take("savedMeal");
+      if (pending) {
+        setIncomingProduct(pending);
+        openProductPickerRef.current(true);
+      }
+      const edited = useIngredientEdit.getState().take("savedMeal");
+      if (edited) setAmountRef.current(edited.key, edited.amount, edited.unit);
+    }, []),
+  );
+
+  const [isPreparing, setIsPreparing] = useState(false);
+  const isSaving = isPreparing || createSavedMeal.isPending || updateSavedMeal.isPending;
 
   async function handleSave() {
+    if (isSaving) return;
+
     if (!form.name.trim()) {
       form.setNameError(t("errors.requiredField"));
       return;
@@ -77,14 +114,22 @@ export function AddSavedMealScreen() {
       return;
     }
 
-    const payload = {
-      name: form.name.trim(),
-      imageUrl: form.imageUrl.trim() || undefined,
-      mealTypes: form.mealTypes,
-      items: form.validItems,
-    };
+    if (form.validItems.length < form.items.length) {
+      Alert.alert("", t("errors.missingAmounts"));
+      return;
+    }
 
+    setIsPreparing(true);
     try {
+      const image = await prepareFoodImage(form.imageUrl.trim(), existingMeal?.imageUrl);
+      const payload = {
+        name: form.name.trim(),
+        imageUrl: image || (isEditMode ? null : undefined),
+        mealTypes: form.mealTypes,
+        items: form.validItems,
+      };
+      setIsPreparing(false);
+
       if (isEditMode) {
         await updateSavedMeal.mutateAsync(payload);
       } else {
@@ -93,6 +138,7 @@ export function AddSavedMealScreen() {
 
       router.back();
     } catch {
+      setIsPreparing(false);
       Alert.alert(
         "",
         isEditMode
@@ -114,7 +160,9 @@ export function AddSavedMealScreen() {
   }
 
   return (
+    <FormToneProvider tone="glass">
     <SafeAreaView style={styles.root} edges={["top"]}>
+      <AmbientGlow intensity={0.3} />
       <ScreenHeader title={title} />
 
       <KeyboardAvoidingView
@@ -126,22 +174,12 @@ export function AddSavedMealScreen() {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
+          scrollEnabled={!dragging}
           showsVerticalScrollIndicator={false}
         >
-          <Text style={[styles.intro, dir.text]}>
-            {isEditMode ? t("editSavedMeal.subtitle") : t("addSavedMeal.subtitle")}
-          </Text>
-
-          <ImagePickerCard
+          <FormImageHeader
             imageUrl={form.imageUrl}
-            isRTL={isRTL}
-            title={t("savedMeal.imageTitle")}
-            subtitle={t("savedMeal.imageSubtitle")}
-            selectedSubtitle={t("savedMeal.imageSelected")}
-            addLabel={t("savedMeal.addImage")}
-            changeLabel={t("savedMeal.changeImage")}
-            removeLabel={t("savedMeal.removeImage")}
-            placeholderIcon="silverware-fork-knife"
+            fallbackIcon={FOOD_ICONS.savedMeal}
             onChangeImage={form.setImageUrl}
             onRemoveImage={() => form.setImageUrl("")}
           />
@@ -158,18 +196,18 @@ export function AddSavedMealScreen() {
           <SavedMealItemsCard
             items={form.items}
             isRTL={isRTL}
+            onOpenProduct={handleEditItem}
             onChangeAmount={form.updateAmount}
             onToggleUnit={form.toggleUnit}
             onRemoveItem={form.removeItem}
             onAddProduct={() => form.setProductPickerVisible(true)}
             onAddRecipe={() => form.setRecipePickerVisible(true)}
+            onMoveItem={form.moveItem}
+            onDragActiveChange={handleDragActive}
           />
 
           {form.hasTotals ? (
-            <View>
-              <SectionHeader title={t("savedMeal.totalsSection")} />
-              <NutritionTotals totals={form.liveTotals} label={t("foodCard.mealTotal")} />
-            </View>
+            <NutritionTotals totals={form.liveTotals} label={t("form.mealTotal")} />
           ) : null}
         </ScrollView>
 
@@ -189,15 +227,16 @@ export function AddSavedMealScreen() {
         </StickyFooter>
       </KeyboardAvoidingView>
 
-      <ProductPickerModal
+      <RecipeIngredientPickerModal
         visible={form.productPickerVisible}
         products={products}
+        target="savedMeal"
         onEndReached={loadMoreProducts}
         onSearchChange={setPickerSearch}
-        selectedIds={form.selectedProductIds}
-        mealCategory={mealCategory}
-        onSelect={form.addProduct}
+        onAdd={form.addProducts}
         onClose={() => form.setProductPickerVisible(false)}
+        incoming={incomingProduct}
+        onIncomingHandled={clearIncomingProduct}
       />
 
       <RecipePickerModal
@@ -207,5 +246,6 @@ export function AddSavedMealScreen() {
         onClose={() => form.setRecipePickerVisible(false)}
       />
     </SafeAreaView>
+    </FormToneProvider>
   );
 }

@@ -1,0 +1,53 @@
+{
+  "sourceFingerprint": "73a8470657671c9ee6d687ec9e19c7f86ad3732a1f806f68b4f7c588c704515a",
+  "items": [
+    {
+      "targetId": "moh_cfc3b35bc4b75360e9b2bb74b43e87cf922f0b63e058f5f2193fd5951f052567",
+      "candidateId": "a472b165e4f64ed5e39fe102e8d51cbffdcd66d35bcde97571358ea705ce4e1c"
+    },
+    {
+      "targetId": "moh_f70829450dd8d33110e1454f42916225521b88eb5f08d7dc4715de48812ab412",
+      "candidateId": "eed1b11b3d506866dc08abc2b3081fb73862b8975b00167f0533c59d2c7dc91f"
+    },
+    {
+      "targetId": "moh_c150d7dab14896f4bb3d5cd8ab3337251abecccbaa4e5df0b35c71b7e642eaf7",
+      "candidateId": "1c011483250492bf7c864255859bd651d0eb0f6a4c6ec95eb952342be571a359"
+    },
+    {
+      "targetId": "moh_85c131142a1c37947494d42784511eaccdaad901fc8960512fb2cd658918afeb",
+      "candidateId": "8b31cbbeec1cb08affe01247d719d97541df14f92fed4ccb67ada4104ff9791e"
+    },
+    {
+      "targetId": "moh_7be95c959d137b194f2ea0329cf913916408a95236c7bece73e09bdce9016418",
+      "candidateId": "f6cc3eefdbc042112d5fb1a34f09265c5a9592af8b7eb2717a514213aeaabf6a"
+    },
+    {
+      "targetId": "moh_f37be29fb1d9daed4083dcd37f2c0587d575f93931022cc0663912155f8e1f46",
+      "candidateId": "c8825401813e5fe3c3a05f64d150547605c5b70fe2b7eaa3a05681871455f75b"
+    },
+    {
+      "targetId": "moh_f37be29fb1d9daed4083dcd37f2c0587d575f93931022cc0663912155f8e1f46",
+      "candidateId": "77aa9cac1354289b5409d3b1bb111d0fa75f40543760a5573a1149fb65e0ccb3"
+    },
+    {
+      "targetId": "moh_0397aed88ad41a9f21e6edd7eb36cc11203a0e9a71d0f3e3fd2e504cc49e8949",
+      "candidateId": "415a289f62871c9bed9c7081e5308da51976baa7e7ab1af07082f14d200ad758"
+    },
+    {
+      "targetId": "moh_0397aed88ad41a9f21e6edd7eb36cc11203a0e9a71d0f3e3fd2e504cc49e8949",
+      "candidateId": "cc0bb118007851d4e7b09c950a129cd8a8542a0c596e791503fd587d1c682edd"
+    },
+    {
+      "targetId": "moh_94a231d508376b995666006124e03f84c8ffab9c0651d12fdaaab5e84330be0c",
+      "candidateId": "f698a942ad78353948acfb321074cd53259a5812fc9adcdb7d94eb4262c45b04"
+    },
+    {
+      "targetId": "moh_94a231d508376b995666006124e03f84c8ffab9c0651d12fdaaab5e84330be0c",
+      "candidateId": "a132be0cca5aa6528858ca375ebceca62434d67fc6a0825e9ae2907d39e9dd02"
+    },
+    {
+      "targetId": "moh_616008b2e460aff3fc9f78ca2e5ad3935245b3aabab59efc91f5a9411cbf41f0",
+      "candidateId": "2146b295e372c01dc1d3fe3b330907864b50c7c0c3da6d1f1ce3ac79bf9fa7b5"
+    }
+  ]
+}

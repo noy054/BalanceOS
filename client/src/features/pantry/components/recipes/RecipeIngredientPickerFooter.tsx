@@ -4,11 +4,12 @@ import { Button } from "../../../../shared/components/ui/Button";
 import { StickyFooter } from "../../../../shared/components/ui/StickyFooter";
 
 type Props = {
+  target?: "recipe" | "savedMeal";
   selectedCount: number;
   onAdd: () => void;
 };
 
-export function RecipeIngredientPickerFooter({ selectedCount, onAdd }: Props) {
+export function RecipeIngredientPickerFooter({ target = "recipe", selectedCount, onAdd }: Props) {
   const { t } = useTranslation("pantry");
 
   return (
@@ -16,8 +17,8 @@ export function RecipeIngredientPickerFooter({ selectedCount, onAdd }: Props) {
       <Button
         label={
           selectedCount > 0
-            ? t("recipe.addSelectedBtn", { count: selectedCount })
-            : t("recipe.addSelectedBtnClean")
+            ? t(`${target}.addSelectedBtn`, { count: selectedCount })
+            : t(`${target}.addSelectedBtnClean`)
         }
         onPress={onAdd}
         disabled={selectedCount === 0}

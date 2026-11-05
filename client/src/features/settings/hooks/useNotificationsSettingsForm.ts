@@ -23,6 +23,10 @@ export function useNotificationsSettingsForm(settings?: NutritionSettings) {
   const [weeklyDay, setWeeklyDay] = useState("0");
   const [weeklyTime, setWeeklyTime] = useState("");
 
+  const [weighIn, setWeighIn] = useState(false);
+  const [weighInDays, setWeighInDays] = useState<number[]>([]);
+  const [weighInTime, setWeighInTime] = useState("");
+
   const [activeTimeField, setActiveTimeField] = useState<TimeField | null>(
     null,
   );
@@ -55,6 +59,10 @@ export function useNotificationsSettingsForm(settings?: NutritionSettings) {
     setWeekly(settings.weeklySummaryEnabled ?? false);
     setWeeklyDay(settings.weeklySummaryDay?.toString() ?? "0");
     setWeeklyTime(settings.weeklySummaryTime ?? "");
+
+    setWeighIn(settings.weighInReminderEnabled ?? false);
+    setWeighInDays(settings.weighInReminderDays ?? []);
+    setWeighInTime(settings.weighInReminderTime ?? "");
   }, [settings]);
 
   function getTimeValue(field: TimeField) {
@@ -69,6 +77,8 @@ export function useNotificationsSettingsForm(settings?: NutritionSettings) {
         return dailyTime;
       case "weekly":
         return weeklyTime;
+      case "weighIn":
+        return weighInTime;
     }
   }
 
@@ -89,6 +99,9 @@ export function useNotificationsSettingsForm(settings?: NutritionSettings) {
       case "weekly":
         setWeeklyTime(value);
         break;
+      case "weighIn":
+        setWeighInTime(value);
+        break;
     }
   }
 
@@ -99,6 +112,12 @@ export function useNotificationsSettingsForm(settings?: NutritionSettings) {
 
   function closeTimePicker() {
     setActiveTimeField(null);
+  }
+
+  function toggleWeighInDay(day: number) {
+    setWeighInDays((prev) =>
+      prev.includes(day) ? prev.filter((entry) => entry !== day) : [...prev, day].sort((a, b) => a - b),
+    );
   }
 
   return {
@@ -128,6 +147,12 @@ export function useNotificationsSettingsForm(settings?: NutritionSettings) {
     weeklyDay,
     setWeeklyDay,
     weeklyTime,
+
+    weighIn,
+    setWeighIn,
+    weighInDays,
+    toggleWeighInDay,
+    weighInTime,
 
     activeTimeField,
     pickerValue,

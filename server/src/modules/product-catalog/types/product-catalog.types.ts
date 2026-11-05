@@ -24,9 +24,11 @@ export const CATALOG_ITEM_PUBLIC_SELECT = {
   fiberPerServing: true,
   nutrients: true,
   servingSizeGrams: true,
+  servingSizeMl: true,
   servingSizeText: true,
   servingQuantity: true,
   servingUnit: true,
+  department: true,
   source: true,
   verificationStatus: true,
   externalProvider: true,
@@ -62,3 +64,17 @@ export const CATALOG_ITEM_ADMIN_SELECT = {
 export type ProductCatalogItemAdminRow = Prisma.ProductCatalogItemGetPayload<{
   select: typeof CATALOG_ITEM_ADMIN_SELECT;
 }>;
+
+export type CatalogBrowseItemDto = ProductCatalogItemDto & {
+  pantryProductId: string | null;
+};
+
+export type CatalogDepartmentCountDto = {
+  department: string;
+  count: number;
+};
+
+export type CatalogSubcategoryCountDto = {
+  key: string;
+  count: number;
+};

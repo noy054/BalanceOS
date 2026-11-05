@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
+import { useState } from "react";
+import { ScrollView, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { PantryProduct } from "../../types";
+import { spacing } from "../../../../shared/theme";
 import { BottomSheet } from "../../../../shared/components/ui/BottomSheet";
 import { useProductCalculator } from "../../hooks/useProductCalculator";
-import { useFoodCardModels } from "../../hooks/useFoodCardModels";
+import { FOOD_ICONS, useFoodCardModels } from "../../hooks/useFoodCardModels";
 import { AddToMealPanel } from "../../../meals/components/AddToMealPanel";
+import { DetailHero } from "../food/DetailHero";
 import { ProductCalculatorCard } from "./ProductCalculatorCard";
 
 type Props = {
@@ -18,57 +20,54 @@ type Props = {
 export function ProductCalculatorModal({ product, visible, onClose }: Props) {
   const { t, i18n } = useTranslation("pantry");
   const models = useFoodCardModels();
-  const [step, setStep] = useState<"calculate" | "meal">("calculate");
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
 
   const calculator = useProductCalculator(product);
-
-  useEffect(() => {
-    if (visible) setStep("calculate");
-  }, [visible, product?.id]);
+  const [rulerActive, setRulerActive] = useState(false);
 
   if (!product) {
     return null;
   }
 
-  const addingToMeal = step === "meal" && calculator.result !== null;
-
   return (
-    <BottomSheet
-      visible={visible}
-      onClose={onClose}
-      title={addingToMeal ? t("calculatorMeal.title") : product.name}
-      subtitle={
-        addingToMeal
-          ? product.name
-          : `${t("productCalculator.quickTitle")} · ${models.productBasisLabel(product)}`
-      }
-    >
-      <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        {addingToMeal && calculator.result ? (
-          <AddToMealPanel
-            product={product}
-            result={calculator.result}
-            onDone={onClose}
-            onBack={() => setStep("calculate")}
-          />
-        ) : (
-          <ProductCalculatorCard
-            plain
-            quantity={calculator.quantity}
-            unit={calculator.unit}
-            units={calculator.units}
-            serving={product}
-            result={calculator.result}
-            isRTL={isRTL}
-            t={t}
-            onChangeQuantity={calculator.updateQuantity}
-            onSelectUnit={calculator.selectUnit}
-            onAddToMeal={() => setStep("meal")}
-          />
-        )}
+    <BottomSheet visible={visible} onClose={onClose} title={t("productCalculator.quickTitle")}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={!rulerActive}
+        contentContainerStyle={styles.content}
+      >
+        <DetailHero
+          compact
+          title={product.name}
+          meta={[product.brand, models.productBasisLabel(product)].filter(Boolean).join(" · ")}
+          imageUrl={product.imageUrl}
+          fallbackIcon={FOOD_ICONS.product}
+        />
+        <ProductCalculatorCard
+          quantity={calculator.quantity}
+          unit={calculator.unit}
+          units={calculator.units}
+          serving={product}
+          result={calculator.result}
+          isRTL={isRTL}
+          t={t}
+          onChangeQuantity={calculator.updateQuantity}
+          onSelectUnit={calculator.selectUnit}
+          onRulerActiveChange={setRulerActive}
+        >
+          {calculator.units.length > 0 ? (
+            <AddToMealPanel product={product} result={calculator.result} onDone={onClose} />
+          ) : null}
+        </ProductCalculatorCard>
       </ScrollView>
     </BottomSheet>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    gap: spacing.md,
+  },
+});

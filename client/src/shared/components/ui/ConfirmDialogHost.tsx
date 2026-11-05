@@ -5,12 +5,17 @@ import { useDirection } from "../../hooks/useDirection";
 import { radius, shadows, spacing, typography, useThemedStyles } from "../../theme";
 import { Button } from "./Button";
 
-export function ConfirmDialogHost() {
-  const styles = useStyles();
-  const dir = useDirection();
+type Props = {
+  embedded?: boolean;
+};
+
+export function ConfirmDialogHost({ embedded = false }: Props) {
   const request = useConfirmStore((state) => state.request);
+  const hasOpenSheet = useConfirmStore((state) => state.openSheets > 0);
 
   if (!request) return null;
+  if (embedded) return <ConfirmDialog />;
+  if (hasOpenSheet) return null;
 
   return (
     <Modal
@@ -20,7 +25,20 @@ export function ConfirmDialogHost() {
       statusBarTranslucent
       onRequestClose={() => settleConfirm(false)}
     >
-      <View style={styles.root}>
+      <ConfirmDialog />
+    </Modal>
+  );
+}
+
+function ConfirmDialog() {
+  const styles = useStyles();
+  const dir = useDirection();
+  const request = useConfirmStore((state) => state.request);
+
+  if (!request) return null;
+
+  return (
+      <View style={[styles.root, StyleSheet.absoluteFill]}>
         <Pressable
           style={[StyleSheet.absoluteFill, styles.overlay]}
           onPress={() => settleConfirm(false)}
@@ -50,7 +68,6 @@ export function ConfirmDialogHost() {
           </View>
         </View>
       </View>
-    </Modal>
   );
 }
 

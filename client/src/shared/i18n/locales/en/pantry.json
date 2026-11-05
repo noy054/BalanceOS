@@ -1,4 +1,13 @@
 {
+  "sort": {
+    "title": "Sort by",
+    "buttonA11y": "Sort: {{sort}}",
+    "options": {
+      "newest": "Newest first",
+      "updated": "Recently updated",
+      "name": "Alphabetical"
+    }
+  },
   "title": "My Pantry",
   "subtitle": "Manage your products, recipes and saved meals",
   "search": {
@@ -36,7 +45,11 @@
     "changeImage": "Change image",
     "pickFromGallery": "Choose from gallery",
     "removeImage": "Remove image",
-    "gramsShort": "g"
+    "gramsShort": "g",
+    "per100ml": "per 100ml",
+    "millilitersUnit": "ml",
+    "mlShort": "ml",
+    "caloriesPer100mlLabel": "Calories per 100ml"
   },
   "categories": {
     "BREAKFAST": "Breakfast",
@@ -67,7 +80,9 @@
     "caloriesPerServingLabel": "Calories per serving",
     "reviewTitle": "Review product",
     "reviewSubtitle": "Check the scanned details and correct anything before saving. Your changes are saved to your pantry only and sent for review.",
-    "reviewValuesHint": "Fill in any missing values. Values the source didn't provide are left empty."
+    "reviewValuesHint": "Fill in any missing values. Values the source didn't provide are left empty.",
+    "scaledNotice": "Serving and nutrition were scaled proportionally (×{{factor}}).",
+    "per100ml": "per 100ml"
   },
   "macros": {
     "protein": "Protein",
@@ -95,6 +110,9 @@
     "calculatorByCalories": "kcal",
     "calculatorQuantity": "Quantity",
     "calculatorResult": "Result",
+    "resultFor": "Result for {{amount}}",
+    "decrease": "Decrease amount",
+    "increase": "Increase amount",
     "editButton": "Edit",
     "deleteButton": "Delete",
     "deleteConfirmTitle": "Delete Product",
@@ -106,7 +124,8 @@
     "calculatorByServings": "Servings",
     "calculateAction": "Calculate",
     "nutritionFor": "Nutrition {{basis}}",
-    "calculatorUnavailable": "This product has no complete nutrition values, so it can't be calculated."
+    "calculatorUnavailable": "This product has no complete nutrition values, so it can't be calculated.",
+    "calculatorByMilliliters": "Milliliters"
   },
   "recipe": {
     "nameLabel": "Recipe name *",
@@ -143,7 +162,13 @@
     "updateButton": "Save Changes",
     "addSelectedBtnClean": "Add to recipe",
     "removeItemNamed": "Remove {{name}}",
-    "toggleUnit": "Switch between grams and servings"
+    "toggleUnit": "Switch between grams and servings",
+    "stepsSection": "Steps (optional)",
+    "stepsEmpty": "Add numbered preparation steps.",
+    "addStep": "Add step",
+    "stepPlaceholder": "What happens in this step?",
+    "stepLabel": "Step {{number}}",
+    "removeStep": "Remove step {{number}}"
   },
   "addRecipe": {
     "title": "New Recipe",
@@ -151,10 +176,12 @@
     "requiredHint": "* Required fields"
   },
   "recipeDetail": {
-    "title": "Recipe Details",
+    "title": "Recipe details",
     "ingredientsSection": "Ingredients",
     "totalsSection": "Nutrition Totals",
-    "itemsCount": "{{count}} ingredients"
+    "itemsCount": "{{count}} ingredients",
+    "editButton": "Edit recipe",
+    "stepsSection": "Preparation"
   },
   "savedMeal": {
     "nameLabel": "Meal name *",
@@ -187,7 +214,9 @@
     "updateButton": "Save Changes",
     "namePlaceholder": "Meal name",
     "deleteTitle": "Delete Meal",
-    "deleteMessage": "Delete this saved meal?"
+    "deleteMessage": "Delete this saved meal?",
+    "addSelectedBtn": "Add {{count}} to meal",
+    "addSelectedBtnClean": "Add to meal"
   },
   "addSavedMeal": {
     "title": "New Saved Meal",
@@ -195,17 +224,20 @@
     "requiredHint": "* Required fields"
   },
   "savedMealDetail": {
-    "title": "Saved Meal Details",
+    "title": "Meal details",
     "itemsSection": "Items",
     "totalsSection": "Nutrition Totals",
-    "itemsCount": "{{count}} items"
+    "itemsCount": "{{count}} items",
+    "editButton": "Edit meal"
   },
   "picker": {
     "productsTitle": "Select Product",
     "recipesTitle": "Select Recipe",
     "searchPlaceholder": "Search...",
     "noResults": "No results",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "scanBarcode": "Scan barcode",
+    "createProduct": "Create product"
   },
   "barcode": {
     "title": "Scan Barcode",
@@ -301,7 +333,8 @@
     "galleryPermissionDenied": "Allow photo library access to choose an image",
     "imagePermissionDenied": "Allow photo access to add an image.",
     "updateRecipeFailed": "Failed to update recipe",
-    "updateSavedMealFailed": "Failed to save changes"
+    "updateSavedMealFailed": "Failed to save changes",
+    "missingAmounts": "Enter an amount for every item before saving."
   },
   "common": {
     "edit": "Edit",
@@ -328,10 +361,10 @@
     "recipeTotal": "Whole recipe",
     "mealTotal": "Meal total",
     "gramsQuantity": "{{grams}} g",
-    "servingsQuantity": "{{count}} servings ({{grams}} g)",
+    "servingsQuantity": "{{count}} servings ({{measure}})",
     "recipeServings": "×{{count}} recipe",
-    "servingsQuantity_one": "{{count}} serving ({{grams}} g)",
-    "servingsQuantity_other": "{{count}} servings ({{grams}} g)",
+    "servingsQuantity_one": "{{count}} serving ({{measure}})",
+    "servingsQuantity_other": "{{count}} servings ({{measure}})",
     "servingsCount_one": "{{count}} serving",
     "servingsCount_other": "{{count}} servings"
   },
@@ -340,20 +373,20 @@
     "quickFor": "Quick calculation for {{name}}"
   },
   "editRecipe": {
-    "title": "Edit Recipe",
+    "title": "Edit recipe",
     "subtitle": "Update the recipe details and ingredients."
   },
   "editSavedMeal": {
-    "title": "Edit Saved Meal",
+    "title": "Edit meal",
     "subtitle": "Update the meal details and items."
   },
   "serving": {
     "servingsUnit": "servings",
     "servingOne": "serving",
-    "per": "per {{quantity}} {{unit}} ({{grams}} g)",
-    "perGrams": "per serving ({{grams}} g)",
-    "amount": "{{count}} {{unit}} ({{grams}} g)",
-    "unitWeight": "{{grams}} g each",
+    "per": "per {{quantity}} {{unit}} ({{measure}})",
+    "perGrams": "per serving ({{measure}})",
+    "amount": "{{count}} {{unit}} ({{measure}})",
+    "unitWeight": "{{measure}} each",
     "quantityLabel": "Quantity",
     "unitLabel": "Unit",
     "unitPlaceholder": "e.g. slices",
@@ -365,7 +398,7 @@
     "sectionTitleOptional": "Serving (optional)",
     "weightLabelOptional": "Total weight (g)",
     "quantityOf": "Number of {{unit}}",
-    "servingWeight": "1 serving = {{grams}} g",
+    "servingWeight": "1 serving = {{measure}}",
     "perNoWeight": "per {{quantity}} {{unit}}",
     "perServingPlain": "per serving",
     "amountNoWeight": "{{count}} {{unit}}",
@@ -373,11 +406,28 @@
     "hintServing": "Enter the values for this serving, for example 1 large egg or 2 slices. Add the weight only if you know it; it enables logging in grams.",
     "basisShort": {
       "per100g": "100 g",
-      "unit": "{{quantity}} {{unit}} ({{grams}} g)",
+      "unit": "{{quantity}} {{unit}} ({{measure}})",
       "unitNoWeight": "{{quantity}} {{unit}}",
-      "servingGrams": "serving ({{grams}} g)",
-      "serving": "serving"
-    }
+      "servingGrams": "serving ({{measure}})",
+      "serving": "serving",
+      "per100ml": "100 ml"
+    },
+    "units": {
+      "cup": "cup",
+      "slice": "slice",
+      "unit": "unit",
+      "tablespoon": "tbsp",
+      "teaspoon": "tsp",
+      "package": "package",
+      "portion": "serving"
+    },
+    "cooked": "Cooked",
+    "cookedSuffix": "(cooked)",
+    "cookedHint": "Cooked and raw weights differ. Enter the cooked weight yourself; nothing is converted automatically.",
+    "weightFromProduct": "Weight filled from this product’s data",
+    "volumeLabelRequired": "Volume (ml) *",
+    "volumeLabelOptional": "Volume (ml)",
+    "millilitersShort": "ml"
   },
   "strip": {
     "gramsUnit": "g",
@@ -397,5 +447,157 @@
     "savedText": "{{amount}} was added to {{meal}} · {{date}}",
     "viewDay": "View day",
     "saveFailed": "The item could not be added. Check your connection and try again."
+  },
+  "super": {
+    "title": "Super",
+    "openHint": "Browse the product catalog by department",
+    "subtitle": "Browse by department and add products to your pantry.",
+    "searchPlaceholder": "Search the Super",
+    "searchIn": "Search in {{department}}",
+    "productTitle": "Product",
+    "productsCount_one": "{{count}} product",
+    "productsCount_other": "{{count}} products",
+    "addFor": "Add {{name}} to pantry",
+    "addToPantry": "Add to pantry",
+    "inPantry": "In pantry",
+    "inPantryFor": "{{name}} is in your pantry",
+    "viewInPantry": "In pantry · View",
+    "added": "{{name}} added to your pantry",
+    "view": "View",
+    "empty": "The Super is being stocked. Check back soon.",
+    "emptyDepartment": "No products in this department yet",
+    "noResults": "No matching products",
+    "loadFailed": "Couldn't load the Super",
+    "retry": "Try again",
+    "removeFromPantry": "Remove from pantry",
+    "removeHint": "Removes this product from your pantry",
+    "removeConfirmTitle": "Remove from pantry?",
+    "removeConfirmMessage": "{{name}} will be removed from your pantry only. It stays in the Super, and your past logs won't change.",
+    "removeConfirmYes": "Remove",
+    "removeConfirmNo": "Cancel",
+    "removed": "{{name}} was removed from your pantry",
+    "removeFailed": "The product couldn't be removed. Check your connection and try again.",
+    "heroSubtitle": "Products from the Super, quick to add to your pantry",
+    "categoriesTitle": "Categories",
+    "all": "All",
+    "bannerTitle": "Fresh fruit & vegetables",
+    "bannerSubtitle": "Vegetables, fruit and nuts to choose from",
+    "bannerA11y": "Open {{department}}",
+    "subcategories": {
+      "YOGURT": "Yogurt",
+      "MILK": "Milk",
+      "EGGS": "Eggs",
+      "CHEESE": "Cheese",
+      "BUTTER_CREAM": "Butter & cream",
+      "CHICKEN": "Chicken",
+      "BEEF": "Beef",
+      "TURKEY": "Turkey",
+      "FISH": "Fish",
+      "DELI": "Deli",
+      "VEGETABLES": "Vegetables",
+      "FRUITS": "Fruit",
+      "NUTS_DRIED": "Nuts & dried fruit",
+      "BREAD": "Bread",
+      "PITA_WRAPS": "Pitas & wraps",
+      "ROLLS": "Rolls & bagels",
+      "PASTRIES": "Cakes & pastries",
+      "CEREAL": "Cereal",
+      "GRANOLA": "Granola & muesli",
+      "OATS": "Oats",
+      "RICE": "Rice",
+      "PASTA": "Pasta",
+      "LEGUMES": "Legumes",
+      "GRAINS": "Grains",
+      "FLOUR": "Flour",
+      "CHOCOLATE": "Chocolate",
+      "SALTY": "Salty snacks",
+      "COOKIES": "Cookies & wafers",
+      "BARS": "Bars",
+      "CANDY": "Candy",
+      "SWEET": "Jams & honey",
+      "NUT_BUTTERS": "Nut butters & tahini",
+      "SAVORY": "Savory spreads",
+      "CANNED": "Canned",
+      "OILS": "Oils",
+      "SAUCES": "Sauces",
+      "SPICES": "Spices",
+      "VINEGAR": "Vinegar",
+      "ICE_CREAM": "Ice cream",
+      "MEALS": "Ready meals",
+      "WATER": "Water & soda",
+      "JUICE": "Juice",
+      "SOFT_DRINKS": "Soft drinks",
+      "COFFEE_TEA": "Coffee & tea",
+      "PLANT_DRINKS": "Plant drinks",
+      "POWDERS": "Protein powders",
+      "DRINKS": "Drinks"
+    },
+    "departments": {
+      "DAIRY_EGGS": "Dairy & eggs",
+      "MEAT_FISH": "Meat & fish",
+      "PRODUCE": "Fruit, vegetables & nuts",
+      "BAKERY": "Bread & bakery",
+      "BREAKFAST": "Breakfast cereals",
+      "GRAINS_LEGUMES": "Pasta, rice & grains",
+      "SNACKS_SWEETS": "Snacks & sweets",
+      "SPREADS_CANNED": "Spreads & canned",
+      "SAUCES_OILS": "Sauces, oils & spices",
+      "FROZEN": "Frozen",
+      "BEVERAGES": "Beverages",
+      "SPORTS_NUTRITION": "Sports nutrition",
+      "OTHER": "Other"
+    },
+    "addWithServing": "Define serving and add"
+  },
+  "recipeUsage": {
+    "warning_one": "Heads up: this product is used in the recipe {{names}}. Removing it from your pantry will also remove it from that recipe.",
+    "warning_other": "Heads up: this product is used in {{count}} recipes: {{names}}. Removing it from your pantry will also remove it from those recipes.",
+    "more_one": "and 1 more",
+    "more_other": "and {{count}} more",
+    "unknown": "We couldn't check whether this product is used in recipes or saved meals. If it is, it will be removed from them too."
+  },
+  "savedMealUsage": {
+    "warning_one": "It is also used in the saved meal {{names}}, and will be removed from it too.",
+    "warning_other": "It is also used in {{count}} saved meals: {{names}}. It will be removed from them too."
+  },
+  "form": {
+    "addImage": "Add image",
+    "replaceImage": "Replace image",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "reorderItem": "Reorder {{name}}",
+    "noIngredients": "No ingredients yet. Add one to calculate the recipe's nutrition.",
+    "noItems": "No items yet. Add a product or recipe to calculate the meal's nutrition.",
+    "mealTotal": "Meal total"
+  },
+  "mealTypesShort": {
+    "BREAKFAST": "Breakfast",
+    "LUNCH": "Lunch",
+    "DINNER": "Dinner",
+    "SNACK_1": "Snack 1",
+    "SNACK_2": "Snack 2"
+  },
+  "ingredientEdit": {
+    "update": "Update quantity",
+    "increase": "Increase amount",
+    "decrease": "Decrease amount",
+    "editHint": "Opens to edit the amount",
+    "setQuantity": "Set amount",
+    "recipeHint": "Updates this ingredient in the recipe you came from. It is saved when you save the recipe.",
+    "mealHint": "Updates this item in the saved meal you came from. It is saved when you save the meal.",
+    "title": "Update ingredient quantity",
+    "inMeal": "Ingredient in meal: {{name}}",
+    "inRecipe": "Ingredient in recipe: {{name}}",
+    "inMealUnnamed": "Ingredient in the meal you’re editing",
+    "inRecipeUnnamed": "Ingredient in the recipe you’re editing",
+    "savedMealHint": "The new amount is saved to the meal right away.",
+    "savedRecipeHint": "The new amount is saved to the recipe right away.",
+    "detailHint": "Tap a product to update its amount.",
+    "failed": "We couldn’t update the amount. Try again.",
+    "quickEdit": "Change amount"
+  },
+  "measure": {
+    "grams": "{{value}} g",
+    "milliliters": "{{value}} ml"
   }
 }

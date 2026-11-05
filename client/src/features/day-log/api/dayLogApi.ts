@@ -6,6 +6,8 @@ import {
   DayLogCalendarResponse,
   DayLogMealsResponse,
   DayLogResponse,
+  MealItemComponent,
+  UpdateMealItemComponentPayload,
   UpdateMealItemPayload,
 } from '../types';
 
@@ -33,6 +35,22 @@ export const dayLogApi = {
   updateMealItem({ itemId, ...amount }: UpdateMealItemPayload): Promise<{ id: string }> {
     return apiClient
       .patch<{ id: string }>(DAY_LOG_ENDPOINTS.REMOVE_MEAL_ITEM(itemId), amount)
+      .then((r) => r.data);
+  },
+
+  getMealItemComponents(itemId: string): Promise<{ components: MealItemComponent[] }> {
+    return apiClient
+      .get<{ components: MealItemComponent[] }>(DAY_LOG_ENDPOINTS.ITEM_COMPONENTS(itemId))
+      .then((r) => r.data);
+  },
+
+  updateMealItemComponent({
+    itemId,
+    componentId,
+    ...amount
+  }: UpdateMealItemComponentPayload): Promise<{ id: string }> {
+    return apiClient
+      .patch<{ id: string }>(DAY_LOG_ENDPOINTS.ITEM_COMPONENT(itemId, componentId), amount)
       .then((r) => r.data);
   },
 

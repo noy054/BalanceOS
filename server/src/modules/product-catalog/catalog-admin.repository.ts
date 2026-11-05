@@ -12,6 +12,7 @@ import {
 } from './types/product-catalog.types';
 import { CatalogProductData, fromCatalogRow, toJson } from './catalog-data';
 import { catalogFields } from './catalog-review.repository';
+import { classifyCatalogItem } from './catalog-subcategories';
 import { CatalogItemState } from './dto/catalog-review.dto';
 import {
   AUDIT_ACTION,
@@ -20,6 +21,7 @@ import {
   toAuditData,
   toJsonObject,
 } from '../audit/audit.types';
+import { allTermsWhere } from '../../common/search/search-terms';
 
 const SUBMISSION_SUMMARY_SELECT = {
   id: true,
@@ -55,8 +57,7 @@ export class CatalogAdminRepository {
         ...(q
           ? {
               OR: [
-                { name: { contains: q, mode: 'insensitive' } },
-                { brand: { contains: q, mode: 'insensitive' } },
+                allTermsWhere(['name', 'brand'] as const, q),
                 { normalizedBarcode: { contains: q } },
               ],
             }
@@ -105,7 +106,11 @@ export class CatalogAdminRepository {
     return this.prisma.$transaction(async (tx) => {
       const current = await tx.productCatalogItem.findUnique({
         where: { id: params.id },
-        select: CATALOG_ITEM_ADMIN_SELECT,
+        select: {
+          ...CATALOG_ITEM_ADMIN_SELECT,
+          category: true,
+          externalRawData: true,
+        },
       });
       if (!current) return null;
       const before = fromCatalogRow(current);
@@ -115,6 +120,11 @@ export class CatalogAdminRepository {
           ...catalogFields(params.data),
           barcode: params.data.barcode,
           normalizedBarcode: params.normalizedBarcode,
+          ...classifyCatalogItem(
+            current.category,
+            current.externalRawData,
+            params.data.name,
+          ),
           originalData: current.originalData ?? toJson(before),
           verificationStatus: ProductVerificationStatus.ADMIN_VERIFIED,
           updatedByUserId: params.adminId,

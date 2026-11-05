@@ -10,7 +10,7 @@ type Props = {
   value: string;
   onChangeText: (text: string) => void;
   placeholder: string;
-  tone?: "surface" | "muted";
+  tone?: "surface" | "muted" | "glass";
   autoFocus?: boolean;
   trailing?: ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -32,7 +32,7 @@ export function SearchField({
 
   return (
     <View style={[styles.row, dir.row, style]}>
-      <View style={[styles.field, tone === "muted" && styles.fieldMuted, dir.row]}>
+      <View style={[styles.field, tone === "muted" && styles.fieldMuted, tone === "glass" && styles.fieldGlass, dir.row]}>
         <MaterialCommunityIcons name="magnify" size={20} color={colors.textMuted} />
 
         <TextInput
@@ -85,6 +85,10 @@ const useStyles = () =>
       fieldMuted: {
         backgroundColor: colors.surfaceMuted,
         borderColor: colors.border,
+      },
+      fieldGlass: {
+        backgroundColor: colors.glassCard,
+        borderColor: colors.glassBorder,
       },
       input: {
         flex: 1,

@@ -8,6 +8,7 @@ import { PantryProduct, PantryRecipe, ProductCategory } from "../../types";
 import { sortByMealCategory } from "../../helpers/sortByMealCategory";
 import { useAppTheme } from "../../../../shared/theme";
 import { SearchField } from "../../../../shared/components/ui/SearchField";
+import { IconButton } from "../../../../shared/components/ui/IconButton";
 import { StateView } from "../../../../shared/components/ui/StateView";
 import { FoodItemCard } from "../food/FoodItemCard";
 import { PickerHeader } from "../shared/PickerHeader";
@@ -16,6 +17,7 @@ import { useStyles } from "./styles/ProductPickerModal.styles";
 import { ListGap } from "../../../../shared/components/ui/ListGap";
 import { useKeyboardInset } from "../../../../shared/hooks/useKeyboardInset";
 import { isAmbiguousName, useDuplicateNames } from "../../helpers/duplicateNames";
+import { matchesAllTerms } from "../../../../shared/helpers/searchTerms";
 
 type ProductPickerModalProps = {
   visible: boolean;
@@ -26,6 +28,8 @@ type ProductPickerModalProps = {
   onClose: () => void;
   onEndReached?: () => void;
   onSearchChange?: (text: string) => void;
+  onScanBarcode?: () => void;
+  onCreateProduct?: () => void;
 };
 
 function AddIndicator({ added }: { added: boolean }) {
@@ -49,6 +53,8 @@ export function ProductPickerModal({
   onClose,
   onEndReached,
   onSearchChange,
+  onScanBarcode,
+  onCreateProduct,
 }: ProductPickerModalProps) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
@@ -94,6 +100,38 @@ export function ProductPickerModal({
             onChangeText={handleSearchChange}
             placeholder={t("search.placeholder")}
             autoFocus
+            trailing={
+              onScanBarcode || onCreateProduct ? (
+                <>
+                  {onScanBarcode ? (
+                    <IconButton
+                      icon="barcode-scan"
+                      variant="tonal"
+                      size={44}
+                      iconSize={22}
+                      accessibilityLabel={t("picker.scanBarcode")}
+                      onPress={() => {
+                        handleClose();
+                        onScanBarcode();
+                      }}
+                    />
+                  ) : null}
+                  {onCreateProduct ? (
+                    <IconButton
+                      icon="plus"
+                      variant="tonal"
+                      size={44}
+                      iconSize={24}
+                      accessibilityLabel={t("picker.createProduct")}
+                      onPress={() => {
+                        handleClose();
+                        onCreateProduct();
+                      }}
+                    />
+                  ) : null}
+                </>
+              ) : null
+            }
           />
         </View>
 
@@ -156,7 +194,7 @@ export function RecipePickerModal({
   const [search, setSearch] = useState("");
 
   const filtered = search.trim()
-    ? recipes.filter((r) => r.name.toLowerCase().includes(search.toLowerCase()))
+    ? recipes.filter((r) => matchesAllTerms(search, r.name))
     : recipes;
 
   function handleSelect(recipe: PantryRecipe) {

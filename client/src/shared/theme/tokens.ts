@@ -148,5 +148,5 @@ export const cameraColors = {
   overlay: "rgba(15, 18, 26, 0.72)",
   foreground: "#FFFFFF",
   corner: "rgba(255, 255, 255, 0.92)",
-  scanLine: "#5271FF",
+  scanLine: "#C5F87F",
 };

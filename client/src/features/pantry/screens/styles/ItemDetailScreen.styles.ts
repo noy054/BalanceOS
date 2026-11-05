@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import {
   radius,
   spacing,
+  typography,
   useThemedStyles,
 } from "../../../../shared/theme";
 
@@ -11,7 +12,7 @@ export const useStyles = () =>
     StyleSheet.create({
       root: {
         flex: 1,
-        backgroundColor: colors.background,
+        backgroundColor: colors.canvas,
       },
 
       scroll: {
@@ -34,8 +35,16 @@ export const useStyles = () =>
         gap: 0,
       },
 
+      sectionHint: {
+        ...typography.footnote,
+        color: colors.textSecondary,
+        marginTop: -spacing.xs,
+        marginBottom: spacing.sm,
+      },
       itemsCard: {
-        backgroundColor: colors.surface,
+        backgroundColor: colors.glassCard,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
         borderRadius: radius.lg,
         paddingHorizontal: spacing.md,
       },

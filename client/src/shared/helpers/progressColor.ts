@@ -25,3 +25,8 @@ export function mixColors(from: string, to: string, amount: number) {
       .padStart(2, "0");
   return `#${channel(0)}${channel(1)}${channel(2)}`;
 }
+
+export function withAlpha(hex: string, alpha: number) {
+  const [r, g, b] = toRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${Math.min(Math.max(alpha, 0), 1)})`;
+}

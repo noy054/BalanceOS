@@ -14,7 +14,7 @@ export const useStyles = () =>
         paddingHorizontal: SIDE_OFFSET,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.background,
+        backgroundColor: "transparent",
         position: "relative",
         zIndex: 10,
       },

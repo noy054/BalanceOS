@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateRecipeDto, RecipeItemDto } from './dto/create-recipe.dto';
+import { Prisma } from '../../../generated/prisma/client';
+import { RecipeItemDto } from './dto/create-recipe.dto';
 import { PRODUCT_NUTRITION_SELECT } from './product-select';
+
+const ITEM_ORDER: { position?: 'asc'; createdAt?: 'asc' }[] = [
+  { position: 'asc' },
+  { createdAt: 'asc' },
+];
 
 const RECIPE_INCLUDE = {
   items: {
@@ -17,9 +23,18 @@ const RECIPE_INCLUDE = {
         },
       },
     },
-    orderBy: { createdAt: 'asc' as const },
+    orderBy: ITEM_ORDER,
   },
 } as const;
+
+export type RecipeHeader = {
+  name?: string;
+  description?: string;
+  mealType?: string | null;
+  mealTypes?: string[];
+  imageUrl?: string | null;
+  steps?: string[];
+};
 
 export type RecipeRow = Awaited<
   ReturnType<RecipesRepository['findByIdAndUserId']>
@@ -33,7 +48,7 @@ export class RecipesRepository {
     return this.prisma.pantryRecipe.findMany({
       where: { userId },
       include: RECIPE_INCLUDE,
-      orderBy: { name: 'asc' },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
     });
   }
 
@@ -44,18 +59,23 @@ export class RecipesRepository {
     });
   }
 
-  create(userId: string, dto: CreateRecipeDto) {
+  create(userId: string, header: RecipeHeader, items: RecipeItemDto[]) {
     return this.prisma.pantryRecipe.create({
       data: {
         userId,
-        name: dto.name,
-        description: dto.description,
-        mealType: dto.mealType ?? null,
+        name: header.name ?? '',
+        description: header.description,
+        mealType: header.mealType ?? null,
+        mealTypes: header.mealTypes ?? [],
+        imageUrl: header.imageUrl ?? null,
+        steps: header.steps ?? [],
         items: {
-          create: dto.items.map((item) => ({
+          create: items.map((item, position) => ({
             productId: item.productId,
             grams: item.grams ?? null,
             servings: item.servings ?? null,
+            milliliters: item.milliliters ?? null,
+            position,
           })),
         },
       },
@@ -80,34 +100,40 @@ export class RecipesRepository {
 
   async updateWithItems(
     id: string,
-    name: string | undefined,
-    description: string | undefined,
-    mealType: string | undefined,
+    header: RecipeHeader,
     items: RecipeItemDto[] | undefined,
+    db: Prisma.TransactionClient,
   ) {
-    return this.prisma.$transaction(async (tx) => {
-      if (items !== undefined) {
-        await tx.pantryRecipeItem.deleteMany({ where: { recipeId: id } });
-        if (items.length > 0) {
-          await tx.pantryRecipeItem.createMany({
-            data: items.map((item) => ({
-              recipeId: id,
-              productId: item.productId,
-              grams: item.grams ?? null,
-              servings: item.servings ?? null,
-            })),
-          });
-        }
+    if (items !== undefined) {
+      await db.pantryRecipeItem.deleteMany({ where: { recipeId: id } });
+      if (items.length > 0) {
+        await db.pantryRecipeItem.createMany({
+          data: items.map((item, position) => ({
+            recipeId: id,
+            productId: item.productId,
+            grams: item.grams ?? null,
+            servings: item.servings ?? null,
+            milliliters: item.milliliters ?? null,
+            position,
+          })),
+        });
       }
-      return tx.pantryRecipe.update({
-        where: { id },
-        data: {
-          ...(name !== undefined ? { name } : {}),
-          ...(description !== undefined ? { description } : {}),
-          ...(mealType !== undefined ? { mealType } : {}),
-        },
-        include: RECIPE_INCLUDE,
-      });
+    }
+    return db.pantryRecipe.update({
+      where: { id },
+      data: {
+        ...(header.name !== undefined ? { name: header.name } : {}),
+        ...(header.description !== undefined
+          ? { description: header.description }
+          : {}),
+        ...(header.mealType !== undefined ? { mealType: header.mealType } : {}),
+        ...(header.mealTypes !== undefined
+          ? { mealTypes: header.mealTypes }
+          : {}),
+        ...(header.imageUrl !== undefined ? { imageUrl: header.imageUrl } : {}),
+        ...(header.steps !== undefined ? { steps: header.steps } : {}),
+      },
+      include: RECIPE_INCLUDE,
     });
   }
 

@@ -65,7 +65,9 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       card: {
-        backgroundColor: colors.surface,
+        backgroundColor: colors.glassCard,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: colors.glassBorder,
         borderRadius: radius.lg,
         padding: spacing.md,
         gap: spacing.xs,

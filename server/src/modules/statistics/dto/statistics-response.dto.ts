@@ -6,10 +6,24 @@ export type MacroStat = {
   pct: number;
 };
 
+export type NutrientTargets = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+};
+
 export type DayTrendPoint = {
   date: string;
+  logged: boolean;
   calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
   target: number;
+  targets: NutrientTargets;
 };
 
 export type MealDistributionItem = {
@@ -22,12 +36,14 @@ export type FoodItem = {
   name: string;
   totalCalories: number;
   count: number;
+  imageUrl: string | null;
 };
 
 export type MostUsedFood = {
   name: string;
   count: number;
   avgCalories: number;
+  imageUrl: string | null;
 };
 
 export type StatisticsResponseDto = {
@@ -57,6 +73,7 @@ export type StatisticsResponseDto = {
     protein: MacroStat;
     carbs: MacroStat;
     fat: MacroStat;
+    fiber: MacroStat;
   };
 
   mealDistribution: MealDistributionItem[];

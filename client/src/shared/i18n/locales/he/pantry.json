@@ -1,4 +1,13 @@
 {
+  "sort": {
+    "title": "מיון לפי",
+    "buttonA11y": "מיון: {{sort}}",
+    "options": {
+      "newest": "החדשים ביותר",
+      "updated": "עודכנו לאחרונה",
+      "name": "לפי א״ב"
+    }
+  },
   "title": "המזווה שלי",
   "subtitle": "נהל את המוצרים, המתכונים והארוחות שלך",
   "search": {
@@ -50,7 +59,11 @@
     "changeImage": "החלפת תמונה",
     "pickFromGallery": "בחירה מהגלריה",
     "removeImage": "הסרת תמונה",
-    "gramsShort": "ג׳"
+    "gramsShort": "ג׳",
+    "per100ml": "ל־100 מ״ל",
+    "millilitersUnit": "מ״ל",
+    "mlShort": "מ״ל",
+    "caloriesPer100mlLabel": "קלוריות ל־100 מ״ל"
   },
   "categories": {
     "BREAKFAST": "בוקר",
@@ -81,7 +94,9 @@
     "caloriesPerServingLabel": "קלוריות למנה",
     "reviewTitle": "בדיקת מוצר",
     "reviewSubtitle": "בדקו את פרטי הסריקה ותקנו לפני השמירה. השינויים נשמרים במזווה שלכם בלבד ונשלחים לבדיקה.",
-    "reviewValuesHint": "השלימו ערכים חסרים. ערכים שלא סופקו על ידי המקור נשארים ריקים."
+    "reviewValuesHint": "השלימו ערכים חסרים. ערכים שלא סופקו על ידי המקור נשארים ריקים.",
+    "scaledNotice": "הכמות והערכים התזונתיים עודכנו באופן יחסי (×{{factor}}).",
+    "per100ml": "ל־100 מ״ל"
   },
   "productDetail": {
     "title": "פרטי מוצר",
@@ -95,6 +110,9 @@
     "calculatorByCalories": "קק״ל",
     "calculatorQuantity": "כמות",
     "calculatorResult": "תוצאה",
+    "resultFor": "תוצאה ל-{{amount}}",
+    "decrease": "הפחתת הכמות",
+    "increase": "הגדלת הכמות",
     "editButton": "ערוך",
     "deleteButton": "מחק",
     "deleteConfirmTitle": "מחיקת מוצר",
@@ -106,7 +124,8 @@
     "calculatorByServings": "מנות",
     "calculateAction": "חישוב",
     "nutritionFor": "ערכי תזונה {{basis}}",
-    "calculatorUnavailable": "למוצר הזה אין ערכים תזונתיים מלאים, ולכן אי אפשר לחשב אותו."
+    "calculatorUnavailable": "למוצר הזה אין ערכים תזונתיים מלאים, ולכן אי אפשר לחשב אותו.",
+    "calculatorByMilliliters": "מ״ל"
   },
   "recipe": {
     "nameLabel": "שם המתכון *",
@@ -143,7 +162,13 @@
     "updateButton": "שמור שינויים",
     "addSelectedBtnClean": "הוסף למתכון",
     "removeItemNamed": "הסרת {{name}}",
-    "toggleUnit": "מעבר בין גרמים למנות"
+    "toggleUnit": "מעבר בין גרמים למנות",
+    "stepsSection": "שלבי הכנה (לא חובה)",
+    "stepsEmpty": "אפשר להוסיף שלבי הכנה ממוספרים.",
+    "addStep": "הוספת שלב",
+    "stepPlaceholder": "מה עושים בשלב הזה?",
+    "stepLabel": "שלב {{number}}",
+    "removeStep": "הסרת שלב {{number}}"
   },
   "addRecipe": {
     "title": "מתכון חדש",
@@ -154,7 +179,9 @@
     "title": "פרטי מתכון",
     "ingredientsSection": "מצרכים",
     "totalsSection": "ערכי תזונה כוללים",
-    "itemsCount": "{{count}} מצרכים"
+    "itemsCount": "{{count}} מצרכים",
+    "editButton": "עריכת מתכון",
+    "stepsSection": "אופן ההכנה"
   },
   "savedMeal": {
     "nameLabel": "שם הארוחה *",
@@ -187,7 +214,9 @@
     "updateButton": "שמור שינויים",
     "namePlaceholder": "שם הארוחה",
     "deleteTitle": "מחיקת ארוחה",
-    "deleteMessage": "האם למחוק את הארוחה השמורה?"
+    "deleteMessage": "האם למחוק את הארוחה השמורה?",
+    "addSelectedBtn": "הוספת {{count}} לארוחה",
+    "addSelectedBtnClean": "הוספה לארוחה"
   },
   "addSavedMeal": {
     "title": "ארוחה שמורה חדשה",
@@ -195,17 +224,20 @@
     "requiredHint": "* שדות חובה"
   },
   "savedMealDetail": {
-    "title": "פרטי ארוחה שמורה",
+    "title": "פרטי ארוחה",
     "itemsSection": "פריטים",
     "totalsSection": "ערכי תזונה כוללים",
-    "itemsCount": "{{count}} פריטים"
+    "itemsCount": "{{count}} פריטים",
+    "editButton": "עריכת ארוחה"
   },
   "picker": {
     "productsTitle": "בחר מוצר",
     "recipesTitle": "בחר מתכון",
     "searchPlaceholder": "חפש...",
     "noResults": "אין תוצאות",
-    "cancel": "ביטול"
+    "cancel": "ביטול",
+    "scanBarcode": "סריקת ברקוד",
+    "createProduct": "יצירת מוצר"
   },
   "barcode": {
     "title": "סרוק ברקוד",
@@ -301,7 +333,8 @@
     "galleryPermissionDenied": "צריך לאשר גישה לגלריה כדי לבחור תמונה",
     "imagePermissionDenied": "צריך לאשר גישה לתמונות כדי להוסיף תמונה.",
     "updateRecipeFailed": "עדכון המתכון נכשל",
-    "updateSavedMealFailed": "שמירת השינויים נכשלה"
+    "updateSavedMealFailed": "שמירת השינויים נכשלה",
+    "missingAmounts": "יש להזין כמות לכל פריט לפני השמירה."
   },
   "common": {
     "edit": "עריכה",
@@ -328,12 +361,12 @@
     "recipeTotal": "מתכון שלם",
     "mealTotal": "סה״כ ארוחה",
     "gramsQuantity": "{{grams}} גרם",
-    "servingsQuantity": "{{count}} מנות ({{grams}} גרם)",
+    "servingsQuantity": "{{count}} מנות ({{measure}})",
     "recipeServings": "×{{count}} מתכון",
-    "servingsQuantity_one": "מנה אחת ({{grams}} גרם)",
-    "servingsQuantity_two": "{{count}} מנות ({{grams}} גרם)",
-    "servingsQuantity_many": "{{count}} מנות ({{grams}} גרם)",
-    "servingsQuantity_other": "{{count}} מנות ({{grams}} גרם)",
+    "servingsQuantity_one": "מנה אחת ({{measure}})",
+    "servingsQuantity_two": "{{count}} מנות ({{measure}})",
+    "servingsQuantity_many": "{{count}} מנות ({{measure}})",
+    "servingsQuantity_other": "{{count}} מנות ({{measure}})",
     "servingsCount_one": "מנה אחת",
     "servingsCount_two": "{{count}} מנות",
     "servingsCount_many": "{{count}} מנות",
@@ -348,16 +381,16 @@
     "subtitle": "עדכון פרטי המתכון והמצרכים."
   },
   "editSavedMeal": {
-    "title": "עריכת ארוחה שמורה",
+    "title": "עריכת ארוחה",
     "subtitle": "עדכון פרטי הארוחה והפריטים."
   },
   "serving": {
     "servingsUnit": "מנות",
     "servingOne": "מנה",
-    "per": "ל־{{quantity}} {{unit}} ({{grams}} גרם)",
-    "perGrams": "למנה ({{grams}} גרם)",
-    "amount": "{{count}} {{unit}} ({{grams}} גרם)",
-    "unitWeight": "{{grams}} גרם ליחידה",
+    "per": "ל־{{quantity}} {{unit}} ({{measure}})",
+    "perGrams": "למנה ({{measure}})",
+    "amount": "{{count}} {{unit}} ({{measure}})",
+    "unitWeight": "{{measure}} ליחידה",
     "quantityLabel": "כמות",
     "unitLabel": "יחידה",
     "unitPlaceholder": "לדוגמה: פרוסות",
@@ -369,7 +402,7 @@
     "sectionTitleOptional": "מנה (לא חובה)",
     "weightLabelOptional": "משקל כולל (גרם)",
     "quantityOf": "כמות ({{unit}})",
-    "servingWeight": "מנה אחת = {{grams}} גרם",
+    "servingWeight": "מנה אחת = {{measure}}",
     "perNoWeight": "ל־{{quantity}} {{unit}}",
     "perServingPlain": "למנה",
     "amountNoWeight": "{{count}} {{unit}}",
@@ -377,11 +410,28 @@
     "hintServing": "הזינו את הערכים למנה הזו, למשל ביצה גדולה אחת או 2 פרוסות. הוסיפו משקל רק אם הוא ידוע; הוא מאפשר רישום בגרמים.",
     "basisShort": {
       "per100g": "100 גרם",
-      "unit": "{{quantity}} {{unit}} ({{grams}} גרם)",
+      "unit": "{{quantity}} {{unit}} ({{measure}})",
       "unitNoWeight": "{{quantity}} {{unit}}",
-      "servingGrams": "מנה ({{grams}} גרם)",
-      "serving": "מנה"
-    }
+      "servingGrams": "מנה ({{measure}})",
+      "serving": "מנה",
+      "per100ml": "100 מ״ל"
+    },
+    "units": {
+      "cup": "כוס",
+      "slice": "פרוסה",
+      "unit": "יחידה",
+      "tablespoon": "כף",
+      "teaspoon": "כפית",
+      "package": "אריזה",
+      "portion": "מנה"
+    },
+    "cooked": "מבושל",
+    "cookedSuffix": "(מבושל)",
+    "cookedHint": "משקל מבושל שונה ממשקל לא מבושל. הזינו את המשקל המבושל בעצמכם, בלי המרה אוטומטית.",
+    "weightFromProduct": "המשקל מולא לפי נתוני המוצר הזה",
+    "volumeLabelRequired": "נפח (מ״ל) *",
+    "volumeLabelOptional": "נפח (מ״ל)",
+    "millilitersShort": "מ״ל"
   },
   "strip": {
     "gramsUnit": "ג׳",
@@ -401,5 +451,165 @@
     "savedText": "{{amount}} נוסף ל{{meal}} · {{date}}",
     "viewDay": "מעבר ליום",
     "saveFailed": "לא ניתן היה להוסיף את הפריט. כדאי לבדוק את החיבור ולנסות שוב."
+  },
+  "super": {
+    "title": "סופר",
+    "openHint": "עיון במאגר המוצרים לפי מחלקות",
+    "subtitle": "בחרו מחלקה והוסיפו מוצרים למזווה שלכם.",
+    "searchPlaceholder": "חיפוש בסופר",
+    "searchIn": "חיפוש ב{{department}}",
+    "productTitle": "מוצר",
+    "productsCount_one": "מוצר אחד",
+    "productsCount_two": "{{count}} מוצרים",
+    "productsCount_many": "{{count}} מוצרים",
+    "productsCount_other": "{{count}} מוצרים",
+    "addFor": "הוספת {{name}} למזווה",
+    "addToPantry": "הוספה למזווה",
+    "inPantry": "במזווה",
+    "inPantryFor": "{{name}} נמצא במזווה שלך",
+    "viewInPantry": "במזווה · צפייה",
+    "added": "{{name}} נוסף למזווה",
+    "view": "צפייה",
+    "empty": "הסופר מתמלא במוצרים. חזרו בקרוב.",
+    "emptyDepartment": "אין עדיין מוצרים במחלקה הזו",
+    "noResults": "לא נמצאו מוצרים מתאימים",
+    "loadFailed": "לא הצלחנו לטעון את הסופר",
+    "retry": "נסו שוב",
+    "removeFromPantry": "הסרה מהמזווה",
+    "removeHint": "הקשה תסיר את המוצר מהמזווה שלך",
+    "removeConfirmTitle": "להסיר מהמזווה?",
+    "removeConfirmMessage": "{{name}} יוסר מהמזווה שלך בלבד. המוצר יישאר בסופר, והיומן הקודם שלך לא ישתנה.",
+    "removeConfirmYes": "הסרה",
+    "removeConfirmNo": "ביטול",
+    "removed": "{{name}} הוסר מהמזווה",
+    "removeFailed": "לא הצלחנו להסיר את המוצר. כדאי לבדוק את החיבור ולנסות שוב.",
+    "heroSubtitle": "מוצרים מהסופר להוספה מהירה למזווה",
+    "categoriesTitle": "קטגוריות",
+    "all": "הכל",
+    "bannerTitle": "פירות וירקות טריים",
+    "bannerSubtitle": "ירקות, פירות ואגוזים לבחירה",
+    "bannerA11y": "מעבר אל {{department}}",
+    "subcategories": {
+      "YOGURT": "יוגורט",
+      "MILK": "חלב",
+      "EGGS": "ביצים",
+      "CHEESE": "גבינות",
+      "BUTTER_CREAM": "חמאה ושמנת",
+      "CHICKEN": "עוף",
+      "BEEF": "בקר",
+      "TURKEY": "הודו",
+      "FISH": "דגים",
+      "DELI": "נקניקים",
+      "VEGETABLES": "ירקות",
+      "FRUITS": "פירות",
+      "NUTS_DRIED": "אגוזים ופירות יבשים",
+      "BREAD": "לחם",
+      "PITA_WRAPS": "פיתות וטורטיות",
+      "ROLLS": "לחמניות ובייגלה",
+      "PASTRIES": "עוגות ומאפים",
+      "CEREAL": "דגני בוקר",
+      "GRANOLA": "גרנולה ומוזלי",
+      "OATS": "שיבולת שועל",
+      "RICE": "אורז",
+      "PASTA": "פסטה",
+      "LEGUMES": "קטניות",
+      "GRAINS": "דגנים",
+      "FLOUR": "קמח",
+      "CHOCOLATE": "שוקולד",
+      "SALTY": "חטיפים מלוחים",
+      "COOKIES": "עוגיות ופלים",
+      "BARS": "חטיפים",
+      "CANDY": "ממתקים",
+      "SWEET": "ריבות ודבש",
+      "NUT_BUTTERS": "חמאות אגוזים וטחינה",
+      "SAVORY": "ממרחים מלוחים",
+      "CANNED": "שימורים",
+      "OILS": "שמנים",
+      "SAUCES": "רטבים",
+      "SPICES": "תבלינים",
+      "VINEGAR": "חומץ",
+      "ICE_CREAM": "גלידות",
+      "MEALS": "מוכנים",
+      "WATER": "מים וסודה",
+      "JUICE": "מיצים",
+      "SOFT_DRINKS": "משקאות קלים",
+      "COFFEE_TEA": "קפה ותה",
+      "PLANT_DRINKS": "משקאות צמחיים",
+      "POWDERS": "אבקות חלבון",
+      "DRINKS": "משקאות"
+    },
+    "departments": {
+      "DAIRY_EGGS": "חלב וביצים",
+      "MEAT_FISH": "בשר ודגים",
+      "PRODUCE": "פירות, ירקות ואגוזים",
+      "BAKERY": "לחם ומאפים",
+      "BREAKFAST": "דגני בוקר",
+      "GRAINS_LEGUMES": "פסטה, אורז ודגנים",
+      "SNACKS_SWEETS": "חטיפים ומתוקים",
+      "SPREADS_CANNED": "ממרחים ושימורים",
+      "SAUCES_OILS": "רטבים, שמנים ותבלינים",
+      "FROZEN": "קפואים",
+      "BEVERAGES": "משקאות",
+      "SPORTS_NUTRITION": "תזונת ספורט",
+      "OTHER": "שונות"
+    },
+    "addWithServing": "הגדרת מנה והוספה"
+  },
+  "recipeUsage": {
+    "warning_one": "שימו לב: המוצר משמש במתכון {{names}}. הסרתו מהמזווה תסיר אותו גם מהמתכון הזה.",
+    "warning_two": "שימו לב: המוצר משמש בשני מתכונים: {{names}}. הסרתו מהמזווה תסיר אותו גם מהמתכונים האלה.",
+    "warning_many": "שימו לב: המוצר משמש ב-{{count}} מתכונים: {{names}}. הסרתו מהמזווה תסיר אותו גם מהמתכונים האלה.",
+    "warning_other": "שימו לב: המוצר משמש ב-{{count}} מתכונים: {{names}}. הסרתו מהמזווה תסיר אותו גם מהמתכונים האלה.",
+    "more_one": "ועוד מתכון אחד",
+    "more_two": "ועוד {{count}}",
+    "more_many": "ועוד {{count}}",
+    "more_other": "ועוד {{count}}",
+    "unknown": "לא הצלחנו לבדוק אם המוצר משמש במתכונים או בארוחות שמורות. אם כן, הוא יוסר גם מהם."
+  },
+  "savedMealUsage": {
+    "warning_one": "המוצר משמש גם בארוחה השמורה {{names}}, והסרתו תסיר אותו גם ממנה.",
+    "warning_two": "המוצר משמש גם בשתי ארוחות שמורות: {{names}}. הסרתו תסיר אותו גם מהן.",
+    "warning_many": "המוצר משמש גם ב-{{count}} ארוחות שמורות: {{names}}. הסרתו תסיר אותו גם מהן.",
+    "warning_other": "המוצר משמש גם ב-{{count}} ארוחות שמורות: {{names}}. הסרתו תסיר אותו גם מהן."
+  },
+  "form": {
+    "addImage": "הוספת תמונה",
+    "replaceImage": "החלפת תמונה",
+    "moveUp": "הזזה למעלה",
+    "moveDown": "הזזה למטה",
+    "reorderItem": "שינוי מיקום: {{name}}",
+    "noIngredients": "עדיין אין מצרכים. הוסיפו מצרך כדי לחשב את ערכי המתכון.",
+    "noItems": "עדיין אין פריטים. הוסיפו מוצר או מתכון כדי לחשב את ערכי הארוחה.",
+    "mealTotal": "סה״כ לארוחה"
+  },
+  "mealTypesShort": {
+    "BREAKFAST": "בוקר",
+    "LUNCH": "צהריים",
+    "DINNER": "ערב",
+    "SNACK_1": "נשנוש 1",
+    "SNACK_2": "נשנוש 2"
+  },
+  "ingredientEdit": {
+    "update": "עדכון כמות",
+    "increase": "הגדלת כמות",
+    "decrease": "הקטנת כמות",
+    "editHint": "פתיחה לעריכת הכמות",
+    "setQuantity": "הגדרת כמות",
+    "recipeHint": "הכמות תתעדכן במתכון שממנו הגעת. השינויים יישמרו כשתשמרו את המתכון.",
+    "mealHint": "הכמות תתעדכן בארוחה השמורה שממנה הגעת. השינויים יישמרו כשתשמרו את הארוחה.",
+    "title": "עדכון כמות רכיב",
+    "inMeal": "רכיב בארוחה: {{name}}",
+    "inRecipe": "רכיב במתכון: {{name}}",
+    "inMealUnnamed": "רכיב בארוחה שבעריכה",
+    "inRecipeUnnamed": "רכיב במתכון שבעריכה",
+    "savedMealHint": "הכמות החדשה תישמר מיד בארוחה.",
+    "savedRecipeHint": "הכמות החדשה תישמר מיד במתכון.",
+    "detailHint": "הקישו על מוצר כדי לעדכן את הכמות שלו.",
+    "failed": "לא הצלחנו לעדכן את הכמות. נסו שוב.",
+    "quickEdit": "שינוי כמות"
+  },
+  "measure": {
+    "grams": "{{value}} גרם",
+    "milliliters": "{{value}} מ״ל"
   }
 }

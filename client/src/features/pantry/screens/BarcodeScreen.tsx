@@ -6,6 +6,7 @@ import type { BarcodeScanningResult } from "expo-camera";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { track } from "../../analytics/analytics";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { Button } from "../../../shared/components/ui/Button";
@@ -16,7 +17,7 @@ import { getBarcodeLookupErrorKey, isScannableBarcode } from "../helpers/barcode
 import { SCANNABLE_BARCODE_TYPES } from "../constants";
 import { PantryProduct, ProductCatalogProduct } from "../types";
 import { useRecipeReturn } from "../recipeReturnStore";
-import { useMealReturn } from "../mealReturnStore";
+import { isProductReturnTarget, ProductReturnTarget, useMealReturn } from "../mealReturnStore";
 import { usePantryHighlight } from "../pantryHighlightStore";
 import { cameraColors, useAppTheme } from "../../../shared/theme";
 import { useStyles } from "./styles/BarcodeScreen.styles";
@@ -36,7 +37,7 @@ export function BarcodeScreen() {
   const setMealPending = useMealReturn((s) => s.setPending);
 
   const fromRecipePicker = returnTo === "recipe";
-  const fromMealFlow = returnTo === "meal";
+  const fromMealFlow = isProductReturnTarget(returnTo);
 
   const setHighlight = usePantryHighlight((s) => s.setHighlight);
 
@@ -62,7 +63,7 @@ export function BarcodeScreen() {
     if (fromRecipePicker) {
       setPending(product);
     } else if (fromMealFlow) {
-      setMealPending(product);
+      setMealPending(returnTo as ProductReturnTarget, product);
     } else {
       setHighlight(product.id);
     }
@@ -104,6 +105,7 @@ export function BarcodeScreen() {
 
     try {
       const result = await resolveBarcode(barcode);
+      track("barcode_scanned");
 
       if (result.status === "IN_PANTRY") {
         if (fromRecipePicker || fromMealFlow) {
@@ -120,6 +122,7 @@ export function BarcodeScreen() {
         setPhase("not_found");
       }
     } catch (err: unknown) {
+      track("barcode_scanned", "failed");
       Alert.alert("", t(getBarcodeLookupErrorKey(err)), [{ text: t("barcode.retry"), onPress: handleReset }], {
         cancelable: true,
         onDismiss: handleReset,

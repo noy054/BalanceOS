@@ -22,6 +22,8 @@ import {
   toAuditData,
   toJsonObject,
 } from '../audit/audit.types';
+import { classifyCatalogItem } from './catalog-subcategories';
+import { allTermsWhere } from '../../common/search/search-terms';
 
 const SUBMISSION_INCLUDE = {
   user: { select: { id: true, email: true, fullName: true } },
@@ -73,6 +75,7 @@ export function catalogFields(data: CatalogProductData) {
     fatPerServing: data.fatPerServing,
     fiberPerServing: data.fiberPerServing,
     servingSizeGrams: data.servingSizeG,
+    servingSizeMl: data.servingSizeMl,
     servingSizeText: data.servingSizeText,
     servingQuantity: data.servingQuantity,
     servingUnit: data.servingUnit,
@@ -224,7 +227,7 @@ export class CatalogReviewRepository {
         ...(q
           ? {
               OR: [
-                { productName: { contains: q, mode: 'insensitive' } },
+                allTermsWhere(['productName'] as const, q),
                 { normalizedBarcode: { contains: q } },
                 { user: { email: { contains: q, mode: 'insensitive' } } },
                 { user: { fullName: { contains: q, mode: 'insensitive' } } },
@@ -353,7 +356,12 @@ export class CatalogReviewRepository {
       if (catalogItemId) {
         const current = await tx.productCatalogItem.findUniqueOrThrow({
           where: { id: catalogItemId },
-          select: { ...CATALOG_ITEM_REVIEW_SELECT, normalizedBarcode: true },
+          select: {
+            ...CATALOG_ITEM_REVIEW_SELECT,
+            normalizedBarcode: true,
+            category: true,
+            externalRawData: true,
+          },
         });
         const before = fromCatalogRow(current);
         const replacesBarcode =
@@ -373,6 +381,11 @@ export class CatalogReviewRepository {
                   normalizedBarcode: params.normalizedBarcode,
                 }
               : {}),
+            ...classifyCatalogItem(
+              current.category,
+              current.externalRawData,
+              applied.name,
+            ),
             originalData: current.originalData ?? toJson(before),
             verificationStatus: ProductVerificationStatus.ADMIN_VERIFIED,
             updatedByUserId: params.adminId,
@@ -395,6 +408,7 @@ export class CatalogReviewRepository {
             ...catalogFields(params.data),
             barcode: params.data.barcode,
             normalizedBarcode: params.normalizedBarcode,
+            ...classifyCatalogItem(null, null, params.data.name),
             originalData: toJson(params.proposedOriginal),
             source: ProductSource.MANUAL,
             verificationStatus: ProductVerificationStatus.ADMIN_VERIFIED,

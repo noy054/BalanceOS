@@ -1,8 +1,7 @@
 import { Alert, Linking, Platform, ScrollView, Share, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
-import { ScreenHeader } from "../../../shared/components/ScreenHeader";
+import { SettingsScreenLayout, useSettingsBottomPadding } from "../components/SettingsScreenLayout";
 import { SettingsSection } from "../components/SettingsSection";
 import { SettingsRow } from "../components/SettingsRow";
 import { useStyles, getDirectionStyles } from "./styles/AboutScreen.styles";
@@ -45,6 +44,7 @@ export function AboutScreen() {
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const dir = getDirectionStyles(isRTL);
+  const bottomPadding = useSettingsBottomPadding();
 
   const openFailed = t("about.openLinkFailed");
 
@@ -73,10 +73,9 @@ export function AboutScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={t("about.screenTitle")} />
+    <SettingsScreenLayout title={t("about.screenTitle")}>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[styles.content, bottomPadding]} showsVerticalScrollIndicator={false}>
         <View style={styles.appCard}>
           <View style={[styles.logoMark, dir.logoRow]}>
             <Text style={styles.logoBalance}>Balance</Text>
@@ -144,6 +143,6 @@ export function AboutScreen() {
           {t("about.storeNote")}
         </Text>
       </ScrollView>
-    </SafeAreaView>
+    </SettingsScreenLayout>
   );
 }

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Modal, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -25,6 +26,9 @@ type Props = {
   onClose: () => void;
   onEndReached?: () => void;
   onSearchChange?: (text: string) => void;
+  target?: "recipe" | "savedMeal";
+  incoming?: PantryProduct | null;
+  onIncomingHandled?: () => void;
 };
 
 export function RecipeIngredientPickerModal({
@@ -34,6 +38,9 @@ export function RecipeIngredientPickerModal({
   onClose,
   onEndReached,
   onSearchChange,
+  target = "recipe",
+  incoming = null,
+  onIncomingHandled,
 }: Props) {
   const { i18n } = useTranslation("pantry");
   const styles = useStyles();
@@ -43,6 +50,13 @@ export function RecipeIngredientPickerModal({
 
   const picker = useRecipeIngredientPicker(products);
   const keyboardInset = useKeyboardInset();
+  const include = picker.include;
+
+  useEffect(() => {
+    if (!incoming) return;
+    include(incoming);
+    onIncomingHandled?.();
+  }, [incoming, include, onIncomingHandled]);
 
   function handleSearchChange(text: string) {
     picker.setSearch(text);
@@ -66,14 +80,20 @@ export function RecipeIngredientPickerModal({
     onClose();
   }
 
+  function leavePicker() {
+    picker.setSearch("");
+    onSearchChange?.("");
+    onClose();
+  }
+
   function navigateToAddProduct() {
-    handleClose();
-    router.push("/(app)/pantry/add-product?returnTo=recipe");
+    leavePicker();
+    router.push(`/(app)/pantry/add-product?returnTo=${target}`);
   }
 
   function navigateToBarcode() {
-    handleClose();
-    router.push("/(app)/pantry/barcode?returnTo=recipe");
+    leavePicker();
+    router.push(`/(app)/pantry/barcode?returnTo=${target}`);
   }
 
   return (
@@ -114,6 +134,7 @@ export function RecipeIngredientPickerModal({
         ) : null}
 
         <RecipeIngredientPickerFooter
+          target={target}
           selectedCount={picker.selectedCount}
           onAdd={handleAdd}
         />

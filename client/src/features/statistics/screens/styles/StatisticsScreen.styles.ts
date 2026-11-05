@@ -7,13 +7,20 @@ export const useStyles = () =>
     StyleSheet.create({
       root: {
         flex: 1,
-        backgroundColor: colors.background,
       },
 
       rangeWrap: {
         paddingHorizontal: spacing.md,
-        paddingBottom: spacing.ms,
-        gap: spacing.ms,
+        paddingBottom: spacing.sm,
+        gap: spacing.sm,
+      },
+
+      rangeTrack: {
+        padding: 4,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
       },
 
       scroll: {
@@ -23,8 +30,8 @@ export const useStyles = () =>
       scrollContent: {
         paddingHorizontal: spacing.md,
         paddingTop: spacing.xs,
-        paddingBottom: spacing.lg,
-        gap: spacing.ms,
+        paddingBottom: spacing.xxl,
+        gap: spacing.md,
       },
     }),
   );

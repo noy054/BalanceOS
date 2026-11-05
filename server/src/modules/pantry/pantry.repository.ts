@@ -5,6 +5,17 @@ import { UpdatePantryProductDto } from './dto/update-pantry-product.dto';
 import { PantryProductModel } from '../../../generated/prisma/models';
 import { Prisma } from '../../../generated/prisma/client';
 import { PRODUCT_NUTRITION_SELECT } from './product-select';
+import { allTermsWhere } from '../../common/search/search-terms';
+import { PantrySort } from './dto/list-pantry-products.dto';
+
+const SORT_ORDER: Record<
+  PantrySort,
+  Prisma.PantryProductOrderByWithRelationInput[]
+> = {
+  newest: [{ createdAt: 'desc' }, { id: 'desc' }],
+  updated: [{ updatedAt: 'desc' }, { id: 'desc' }],
+  name: [{ name: 'asc' }, { id: 'asc' }],
+};
 
 @Injectable()
 export class PantryRepository {
@@ -15,20 +26,14 @@ export class PantryRepository {
     take: number,
     search?: string,
     cursor?: string,
+    sort: PantrySort = 'newest',
   ): Promise<PantryProductModel[]> {
     return this.prisma.pantryProduct.findMany({
       where: {
         userId,
-        ...(search
-          ? {
-              OR: [
-                { name: { contains: search, mode: 'insensitive' } },
-                { brand: { contains: search, mode: 'insensitive' } },
-              ],
-            }
-          : {}),
+        ...allTermsWhere(['name', 'brand'] as const, search),
       },
-      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      orderBy: SORT_ORDER[sort],
       take,
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     });
@@ -48,28 +53,26 @@ export class PantryRepository {
     });
   }
 
-  async findAmountUsages(
-    productId: string,
-  ): Promise<{ byGrams: boolean; byServings: boolean }> {
-    const [recipeGrams, recipeServings, mealGrams, mealServings] =
-      await Promise.all([
+  async findAmountUsages(productId: string): Promise<{
+    byGrams: boolean;
+    byServings: boolean;
+    byMilliliters: boolean;
+  }> {
+    const count = (field: 'grams' | 'servings' | 'milliliters') =>
+      Promise.all([
         this.prisma.pantryRecipeItem.count({
-          where: { productId, grams: { not: null } },
-        }),
-        this.prisma.pantryRecipeItem.count({
-          where: { productId, servings: { not: null } },
+          where: { productId, [field]: { not: null } },
         }),
         this.prisma.savedMealItem.count({
-          where: { productId, grams: { not: null } },
+          where: { productId, [field]: { not: null } },
         }),
-        this.prisma.savedMealItem.count({
-          where: { productId, servings: { not: null } },
-        }),
-      ]);
-    return {
-      byGrams: recipeGrams + mealGrams > 0,
-      byServings: recipeServings + mealServings > 0,
-    };
+      ]).then(([recipes, meals]) => recipes + meals > 0);
+    const [byGrams, byServings, byMilliliters] = await Promise.all([
+      count('grams'),
+      count('servings'),
+      count('milliliters'),
+    ]);
+    return { byGrams, byServings, byMilliliters };
   }
 
   async countRecipesForUser(userId: string, ids: string[]): Promise<number> {

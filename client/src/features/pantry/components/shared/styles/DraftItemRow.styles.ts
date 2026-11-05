@@ -38,17 +38,23 @@ export const useDraftRowStyles = () =>
       },
 
       amountBox: {
+        alignSelf: "flex-start",
         alignItems: "center",
-        gap: spacing.xs,
+        height: 36,
+        borderRadius: radius.md,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
+        overflow: "hidden",
+      },
+
+      amountBoxEmpty: {
+        borderColor: colors.warning,
       },
 
       amountInput: {
-        width: 64,
-        minHeight: 40,
-        borderRadius: radius.sm,
-        borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.inputBackground,
+        width: 56,
+        height: "100%",
         paddingHorizontal: spacing.xs,
         ...typography.callout,
         ...typography.number,
@@ -57,41 +63,37 @@ export const useDraftRowStyles = () =>
         textAlign: "center",
       },
 
+      amountDivider: {
+        width: StyleSheet.hairlineWidth,
+        alignSelf: "stretch",
+        backgroundColor: colors.glassBorder,
+      },
+
       unitLabel: {
-        minWidth: 40,
-        maxWidth: 88,
-        ...typography.caption,
+        maxWidth: 96,
+        paddingHorizontal: spacing.sm,
+        ...typography.footnote,
         color: colors.textSecondary,
-        textAlign: "center",
       },
 
       unitToggle: {
-        minWidth: 52,
-        maxWidth: 96,
-        minHeight: 32,
+        height: "100%",
+        maxWidth: 120,
         paddingHorizontal: spacing.sm,
-        borderRadius: radius.sm,
-        backgroundColor: colors.surfaceMuted,
         alignItems: "center",
         justifyContent: "center",
-      },
-
-      unitToggleActive: {
-        backgroundColor: colors.accentSoft,
+        gap: 2,
       },
 
       unitTogglePressed: {
-        opacity: 0.7,
+        backgroundColor: colors.glassBorder,
       },
 
       unitToggleText: {
-        ...typography.caption,
-        color: colors.textSecondary,
-      },
-
-      unitToggleTextActive: {
+        flexShrink: 1,
+        ...typography.footnote,
+        fontFamily: fonts.medium,
         color: colors.accent,
-        fontFamily: fonts.semibold,
       },
     }),
   );

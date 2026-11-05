@@ -8,11 +8,12 @@ import { useAddMealItemOnDate } from "../../day-log/hooks/useDayLog";
 import { useSelectedDate } from "../../day-log/hooks/useSelectedDate";
 import { useSelectedDateStore } from "../../day-log/store/selectedDateStore";
 import { AmountPayload } from "../../pantry/helpers/serving";
+import { track } from "../../analytics/analytics";
 import { LOGGABLE_MEAL_TYPES, LoggableMealType, mealTypeForTime } from "../constants/mealTypes";
 
 export type SavedMealTarget = { date: DateKey; mealType: LoggableMealType };
 
-export function useAddToMeal(productId: string, amount: AmountPayload) {
+export function useAddToMeal(productId: string, amount: AmountPayload | null) {
   const { t } = useTranslation("pantry");
   const selected = useSelectedDate();
   const setSelectedDate = useSelectedDateStore((state) => state.setSelectedDate);
@@ -22,7 +23,7 @@ export function useAddToMeal(productId: string, amount: AmountPayload) {
   const [mealType, setMealType] = useState<LoggableMealType>(() => mealTypeForTime(new Date()));
   const inFlight = useRef(false);
 
-  const canSave = !add.isPending && date <= selected.maxDate;
+  const canSave = amount !== null && !add.isPending && date <= selected.maxDate;
 
   function chooseDate(next: DateKey) {
     if (next > selected.maxDate) return;
@@ -30,15 +31,17 @@ export function useAddToMeal(productId: string, amount: AmountPayload) {
   }
 
   async function save(): Promise<SavedMealTarget | null> {
-    if (!canSave || inFlight.current) return null;
+    if (!canSave || !amount || inFlight.current) return null;
     inFlight.current = true;
     try {
       await add.mutateAsync({
         date,
         payload: { mealType, pantryProductId: productId, ...amount },
       });
+      track("calculator_added_to_meal");
       return { date, mealType };
     } catch {
+      track("calculator_added_to_meal", "failed");
       Alert.alert("", t("calculatorMeal.saveFailed"));
       return null;
     } finally {

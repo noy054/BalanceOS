@@ -64,3 +64,42 @@ export type AnnouncementPayload = AnnouncementContent & {
   publishAt: string | null;
   expiresAt: string | null;
 };
+
+export type AnalyticsFeatureUsage = {
+  feature: string;
+  events: number;
+  uniqueUsers: number;
+  failed: number;
+  completionRate: number | null;
+  previousEvents: number;
+  change: number | null;
+  daily: number[];
+};
+
+export type AnalyticsActionUsage = {
+  action: string;
+  feature: string;
+  events: number;
+  uniqueUsers: number;
+  failed: number;
+  completionRate: number | null;
+};
+
+export type AnalyticsDashboard = {
+  generatedAt: string;
+  lastEventAt: string | null;
+  from: string;
+  to: string;
+  days: string[];
+  totals: {
+    activeUsers: number;
+    events: number;
+    failed: number;
+    completionRate: number | null;
+    activeUsersChange: number | null;
+    eventsChange: number | null;
+  };
+  activeUsers: { date: string; users: number }[];
+  features: AnalyticsFeatureUsage[];
+  actions: AnalyticsActionUsage[];
+};

@@ -25,7 +25,7 @@ export function SavedMealCard({ meal, onPress, onEdit, onMore }: Props) {
         onEdit ? (
           <IconButton
             icon="pencil-outline"
-            variant="tonal"
+            variant="glass"
             size={40}
             iconSize={20}
             accessibilityLabel={t("common.editItem", { name: meal.name })}

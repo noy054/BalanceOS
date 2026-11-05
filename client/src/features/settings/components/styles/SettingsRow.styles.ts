@@ -11,18 +11,21 @@ export const useStyles = () =>
         gap: spacing.ms,
       },
       pressed: {
-        backgroundColor: colors.surfaceMuted,
+        backgroundColor: colors.glassBorder,
       },
       iconWrap: {
         width: 36,
         height: 36,
         borderRadius: radius.md,
         backgroundColor: colors.accentSoft,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
         alignItems: 'center',
         justifyContent: 'center',
       },
       iconWrapDestructive: {
         backgroundColor: colors.dangerSoft,
+        borderColor: 'transparent',
       },
       body: {
         flex: 1,
@@ -33,14 +36,14 @@ export const useStyles = () =>
       },
       rowBorder: {
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: colors.border,
+        borderBottomColor: colors.glassBorder,
       },
       left: {
         flex: 1,
         gap: 2,
       },
       label: {
-        ...typography.body,
+        ...typography.bodyStrong,
         color: colors.textPrimary,
       },
       labelDestructive: {

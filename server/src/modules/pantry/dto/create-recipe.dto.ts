@@ -1,5 +1,7 @@
 import {
+  ArrayMaxSize,
   ArrayMinSize,
+  ArrayUnique,
   IsArray,
   IsIn,
   IsNotEmpty,
@@ -10,6 +12,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { MAX_TEMPLATE_ITEMS } from './template-limits';
 import { Type } from 'class-transformer';
 
 const MEAL_TYPES = [
@@ -33,6 +36,12 @@ export class RecipeItemDto {
 
   @IsOptional()
   @IsNumber()
+  @Min(0.1)
+  @Type(() => Number)
+  milliliters?: number;
+
+  @IsOptional()
+  @IsNumber()
   @Min(0.0001)
   @Type(() => Number)
   servings?: number;
@@ -53,8 +62,28 @@ export class CreateRecipeDto {
   @IsIn(MEAL_TYPES)
   mealType?: string;
 
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(MEAL_TYPES.length)
+  @ArrayUnique()
+  @IsIn(MEAL_TYPES, { each: true })
+  mealTypes?: string[];
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  imageUrl?: string | null;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(50)
+  @IsString({ each: true })
+  @MaxLength(1000, { each: true })
+  steps?: string[];
+
   @IsArray()
   @ArrayMinSize(1)
+  @ArrayMaxSize(MAX_TEMPLATE_ITEMS)
   @ValidateNested({ each: true })
   @Type(() => RecipeItemDto)
   items: RecipeItemDto[];

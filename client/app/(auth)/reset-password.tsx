@@ -104,7 +104,7 @@ export default function ResetPasswordScreen() {
         onPress={handleSubmit}
         loading={resetPassword.isPending}
         disabled={resetPassword.isPending || !token || !newPassword}
-        buttonColor={colors.accent}
+        buttonColor={colors.accentFill}
         textColor={colors.onAccent}
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}

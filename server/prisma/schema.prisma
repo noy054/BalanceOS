@@ -39,6 +39,10 @@ model User {
   announcementReceipts AnnouncementReceipt[]
   bodyEntries          BodyEntry[]
   progressPhotos       ProgressPhoto[]
+  subscription         Subscription?
+  billingCheckouts     BillingCheckout[]
+  billingPayments      BillingPayment[]
+  analyticsEvents      AnalyticsEvent[]
 
   @@index([email])
 }
@@ -95,6 +99,9 @@ model UserNutritionSettings {
   weeklySummaryEnabled     Boolean @default(false)
   weeklySummaryDay         Int?
   weeklySummaryTime        String?
+  weighInReminderEnabled   Boolean @default(false)
+  weighInReminderDays      Int[]   @default([])
+  weighInReminderTime      String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -109,6 +116,7 @@ enum UserRole {
 
 enum NutritionBasis {
   PER_100G
+  PER_100ML
   PER_SERVING
 }
 
@@ -137,11 +145,13 @@ model ProductCatalogItem {
   gtin              String?
   normalizedBarcode String? @unique
 
-  name         String
-  brand        String?
-  manufacturer String?
-  category     String?
-  subCategory  String?
+  name           String
+  brand          String?
+  manufacturer   String?
+  category       String?
+  subCategory    String?
+  department     String?
+  subcategoryKey String?
 
   countryCode  String? @default("IL")
   languageCode String? @default("he")
@@ -152,6 +162,7 @@ model ProductCatalogItem {
 
   servingSizeText  String?
   servingSizeGrams Float?
+  servingSizeMl    Float?
   servingQuantity  Float?
   servingUnit      String?
 
@@ -200,6 +211,8 @@ model ProductCatalogItem {
 
   @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "ProductCatalogItem_name_trgm_idx")
   @@index([brand(ops: raw("gin_trgm_ops"))], type: Gin, map: "ProductCatalogItem_brand_trgm_idx")
+  @@index([department, name])
+  @@index([department, subcategoryKey, name])
   @@index([createdByUserId])
   @@index([updatedByUserId])
   @@index([archivedAt])
@@ -282,6 +295,7 @@ model PantryProduct {
   fiberPerServing    Float?
   nutrients          Json?
   servingSizeG       Float?
+  servingSizeMl      Float?
   servingSizeText    String?
   servingQuantity    Float?
   servingUnit        String?
@@ -295,6 +309,7 @@ model PantryProduct {
   recipeItems    PantryRecipeItem[]
   savedMealItems SavedMealItem[]
   mealItems      MealItem[]
+  mealComponents MealItemComponent[]
   submissions    CatalogSubmission[]
 
   @@unique([userId, normalizedBarcode])
@@ -306,29 +321,35 @@ model PantryProduct {
 }
 
 model PantryRecipe {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   userId      String
   name        String
   description String?
   mealType    String?
+  mealTypes   String[] @default([])
+  imageUrl    String?
+  steps       String[] @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   items          PantryRecipeItem[]
   savedMealItems SavedMealItem[]
   mealItems      MealItem[]
+  mealComponents MealItemComponent[]
 
   @@index([userId])
 }
 
 model PantryRecipeItem {
-  id        String @id @default(cuid())
-  recipeId  String
-  productId String
-  grams     Float?
-  servings  Float?
+  id          String @id @default(cuid())
+  recipeId    String
+  productId   String
+  grams       Float?
+  servings    Float?
+  milliliters Float?
+  position    Int    @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -344,6 +365,7 @@ model SavedMeal {
   userId    String
   name      String
   mealTypes String[] @default([])
+  imageUrl  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -362,13 +384,15 @@ model SavedMealItem {
   recipeId    String?
   grams       Float?
   servings    Float?
+  milliliters Float?
+  position    Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   savedMeal SavedMeal      @relation(fields: [savedMealId], references: [id], onDelete: Cascade)
-  product   PantryProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
-  recipe    PantryRecipe?  @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  product   PantryProduct? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  recipe    PantryRecipe?  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   @@index([savedMealId])
 }
@@ -417,17 +441,43 @@ model MealItem {
   savedMealId     String?
   grams           Float?
   servings        Float?
+  milliliters     Float?
   macrosSnapshot  Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  mealEntry     MealEntry      @relation(fields: [mealEntryId], references: [id], onDelete: Cascade)
-  pantryProduct PantryProduct? @relation(fields: [pantryProductId], references: [id], onDelete: SetNull)
-  pantryRecipe  PantryRecipe?  @relation(fields: [pantryRecipeId], references: [id], onDelete: SetNull)
-  savedMeal     SavedMeal?     @relation(fields: [savedMealId], references: [id], onDelete: SetNull)
+  mealEntry     MealEntry           @relation(fields: [mealEntryId], references: [id], onDelete: Cascade)
+  pantryProduct PantryProduct?      @relation(fields: [pantryProductId], references: [id], onDelete: SetNull)
+  pantryRecipe  PantryRecipe?       @relation(fields: [pantryRecipeId], references: [id], onDelete: SetNull)
+  savedMeal     SavedMeal?          @relation(fields: [savedMealId], references: [id], onDelete: SetNull)
+  components    MealItemComponent[]
 
   @@index([mealEntryId])
+}
+
+model MealItemComponent {
+  id              String  @id @default(cuid())
+  mealItemId      String
+  position        Int
+  name            String
+  imageUrl        String?
+  pantryProductId String?
+  pantryRecipeId  String?
+  grams           Float?
+  servings        Float?
+  milliliters     Float?
+  serving         Json?
+  macrosSnapshot  Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mealItem      MealItem       @relation(fields: [mealItemId], references: [id], onDelete: Cascade)
+  pantryProduct PantryProduct? @relation(fields: [pantryProductId], references: [id], onDelete: SetNull)
+  pantryRecipe  PantryRecipe?  @relation(fields: [pantryRecipeId], references: [id], onDelete: SetNull)
+
+  @@index([mealItemId, position])
 }
 
 model CatalogSubmission {
@@ -589,4 +639,137 @@ model ProgressPhoto {
 
   @@index([entryId])
   @@index([userId])
+}
+
+model AnalyticsEvent {
+  id            String   @id @default(cuid())
+  userId        String
+  clientEventId String
+  feature       String
+  action        String
+  status        String
+  occurredAt    DateTime
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clientEventId])
+  @@index([occurredAt])
+  @@index([feature, occurredAt])
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  EXPIRED
+}
+
+enum CheckoutPurpose {
+  SUBSCRIBE
+  UPDATE_PAYMENT_METHOD
+}
+
+enum CheckoutStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+enum BillingPaymentKind {
+  INITIAL
+  RENEWAL
+  VERIFICATION
+}
+
+enum BillingPaymentStatus {
+  PAID
+  FAILED
+}
+
+model Subscription {
+  id                 String             @id @default(cuid())
+  userId             String             @unique
+  interval           BillingInterval
+  status             SubscriptionStatus
+  priceAmount        Int
+  currency           String
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean            @default(false)
+  canceledAt         DateTime?
+  endedAt            DateTime?
+  provider           String
+  providerCustomerId String?
+  providerToken      String?
+  cardBrand          String?
+  cardLast4          String?
+  cardExpiry         String?
+  failedAttempts     Int                @default(0)
+  nextRetryAt        DateTime?
+  graceEndsAt        DateTime?
+  renewalLockedUntil DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments BillingPayment[]
+
+  @@index([status, currentPeriodEnd])
+}
+
+model BillingCheckout {
+  id                String           @id @default(cuid())
+  userId            String
+  purpose           CheckoutPurpose
+  interval          BillingInterval?
+  amount            Int
+  currency          String
+  status            CheckoutStatus   @default(PENDING)
+  provider          String
+  providerReference String?          @unique
+  returnUrl         String?
+  failureReason     String?
+  expiresAt         DateTime
+  completedAt       DateTime?
+  createdAt         DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model BillingPayment {
+  id                    String               @id @default(cuid())
+  userId                String
+  subscriptionId        String?
+  kind                  BillingPaymentKind
+  status                BillingPaymentStatus
+  amount                Int
+  currency              String
+  providerTransactionId String?              @unique
+  failureReason         String?
+  periodStart           DateTime?
+  periodEnd             DateTime?
+  createdAt             DateTime             @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+}
+
+model BillingEvent {
+  id        String   @id @default(cuid())
+  provider  String
+  eventKey  String   @unique
+  type      String
+  payload   Json
+  createdAt DateTime @default(now())
 }

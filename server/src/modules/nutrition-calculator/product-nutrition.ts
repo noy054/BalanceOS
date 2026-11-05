@@ -19,11 +19,13 @@ export type ProductNutritionSource = {
   fatPerServing?: number | null;
   fiberPerServing?: number | null;
   servingSizeG?: number | null;
+  servingSizeMl?: number | null;
 };
 
 export type ProductAmount = {
   grams?: number | null;
   servings?: number | null;
+  milliliters?: number | null;
 };
 
 export type MacroValues = {
@@ -86,6 +88,26 @@ function servingGrams(p: ProductNutritionSource): number | null {
   return p.servingSizeG != null && p.servingSizeG > 0 ? p.servingSizeG : null;
 }
 
+function servingMilliliters(p: ProductNutritionSource): number | null {
+  return p.servingSizeMl != null && p.servingSizeMl > 0
+    ? p.servingSizeMl
+    : null;
+}
+
+function isVolumeBasis(p: ProductNutritionSource): boolean {
+  return p.nutritionBasis === 'PER_100ML';
+}
+
+function gramsPerMilliliter(p: ProductNutritionSource): number | null {
+  const grams = servingGrams(p);
+  const milliliters = servingMilliliters(p);
+  return grams && milliliters ? grams / milliliters : null;
+}
+
+function baseServingAmount(p: ProductNutritionSource): number | null {
+  return isVolumeBasis(p) ? servingMilliliters(p) : servingGrams(p);
+}
+
 function scale(values: MacroValues, factor: number): MacroValues {
   return {
     calories: values.calories * factor,
@@ -113,14 +135,22 @@ export function hasCompleteNutrition(p: ProductNutritionSource): boolean {
 }
 
 export function supportsGrams(p: ProductNutritionSource): boolean {
-  return (
-    per100g(p) !== null || (perServing(p) !== null && servingGrams(p) !== null)
-  );
+  const viaBase =
+    per100g(p) !== null &&
+    (!isVolumeBasis(p) || gramsPerMilliliter(p) !== null);
+  return viaBase || (perServing(p) !== null && servingGrams(p) !== null);
+}
+
+export function supportsMilliliters(p: ProductNutritionSource): boolean {
+  const viaBase =
+    per100g(p) !== null && (isVolumeBasis(p) || gramsPerMilliliter(p) !== null);
+  return viaBase || (perServing(p) !== null && servingMilliliters(p) !== null);
 }
 
 export function supportsServings(p: ProductNutritionSource): boolean {
   return (
-    perServing(p) !== null || (per100g(p) !== null && servingGrams(p) !== null)
+    perServing(p) !== null ||
+    (per100g(p) !== null && baseServingAmount(p) !== null)
   );
 }
 
@@ -139,13 +169,17 @@ export function rawProductNutrition(
   const base100 = per100g(p);
   const baseServing = perServing(p);
   const grams = servingGrams(p);
+  const milliliters = servingMilliliters(p);
+  const servingBase = baseServingAmount(p);
+  const density = gramsPerMilliliter(p);
+  const volume = isVolumeBasis(p);
 
   if (amount.servings != null && amount.servings > 0) {
     if (p.nutritionBasis === 'PER_SERVING' && baseServing) {
       return scale(baseServing, amount.servings);
     }
-    if (base100 && grams) {
-      return scale(base100, (amount.servings * grams) / 100);
+    if (base100 && servingBase) {
+      return scale(base100, (amount.servings * servingBase) / 100);
     }
     if (baseServing) {
       return scale(baseServing, amount.servings);
@@ -154,11 +188,27 @@ export function rawProductNutrition(
   }
 
   if (amount.grams != null && amount.grams > 0) {
-    if (base100) {
+    if (base100 && !volume) {
       return scale(base100, amount.grams / 100);
+    }
+    if (base100 && volume && density) {
+      return scale(base100, amount.grams / density / 100);
     }
     if (baseServing && grams) {
       return scale(baseServing, amount.grams / grams);
+    }
+    return null;
+  }
+
+  if (amount.milliliters != null && amount.milliliters > 0) {
+    if (base100 && volume) {
+      return scale(base100, amount.milliliters / 100);
+    }
+    if (base100 && !volume && density) {
+      return scale(base100, (amount.milliliters * density) / 100);
+    }
+    if (baseServing && milliliters) {
+      return scale(baseServing, amount.milliliters / milliliters);
     }
     return null;
   }

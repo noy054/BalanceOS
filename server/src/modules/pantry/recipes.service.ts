@@ -1,5 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { RecipesRepository, RecipeRow } from './recipes.repository';
+import {
+  RecipeHeader,
+  RecipesRepository,
+  RecipeRow,
+} from './recipes.repository';
 import { CreateRecipeDto, RecipeItemDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import {
@@ -8,8 +12,32 @@ import {
   sumNutrition,
 } from './nutrition.utils';
 import { PantryItemValidator } from './pantry-item.validator';
+import { TemplateLogSyncService } from '../day-logs/template-log-sync.service';
 
 export type { NutritionTotals };
+
+function recipeHeader(dto: UpdateRecipeDto): RecipeHeader {
+  const mealTypes =
+    dto.mealTypes ??
+    (dto.mealType !== undefined
+      ? dto.mealType
+        ? [dto.mealType]
+        : []
+      : undefined);
+  return {
+    name: dto.name,
+    description: dto.description,
+    imageUrl:
+      dto.imageUrl === undefined ? undefined : dto.imageUrl?.trim() || null,
+    steps:
+      dto.steps === undefined
+        ? undefined
+        : dto.steps.map((step) => step.trim()).filter(Boolean),
+    ...(mealTypes !== undefined
+      ? { mealTypes, mealType: mealTypes[0] ?? null }
+      : {}),
+  };
+}
 
 function enrichRecipe(recipe: NonNullable<RecipeRow>) {
   const enrichedItems = recipe.items.map((item) => ({
@@ -28,6 +56,7 @@ export class RecipesService {
   constructor(
     private readonly repo: RecipesRepository,
     private readonly validator: PantryItemValidator,
+    private readonly logSync: TemplateLogSyncService,
   ) {}
 
   async list(userId: string) {
@@ -43,19 +72,21 @@ export class RecipesService {
 
   async create(userId: string, dto: CreateRecipeDto) {
     await this.validateItems(userId, dto.items);
-    const recipe = await this.repo.create(userId, dto);
+    await this.validator.validateImage(userId, dto.imageUrl);
+    const recipe = await this.repo.create(userId, recipeHeader(dto), dto.items);
     return enrichRecipe(recipe);
   }
 
   async update(userId: string, id: string, dto: UpdateRecipeDto) {
     await this.getById(userId, id);
     if (dto.items) await this.validateItems(userId, dto.items);
-    const updated = await this.repo.updateWithItems(
+    await this.validator.validateImage(userId, dto.imageUrl);
+    const fromDate = this.logSync.resolveFromDate(dto.logsFrom);
+    const updated = await this.logSync.updateRecipe(
+      userId,
       id,
-      dto.name,
-      dto.description,
-      dto.mealType,
-      dto.items,
+      fromDate,
+      (db) => this.repo.updateWithItems(id, recipeHeader(dto), dto.items, db),
     );
     return enrichRecipe(updated);
   }
@@ -72,6 +103,7 @@ export class RecipesService {
         productId: item.productId,
         grams: item.grams,
         servings: item.servings,
+        milliliters: item.milliliters,
       })),
     );
   }

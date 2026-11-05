@@ -1,13 +1,17 @@
-import { View, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
+
+import { useDirection } from "../../../shared/hooks/useDirection";
+import { fonts, spacing, typography, useAppTheme, useThemedStyles } from "../../../shared/theme";
+import { formatStat } from "../helpers/nutrients";
 import { MealDistributionItem } from "../types";
-import { useStyles as useSectionStyles } from "./styles/SectionCard.styles";
-import { useStyles } from "./styles/MealDistributionCard.styles";
+import { StatCard } from "./StatCard";
 
 type Props = {
   distribution: MealDistributionItem[];
-  isRTL: boolean;
 };
+
+const MEAL_ORDER = ["BREAKFAST", "LUNCH", "DINNER", "SNACK_1", "SNACK_2"];
 
 const MEAL_LABEL_KEYS: Record<string, string> = {
   BREAKFAST: "mealTypes.breakfast",
@@ -17,66 +21,123 @@ const MEAL_LABEL_KEYS: Record<string, string> = {
   SNACK_2: "mealTypes.snack2",
 };
 
-const MEAL_ORDER = ["BREAKFAST", "LUNCH", "DINNER", "SNACK_1", "SNACK_2"];
-
-export function MealDistributionCard({ distribution, isRTL }: Props) {
+export function MealDistributionCard({ distribution }: Props) {
   const { t } = useTranslation("statistics");
-  const sectionStyles = useSectionStyles();
   const styles = useStyles();
+  const dir = useDirection();
+  const { colors } = useAppTheme();
 
-  const textAlign = isRTL ? "right" : "left";
+  const mealColors: Record<string, string> = {
+    BREAKFAST: colors.accentFill,
+    LUNCH: colors.success,
+    DINNER: colors.textSecondary,
+    SNACK_1: colors.textMuted,
+    SNACK_2: colors.borderStrong,
+  };
 
-  const active = distribution
+  const meals = distribution
     .filter((item) => item.avgCalories > 0)
-    .sort(
-      (a, b) => MEAL_ORDER.indexOf(a.mealType) - MEAL_ORDER.indexOf(b.mealType),
-    );
+    .sort((a, b) => MEAL_ORDER.indexOf(a.mealType) - MEAL_ORDER.indexOf(b.mealType));
 
   return (
-    <View style={sectionStyles.card}>
-      <Text style={[sectionStyles.cardTitle, { textAlign }]}>
-        {t("distribution.title")}
-      </Text>
-
-      {active.length === 0 ? (
-        <View style={styles.emptyBox}>
-          <Text style={[styles.emptyText, { textAlign }]}>{t("noData")}</Text>
-        </View>
+    <StatCard title={t("distribution.title")} subtitle={t("distribution.subtitle")}>
+      {meals.length === 0 ? (
+        <Text style={[styles.empty, dir.text]}>{t("noData")}</Text>
       ) : (
-        <View style={styles.list}>
-          {active.map((item) => {
-            const labelKey = MEAL_LABEL_KEYS[item.mealType];
-            const fillWidth = Math.min(Math.max(item.pct, 0), 100);
+        <>
+          <View style={[styles.bar, dir.row]}>
+            {meals.map((item) => (
+              <View
+                key={item.mealType}
+                style={[
+                  styles.segment,
+                  { flexGrow: Math.max(item.pct, 1), backgroundColor: mealColors[item.mealType] },
+                ]}
+              />
+            ))}
+          </View>
 
-            return (
-              <View key={item.mealType} style={styles.row}>
-                <View style={[styles.topLine, isRTL && styles.topLineRtl]}>
-                  <View style={styles.percentBadge}>
-                    <Text style={styles.percentText}>{item.pct}%</Text>
+          <View style={[styles.legend, dir.row]}>
+            {meals.map((item) => {
+              const label = t((MEAL_LABEL_KEYS[item.mealType] ?? item.mealType) as Parameters<typeof t>[0]);
+              return (
+                <View
+                  key={item.mealType}
+                  style={styles.legendItem}
+                  accessible
+                  accessibilityLabel={`${label} ${item.pct}%, ${formatStat(item.avgCalories, "kcal")} ${t("units.kcal")}`}
+                >
+                  <View style={[styles.legendTop, dir.row]}>
+                    <View style={[styles.dot, { backgroundColor: mealColors[item.mealType] }]} />
+                    <Text style={styles.pct}>{`${item.pct}%`}</Text>
                   </View>
-
-                  <View style={styles.textBlock}>
-                    <Text
-                      style={[styles.mealName, { textAlign }]}
-                      numberOfLines={1}
-                    >
-                      {t(labelKey as Parameters<typeof t>[0])}
-                    </Text>
-
-                    <Text style={[styles.mealSubText, { textAlign }]}>
-                      {item.avgCalories} {t("units.kcal")}
-                    </Text>
-                  </View>
+                  <Text style={styles.label} numberOfLines={1}>
+                    {label}
+                  </Text>
+                  <Text style={styles.kcal} numberOfLines={1}>
+                    {`${formatStat(item.avgCalories, "kcal")} ${t("units.kcal")}`}
+                  </Text>
                 </View>
-
-                <View style={styles.track}>
-                  <View style={[styles.fill, { width: `${fillWidth}%` }]} />
-                </View>
-              </View>
-            );
-          })}
-        </View>
+              );
+            })}
+          </View>
+        </>
       )}
-    </View>
+    </StatCard>
   );
 }
+
+const useStyles = () =>
+  useThemedStyles((colors) =>
+    StyleSheet.create({
+      empty: {
+        ...typography.callout,
+        color: colors.textSecondary,
+      },
+      bar: {
+        height: 12,
+        gap: 3,
+        borderRadius: 6,
+        overflow: "hidden",
+      },
+      segment: {
+        flexBasis: 0,
+        borderRadius: 3,
+      },
+      legend: {
+        flexWrap: "wrap",
+        rowGap: spacing.ms,
+      },
+      legendItem: {
+        flexBasis: "33.33%",
+        flexGrow: 1,
+        alignItems: "center",
+        gap: 2,
+      },
+      legendTop: {
+        alignItems: "center",
+        gap: spacing.xs,
+      },
+      dot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+      },
+      pct: {
+        ...typography.value,
+        fontFamily: fonts.bold,
+        fontSize: 17,
+        color: colors.textPrimary,
+      },
+      label: {
+        ...typography.caption,
+        color: colors.textSecondary,
+      },
+      kcal: {
+        ...typography.caption,
+        ...typography.number,
+        fontFamily: fonts.regular,
+        color: colors.textMuted,
+      },
+    }),
+  );

@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 
 import { useAppTheme } from "../theme";
 import { getDirectionStyles, useStyles } from "./styles/FormInput.styles";
+import { useFormTone } from "./FormTone";
 
 type Props = {
   label: string;
@@ -27,6 +28,8 @@ type Props = {
   editable?: boolean;
   readOnlyAppearance?: "disabled" | "field";
   returnKeyType?: "next" | "done" | "go" | "search" | "send";
+  onFocus?: () => void;
+  onBlur?: () => void;
 };
 
 export function FormInput({
@@ -44,10 +47,13 @@ export function FormInput({
   editable = true,
   readOnlyAppearance = "disabled",
   returnKeyType = "next",
+  onFocus,
+  onBlur,
 }: Props) {
   const { t, i18n } = useTranslation("common");
   const { colors } = useAppTheme();
   const styles = useStyles();
+  const glass = useFormTone() === "glass";
 
   const isRTL = i18n.dir(i18n.language) === "rtl";
   const dir = getDirectionStyles(isRTL);
@@ -57,8 +63,9 @@ export function FormInput({
 
   const frameStyles = [
     styles.frame,
+    glass && styles.frameGlass,
     dir.row,
-    isFocused && styles.frameFocused,
+    isFocused && (glass ? styles.frameGlassFocused : styles.frameFocused),
     error ? styles.frameError : null,
     !editable && readOnlyAppearance === "disabled" && styles.frameDisabled,
   ];
@@ -83,8 +90,14 @@ export function FormInput({
           textAlign={dir.input.textAlign}
           accessibilityLabel={label}
           accessibilityHint={error ?? hint}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onFocus={() => {
+            setIsFocused(true);
+            onFocus?.();
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+            onBlur?.();
+          }}
         />
 
         {showPasswordToggle ? (

@@ -6,6 +6,7 @@ const DEFAULT_TARGETS = {
   protein: 150,
   carbs: 200,
   fat: 60,
+  fiber: 25,
 };
 
 @Injectable()
@@ -20,6 +21,7 @@ export class StatisticsRepository {
         proteinTarget: true,
         carbsTarget: true,
         fatTarget: true,
+        fiberTarget: true,
       },
     });
     return {
@@ -27,6 +29,7 @@ export class StatisticsRepository {
       protein: s?.proteinTarget ?? DEFAULT_TARGETS.protein,
       carbs: s?.carbsTarget ?? DEFAULT_TARGETS.carbs,
       fat: s?.fatTarget ?? DEFAULT_TARGETS.fat,
+      fiber: s?.fiberTarget ?? DEFAULT_TARGETS.fiber,
     };
   }
 
@@ -42,12 +45,57 @@ export class StatisticsRepository {
         proteinTotal: true,
         carbsTotal: true,
         fatTotal: true,
+        fiberTotal: true,
+        targetsSnapshot: true,
         mealEntries: {
           select: {
             mealType: true,
             items: {
               select: {
                 macrosSnapshot: true,
+                pantryProduct: { select: { imageUrl: true } },
+                pantryRecipe: { select: { imageUrl: true } },
+                savedMeal: { select: { imageUrl: true } },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { date: 'asc' },
+    });
+  }
+
+  findReportDays(userId: string, startDate: string, endDate: string) {
+    return this.prisma.dayLog.findMany({
+      where: {
+        userId,
+        date: { gte: startDate, lte: endDate },
+      },
+      select: {
+        date: true,
+        targetsSnapshot: true,
+        mealEntries: {
+          select: {
+            mealType: true,
+            items: {
+              orderBy: { createdAt: 'asc' },
+              select: {
+                grams: true,
+                servings: true,
+                milliliters: true,
+                macrosSnapshot: true,
+                pantryProductId: true,
+                pantryRecipeId: true,
+                savedMealId: true,
+                pantryProduct: {
+                  select: {
+                    nutritionBasis: true,
+                    servingSizeG: true,
+                    servingSizeMl: true,
+                    servingQuantity: true,
+                    servingUnit: true,
+                  },
+                },
               },
             },
           },

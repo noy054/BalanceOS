@@ -14,6 +14,9 @@ const snapshot = {
 
 function setup(item: object | null) {
   const repo = {
+    withMealItemLock: jest.fn(
+      (_id: string, fn: (db: string) => Promise<unknown>) => fn('tx'),
+    ),
     findMealItemForUpdate: jest.fn().mockResolvedValue(item),
     updateMealItemAmount: jest.fn().mockResolvedValue({ id: 'i1' }),
     recalculateAndSaveTotals: jest.fn().mockResolvedValue({}),
@@ -28,7 +31,9 @@ function setup(item: object | null) {
 const owned = (amount: { grams: number | null; servings: number | null }) => ({
   id: 'i1',
   ...amount,
+  milliliters: null,
   macrosSnapshot: snapshot,
+  components: [],
   mealEntry: { dayLog: { id: 'log1' } },
 });
 
@@ -36,19 +41,25 @@ describe('DayLogsService.updateMealItem', () => {
   it('scales the stored snapshot to the new grams and recalculates the day', async () => {
     const { service, repo } = setup(owned({ grams: 60, servings: null }));
     await service.updateMealItem('u1', 'i1', { grams: 90 });
-    expect(repo.findMealItemForUpdate).toHaveBeenCalledWith('i1', 'u1');
-    expect(repo.updateMealItemAmount).toHaveBeenCalledWith('i1', {
-      grams: 90,
-      servings: null,
-      macrosSnapshot: {
-        name: 'Rolled oats',
-        calories: 341,
-        protein: 11.9,
-        carbs: 60.9,
-        fat: 5.9,
-        fiber: 9.1,
+    expect(repo.findMealItemForUpdate).toHaveBeenCalledWith('i1', 'u1', 'tx');
+    expect(repo.updateMealItemAmount).toHaveBeenCalledWith(
+      'i1',
+      {
+        grams: 90,
+        servings: null,
+        milliliters: null,
+        macrosSnapshot: {
+          name: 'Rolled oats',
+          calories: 341,
+          protein: 11.9,
+          carbs: 60.9,
+          fat: 5.9,
+          fiber: 9.1,
+        },
+        components: [],
       },
-    });
+      'tx',
+    );
     expect(repo.recalculateAndSaveTotals).toHaveBeenCalledWith('log1');
   });
 
@@ -58,6 +69,7 @@ describe('DayLogsService.updateMealItem', () => {
     expect(repo.updateMealItemAmount).toHaveBeenCalledWith(
       'i1',
       expect.objectContaining({ grams: null, servings: 3 }),
+      'tx',
     );
   });
 

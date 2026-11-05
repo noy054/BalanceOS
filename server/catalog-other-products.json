@@ -1,0 +1,162 @@
+[
+  {
+    "id": "cmvtpe52v0011ux00ixbejn4t",
+    "name": "7290004064174",
+    "department": "OTHER",
+    "externalProvider": "open_food_facts",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://images.openfoodfacts.org/images/products/729/000/406/4174/front_ru.3.400.jpg"
+  },
+  {
+    "id": "cmqapdwte0009uxt82paqq5qq",
+    "name": "Protein",
+    "department": "OTHER",
+    "externalProvider": "open_food_facts",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://images.openfoodfacts.org/images/products/729/011/431/2950/front_en.11.400.jpg"
+  },
+  {
+    "id": "cmvtpd6yk000xux00oiev7zze",
+    "name": "אבקת אפייה",
+    "department": "OTHER",
+    "externalProvider": "open_food_facts",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://images.openfoodfacts.org/images/products/729/000/231/9016/front_fr.3.400.jpg"
+  },
+  {
+    "id": "cmvzbrkx3000huxgg6ibnobpy",
+    "name": "בורגול",
+    "department": "OTHER",
+    "externalProvider": "open_food_facts",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": null
+  },
+  {
+    "id": "store_hahishook_2678",
+    "name": "בורגול",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2023/06/%D7%91%D7%95%D7%A8%D7%92%D7%95%D7%9C.jpg"
+  },
+  {
+    "id": "store_hahishook_517213",
+    "name": "זרעי פשתן",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2026/03/7290020701053-%D7%96%D7%A8%D7%A2%D7%99-%D7%A4%D7%A9%D7%AA%D7%9F-500-%D7%92%D7%A8%D7%9D.jpg"
+  },
+  {
+    "id": "web_product_07290014758162",
+    "name": "חלב עיזים 4% שומן",
+    "department": null,
+    "externalProvider": "MOH_WEB_ENRICHMENT",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://res.cloudinary.com/shufersal/image/upload/f_auto,q_auto/v1551800922/prod/product_images/products_zoom/TFF52_Z_P_7290014758162_1.png"
+  },
+  {
+    "id": "web_product_07290102395224",
+    "name": "יוגורט מולר נטורל 1.7%",
+    "department": null,
+    "externalProvider": "MOH_WEB_ENRICHMENT",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://res.cloudinary.com/shufersal/image/upload/f_auto,q_auto/v1551800922/prod/product_images/products_zoom/XVL46_Z_P_7290102395224_1.png"
+  },
+  {
+    "id": "store_hahishook_425938",
+    "name": "מרשמלו",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2026/01/2fc7ce9b-276a-4c62-8a25-a0841a324813.jpg"
+  },
+  {
+    "id": "cmw0tkg840001uxagby4r5wjr",
+    "name": "סילאן טבעי",
+    "department": "OTHER",
+    "externalProvider": "open_food_facts",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": null
+  },
+  {
+    "id": "store_hahishook_126513",
+    "name": "עמבה",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2025/01/%D7%A9%D7%9E%D7%97%D7%95%D7%A0%D7%99-%D7%A2%D7%9E%D7%91%D7%94-e1745069050353.jpg"
+  },
+  {
+    "id": "store_hahishook_125769",
+    "name": "קורנפלור",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2025/01/%D7%A7%D7%95%D7%A8%D7%A0%D7%A4%D7%9C%D7%95%D7%A8-%D7%A4%D7%A8%D7%99%D7%9E%D7%99%D7%95%D7%9D-e1744957122353.jpg"
+  },
+  {
+    "id": "store_hahishook_2692",
+    "name": "קינואה",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2023/06/%D7%A7%D7%99%D7%A0%D7%95%D7%90%D7%94.jpg"
+  },
+  {
+    "id": "store_hahishook_4071",
+    "name": "רוטב טריאקי",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2023/07/%D7%98%D7%A8%D7%99%D7%90%D7%A7%D7%99-.jpg"
+  },
+  {
+    "id": "store_hahishook_4080",
+    "name": "רוטב סויה",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2023/07/%D7%A1%D7%95%D7%99%D7%94-%D7%A4%D7%A8%D7%99%D7%9E%D7%99%D7%95%D7%9D-.jpg"
+  },
+  {
+    "id": "store_hahishook_679643",
+    "name": "ריבת חלב",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2026/07/%D7%A8%D7%99%D7%91%D7%AA-%D7%97%D7%9C%D7%91.jpg"
+  },
+  {
+    "id": "store_hahishook_659915",
+    "name": "שמן קוקוס",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2026/07/7290018976203.jpg"
+  },
+  {
+    "id": "store_hahishook_610304",
+    "name": "שמן שומשום",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2026/05/7290013329844.jpg"
+  },
+  {
+    "id": "store_hahishook_2904",
+    "name": "שמרים יבשים",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2023/06/7290118990826.jpg"
+  },
+  {
+    "id": "store_hahishook_3939",
+    "name": "תמר מג'הול",
+    "department": "OTHER",
+    "externalProvider": "HAHISHOOK_STORE",
+    "verificationStatus": "AUTO_IMPORTED",
+    "imageUrl": "https://hahishook.com/wp-content/uploads/2023/07/%D7%AA%D7%9E%D7%A8-%D7%9B%D7%AA%D7%95%D7%9D1.jpg"
+  }
+]

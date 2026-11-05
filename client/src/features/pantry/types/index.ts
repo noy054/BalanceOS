@@ -9,7 +9,7 @@ export const ALL_PRODUCT_CATEGORIES: ProductCategory[] = [
   "SNACK",
 ];
 
-export type NutritionBasis = "PER_100G" | "PER_SERVING";
+export type NutritionBasis = "PER_100G" | "PER_100ML" | "PER_SERVING";
 
 export type NutrientMap = Record<string, number>;
 
@@ -26,6 +26,7 @@ export type ProductNutritionFields = {
   fatPerServing?: number | null;
   fiberPerServing?: number | null;
   servingSizeG: number | null;
+  servingSizeMl?: number | null;
   servingSizeText: string | null;
   servingQuantity?: number | null;
   servingUnit?: string | null;
@@ -59,6 +60,7 @@ export type ProductNutritionPayload = {
   fatPerServing: number | null;
   fiberPerServing: number | null;
   servingSizeG: number | null;
+  servingSizeMl: number | null;
   servingQuantity: number | null;
   servingUnit: string | null;
 };
@@ -120,6 +122,7 @@ export type ProductCatalogProduct = {
   saltPer100g?: number | null;
   nutrients?: NutrientMap | null;
   servingSizeGrams: number | null;
+  servingSizeMl?: number | null;
   servingSizeText: string | null;
   servingQuantity?: number | null;
   servingUnit?: string | null;
@@ -128,6 +131,36 @@ export type ProductCatalogProduct = {
   externalProvider: string | null;
   createdAt: string;
   updatedAt: string;
+};
+
+export type CatalogDepartment =
+  | "DAIRY_EGGS"
+  | "MEAT_FISH"
+  | "PRODUCE"
+  | "BAKERY"
+  | "BREAKFAST"
+  | "GRAINS_LEGUMES"
+  | "SNACKS_SWEETS"
+  | "SPREADS_CANNED"
+  | "SAUCES_OILS"
+  | "FROZEN"
+  | "BEVERAGES"
+  | "SPORTS_NUTRITION"
+  | "OTHER";
+
+export type CatalogDepartmentCount = {
+  department: CatalogDepartment;
+  count: number;
+};
+
+export type CatalogSubcategoryCount = {
+  key: string;
+  count: number;
+};
+
+export type CatalogBrowseItem = ProductCatalogProduct & {
+  department: CatalogDepartment | null;
+  pantryProductId: string | null;
 };
 
 export type AddFromCatalogPayload = Partial<ProductNutritionPayload> & {
@@ -203,6 +236,7 @@ export type RecipeItem = {
   productId: string;
   grams: number | null;
   servings?: number | null;
+  milliliters?: number | null;
   product: RecipeItemProduct;
   nutrition: NutritionTotals;
 };
@@ -213,6 +247,9 @@ export type PantryRecipe = {
   name: string;
   description: string | null;
   mealType: MealType | string | null;
+  mealTypes?: Array<MealType | string>;
+  imageUrl?: string | null;
+  steps?: string[];
   items: RecipeItem[];
   totals: NutritionTotals;
   createdAt: string;
@@ -222,7 +259,9 @@ export type PantryRecipe = {
 export type CreateRecipePayload = {
   name: string;
   description?: string;
-  mealType?: MealType | string;
+  mealTypes?: MealType[];
+  imageUrl?: string | null;
+  steps?: string[];
   items: RecipeItemPayload[];
 };
 
@@ -230,12 +269,16 @@ export type RecipeItemPayload = {
   productId: string;
   grams?: number;
   servings?: number;
+  milliliters?: number;
 };
 
 export type UpdateRecipePayload = {
+  logsFrom?: string;
   name?: string;
   description?: string;
-  mealType?: MealType | string;
+  mealTypes?: MealType[];
+  imageUrl?: string | null;
+  steps?: string[];
   items?: RecipeItemPayload[];
 };
 
@@ -244,6 +287,7 @@ export type UpdateRecipePayload = {
 export type SavedMealRecipeItem = {
   grams: number | null;
   servings?: number | null;
+  milliliters?: number | null;
   product: RecipeItemProduct;
 };
 
@@ -260,6 +304,7 @@ export type SavedMealItem = {
   recipeId: string | null;
   grams: number | null;
   servings: number | null;
+  milliliters: number | null;
   product: RecipeItemProduct | null;
   recipe: SavedMealItemRecipe | null;
   nutrition: NutritionTotals;
@@ -280,16 +325,20 @@ export type SavedMeal = {
 export type CreateSavedMealPayload = {
   name: string;
   mealTypes?: MealType[];
+  imageUrl?: string | null;
   items: Array<{
     productId?: string;
     recipeId?: string;
     grams?: number;
     servings?: number;
+    milliliters?: number;
   }>;
 };
 
 export type UpdateSavedMealPayload = {
+  logsFrom?: string;
   name?: string;
   mealTypes?: MealType[];
+  imageUrl?: string | null;
   items?: CreateSavedMealPayload["items"];
 };

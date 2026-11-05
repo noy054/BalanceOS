@@ -9,6 +9,7 @@ import enPantry from "./locales/en/pantry.json";
 import enSettings from "./locales/en/settings.json";
 import enStatistics from "./locales/en/statistics.json";
 import enProgress from "./locales/en/progress.json";
+import enBilling from "./locales/en/billing.json";
 
 import heAuth from "./locales/he/auth.json";
 import heOnboarding from "./locales/he/onboarding.json";
@@ -18,6 +19,7 @@ import hePantry from "./locales/he/pantry.json";
 import heSettings from "./locales/he/settings.json";
 import heStatistics from "./locales/he/statistics.json";
 import heProgress from "./locales/he/progress.json";
+import heBilling from "./locales/he/billing.json";
 
 const resources = {
   he: {
@@ -29,6 +31,7 @@ const resources = {
     settings: heSettings,
     statistics: heStatistics,
     progress: heProgress,
+    billing: heBilling,
   },
   en: {
     auth: enAuth,
@@ -39,6 +42,7 @@ const resources = {
     settings: enSettings,
     statistics: enStatistics,
     progress: enProgress,
+    billing: enBilling,
   },
 };
 
@@ -67,7 +71,7 @@ i18n.use(initReactI18next).init({
   resources,
   lng: DEFAULT_LANGUAGE,
   fallbackLng: "en",
-  ns: ["auth", "onboarding", "common", "dashboard", "pantry", "settings", "statistics", "progress"],
+  ns: ["auth", "onboarding", "common", "dashboard", "pantry", "settings", "statistics", "progress", "billing"],
   defaultNS: "common",
   interpolation: {
     escapeValue: false,

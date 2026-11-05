@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Alert, FlatList, ScrollView, Text, View } from 'react-native';
+import { Alert, FlatList, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -16,22 +16,24 @@ import { KeyboardAvoider } from '../../../shared/components/ui/KeyboardAvoider';
 import { usePantryProducts } from '../../pantry/hooks/usePantry';
 import { useRecipes } from '../../pantry/hooks/useRecipes';
 import { useSavedMeals } from '../../pantry/hooks/useSavedMeals';
-import { PartialAddMealItemsError, useAddMealItems } from '../../day-log/hooks/useDayLog';
+import { useAddMealItemOnDate } from '../../day-log/hooks/useDayLog';
 import { PantryProduct, PantryRecipe, ProductCategory, SavedMeal } from '../../pantry/types';
 import { MEAL_SHORTCUTS } from '../constants/mealShortcuts';
 import { FoodItemCard } from '../../pantry/components/food/FoodItemCard';
 import { useFoodCardModels } from '../../pantry/hooks/useFoodCardModels';
 import { useMealReturn } from '../../pantry/mealReturnStore';
 import { sortByMealCategory } from '../../pantry/helpers/sortByMealCategory';
-import { useServingFormat } from '../../pantry/hooks/useServingFormat';
+import { recipeMealTypes } from '../../pantry/helpers/recipeMealTypes';
+import { hasRemovedSavedMealItems } from '../../pantry/helpers/savedMealItems';
 import { useDirection } from '../../../shared/hooks/useDirection';
-import { formatCalories } from '../../../shared/helpers/formatNumber';
+import { showToast } from '../../../shared/helpers/toast';
 import { DateKey } from '../../../shared/helpers/dateKey';
 import { useSelectedDate } from '../../day-log/hooks/useSelectedDate';
 import { useDayLabels } from '../../day-log/hooks/useDayLabels';
 import { SelectionPanel } from '../components/SelectionPanel';
-import { MealCartEntry, SelectedAmount, useMealSelection } from '../hooks/useMealSelection';
+import { useMealSelection } from '../hooks/useMealSelection';
 import { useStyles } from './styles/AddMealItemScreen.styles';
+import { matchesAllTerms } from "../../../shared/helpers/searchTerms";
 
 type Tab = 'products' | 'recipes' | 'savedMeals';
 
@@ -69,8 +71,7 @@ function matchesMealType<T>(items: T[], mealType: string, typesOf: (item: T) => 
 }
 
 function matchesSearch<T extends { name: string }>(items: T[], search: string) {
-  const q = search.toLowerCase().trim();
-  return q ? items.filter((item) => item.name.toLowerCase().includes(q)) : items;
+  return search.trim() ? items.filter((item) => matchesAllTerms(search, item.name)) : items;
 }
 
 type Props = {
@@ -86,14 +87,12 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
   const styles = useStyles();
   const insets = useSafeAreaInsets();
   const models = useFoodCardModels();
-  const servingFormat = useServingFormat();
   const dir = useDirection();
 
   const isGeneralMode = !mealTypeProp;
   const [activeMealType, setActiveMealType] = useState<string>(mealTypeProp ?? '');
   const [activeTab, setActiveTab] = useState<Tab>('products');
   const [search, setSearch] = useState('');
-  const [cart, setCart] = useState<MealCartEntry[]>([]);
   const selection = useMealSelection();
   const selectionRef = useRef(selection);
   selectionRef.current = selection;
@@ -105,13 +104,12 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
   } = usePantryProducts(search);
   const { data: recipes = [], isLoading: loadingRecipes } = useRecipes();
   const { data: savedMeals = [], isLoading: loadingSavedMeals } = useSavedMeals();
-  const addMealItems = useAddMealItems(date);
+  const addMealItem = useAddMealItemOnDate();
 
   useFocusEffect(
     useCallback(() => {
-      const pending = useMealReturn.getState().pendingProduct;
+      const pending = useMealReturn.getState().take('meal');
       if (!pending) return;
-      useMealReturn.getState().clearPending();
       setActiveTab('products');
       setSearch('');
       if (!selectionRef.current.isSelected('product', pending.id)) {
@@ -138,7 +136,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
     [products, activeMealType],
   );
   const filteredRecipes = useMemo(
-    () => matchesSearch(matchesMealType(recipes, activeMealType, (recipe) => (recipe.mealType ? [recipe.mealType] : [])), search),
+    () => matchesSearch(matchesMealType(recipes, activeMealType, (recipe) => recipeMealTypes(recipe)), search),
     [recipes, search, activeMealType],
   );
   const filteredMeals = useMemo(
@@ -160,7 +158,8 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
     if (!keepsSelection) selection.deselect();
   }
 
-  function handleAddToCart() {
+  async function handleAdd() {
+    if (addMealItem.isPending) return;
     if (!activeMealType) {
       Alert.alert('', t('addItem.chooseMealType'));
       return;
@@ -170,32 +169,15 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
       Alert.alert('', t('addItem.invalidAmount'));
       return;
     }
-    setCart((prev) => [...prev, entry]);
-    selection.deselect();
-  }
-
-  async function handleSave() {
-    if (cart.length === 0 || addMealItems.isPending) return;
-    const submitted = cart;
     try {
-      await addMealItems.mutateAsync(submitted.map((entry) => entry.payload));
-      router.back();
-    } catch (err: unknown) {
-      // Keep only what was not logged, so retrying never logs an item twice.
-      if (err instanceof PartialAddMealItemsError && err.savedCount > 0) {
-        const savedKeys = new Set(submitted.slice(0, err.savedCount).map((entry) => entry.key));
-        setCart((prev) => prev.filter((entry) => !savedKeys.has(entry.key)));
-        Alert.alert('', t('addItem.logPartialError', { count: err.savedCount }));
-        return;
-      }
+      await addMealItem.mutateAsync({ date, payload: entry.payload });
+      selection.deselect();
+      showToast({ message: t('addItem.addedTo', { name: entry.name, mealType: mealTypeLabel }) });
+      if (router.canGoBack()) router.back();
+      else router.replace('/(app)/dashboard');
+    } catch {
       Alert.alert('', t('addItem.logError'));
     }
-  }
-
-  function amountLabel(amount: SelectedAmount) {
-    if (amount.kind === 'product') return servingFormat.amount(amount.product, amount);
-    if (amount.kind === 'recipe') return t('addItem.recipeAmount', { count: amount.servings });
-    return t('addItem.wholeMeal');
   }
 
   const tabs: Array<{ value: Tab; label: string }> = [
@@ -266,8 +248,8 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
     );
   }
 
-  const cartCalories = cart.reduce((sum, entry) => sum + entry.calories, 0);
-  const showDock = Boolean(selection.selected) || cart.length > 0;
+  const selectedMeal = selection.selected?.kind === 'savedMeal' ? selection.selected.item : null;
+  const hasRemovedItems = selectedMeal ? hasRemovedSavedMealItems(selectedMeal) : false;
 
   return (
     <SafeAreaView style={styles.root} edges={['top']} key={i18n.language}>
@@ -361,82 +343,45 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
           />
         )}
 
-        {showDock ? (
+        {selection.selected ? (
           <View style={[styles.dock, { paddingBottom: Math.max(insets.bottom, DOCK_MIN_BOTTOM) }]}>
-            {selection.selected ? (
-              <SelectionPanel
-                selected={selection.selected}
-                quantity={selection.quantity}
-                unit={selection.unit}
-                unitOptions={selection.unitOptions}
-                nutrition={selection.nutrition}
-                onChangeQuantity={selection.setQuantity}
-                onChangeUnit={selection.changeUnit}
-                onStep={selection.step}
-                onDeselect={selection.deselect}
-              />
-            ) : (
-              <ScrollView style={styles.cartScroll} nestedScrollEnabled showsVerticalScrollIndicator={false}>
-                {cart.map((entry, index) => (
-                  <View
-                    key={entry.key}
-                    style={[styles.cartRow, dir.row, index > 0 && styles.cartRowDivider]}
-                  >
-                    <View style={styles.cartText}>
-                      <Text style={[styles.cartItemName, dir.text]} numberOfLines={1}>
-                        {entry.name}
-                      </Text>
-                      <Text style={[styles.cartItemQty, dir.text]} numberOfLines={1}>
-                        {amountLabel(entry.amount)}
-                      </Text>
-                    </View>
-                    <Text style={styles.cartItemCalories}>{formatCalories(entry.calories)}</Text>
-                    <IconButton
-                      icon="close"
-                      size={36}
-                      iconSize={18}
-                      accessibilityLabel={t('addItem.removeFromList', { name: entry.name })}
-                      onPress={() => setCart((prev) => prev.filter((e) => e.key !== entry.key))}
-                    />
-                  </View>
-                ))}
-              </ScrollView>
-            )}
+            <SelectionPanel
+              selected={selection.selected}
+              quantity={selection.quantity}
+              unit={selection.unit}
+              unitOptions={selection.unitOptions}
+              nutrition={selection.nutrition}
+              onChangeQuantity={selection.setQuantity}
+              onChangeUnit={selection.changeUnit}
+              onStep={selection.step}
+              onDeselect={selection.deselect}
+            />
 
-            <View style={[styles.bar, dir.row]}>
-              {cart.length > 0 ? (
-                <View style={styles.barSummary}>
-                  <Text style={[styles.barCount, dir.text]} numberOfLines={1}>
-                    {t('addItem.cartItems', { count: cart.length })}
-                  </Text>
-                  <Text style={[styles.barCalories, dir.text]} numberOfLines={1}>
-                    {t('addItem.caloriesAmount', { calories: formatCalories(cartCalories) })}
-                  </Text>
-                </View>
-              ) : null}
-
-              {selection.selected ? (
+            {selectedMeal && hasRemovedItems ? (
+              <View style={[styles.notice, dir.row]} accessibilityLiveRegion="polite">
+                <Text style={[styles.noticeText, dir.text]}>{t('addItem.removedItems')}</Text>
                 <Button
-                  label={t('addItem.addToList')}
-                  icon="plus"
-                  onPress={handleAddToCart}
-                  disabled={!selection.nutrition}
-                  variant={cart.length > 0 ? 'tonal' : 'primary'}
-                  style={styles.barButton}
-                />
-              ) : (
-                <Button
-                  label={
-                    addMealItems.isPending
-                      ? t('addItem.saving')
-                      : t('addItem.saveButton', { mealType: mealTypeLabel })
+                  label={t('addItem.editMeal')}
+                  variant="tonal"
+                  size="sm"
+                  onPress={() =>
+                    router.push({
+                      pathname: '/(app)/pantry/add-saved-meal',
+                      params: { id: selectedMeal.id, mode: 'edit' },
+                    })
                   }
-                  onPress={handleSave}
-                  loading={addMealItems.isPending}
-                  style={styles.barButton}
                 />
-              )}
-            </View>
+              </View>
+            ) : null}
+
+            <Button
+              label={activeMealType ? t('addItem.title', { mealType: mealTypeLabel }) : t('addItem.addButton')}
+              icon="plus"
+              onPress={handleAdd}
+              loading={addMealItem.isPending}
+              disabled={!selection.nutrition || hasRemovedItems}
+              fullWidth
+            />
           </View>
         ) : null}
       </KeyboardAvoider>

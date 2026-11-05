@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
 import { useDirection } from "../../../shared/hooks/useDirection";
@@ -8,9 +10,11 @@ import { Collapsible } from "../../../shared/components/ui/Collapsible";
 import { formatCalories, formatGrams } from "../../../shared/helpers/formatNumber";
 import { useItemAmountLabel } from "../hooks/useItemAmountLabel";
 import { CopyTarget, MealEntrySummary, MealItemSummary } from "../types";
+import { MealItemIngredients } from "./MealItemIngredients";
 import { useStyles } from "./styles/MealSectionCard.styles";
 
 type Props = {
+  date: string;
   mealType: string;
   labelKey: string;
   meal: MealEntrySummary | null;
@@ -18,11 +22,11 @@ type Props = {
   pendingIds?: ReadonlySet<string>;
   onAdd: (mealType: string) => void;
   onCopy?: (target: CopyTarget) => void;
-  onEditItem?: (item: MealItemSummary, mealLabel: string) => void;
   onRemoveItem?: (item: MealItemSummary, mealLabel: string) => void;
 };
 
 export function MealSectionCard({
+  date,
   mealType,
   labelKey,
   meal,
@@ -30,7 +34,6 @@ export function MealSectionCard({
   pendingIds,
   onAdd,
   onCopy,
-  onEditItem,
   onRemoveItem,
 }: Props) {
   const { t } = useTranslation("dashboard");
@@ -38,6 +41,16 @@ export function MealSectionCard({
   const { colors } = useAppTheme();
   const dir = useDirection();
   const amountLabel = useItemAmountLabel();
+  const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set());
+
+  function toggleItem(id: string) {
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   const mealLabel = t(`mealTypes.${labelKey}`);
   const items = meal?.items ?? [];
@@ -82,26 +95,34 @@ export function MealSectionCard({
                 .filter(Boolean)
                 .join(" · ");
 
+              const isOpen = openIds.has(item.id);
+
               return (
                 <View
                   key={item.id}
                   style={[
-                    styles.itemRow,
+                    styles.itemBlock,
                     index === items.length - 1 && styles.itemRowLast,
-                    dir.row,
                     isPending && styles.pending,
                   ]}
                 >
+                  <View style={[styles.itemRow, dir.row]}>
                   <Pressable
-                    onPress={() => onEditItem?.(item, mealLabel)}
-                    disabled={!onEditItem || isPending || isMealPending}
+                    onPress={() => toggleItem(item.id)}
+                    disabled={isPending || isMealPending}
                     accessibilityRole="button"
+                    accessibilityState={{ expanded: isOpen }}
                     accessibilityLabel={`${item.name}, ${detail}, ${t("meals.itemCalories", {
                       calories: formatCalories(item.calories),
                     })}`}
-                    accessibilityHint={t("meals.editItemHint")}
+                    accessibilityHint={isOpen ? t("meals.collapseItemHint") : t("meals.expandItemHint")}
                     style={({ pressed }) => [styles.itemMain, dir.row, pressed && styles.actionPressed]}
                   >
+                    <MaterialCommunityIcons
+                      name={isOpen ? "chevron-up" : "chevron-down"}
+                      size={18}
+                      color={colors.textMuted}
+                    />
                     <View style={styles.itemText}>
                       <Text style={[styles.itemName, dir.text]} numberOfLines={2}>
                         {item.name}
@@ -139,6 +160,8 @@ export function MealSectionCard({
                       style={styles.endAction}
                     />
                   ) : null}
+                  </View>
+                  {isOpen ? <MealItemIngredients item={item} date={date} /> : null}
                 </View>
               );
             })}

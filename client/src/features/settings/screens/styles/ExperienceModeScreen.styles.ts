@@ -5,7 +5,6 @@ import { radius, spacing, typography, useThemedStyles } from '../../../../shared
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      root: { flex: 1, backgroundColor: colors.background },
       content: {
         paddingHorizontal: spacing.md,
         paddingTop: spacing.xs,
@@ -13,16 +12,16 @@ export const useStyles = () =>
         gap: spacing.ms,
       },
       card: {
-        backgroundColor: colors.surface,
+        backgroundColor: colors.glassCard,
         borderRadius: radius.lg,
         borderWidth: 1,
-        borderColor: colors.border,
+        borderColor: colors.glassBorder,
         padding: spacing.md,
         gap: spacing.sm,
       },
       cardActive: {
-        borderColor: colors.accent,
-        borderWidth: 1.5,
+        borderColor: colors.accentFill,
+        backgroundColor: colors.accentSoft,
       },
       cardPressed: {
         opacity: 0.8,
@@ -35,7 +34,7 @@ export const useStyles = () =>
         width: 40,
         height: 40,
         borderRadius: radius.md,
-        backgroundColor: colors.surfaceMuted,
+        backgroundColor: colors.glassBorder,
         alignItems: 'center',
         justifyContent: 'center',
       },
@@ -57,12 +56,7 @@ export const useStyles = () =>
         justifyContent: 'center',
       },
       radioActive: {
-        borderColor: colors.accent,
-      },
-      radioDot: {
-        width: 12,
-        height: 12,
-        borderRadius: 6,
+        borderColor: colors.accentFill,
         backgroundColor: colors.accentFill,
       },
       cardDescription: {

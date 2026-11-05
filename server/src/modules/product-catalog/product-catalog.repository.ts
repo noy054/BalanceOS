@@ -3,10 +3,22 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { NormalizedProductData } from './types/external-product.types';
 import { EMPTY_NUTRITION } from '../pantry/product-nutrition.normalizer';
 import { toJson } from './catalog-data';
+import { CatalogDepartment } from './catalog-departments';
+import { classifyCatalogItem } from './catalog-subcategories';
 import {
   CATALOG_ITEM_PUBLIC_SELECT,
   ProductCatalogItemDto,
 } from './types/product-catalog.types';
+import { allTermsWhere } from '../../common/search/search-terms';
+
+const PRODUCT_SEARCH_FIELDS = ['name', 'brand'] as const;
+
+function departmentWhere(department?: CatalogDepartment) {
+  if (department === 'OTHER') {
+    return { OR: [{ department: 'OTHER' }, { department: null }] };
+  }
+  return department ? { department } : {};
+}
 
 @Injectable()
 export class ProductCatalogRepository {
@@ -44,10 +56,7 @@ export class ProductCatalogRepository {
     return this.prisma.productCatalogItem.findMany({
       where: {
         archivedAt: null,
-        OR: [
-          { name: { contains: query, mode: 'insensitive' } },
-          { brand: { contains: query, mode: 'insensitive' } },
-        ],
+        ...allTermsWhere(PRODUCT_SEARCH_FIELDS, query),
       },
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
       take,
@@ -66,6 +75,7 @@ export class ProductCatalogRepository {
         normalizedBarcode: data.normalizedBarcode,
         name: data.name,
         brand: data.brand,
+        ...classifyCatalogItem(null, data.externalRawData, data.name),
         imageUrl: data.imageUrl,
         caloriesPer100g: data.caloriesPer100g,
         proteinPer100g: data.proteinPer100g,
@@ -103,6 +113,81 @@ export class ProductCatalogRepository {
         updatedByUserId: userId,
       },
       select: CATALOG_ITEM_PUBLIC_SELECT,
+    });
+  }
+
+  async countByDepartment(): Promise<Map<string, number>> {
+    const groups = await this.prisma.productCatalogItem.groupBy({
+      by: ['department'],
+      where: { archivedAt: null },
+      _count: { _all: true },
+    });
+    const counts = new Map<string, number>();
+    for (const group of groups) {
+      const key = group.department ?? 'OTHER';
+      counts.set(key, (counts.get(key) ?? 0) + group._count._all);
+    }
+    return counts;
+  }
+
+  async countBySubcategory(
+    department: CatalogDepartment,
+  ): Promise<Map<string, number>> {
+    const groups = await this.prisma.productCatalogItem.groupBy({
+      by: ['subcategoryKey'],
+      where: {
+        archivedAt: null,
+        ...departmentWhere(department),
+        subcategoryKey: { not: null },
+      },
+      _count: { _all: true },
+    });
+    return new Map(
+      groups.map((group) => [group.subcategoryKey ?? '', group._count._all]),
+    );
+  }
+
+  browse(params: {
+    department?: CatalogDepartment;
+    query?: string;
+    subcategory?: string;
+    take: number;
+    cursor?: string;
+  }): Promise<ProductCatalogItemDto[]> {
+    const { department, query, subcategory, take, cursor } = params;
+    const filters = [
+      ...(query ? [allTermsWhere(PRODUCT_SEARCH_FIELDS, query)] : []),
+      ...(subcategory ? [{ subcategoryKey: subcategory }] : []),
+    ];
+    return this.prisma.productCatalogItem.findMany({
+      where: {
+        archivedAt: null,
+        ...departmentWhere(department),
+        ...(filters.length > 0 ? { AND: filters } : {}),
+      },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      take,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      select: CATALOG_ITEM_PUBLIC_SELECT,
+    });
+  }
+
+  findPantryMatches(
+    userId: string,
+    catalogItemIds: string[],
+    normalizedBarcodes: string[],
+  ) {
+    return this.prisma.pantryProduct.findMany({
+      where: {
+        userId,
+        OR: [
+          { catalogItemId: { in: catalogItemIds } },
+          ...(normalizedBarcodes.length > 0
+            ? [{ normalizedBarcode: { in: normalizedBarcodes } }]
+            : []),
+        ],
+      },
+      select: { id: true, catalogItemId: true, normalizedBarcode: true },
     });
   }
 

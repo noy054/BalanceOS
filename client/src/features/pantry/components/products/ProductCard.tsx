@@ -48,7 +48,7 @@ export function ProductCard({
           {onEdit ? (
             <IconButton
               icon="pencil-outline"
-              variant="tonal"
+              variant="glass"
               size={40}
               iconSize={20}
               accessibilityLabel={t("common.editItem", { name: product.name })}

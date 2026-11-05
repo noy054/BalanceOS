@@ -5,10 +5,6 @@ import { fonts, radius, spacing, typography, useThemedStyles } from '../../../..
 export const useSubScreenStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      root: {
-        flex: 1,
-        backgroundColor: colors.background,
-      },
       flex: {
         flex: 1,
       },
@@ -32,7 +28,9 @@ export const useSubScreenStyles = () =>
       },
       infoBanner: {
         backgroundColor: colors.accentSoft,
-        borderRadius: radius.md,
+        borderWidth: 1,
+        borderColor: colors.accentBorder,
+        borderRadius: radius.lg,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.ms,
         marginBottom: spacing.lg,

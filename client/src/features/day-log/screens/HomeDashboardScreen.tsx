@@ -10,16 +10,17 @@ import { DailySummaryCard } from "../components/DailySummaryCard";
 import { MealSectionCard } from "../components/MealSectionCard";
 import { MealsSectionHeader } from "../components/MealsSectionHeader";
 import { CopyMealModal } from "../components/CopyMealModal";
-import { MealItemSheet } from "../components/MealItemSheet";
 import { MEAL_SHORTCUTS } from "../../meals/constants/mealShortcuts";
 import { DayHeader } from "../components/DayHeader";
 import { DayPickerSheet } from "../components/DayPickerSheet";
+import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
+import { useGreeting } from "../hooks/useGreeting";
 import { prefetchDay, useDayLog, useDayMeals } from "../hooks/useDayLog";
 import { useSelectedDate } from "../hooks/useSelectedDate";
 import { HomeAnnouncements } from "../../announcements/components/HomeAnnouncements";
 import { addDays } from "../../../shared/helpers/dateKey";
 import { useMealRemoval } from "../hooks/useMealRemoval";
-import { CopyTarget, DayLogSummary, MealEntrySummary, MealItemSummary } from "../types";
+import { CopyTarget, DayLogSummary, MealEntrySummary } from "../types";
 import { useNutritionSettings } from "../../settings/hooks/useSettings";
 import { useAppTheme } from "../../../shared/theme";
 import { useStyles } from "./styles/HomeDashboardScreen.styles";
@@ -50,6 +51,7 @@ export function HomeDashboardScreen() {
   const queryClient = useQueryClient();
   const { date, today, maxDate, isToday, setDate, goToToday } = useSelectedDate();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const greeting = useGreeting();
 
   const {
     data: summary = EMPTY_SUMMARY,
@@ -131,9 +133,6 @@ export function HomeDashboardScreen() {
 
   const [copyTarget, setCopyTarget] = useState<CopyTarget | null>(null);
   const [mealsExpanded, setMealsExpanded] = useState(true);
-  const [editing, setEditing] = useState<{ item: MealItemSummary; mealLabel: string } | null>(
-    null,
-  );
   const removal = useMealRemoval(date);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -151,7 +150,7 @@ export function HomeDashboardScreen() {
   }
 
   return (
-    <TabScreenLayout activeTab="home">
+    <TabScreenLayout activeTab="home" backgroundColor={colors.canvas}>
       <View key={i18n.language} style={styles.root}>
         <ScrollView
           style={styles.scroll}
@@ -167,7 +166,10 @@ export function HomeDashboardScreen() {
             />
           }
         >
+          <AmbientGlow />
+
           <DayHeader
+            greeting={greeting}
             date={date}
             today={today}
             onPrevious={() => setDate(addDays(date, -1))}
@@ -199,8 +201,8 @@ export function HomeDashboardScreen() {
                   eaten={summary.caloriesEaten}
                   target={summary.caloriesTarget}
                   macros={visibleMacros}
-                  showPercentages={settings?.showProgressPercentages ?? true}
                   isToday={isToday}
+                  showPercentages={settings?.showProgressPercentages ?? true}
                 />
               )}
             </View>
@@ -226,6 +228,7 @@ export function HomeDashboardScreen() {
                 sections.map((section) => (
                   <MealSectionCard
                     key={section.key}
+                    date={date}
                     mealType={section.mealType}
                     labelKey={section.labelKey}
                     meal={section.meal}
@@ -233,7 +236,6 @@ export function HomeDashboardScreen() {
                     pendingIds={removal.pendingIds}
                     onAdd={handleMealTypeSelect}
                     onCopy={setCopyTarget}
-                    onEditItem={(item, mealLabel) => setEditing({ item, mealLabel })}
                     onRemoveItem={(item, mealLabel) => void removal.removeItem(item, mealLabel)}
                   />
                 ))
@@ -247,14 +249,6 @@ export function HomeDashboardScreen() {
         target={copyTarget}
         sourceDate={date}
         onClose={() => setCopyTarget(null)}
-      />
-
-      <MealItemSheet
-        date={date}
-        item={editing?.item ?? null}
-        mealLabel={editing?.mealLabel ?? ""}
-        onClose={() => setEditing(null)}
-        onRemove={removal.removeItem}
       />
 
       <DayPickerSheet

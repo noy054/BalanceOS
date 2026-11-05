@@ -5,7 +5,6 @@ import { fonts, radius, spacing, typography, useThemedStyles } from '../../../..
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      root: { flex: 1, backgroundColor: colors.background },
       flex: { flex: 1 },
       content: {
         paddingHorizontal: spacing.md,
@@ -14,7 +13,9 @@ export const useStyles = () =>
         gap: spacing.md,
       },
       formCard: {
-        backgroundColor: colors.surface,
+        backgroundColor: colors.glassCard,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
         borderRadius: radius.lg,
         paddingHorizontal: spacing.md,
         paddingTop: spacing.md,

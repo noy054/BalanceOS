@@ -27,13 +27,24 @@ export class AuthRepository {
     return this.prisma.refreshToken.findUnique({ where: { tokenHash } });
   }
 
-  async deleteRefreshToken(token: string): Promise<void> {
+  async consumeRefreshToken(token: string): Promise<boolean> {
     const tokenHash = this.hashToken(token);
-    await this.prisma.refreshToken.deleteMany({ where: { tokenHash } });
+    const result = await this.prisma.refreshToken.deleteMany({
+      where: { tokenHash, expiresAt: { gt: new Date() } },
+    });
+    return result.count === 1;
   }
 
-  async deleteAllUserRefreshTokens(userId: string): Promise<void> {
-    await this.prisma.refreshToken.deleteMany({ where: { userId } });
+  async deleteAllUserRefreshTokens(
+    userId: string,
+    keepToken?: string,
+  ): Promise<void> {
+    await this.prisma.refreshToken.deleteMany({
+      where: {
+        userId,
+        ...(keepToken ? { tokenHash: { not: this.hashToken(keepToken) } } : {}),
+      },
+    });
   }
 
   async deleteExpiredTokens(): Promise<void> {

@@ -1,85 +1,109 @@
 import { StyleSheet } from "react-native";
 
-import {
-  fonts,
-  spacing,
-  typography,
-  useThemedStyles, radius } from "../../../../../shared/theme";
+import { fonts, radius, spacing, typography, useThemedStyles } from "../../../../../shared/theme";
 
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      calculatorCard: {
-        borderRadius: radius.lg,
-        backgroundColor: colors.surface,
-        padding: spacing.md,
-        gap: spacing.ms,
+      container: {
+        gap: spacing.md,
       },
 
-      plain: {
-        gap: spacing.ms,
+      toggle: {
+        backgroundColor: colors.glassCard,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
+        borderRadius: radius.round,
+        padding: 4,
       },
 
-      headerBlock: {
-        gap: spacing.xxs,
+      stepper: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: spacing.sm,
+        paddingTop: spacing.xs,
       },
 
-      sectionTitle: {
-        ...typography.headline,
+      quantityBlock: {
+        flex: 1,
+        minWidth: 0,
+        alignItems: "center",
+      },
+
+      quantityInput: {
+        alignSelf: "stretch",
+        ...typography.number,
+        fontFamily: fonts.bold,
+        fontSize: 48,
+        lineHeight: 56,
+        minHeight: 56,
+        paddingVertical: 0,
+        textAlign: "center",
         color: colors.textPrimary,
       },
 
-      sectionHint: {
+      quantityUnit: {
+        ...typography.callout,
+        textAlign: "center",
+        color: colors.textSecondary,
+      },
+
+      equivalents: {
+        ...typography.footnote,
+        ...typography.number,
+        textAlign: "center",
+        color: colors.accent,
+      },
+
+      hint: {
         ...typography.footnote,
         color: colors.textSecondary,
       },
 
-      calcRow: {
-        borderRadius: radius.md,
-        alignItems: "center",
+      resultCard: {
         gap: spacing.ms,
-        minHeight: 48,
-        backgroundColor: colors.inputBackground,
+        borderRadius: radius.lg,
+        backgroundColor: colors.glassCard,
         borderWidth: 1,
-        borderColor: colors.borderStrong,
-        paddingHorizontal: spacing.ms,
+        borderColor: colors.glassBorder,
+        padding: spacing.md,
       },
 
-      calcInput: {
+      resultHeader: {
+        alignItems: "baseline",
+        justifyContent: "space-between",
+        gap: spacing.sm,
+      },
+
+      resultTitle: {
+        ...typography.headline,
+        flexShrink: 1,
+        color: colors.textPrimary,
+      },
+
+
+      columns: {
+        gap: spacing.xs,
+      },
+
+      column: {
         flex: 1,
         minWidth: 0,
-        minHeight: 46,
+        alignItems: "center",
+        gap: 2,
+      },
+
+      columnValue: {
         ...typography.value,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.bold,
+        fontSize: 18,
         color: colors.textPrimary,
       },
 
-      calcUnit: {
-        ...typography.callout,
+      columnLabel: {
+        ...typography.caption,
+        fontFamily: fonts.regular,
         color: colors.textSecondary,
-        maxWidth: 140,
-      },
-
-      calcResultCard: {
-        borderTopWidth: 1,
-        borderTopColor: colors.border,
-        paddingTop: spacing.ms,
-      },
-
-      calcResultTitle: {
-        ...typography.overline,
-        color: colors.textSecondary,
-        marginBottom: spacing.xxs,
-      },
-
-      quantityText: {
-        ...typography.bodyStrong,
-        ...typography.number,
-        fontFamily: fonts.semibold,
-        fontSize: 17,
-        lineHeight: 24,
-        color: colors.textPrimary,
-        marginBottom: spacing.xs,
       },
     }),
   );

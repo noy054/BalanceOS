@@ -1,14 +1,21 @@
+import { ReactNode } from "react";
 import { Text, TextInput, View } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TFunction } from "i18next";
 
 import { useAppTheme } from "../../../../shared/theme";
-import { Button } from "../../../../shared/components/ui/Button";
+import { IconButton } from "../../../../shared/components/ui/IconButton";
 import { SegmentedControl } from "../../../../shared/components/ui/SegmentedControl";
+import { formatCalories, formatGrams } from "../../../../shared/helpers/formatNumber";
+import { macroColor } from "../../../../shared/helpers/macroColors";
+import { MACRO_CONFIG } from "../../../day-log/constants/macros";
 import { CalculatorResult, CalculatorUnit } from "../../hooks/useProductCalculator";
 import { useServingFormat } from "../../hooks/useServingFormat";
-import { getServing, ServingSource } from "../../helpers/serving";
-import { NutritionRow } from "../nutrition/NutritionRow";
+import { useMacroVisibility } from "../../hooks/useMacroVisibility";
+import { CALCULATOR_STEPS, calculatorEquivalents, stepQuantity } from "../../helpers/calculatorAmount";
+import { formatAmount, getServing, ServingSource } from "../../helpers/serving";
 import { getDirectionStyles } from "../../screens/styles/ProductDetailScreen.styles";
+import { QuantityRuler } from "./QuantityRuler";
 import { useStyles } from "./styles/ProductCalculatorCard.styles";
 
 type Props = {
@@ -21,8 +28,16 @@ type Props = {
   t: TFunction<"pantry">;
   onChangeQuantity: (value: string) => void;
   onSelectUnit: (unit: CalculatorUnit) => void;
-  onAddToMeal?: () => void;
-  plain?: boolean;
+  onRulerActiveChange?: (active: boolean) => void;
+  children?: ReactNode;
+};
+
+type ResultColumn = {
+  key: string;
+  label: string;
+  value: string;
+  icon: (typeof MACRO_CONFIG)["protein"]["icon"];
+  color: string;
 };
 
 export function ProductCalculatorCard({
@@ -35,100 +50,218 @@ export function ProductCalculatorCard({
   t,
   onChangeQuantity,
   onSelectUnit,
-  onAddToMeal,
-  plain = false,
+  onRulerActiveChange,
+  children,
 }: Props) {
   const { colors } = useAppTheme();
   const styles = useStyles();
   const dir = getDirectionStyles(isRTL);
   const servingFormat = useServingFormat();
+  const visibility = useMacroVisibility();
 
   const servingUnit = getServing(serving)?.unit ?? null;
+  const steps = CALCULATOR_STEPS[unit];
+  const numeric = parseFloat(quantity.replace(",", "."));
+  const value = Number.isFinite(numeric) ? numeric : 0;
 
-  const placeholder =
-    unit === "servings"
-      ? servingUnit
-        ? t("serving.quantityOf", { unit: servingUnit })
-        : t("productDetail.calculatorPlaceholderServings")
-      : unit === "calories"
-        ? t("productDetail.calculatorPlaceholderCalories")
-        : t("productDetail.calculatorPlaceholder");
-
-  const labels: Record<CalculatorUnit, string> = {
+  const toggleLabels: Record<CalculatorUnit, string> = {
     grams: t("productDetail.calculatorByGrams"),
+    milliliters: t("productDetail.calculatorByMilliliters"),
     servings: servingUnit ?? t("productDetail.calculatorByServings"),
-    calories: t("productDetail.calculatorByCalories"),
+    calories: t("macros.calories"),
   };
 
+  const unitLabels: Record<CalculatorUnit, string> = {
+    grams: t("product.gramsUnit"),
+    milliliters: t("product.millilitersUnit"),
+    servings: servingUnit ?? t("productDetail.calculatorByServings"),
+    calories: t("macros.calories"),
+  };
+
+  function setValue(next: number) {
+    onChangeQuantity(formatAmount(next));
+  }
+
+  const amountText = result ? servingFormat.amount(serving, result.amount) : null;
+  const resultTitle =
+    unit === "servings"
+      ? t("productDetail.resultFor", { amount: amountText ?? "" })
+      : t("productDetail.resultFor", { amount: `${quantity} ${unitLabels[unit]}` });
+
   const nutrition = result?.nutrition;
+  const equivalents = result ? calculatorEquivalents(serving, result.amount, result.nutrition.calories) : null;
+  const equivalentText = equivalents
+    ? [
+        unit !== "grams" && equivalents.grams != null
+          ? `${formatGrams(equivalents.grams)} ${t("product.gramsShort")}`
+          : null,
+        unit !== "milliliters" && equivalents.milliliters != null
+          ? `${formatGrams(equivalents.milliliters)} ${t("product.mlShort")}`
+          : null,
+        unit !== "servings" && equivalents.servings != null
+          ? `${formatAmount(Math.round(equivalents.servings * 100) / 100)} ${unitLabels.servings}`
+          : null,
+        unit !== "calories" ? `${formatCalories(equivalents.calories)} ${t("product.calUnit")}` : null,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : null;
+  const grams = t("product.gramsShort");
+  const columns: ResultColumn[] = nutrition
+    ? [
+        {
+          key: "calories",
+          label: t("product.calUnit"),
+          value: formatCalories(nutrition.calories),
+          icon: "fire",
+          color: colors.accent,
+        },
+        {
+          key: "protein",
+          label: t("macros.protein"),
+          value: formatGrams(nutrition.protein),
+          icon: MACRO_CONFIG.protein.icon,
+          color: macroColor("protein", colors),
+        },
+        ...(visibility.showCarbs
+          ? [
+              {
+                key: "carbs",
+                label: t("macros.carbs"),
+                value: formatGrams(nutrition.carbs),
+                icon: MACRO_CONFIG.carbs.icon,
+                color: macroColor("carbs", colors),
+              },
+            ]
+          : []),
+        ...(visibility.showFat
+          ? [
+              {
+                key: "fat",
+                label: t("macros.fat"),
+                value: formatGrams(nutrition.fat),
+                icon: MACRO_CONFIG.fat.icon,
+                color: macroColor("fat", colors),
+              },
+            ]
+          : []),
+        ...(visibility.showFiber && nutrition.fiber != null
+          ? [
+              {
+                key: "fiber",
+                label: t("macros.fiber"),
+                value: formatGrams(nutrition.fiber),
+                icon: MACRO_CONFIG.fiber.icon,
+                color: macroColor("fiber", colors),
+              },
+            ]
+          : []),
+      ]
+    : [];
+
+  if (units.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={[styles.hint, dir.text]}>{t("productDetail.calculatorUnavailable")}</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={plain ? styles.plain : styles.calculatorCard}>
-      {plain ? null : (
-        <View style={styles.headerBlock}>
-          <Text style={[styles.sectionTitle, dir.text]}>{t("productDetail.calculator")}</Text>
-          <Text style={[styles.sectionHint, dir.text]}>{t("productDetail.calculatorHint")}</Text>
-        </View>
-      )}
-
+    <View style={styles.container}>
       {units.length > 1 ? (
         <SegmentedControl
-          options={units.map((value) => ({ value, label: labels[value] }))}
+          options={units.map((option) => ({ value: option, label: toggleLabels[option] }))}
           value={unit}
-          size="sm"
-          onChange={(next) => onSelectUnit(next)}
+          onChange={onSelectUnit}
+          pill
+          style={styles.toggle}
         />
       ) : null}
 
-      {units.length === 0 ? (
-        <Text style={[styles.sectionHint, dir.text]}>{t("productDetail.calculatorUnavailable")}</Text>
-      ) : (
-        <View style={[styles.calcRow, dir.row]}>
+      <View style={styles.stepper}>
+        <IconButton
+          icon="minus"
+          variant="glass"
+          size={48}
+          iconSize={24}
+          accessibilityLabel={t("productDetail.decrease")}
+          onPress={() => setValue(stepQuantity(value, steps.button, -1, steps.precision))}
+          disabled={value <= steps.precision}
+        />
+
+        <View style={styles.quantityBlock}>
           <TextInput
-            style={[
-              styles.calcInput,
-              { textAlign: isRTL ? "right" : "left", writingDirection: isRTL ? "rtl" : "ltr" },
-            ]}
+            style={styles.quantityInput}
             value={quantity}
             onChangeText={onChangeQuantity}
-            placeholder={placeholder}
+            placeholder="0"
             placeholderTextColor={colors.textMuted}
             keyboardType="decimal-pad"
             returnKeyType="done"
-            accessibilityLabel={placeholder}
+            selectTextOnFocus
+            accessibilityLabel={`${t("productDetail.calculatorQuantity")}, ${unitLabels[unit]}`}
           />
-          <Text style={styles.calcUnit} numberOfLines={1}>
-            {labels[unit]}
+          <Text style={styles.quantityUnit} numberOfLines={1}>
+            {unitLabels[unit]}
           </Text>
-        </View>
-      )}
-
-      {result && nutrition ? (
-        <View style={styles.calcResultCard}>
-          <Text style={[styles.calcResultTitle, dir.text]}>{t("productDetail.calculatorResult")}</Text>
-          <Text style={[styles.quantityText, dir.text]} accessibilityLabel={t("productDetail.calculatorQuantity")}>
-            {servingFormat.amount(serving, result.amount)}
-          </Text>
-
-          <NutritionRow label={t("macros.calories")} value={nutrition.calories} unit={t("product.calUnit")} highlight isRTL={isRTL} />
-          <NutritionRow label={t("macros.protein")} macro="protein" value={nutrition.protein} unit={t("product.gramsUnit")} isRTL={isRTL} />
-          <NutritionRow label={t("macros.carbs")} macro="carbs" value={nutrition.carbs} unit={t("product.gramsUnit")} isRTL={isRTL} />
-          <NutritionRow
-            label={t("macros.fat")} macro="fat"
-            value={nutrition.fat}
-            unit={t("product.gramsUnit")}
-            last={nutrition.fiber == null}
-            isRTL={isRTL}
-          />
-          {nutrition.fiber != null ? (
-            <NutritionRow label={t("macros.fiber")} macro="fiber" value={nutrition.fiber} unit={t("product.gramsUnit")} last isRTL={isRTL} />
+          {equivalentText ? (
+            <Text style={styles.equivalents} numberOfLines={1} accessibilityLiveRegion="polite">
+              {`= ${equivalentText}`}
+            </Text>
           ) : null}
         </View>
-      ) : null}
 
-      {result && onAddToMeal ? (
-        <Button label={t("calculatorMeal.addAction")} icon="plus" onPress={onAddToMeal} fullWidth />
-      ) : null}
+        <IconButton
+          icon="plus"
+          variant="glass"
+          size={48}
+          iconSize={24}
+          accessibilityLabel={t("productDetail.increase")}
+          onPress={() => setValue(stepQuantity(value, steps.button, 1, steps.precision))}
+        />
+      </View>
+
+      <QuantityRuler
+        value={value}
+        steps={steps}
+        accessibilityLabel={`${t("productDetail.calculatorQuantity")}, ${unitLabels[unit]}`}
+        onChange={setValue}
+        onActiveChange={onRulerActiveChange}
+      />
+
+      {result && nutrition ? (
+        <View style={styles.resultCard}>
+          <View style={[styles.resultHeader, dir.row]}>
+            <Text style={[styles.resultTitle, dir.text]} numberOfLines={2}>
+              {resultTitle}
+            </Text>
+          </View>
+
+          <View style={[styles.columns, dir.row]}>
+            {columns.map((column) => (
+              <View
+                key={column.key}
+                style={styles.column}
+                accessible
+                accessibilityLabel={`${column.label} ${column.value}${column.key === "calories" ? "" : ` ${grams}`}`}
+              >
+                <MaterialCommunityIcons name={column.icon} size={18} color={column.color} />
+                <Text style={styles.columnValue} numberOfLines={1}>
+                  {column.value}
+                </Text>
+                <Text style={styles.columnLabel} numberOfLines={1}>
+                  {column.label}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      ) : (
+        <Text style={[styles.hint, dir.text]}>{t("productDetail.calculatorHint")}</Text>
+      )}
+
+      {children}
     </View>
   );
 }

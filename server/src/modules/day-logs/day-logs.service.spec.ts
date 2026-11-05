@@ -127,6 +127,22 @@ describe('DayLogsService dated days', () => {
     expect(repo.findMealEntryWithItems).not.toHaveBeenCalled();
   });
 
+  it('refuses a saved meal whose product was removed from the pantry', async () => {
+    const { service, repo, calculator } = setup();
+    repo.findSavedMealForUser.mockResolvedValue({
+      name: 'Breakfast',
+      items: [{ product: null, recipe: null, grams: 38, servings: null }],
+    });
+    await expect(
+      service.addMealItemOnDate('u1', '2026-10-25', {
+        mealType: 'BREAKFAST',
+        savedMealId: 'm1',
+      }),
+    ).rejects.toThrow('removed from the pantry');
+    expect(calculator.productSnapshot).not.toHaveBeenCalled();
+    expect(repo.createMealItem).not.toHaveBeenCalled();
+  });
+
   it('refuses a saved meal with an item that cannot be calculated', async () => {
     const { service, repo, calculator } = setup();
     calculator.productSnapshot.mockReturnValue(null);

@@ -2,7 +2,7 @@ import { Text, View } from "react-native";
 
 import { formatGrams } from "../../../../shared/helpers/formatNumber";
 import { useAppTheme } from "../../../../shared/theme";
-import { MacroKey, macroColor } from "../../helpers/macroColors";
+import { MacroKey, macroColor } from "../../../../shared/helpers/macroColors";
 import { useRowStyles } from "./styles/NutritionRow.styles";
 
 type Props = {

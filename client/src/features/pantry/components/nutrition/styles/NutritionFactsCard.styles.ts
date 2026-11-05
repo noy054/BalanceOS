@@ -15,28 +15,6 @@ export const useStyles = () =>
         gap: spacing.md,
       },
 
-      identityRow: {
-        alignItems: "center",
-        gap: spacing.ms,
-      },
-
-      identityText: {
-        flex: 1,
-        gap: spacing.xs,
-      },
-
-      productName: {
-        ...typography.title,
-        fontSize: 20,
-        lineHeight: 26,
-        color: colors.textPrimary,
-      },
-
-      metaText: {
-        ...typography.callout,
-        color: colors.textSecondary,
-      },
-
       metaMuted: {
         ...typography.caption,
         ...typography.number,
@@ -45,7 +23,9 @@ export const useStyles = () =>
       },
 
       heroCard: {
-        backgroundColor: colors.surface,
+        backgroundColor: colors.glassCard,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
         borderRadius: radius.lg,
         paddingHorizontal: spacing.md,
         paddingTop: spacing.ms,

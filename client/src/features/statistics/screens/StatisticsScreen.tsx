@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
@@ -8,52 +8,90 @@ import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
 import { TabHeader } from "../../../shared/components/TabHeader";
 import { SegmentedControl } from "../../../shared/components/ui/SegmentedControl";
 import { StateView } from "../../../shared/components/ui/StateView";
+import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
+import { useAppTheme } from "../../../shared/theme";
+import { useMacroVisibility } from "../../pantry/hooks/useMacroVisibility";
+import { ProgressEntryCard } from "../../progress/components/ProgressEntryCard";
 import { STAT_RANGES } from "../constants";
 import { useStatistics } from "../hooks/useStatistics";
-import { StatRange } from "../types";
-import { CaloriesTrendCard } from "../components/CaloriesTrendCard";
-import { FoodInsightsCard } from "../components/FoodInsightsCard";
-import { MacroAccuracyCard } from "../components/MacroAccuracyCard";
+import { enabledNutrients } from "../helpers/nutrients";
+import { buildInsights } from "../helpers/insights";
+import { NutrientKey, StatRange } from "../types";
+import { SummaryCard } from "../components/SummaryCard";
+import { CalorieBarsCard } from "../components/CalorieBarsCard";
 import { MealDistributionCard } from "../components/MealDistributionCard";
-import { RangeSummaryCard } from "../components/RangeSummaryCard";
-import { ProgressEntryCard } from "../../progress/components/ProgressEntryCard";
+import { NutrientProgressCard } from "../components/NutrientProgressCard";
+import { NutrientTrendCard } from "../components/NutrientTrendCard";
+import { FoodRankingCard, useFoodRankingRows } from "../components/FoodRankingCard";
+import { TargetComparisonCard } from "../components/TargetComparisonCard";
+import { InsightsCard } from "../components/InsightsCard";
+import { StatsPeriodNavigator } from "../components/StatsPeriodNavigator";
+import { router } from "expo-router";
+import { useHasProAccess } from "../../billing/hooks/useBilling";
+import { isSubscriptionRequired } from "../../billing/helpers/billingErrors";
+import { BILLING_ROUTE } from "../../billing/constants";
 import { useStyles } from "./styles/StatisticsScreen.styles";
+import { track } from "../../analytics/analytics";
 
 export function StatisticsScreen() {
-  const { t, i18n } = useTranslation("statistics");
+  const { t } = useTranslation("statistics");
   const styles = useStyles();
+  const { colors } = useAppTheme();
   const queryClient = useQueryClient();
-
-  const isRTL = i18n.dir(i18n.language) === "rtl";
+  const visibility = useMacroVisibility();
+  const rankingRows = useFoodRankingRows();
 
   const [range, setRange] = useState<StatRange>("7D");
+  const [nutrientKey, setNutrientKey] = useState<NutrientKey>("calories");
+  const [weekOffset, setWeekOffset] = useState(0);
 
-  const { data, isLoading, isFetching, isError, isSuccess } =
-    useStatistics(range);
+  const { t: tBilling } = useTranslation("billing");
+  const access = useHasProAccess();
+  const { data, isLoading, isError, error, refetch, window, today } = useStatistics(
+    range,
+    weekOffset,
+    access.hasProAccess,
+  );
+  const needsPro = (!access.isLoading && !access.hasProAccess) || isSubscriptionRequired(error);
 
   useFocusEffect(
     useCallback(() => {
-      queryClient.invalidateQueries({
-        queryKey: ["statistics"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["statistics"] });
+      track("statistics_viewed");
     }, [queryClient]),
   );
 
-  const shouldShowLoading = isLoading || isFetching;
-  const hasNoData = isSuccess && !!data && data.summary.loggedDays === 0;
+  const nutrients = useMemo(() => enabledNutrients(visibility, colors), [visibility, colors]);
+  const selectedNutrient = nutrients.some((item) => item.key === nutrientKey)
+    ? nutrientKey
+    : "calories";
+  const insights = useMemo(() => (data ? buildInsights(data) : []), [data]);
+  const hasNoData = Boolean(data) && data?.summary.loggedDays === 0;
 
-  const rangeOptions = STAT_RANGES.map((item) => ({
-    value: item,
-    label: t(`ranges.${item}`),
-  }));
+  const rangeOptions = STAT_RANGES.map((item) => ({ value: item, label: t(`ranges.${item}`) }));
 
   return (
-    <TabScreenLayout activeTab="statistics">
+    <TabScreenLayout activeTab="statistics" backgroundColor={colors.canvas}>
+      <AmbientGlow intensity={0.6} />
       <View style={styles.root}>
         <TabHeader title={t("title")} subtitle={t("subtitle")} />
 
         <View style={styles.rangeWrap}>
-          <SegmentedControl options={rangeOptions} value={range} onChange={setRange} />
+          <SegmentedControl
+            options={rangeOptions}
+            value={range}
+            onChange={setRange}
+            pill
+            style={styles.rangeTrack}
+          />
+          <StatsPeriodNavigator
+            start={window.start}
+            end={window.end}
+            today={today}
+            weekOffset={range === "7D" ? weekOffset : null}
+            onPrevious={() => setWeekOffset((value) => value - 1)}
+            onNext={() => setWeekOffset((value) => Math.min(0, value + 1))}
+          />
         </View>
 
         <ScrollView
@@ -61,10 +99,26 @@ export function StatisticsScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {shouldShowLoading ? (
+          {needsPro ? (
+            <StateView
+              variant="empty"
+              compact
+              icon="star-four-points-outline"
+              title={tBilling("paywall.title")}
+              message={tBilling("paywall.message")}
+              actionLabel={tBilling("paywall.action")}
+              onAction={() => router.push(BILLING_ROUTE)}
+            />
+          ) : (access.isLoading || isLoading) && !data ? (
             <StateView variant="loading" compact />
-          ) : isError ? (
-            <StateView variant="error" compact message={t("errors.loadFailed")} />
+          ) : isError && !data ? (
+            <StateView
+              variant="error"
+              compact
+              message={t("errors.loadFailed")}
+              actionLabel={t("errors.retry")}
+              onAction={() => void refetch()}
+            />
           ) : hasNoData || !data ? (
             <StateView
               variant="empty"
@@ -75,27 +129,41 @@ export function StatisticsScreen() {
             />
           ) : (
             <>
-              <RangeSummaryCard summary={data.summary} isRTL={isRTL} />
-
-              <CaloriesTrendCard trend={data.dailyTrend} isRTL={isRTL} />
-
-              <MacroAccuracyCard
+              <SummaryCard summary={data.summary} />
+              <CalorieBarsCard trend={data.dailyTrend} />
+              <MealDistributionCard distribution={data.mealDistribution} />
+              <NutrientProgressCard
+                nutrients={nutrients}
                 accuracy={data.macroAccuracy}
-                isRTL={isRTL}
                 loggedDays={data.summary.loggedDays}
                 rangeDays={data.summary.rangeDays}
+                selected={selectedNutrient}
+                onSelect={setNutrientKey}
               />
-
-              <MealDistributionCard
-                distribution={data.mealDistribution}
-                isRTL={isRTL}
+              <NutrientTrendCard
+                trend={data.dailyTrend}
+                nutrients={nutrients}
+                selected={selectedNutrient}
+                onSelect={setNutrientKey}
               />
-
-              <FoodInsightsCard
-                topCalorieSources={data.topCalorieSources}
-                mostUsedFoods={data.mostUsedFoods}
-                isRTL={isRTL}
+              <FoodRankingCard
+                title={t("foodInsights.topCalories")}
+                subtitle={t("foodInsights.topCaloriesSub")}
+                valueLabel={t("units.kcal")}
+                rows={rankingRows.byCalories(data.topCalorieSources)}
               />
+              <FoodRankingCard
+                title={t("foodInsights.mostUsed")}
+                subtitle={t("foodInsights.mostUsedSub")}
+                valueLabel={t("foodInsights.times")}
+                rows={rankingRows.byFrequency(data.mostUsedFoods)}
+              />
+              <TargetComparisonCard
+                nutrients={nutrients}
+                accuracy={data.macroAccuracy}
+                summary={data.summary}
+              />
+              {insights.length > 0 ? <InsightsCard insights={insights} /> : null}
             </>
           )}
 

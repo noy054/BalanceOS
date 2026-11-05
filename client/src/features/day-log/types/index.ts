@@ -45,8 +45,9 @@ export type MealMacros = {
 export type MealItemSource = "PRODUCT" | "RECIPE" | "SAVED_MEAL";
 
 export type MealItemServing = {
-  nutritionBasis: "PER_100G" | "PER_SERVING";
+  nutritionBasis: "PER_100G" | "PER_100ML" | "PER_SERVING";
   servingSizeG: number | null;
+  servingSizeMl?: number | null;
   servingQuantity: number | null;
   servingUnit: string | null;
 };
@@ -57,13 +58,36 @@ export type MealItemSummary = MealMacros & {
   source?: MealItemSource | null;
   grams?: number | null;
   servings?: number | null;
+  milliliters?: number | null;
   serving?: MealItemServing | null;
+  components?: MealItemComponent[];
+};
+
+export type MealItemComponent = MealMacros & {
+  id: string;
+  name: string;
+  imageUrl?: string | null;
+  source: "PRODUCT" | "RECIPE";
+  pantryProductId?: string | null;
+  grams: number | null;
+  servings: number | null;
+  milliliters: number | null;
+  serving: MealItemServing | null;
+};
+
+export type UpdateMealItemComponentPayload = {
+  itemId: string;
+  componentId: string;
+  grams?: number;
+  servings?: number;
+  milliliters?: number;
 };
 
 export type UpdateMealItemPayload = {
   itemId: string;
   grams?: number;
   servings?: number;
+  milliliters?: number;
 };
 
 export type MealEntrySummary = MealMacros & {
@@ -90,6 +114,7 @@ export type AddMealItemPayload = {
   mealType: string;
   pantryProductId?: string;
   grams?: number;
+  milliliters?: number;
   pantryRecipeId?: string;
   servings?: number;
   savedMealId?: string;

@@ -1,5 +1,6 @@
 {
   "calories": {
+    "ofTargetShort": "of target",
     "remaining": "Remaining Today",
     "unit": "Calories",
     "eaten": "Eaten",
@@ -12,7 +13,8 @@
     "progressA11y": "{{eaten}} of {{target}} calories eaten",
     "remainingDayLabel": "Remaining",
     "eatenOfTarget": "Eaten / target",
-    "percentOfTarget": "{{percent}}% of target"
+    "percentOfTarget": "{{percent}}% of target",
+    "ofTargetCalories": "of {{target}} kcal"
   },
   "macros": {
     "protein": "Protein",
@@ -57,6 +59,8 @@
     "itemsCount_other": "{{count}} items",
     "addFood": "Add food",
     "editItemHint": "Change the amount or remove it",
+    "expandItemHint": "Shows the amount so you can change it",
+    "collapseItemHint": "Hides the amount editor",
     "savedMeal": "Saved meal",
     "recipeServings_one": "{{count}} serving",
     "recipeServings_other": "{{count}} servings",
@@ -97,17 +101,12 @@
     "noRecipes": "No recipes",
     "noSavedMeals": "No saved meals",
     "loadError": "Failed to load",
-    "logError": "Failed to log item",
-    "logPartialError": "{{count}} items were logged. The rest are still in the list. Try saving again.",
-    "wholeMeal": "Add whole meal",
+    "logError": "Couldn’t add the item. Try again.",
+    "wholeMeal": "Whole meal",
     "selectItem": "Select an item from the list above",
     "done": "Done",
     "added": "Added",
     "chooseMealType": "Choose a meal type to continue",
-    "addToList": "Add to List",
-    "saveButton": "Save to {{mealType}}",
-    "saving": "Saving...",
-    "cartItems": "{{count}} items to add",
     "macros": {
       "calories": "Calories",
       "protein": "Protein",
@@ -123,7 +122,6 @@
       "perServing": "per serving"
     },
     "mealLabel": "Meal",
-    "removeFromList": "Remove {{name}} from the list",
     "scanBarcode": "Scan barcode",
     "searchProducts": "Search products",
     "searchRecipes": "Search recipes",
@@ -135,12 +133,14 @@
     "decrease": "Decrease amount",
     "increase": "Increase amount",
     "gramsAmount": "{{grams}} g",
-    "caloriesAmount": "{{calories}} kcal",
-    "recipeAmount": "×{{count}} recipe",
     "invalidAmount": "Enter an amount greater than zero",
-    "cartItems_one": "{{count}} item to add",
-    "cartItems_other": "{{count}} items to add",
-    "forDate": "{{date}}"
+    "forDate": "{{date}}",
+    "addButton": "Add",
+    "addedTo": "{{name}} added to {{mealType}}",
+    "removedItems": "This meal includes a product or recipe that was removed from your pantry, so it can’t be calculated. Edit the meal to remove or replace it.",
+    "editMeal": "Edit meal",
+    "enterQuantity": "Enter an amount to calculate",
+    "quantityPlaceholder": "Amount"
   },
   "header": {
     "today": "Today"
@@ -188,6 +188,7 @@
   "itemSheet": {
     "amountLabel": "Amount",
     "unitGrams": "g",
+    "unitMilliliters": "ml",
     "unitServings": "servings",
     "decrease": "Decrease amount",
     "increase": "Increase amount",
@@ -197,5 +198,22 @@
     "saveFailed": "Couldn't save the change. Try again.",
     "fixedAmount": "Saved meals are logged as a whole. To change it, remove it and add the meal again.",
     "nutritionA11y": "{{calories}} kcal, protein {{protein}} g, carbs {{carbs}} g, fat {{fat}} g"
+  },
+  "ingredients": {
+    "servingsA11y": "{{name}}: {{count}} servings",
+    "amount": "Amount",
+    "unavailable": "Ingredient details aren't available for this entry. You can still change the whole amount.",
+    "decrease": "Decrease {{name}}",
+    "increase": "Increase {{name}}",
+    "amountA11y": "{{name}} amount in {{unit}}",
+    "saveFailed": "Couldn't save the change. The previous amount was restored.",
+    "dayOnly": "Changes apply to this day only"
+  },
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening",
+    "night": "Good night",
+    "withName": "{{greeting}},"
   }
 }

@@ -57,6 +57,7 @@ export class PantryService {
       limit + 1,
       search,
       dto.cursor,
+      dto.sort ?? 'newest',
     );
     return toPage(rows, limit);
   }
@@ -87,6 +88,7 @@ export class PantryService {
     userId: string,
     dto: CreatePantryProductDto,
   ): Promise<PantryProductModel> {
+    await this.itemValidator.validateImage(userId, dto.imageUrl);
     const normalized = normalizeBarcode(dto.barcode);
     if (normalized) {
       const existing = await this.repo.findByNormalizedBarcode(
@@ -116,6 +118,7 @@ export class PantryService {
     catalogItemId: string,
     dto: AddFromCatalogDto,
   ): Promise<PantryProductModel> {
+    await this.itemValidator.validateImage(userId, dto.imageUrl);
     const item = await this.catalogService.getById(catalogItemId);
 
     const existing =
@@ -175,6 +178,7 @@ export class PantryService {
     dto: UpdatePantryProductDto,
   ): Promise<PantryProductModel> {
     const existing = await this.getById(userId, id);
+    await this.itemValidator.validateImage(userId, dto.imageUrl);
     let normalizedBarcodeUpdate: string | null | undefined = undefined;
     if (dto.barcode !== undefined) {
       const normalized = normalizeBarcode(dto.barcode);

@@ -11,17 +11,17 @@ export const useReminderTimeRowStyles = () =>
 
       reminderRowBorder: {
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: colors.border,
+        borderBottomColor: colors.glassBorder,
       },
 
       timeInputButton: {
         minHeight: 44,
         marginHorizontal: spacing.md,
         marginBottom: spacing.ms,
-        borderRadius: radius.md,
+        borderRadius: radius.lg,
         borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.inputBackground,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
         paddingHorizontal: spacing.ms,
         justifyContent: "center",
       },

@@ -1,11 +1,8 @@
 import { Text, View } from "react-native";
 import { TFunction } from "i18next";
 
-import { CategoryChips } from "../../../../shared/components/CategoryChips";
 import { PantryProduct } from "../../types";
 import { NutritionRow } from "../nutrition/NutritionRow";
-import { ZoomableThumb } from "../food/ZoomableThumb";
-import { FOOD_ICONS } from "../../hooks/useFoodCardModels";
 import { useServingFormat } from "../../hooks/useServingFormat";
 import { getServing } from "../../helpers/serving";
 import { getDirectionStyles } from "../../screens/styles/ProductDetailScreen.styles";
@@ -38,30 +35,8 @@ export function NutritionFactsCard({ product, t, isRTL }: Props) {
     : t("productDetail.nutritionSection");
   const unitWeight = serving?.unit ? format.unitWeight(product) : null;
 
-  const hasCategories = (product.mealCategories ?? []).length > 0;
-
   return (
     <View style={styles.wrapper}>
-      <View style={[styles.identityRow, dir.row]}>
-        <ZoomableThumb imageUrl={product.imageUrl} fallbackIcon={FOOD_ICONS.product} name={product.name} />
-
-        <View style={styles.identityText}>
-          <Text style={[styles.productName, dir.text]} numberOfLines={3}>
-            {product.name}
-          </Text>
-
-          {product.brand ? (
-            <Text style={[styles.metaText, dir.text]} numberOfLines={1}>
-              {product.brand}
-            </Text>
-          ) : null}
-
-          {hasCategories ? (
-            <CategoryChips categories={product.mealCategories ?? []} isRTL={isRTL} />
-          ) : null}
-        </View>
-      </View>
-
       <View style={styles.heroCard}>
         <Text style={[styles.heroLabel, dir.text]}>{sectionLabel}</Text>
         {unitWeight ? (

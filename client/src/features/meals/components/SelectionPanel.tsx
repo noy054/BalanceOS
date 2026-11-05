@@ -1,13 +1,11 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { IconButton } from '../../../shared/components/ui/IconButton';
-import { SegmentedControl } from '../../../shared/components/ui/SegmentedControl';
 import { useDirection } from '../../../shared/hooks/useDirection';
-import { formatGrams } from '../../../shared/helpers/formatNumber';
-import { fonts, spacing, typography, useThemedStyles, radius } from '../../../shared/theme';
-import { NutritionGrid } from '../../pantry/components/food/NutritionGrid';
-import { AmountUnit, amountToGrams, getServing } from '../../pantry/helpers/serving';
+import { fonts, radius, spacing, typography, useAppTheme, useThemedStyles } from '../../../shared/theme';
+import { NutritionStrip } from '../../pantry/components/nutrition/NutritionStrip';
+import { AmountUnit, getServing, hasServing, toAmountPayload } from '../../pantry/helpers/serving';
 import { useServingFormat } from '../../pantry/hooks/useServingFormat';
 import { CalculatedNutrition } from '../../pantry/types';
 import { SelectedItem } from '../hooks/useMealSelection';
@@ -24,8 +22,6 @@ type Props = {
   onDeselect: () => void;
 };
 
-const EMPTY_NUTRITION: CalculatedNutrition = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
-
 export function SelectionPanel({
   selected,
   quantity,
@@ -38,105 +34,116 @@ export function SelectionPanel({
   onDeselect,
 }: Props) {
   const { t } = useTranslation('dashboard');
+  const { t: tp } = useTranslation('pantry');
   const styles = useStyles();
   const dir = useDirection();
-  const servingFormat = useServingFormat();
+  const { colors } = useAppTheme();
 
   const product = selected.kind === 'product' ? selected.item : null;
   const servingLabel = (product && getServing(product)?.unit) || t('addItem.servingsLabel');
-  const unitLabel = product && unit === 'grams' ? t('addItem.gramsLabel') : servingLabel;
+  const unitLabelOf = (option: AmountUnit) =>
+    option === 'grams'
+      ? t('addItem.gramsLabel')
+      : option === 'milliliters'
+        ? tp('product.millilitersUnit')
+        : selected.kind === 'recipe' ? t('addItem.servingsLabel') : servingLabel;
 
   const parsed = parseFloat(quantity.replace(',', '.'));
-  const grams =
-    product && !Number.isNaN(parsed) && parsed > 0 ? amountToGrams(product, parsed, unit) : null;
+  const hasAmount = !Number.isNaN(parsed) && parsed > 0;
+  const servingFormat = useServingFormat();
+  const needsQuantity = Boolean(product && !hasServing(product));
 
-  const detail =
+  const summary =
     selected.kind === 'savedMeal'
       ? t('addItem.wholeMeal')
-      : grams != null && unit === 'servings'
-        ? t('addItem.gramsAmount', { grams: formatGrams(grams) })
-        : product
-          ? servingFormat.perServing(product)
-          : null;
+      : hasAmount
+        ? product
+          ? servingFormat.amount(product, toAmountPayload(product, parsed, unit))
+          : `${quantity} ${unitLabelOf(unit)}`
+        : t('addItem.enterQuantity');
 
   const hasQuantity = selected.kind !== 'savedMeal';
-  const showUnitToggle = unitOptions.length > 1 && product;
-  const values = nutrition ?? EMPTY_NUTRITION;
 
   return (
     <View style={styles.panel}>
-      <View style={[styles.headerRow, dir.row]}>
+      <View style={[styles.header, dir.row]}>
         <View style={styles.headerText}>
-          <Text style={[styles.name, dir.text]} numberOfLines={1}>
+          <Text style={[styles.name, dir.text]} numberOfLines={2}>
             {selected.item.name}
           </Text>
-          {detail ? (
-            <Text style={[styles.detail, dir.text]} numberOfLines={1}>
-              {detail}
-            </Text>
-          ) : null}
+          <Text style={[styles.summary, !hasAmount && hasQuantity && styles.summaryPrompt, dir.text]} numberOfLines={1}>
+            {summary}
+          </Text>
         </View>
-
         <IconButton
           icon="close"
-          size={40}
-          iconSize={20}
+          size={36}
+          iconSize={18}
           accessibilityLabel={t('addItem.deselect', { name: selected.item.name })}
           onPress={onDeselect}
         />
       </View>
 
-      <NutritionGrid
-        calories={values.calories}
-        macros={values}
-        style={!nutrition ? styles.nutritionMuted : undefined}
-      />
+      <NutritionStrip nutrition={nutrition} />
 
       {hasQuantity ? (
-        <View style={[styles.controlsRow, dir.row]}>
+        <View style={[styles.controls, dir.row]}>
           <View style={[styles.stepper, dir.row]}>
             <IconButton
               icon="minus"
               variant="tonal"
-              size={44}
-              iconSize={20}
+              size={40}
+              iconSize={18}
               accessibilityLabel={t('addItem.decrease')}
               onPress={() => onStep(-1)}
             />
             <TextInput
-              style={styles.quantityInput}
+              style={[styles.quantityInput, !hasAmount && styles.quantityInputEmpty]}
               keyboardType="decimal-pad"
               value={quantity}
               onChangeText={onChangeQuantity}
+              placeholder={t('addItem.quantityPlaceholder')}
+              placeholderTextColor={colors.textMuted}
               selectTextOnFocus
+              autoFocus={needsQuantity}
               textAlign="center"
-              accessibilityLabel={unitLabel}
+              accessibilityLabel={`${selected.item.name}, ${unitLabelOf(unit)}`}
             />
             <IconButton
               icon="plus"
               variant="tonal"
-              size={44}
-              iconSize={20}
+              size={40}
+              iconSize={18}
               accessibilityLabel={t('addItem.increase')}
               onPress={() => onStep(1)}
             />
           </View>
 
-          {showUnitToggle ? (
-            <SegmentedControl
-              size="sm"
-              style={styles.unitToggle}
-              options={unitOptions.map((option) => ({
-                value: option,
-                label: option === 'servings' ? servingLabel : t('addItem.gramsLabel'),
-              }))}
-              value={unit}
-              onChange={onChangeUnit}
-            />
+          {unitOptions.length > 1 ? (
+            <View style={[styles.units, dir.row]} accessibilityRole="tablist">
+              {unitOptions.map((option) => {
+                const active = option === unit;
+                return (
+                  <Pressable
+                    key={option}
+                    onPress={() => onChangeUnit(option)}
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected: active }}
+                    style={[styles.unit, active && styles.unitActive]}
+                  >
+                    <Text style={[styles.unitText, active && styles.unitTextActive]} numberOfLines={1}>
+                      {unitLabelOf(option)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
           ) : (
-            <Text style={[styles.unitLabel, dir.text]} numberOfLines={2}>
-              {unitLabel}
-            </Text>
+            <View style={[styles.unitStatic, dir.row]}>
+              <Text style={[styles.unitStaticText, dir.text]} numberOfLines={1}>
+                {unitLabelOf(unit)}
+              </Text>
+            </View>
           )}
         </View>
       ) : null}
@@ -150,8 +157,8 @@ const useStyles = () =>
       panel: {
         gap: spacing.ms,
       },
-      headerRow: {
-        alignItems: 'center',
+      header: {
+        alignItems: 'flex-start',
         gap: spacing.sm,
       },
       headerText: {
@@ -163,43 +170,77 @@ const useStyles = () =>
         ...typography.headline,
         color: colors.textPrimary,
       },
-      detail: {
+      summary: {
         ...typography.footnote,
         ...typography.number,
         color: colors.textSecondary,
       },
-      nutritionMuted: {
-        opacity: 0.4,
+      summaryPrompt: {
+        color: colors.warning,
       },
-      controlsRow: {
+      controls: {
         alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: spacing.ms,
+        gap: spacing.sm,
       },
       stepper: {
         alignItems: 'center',
         gap: spacing.xs,
       },
       quantityInput: {
+        width: 72,
+        height: 40,
         borderRadius: radius.md,
-        width: 80,
-        height: 44,
         borderWidth: 1,
-        borderColor: colors.borderStrong,
-        backgroundColor: colors.inputBackground,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
         ...typography.value,
-        fontFamily: fonts.semibold,
+        fontSize: 16,
         color: colors.textPrimary,
         textAlign: 'center',
         paddingHorizontal: spacing.xs,
       },
-      unitToggle: {
-        flexGrow: 1,
-        flexBasis: 0,
-        minWidth: 168,
+      quantityInputEmpty: {
+        borderColor: colors.warning,
       },
-      unitLabel: {
+      units: {
         flex: 1,
+        minWidth: 0,
+        padding: 3,
+        gap: 3,
+        borderRadius: radius.md,
+        backgroundColor: colors.glassCard,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
+      },
+      unit: {
+        flex: 1,
+        minWidth: 0,
+        height: 34,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: spacing.xs,
+        borderRadius: radius.sm,
+      },
+      unitActive: {
+        backgroundColor: colors.accentFill,
+      },
+      unitText: {
+        ...typography.label,
+        fontSize: 14,
+        color: colors.textSecondary,
+      },
+      unitTextActive: {
+        fontFamily: fonts.semibold,
+        color: colors.onAccent,
+      },
+      unitStatic: {
+        flex: 1,
+        minWidth: 0,
+        alignItems: 'center',
+        gap: spacing.xs,
+      },
+      unitStaticText: {
+        flexShrink: 1,
         ...typography.callout,
         color: colors.textSecondary,
       },

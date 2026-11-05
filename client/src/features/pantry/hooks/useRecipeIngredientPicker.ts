@@ -3,21 +3,16 @@ import { useMemo, useState } from "react";
 import { PantryProduct } from "../types";
 import { PickerDraft } from "../helpers/recipeIngredientPickerDraft";
 import { sortByMealCategory } from "../helpers/sortByMealCategory";
-import { convertAmount, defaultAmount, defaultAmountUnit } from "../helpers/serving";
+import { convertAmount, defaultAmount, defaultAmountUnit, nextAmountUnit } from "../helpers/serving";
+import { matchesAllTerms } from "../../../shared/helpers/searchTerms";
 
 export function useRecipeIngredientPicker(products: PantryProduct[]) {
   const [search, setSearch] = useState("");
   const [drafts, setDrafts] = useState<Map<string, PickerDraft>>(new Map());
 
   const filteredProducts = useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase();
-
-    const searched = normalizedSearch
-      ? products.filter(
-          (product) =>
-            product.name.toLowerCase().includes(normalizedSearch) ||
-            product.brand?.toLowerCase().includes(normalizedSearch),
-        )
+    const searched = search.trim()
+      ? products.filter((product) => matchesAllTerms(search, product.name, product.brand))
       : products;
 
     return sortByMealCategory(searched, null);
@@ -50,6 +45,19 @@ export function useRecipeIngredientPicker(products: PantryProduct[]) {
     });
   }
 
+  function include(product: PantryProduct) {
+    setDrafts((prev) => {
+      if (prev.has(product.id)) return prev;
+      const next = new Map(prev);
+      next.set(product.id, {
+        product,
+        quantity: defaultAmount(product),
+        unit: defaultAmountUnit(product),
+      });
+      return next;
+    });
+  }
+
   function updateQuantity(id: string, quantity: string) {
     setDrafts((prev) => {
       const next = new Map(prev);
@@ -72,7 +80,7 @@ export function useRecipeIngredientPicker(products: PantryProduct[]) {
       const draft = next.get(id);
 
       if (draft) {
-        const nextUnit = draft.unit === "grams" ? "servings" : "grams";
+        const nextUnit = nextAmountUnit(draft.product, draft.unit);
 
         next.set(id, {
           ...draft,
@@ -94,6 +102,7 @@ export function useRecipeIngredientPicker(products: PantryProduct[]) {
     filteredProducts,
     reset,
     toggleProduct,
+    include,
     updateQuantity,
     toggleUnit,
   };

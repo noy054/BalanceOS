@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 import {
-  fonts,
   radius,
   shadows,
   spacing,
@@ -56,71 +55,18 @@ export const useStyles = () =>
         ...shadows.lg,
       },
 
-      cartScroll: {
-        maxHeight: 156,
-        flexGrow: 0,
-      },
-
-      cartRow: {
+      notice: {
         alignItems: 'center',
         gap: spacing.sm,
-        minHeight: 48,
+        padding: spacing.ms,
+        borderRadius: radius.md,
+        backgroundColor: colors.warningSoft,
       },
 
-      cartRowDivider: {
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: colors.border,
-      },
-
-      cartText: {
+      noticeText: {
         flex: 1,
-        minWidth: 0,
-        gap: 1,
-      },
-
-      cartItemName: {
-        ...typography.bodyStrong,
-        color: colors.textPrimary,
-      },
-
-      cartItemQty: {
         ...typography.footnote,
-        ...typography.number,
-        fontFamily: fonts.regular,
-        color: colors.textSecondary,
-      },
-
-      cartItemCalories: {
-        ...typography.callout,
-        ...typography.number,
-        fontFamily: fonts.semibold,
         color: colors.textPrimary,
-      },
-
-      bar: {
-        alignItems: 'center',
-        gap: spacing.ms,
-      },
-
-      barSummary: {
-        flex: 1,
-        minWidth: 0,
-      },
-
-      barCount: {
-        ...typography.caption,
-        color: colors.textSecondary,
-      },
-
-      barCalories: {
-        ...typography.value,
-        color: colors.textPrimary,
-      },
-
-      barButton: {
-        flexGrow: 1,
-        flexBasis: 0,
-        minWidth: 150,
       },
     }),
   );

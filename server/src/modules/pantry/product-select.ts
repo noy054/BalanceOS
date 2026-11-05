@@ -11,6 +11,7 @@ export const PRODUCT_NUTRITION_SELECT = {
   fatPerServing: true,
   fiberPerServing: true,
   servingSizeG: true,
+  servingSizeMl: true,
   servingSizeText: true,
   servingQuantity: true,
   servingUnit: true,

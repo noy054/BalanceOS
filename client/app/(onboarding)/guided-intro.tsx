@@ -44,7 +44,7 @@ export default function GuidedIntroScreen() {
         onPress={handleContinue}
         loading={upsert.isPending}
         disabled={upsert.isPending}
-        buttonColor={colors.accent}
+        buttonColor={colors.accentFill}
         textColor={colors.onAccent}
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}

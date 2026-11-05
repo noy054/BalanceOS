@@ -1,9 +1,7 @@
-import { View, Alert, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
-import { ScreenHeader } from '../../../shared/components/ScreenHeader';
-import { Button } from '../../../shared/components/ui/Button';
+import { SettingsScreenLayout, useSettingsBottomPadding } from '../components/SettingsScreenLayout';
 import { SettingsSection } from '../components/SettingsSection';
 import { SettingsRow } from '../components/SettingsRow';
 import { useDeleteAccount } from '../hooks/useSettings';
@@ -15,6 +13,7 @@ import { confirmAction } from '../../../shared/helpers/confirm';
 export function AccountSecurityScreen() {
   const { t } = useTranslation('settings');
   const styles = useStyles();
+  const bottomPadding = useSettingsBottomPadding();
   const user = useAuthStore((s) => s.user);
   const logout = useLogout();
   const deleteAccount = useDeleteAccount();
@@ -36,10 +35,9 @@ export function AccountSecurityScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      <ScreenHeader title={t('account.screenTitle')} />
+    <SettingsScreenLayout title={t('account.screenTitle')}>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[styles.content, bottomPadding]} showsVerticalScrollIndicator={false}>
         <SettingsSection title={t('account.securitySection')}>
           {isGoogleUser ? (
             <SettingsRow
@@ -60,16 +58,15 @@ export function AccountSecurityScreen() {
           )}
         </SettingsSection>
 
-        <View style={styles.logoutWrapper}>
-          <Button
-            label={logout.isPending ? t('account.loggingOut') : t('account.logoutButton')}
+        <SettingsSection title={t('account.actionsSection')}>
+          <SettingsRow
             icon="logout"
-            variant="secondary"
-            onPress={() => logout.mutate()}
-            loading={logout.isPending}
-            fullWidth
+            label={logout.isPending ? t('account.loggingOut') : t('account.logoutButton')}
+            onPress={logout.isPending ? undefined : () => logout.mutate()}
+            showChevron={false}
+            last
           />
-        </View>
+        </SettingsSection>
 
         <SettingsSection title={t('account.dangerSection')} danger>
           <SettingsRow
@@ -83,6 +80,6 @@ export function AccountSecurityScreen() {
           />
         </SettingsSection>
       </ScrollView>
-    </SafeAreaView>
+    </SettingsScreenLayout>
   );
 }

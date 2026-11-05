@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
 import { tokenStorage } from "./tokenStorage";
 import { router } from "expo-router";
+import { useAuthStore } from "../../features/auth/hooks/useAuthStore";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://192.168.1.187:3000";
 
@@ -84,6 +85,7 @@ apiClient.interceptors.response.use(
     } catch (refreshError) {
       processPendingQueue(refreshError, null);
       await tokenStorage.clearTokens();
+      useAuthStore.getState().setUnauthenticated();
       router.replace("/(auth)/login");
       return Promise.reject(refreshError);
     } finally {

@@ -48,7 +48,7 @@ export function PaperThemeBridge({ children }: { children: ReactNode }) {
         onSurface: colors.textPrimary,
         onSurfaceVariant: colors.textMuted,
         error: colors.danger,
-        onError: colors.onAccent,
+        onError: colors.onDanger,
       },
     };
   }, [colors, isDark]);

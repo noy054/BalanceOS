@@ -1,5 +1,6 @@
 {
   "calories": {
+    "ofTargetShort": "מהיעד",
     "remaining": "נשאר להיום",
     "unit": "קלוריות",
     "eaten": "אכלת",
@@ -12,7 +13,8 @@
     "progressA11y": "נאכלו {{eaten}} מתוך {{target}} קלוריות",
     "remainingDayLabel": "נשאר ליום זה",
     "eatenOfTarget": "נאכל / יעד",
-    "percentOfTarget": "{{percent}}% מהיעד"
+    "percentOfTarget": "{{percent}}% מהיעד",
+    "ofTargetCalories": "מתוך {{target}} קלוריות"
   },
   "macros": {
     "protein": "חלבון",
@@ -59,6 +61,8 @@
     "itemsCount_other": "{{count}} פריטים",
     "addFood": "הוספת מזון",
     "editItemHint": "שינוי כמות או הסרה",
+    "expandItemHint": "הצגת הכמות לעריכה",
+    "collapseItemHint": "הסתרת עריכת הכמות",
     "savedMeal": "ארוחה שמורה",
     "recipeServings_one": "מנה אחת",
     "recipeServings_two": "{{count}} מנות",
@@ -101,17 +105,12 @@
     "noRecipes": "אין מתכונים",
     "noSavedMeals": "אין ארוחות שמורות",
     "loadError": "שגיאה בטעינה",
-    "logError": "שגיאה בשמירה",
-    "logPartialError": "{{count}} פריטים נשמרו. השאר עדיין ברשימה. נסה לשמור שוב.",
-    "wholeMeal": "הוסף ארוחה שלמה",
+    "logError": "ההוספה נכשלה. נסו שוב.",
+    "wholeMeal": "ארוחה שלמה",
     "selectItem": "בחר פריט מהרשימה למעלה",
     "done": "סיום",
     "added": "נוסף",
     "chooseMealType": "בחר סוג ארוחה להמשך",
-    "addToList": "הוסף לרשימה",
-    "saveButton": "שמור ל{{mealType}}",
-    "saving": "שומר...",
-    "cartItems": "{{count}} פריטים להוספה",
     "macros": {
       "calories": "קלוריות",
       "protein": "חלבון",
@@ -127,7 +126,6 @@
       "perServing": "למנה"
     },
     "mealLabel": "ארוחה",
-    "removeFromList": "הסרת {{name}} מהרשימה",
     "scanBarcode": "סריקת ברקוד",
     "searchProducts": "חיפוש מוצרים",
     "searchRecipes": "חיפוש מתכונים",
@@ -139,14 +137,14 @@
     "decrease": "הפחתת כמות",
     "increase": "הגדלת כמות",
     "gramsAmount": "{{grams}} גרם",
-    "caloriesAmount": "{{calories}} קק״ל",
-    "recipeAmount": "×{{count}} מתכון",
     "invalidAmount": "הזינו כמות גדולה מאפס",
-    "cartItems_one": "פריט אחד להוספה",
-    "cartItems_two": "{{count}} פריטים להוספה",
-    "cartItems_many": "{{count}} פריטים להוספה",
-    "cartItems_other": "{{count}} פריטים להוספה",
-    "forDate": "{{date}}"
+    "forDate": "{{date}}",
+    "addButton": "הוספה",
+    "addedTo": "{{name}} נוסף ל{{mealType}}",
+    "removedItems": "הארוחה כוללת מוצר או מתכון שהוסרו מהמזווה, ולכן אי אפשר לחשב אותה. ערכו את הארוחה כדי להסיר או להחליף אותם.",
+    "editMeal": "עריכת ארוחה",
+    "enterQuantity": "הזינו כמות כדי לחשב",
+    "quantityPlaceholder": "כמות"
   },
   "header": {
     "today": "היום"
@@ -196,6 +194,7 @@
   "itemSheet": {
     "amountLabel": "כמות",
     "unitGrams": "ג׳",
+    "unitMilliliters": "מ״ל",
     "unitServings": "מנות",
     "decrease": "הפחתת כמות",
     "increase": "הגדלת כמות",
@@ -205,5 +204,22 @@
     "saveFailed": "לא ניתן היה לשמור את השינוי. נסו שוב.",
     "fixedAmount": "ארוחה שמורה נרשמת כיחידה אחת. כדי לשנות אותה, הסירו אותה והוסיפו את הארוחה מחדש.",
     "nutritionA11y": "{{calories}} קק״ל, חלבון {{protein}} ג׳, פחמימות {{carbs}} ג׳, שומן {{fat}} ג׳"
+  },
+  "ingredients": {
+    "servingsA11y": "{{name}}: {{count}} מנות",
+    "amount": "כמות",
+    "unavailable": "פרטי הרכיבים אינם זמינים לרישום הזה. עדיין אפשר לשנות את הכמות הכוללת.",
+    "decrease": "הפחתת {{name}}",
+    "increase": "הגדלת {{name}}",
+    "amountA11y": "כמות {{name}} ב{{unit}}",
+    "saveFailed": "לא ניתן היה לשמור את השינוי. הכמות הקודמת שוחזרה.",
+    "dayOnly": "השינויים חלים על היום הזה בלבד"
+  },
+  "greeting": {
+    "morning": "בוקר טוב",
+    "afternoon": "צהריים טובים",
+    "evening": "ערב טוב",
+    "night": "לילה טוב",
+    "withName": "{{greeting}},"
   }
 }

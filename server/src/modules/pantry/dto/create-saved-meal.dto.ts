@@ -12,6 +12,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { MAX_TEMPLATE_ITEMS } from './template-limits';
 import { Type } from 'class-transformer';
 
 const MEAL_TYPES = [
@@ -41,6 +42,12 @@ export class SavedMealItemDto {
 
   @IsOptional()
   @IsNumber()
+  @Min(0.1)
+  @Type(() => Number)
+  milliliters?: number;
+
+  @IsOptional()
+  @IsNumber()
   @Min(0.0001)
   @Type(() => Number)
   servings?: number;
@@ -59,8 +66,14 @@ export class CreateSavedMealDto {
   @IsIn(MEAL_TYPES, { each: true })
   mealTypes?: string[];
 
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  imageUrl?: string | null;
+
   @IsArray()
   @ArrayMinSize(1)
+  @ArrayMaxSize(MAX_TEMPLATE_ITEMS)
   @ValidateNested({ each: true })
   @Type(() => SavedMealItemDto)
   items: SavedMealItemDto[];

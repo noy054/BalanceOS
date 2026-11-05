@@ -88,7 +88,7 @@ export default function ForgotPasswordScreen() {
         onPress={handleSubmit}
         loading={forgotPassword.isPending}
         disabled={forgotPassword.isPending || !email}
-        buttonColor={colors.accent}
+        buttonColor={colors.accentFill}
         textColor={colors.onAccent}
         contentStyle={styles.btnContent}
         labelStyle={styles.btnLabel}

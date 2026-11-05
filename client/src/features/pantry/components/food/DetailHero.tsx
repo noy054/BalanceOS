@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
@@ -15,19 +15,35 @@ type Props = {
   description?: string | null;
   imageUrl?: string | null;
   fallbackIcon: IconName;
+  compact?: boolean;
+  children?: ReactNode;
 };
 
-export function DetailHero({ title, meta, tags = [], description, imageUrl, fallbackIcon }: Props) {
+export function DetailHero({
+  title,
+  meta,
+  tags = [],
+  description,
+  imageUrl,
+  fallbackIcon,
+  compact = false,
+  children,
+}: Props) {
   const styles = useStyles();
   const dir = useDirection();
 
   return (
     <View style={styles.wrapper}>
-      <View style={[styles.row, dir.row]}>
-        <ZoomableThumb imageUrl={imageUrl} fallbackIcon={fallbackIcon} name={title} />
+      <View style={[styles.header, dir.row]}>
+        <ZoomableThumb
+          imageUrl={imageUrl}
+          fallbackIcon={fallbackIcon}
+          name={title}
+          size={compact ? 56 : 72}
+        />
 
         <View style={styles.text}>
-          <Text style={[styles.title, dir.text]} numberOfLines={3}>
+          <Text style={[styles.title, compact && styles.titleCompact, dir.text]} numberOfLines={3}>
             {title}
           </Text>
 
@@ -36,24 +52,24 @@ export function DetailHero({ title, meta, tags = [], description, imageUrl, fall
               {meta}
             </Text>
           ) : null}
-
-          {tags.length > 0 ? (
-            <View style={[styles.tags, dir.row]}>
-              {tags.map((tag) => (
-                <View key={tag} style={styles.tag}>
-                  <Text style={styles.tagText} numberOfLines={1}>
-                    {tag}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          ) : null}
         </View>
       </View>
 
-      {description ? (
-        <Text style={[styles.description, dir.text]}>{description}</Text>
+      {tags.length > 0 ? (
+        <View style={[styles.tags, dir.row]}>
+          {tags.map((tag) => (
+            <View key={tag} style={styles.tag}>
+              <Text style={styles.tagText} numberOfLines={1}>
+                {tag}
+              </Text>
+            </View>
+          ))}
+        </View>
       ) : null}
+
+      {children}
+
+      {description ? <Text style={[styles.description, dir.text]}>{description}</Text> : null}
     </View>
   );
 }
@@ -62,22 +78,26 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       wrapper: {
-        gap: spacing.md,
+        gap: spacing.ms,
+        paddingTop: spacing.xs,
       },
-      row: {
+      header: {
         alignItems: "center",
-        gap: spacing.md,
+        gap: spacing.ms,
       },
       text: {
         flex: 1,
         minWidth: 0,
-        gap: spacing.xs,
+        gap: spacing.xxs,
       },
       title: {
         ...typography.title,
-        fontSize: 22,
-        lineHeight: 28,
+        fontSize: 20,
+        lineHeight: 26,
         color: colors.textPrimary,
+      },
+      titleCompact: {
+        ...typography.headline,
       },
       meta: {
         ...typography.callout,
@@ -99,6 +119,7 @@ const useStyles = () =>
       },
       description: {
         ...typography.body,
+        alignSelf: "stretch",
         color: colors.textSecondary,
       },
     }),

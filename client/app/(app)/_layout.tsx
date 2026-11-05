@@ -24,7 +24,15 @@ export default function AppLayout() {
 
   return (
     <NutritionDisplayProvider>
-      <View style={[styles.root, { backgroundColor: colors.background }]}>
+      <View
+        style={[
+          styles.root,
+          {
+            backgroundColor:
+              activeTab !== null ? colors.canvas : colors.background,
+          },
+        ]}
+      >
         <View style={styles.stack}>
           <Stack
             screenOptions={{

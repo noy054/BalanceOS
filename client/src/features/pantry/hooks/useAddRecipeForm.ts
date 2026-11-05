@@ -2,18 +2,31 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
 
 import { useRecipeReturn } from "../recipeReturnStore";
-import { MealType, PantryRecipe } from "../types";
+import { MealType, PantryProduct, PantryRecipe } from "../types";
 import {
   buildRecipePayloadItems,
   calculateRecipeDraftTotals,
-  createRecipeDraftFromProduct,
   createRecipeDraftFromRecipeItem,
   createRecipeDraftFromSelection,
   hasRecipeDraftTotals,
   RecipeIngredientDraft,
   RecipeIngredientSelectionInput,
 } from "../helpers/recipeDraft";
-import { convertAmount } from "../helpers/serving";
+import { convertAmount, AmountUnit, nextAmountUnit } from "../helpers/serving";
+import { moveItem, recipeMealTypes } from "../helpers/recipeMealTypes";
+import { MEAL_TYPES } from "../constants";
+
+export type RecipeStepDraft = {
+  key: string;
+  text: string;
+};
+
+let stepSeed = 0;
+
+function createStep(text = ""): RecipeStepDraft {
+  stepSeed += 1;
+  return { key: `step-${Date.now()}-${stepSeed}`, text };
+}
 
 export function useAddRecipeForm(
   existingRecipe?: PantryRecipe,
@@ -21,9 +34,12 @@ export function useAddRecipeForm(
 ) {
   const [name, setNameValue] = useState("");
   const [description, setDescription] = useState("");
-  const [mealType, setMealType] = useState<MealType | null>(null);
+  const [mealTypes, setMealTypes] = useState<MealType[]>([]);
+  const [imageUrl, setImageUrl] = useState("");
   const [ingredients, setIngredients] = useState<RecipeIngredientDraft[]>([]);
+  const [steps, setSteps] = useState<RecipeStepDraft[]>([]);
   const [pickerVisible, setPickerVisible] = useState(false);
+  const [incomingProduct, setIncomingProduct] = useState<PantryProduct | null>(null);
   const [nameError, setNameError] = useState("");
 
   const hydratedRecipeIdRef = useRef<string | null>(null);
@@ -47,7 +63,9 @@ export function useAddRecipeForm(
 
     setNameValue(existingRecipe.name);
     setDescription(existingRecipe.description ?? "");
-    setMealType((existingRecipe.mealType as MealType | null) ?? null);
+    setMealTypes(recipeMealTypes(existingRecipe));
+    setImageUrl(existingRecipe.imageUrl ?? "");
+    setSteps((existingRecipe.steps ?? []).map((text) => createStep(text)));
     setNameError("");
 
     setIngredients(
@@ -70,10 +88,8 @@ export function useAddRecipeForm(
       if (pendingProduct) {
         clearPending();
 
-        setIngredients((prev) => [
-          ...prev,
-          createRecipeDraftFromProduct(pendingProduct),
-        ]);
+        setIncomingProduct(pendingProduct);
+        setPickerVisible(true);
       }
 
       if (reopenPicker) {
@@ -97,6 +113,8 @@ export function useAddRecipeForm(
     () => buildRecipePayloadItems(ingredients),
     [ingredients],
   );
+
+  const clearIncomingProduct = useCallback(() => setIncomingProduct(null), []);
 
   function setName(value: string) {
     setNameValue(value);
@@ -123,6 +141,14 @@ export function useAddRecipeForm(
     );
   }
 
+  function setAmount(key: string, amount: string, unit: AmountUnit) {
+    setIngredients((prev) =>
+      prev.map((ingredient) =>
+        ingredient.key === key ? { ...ingredient, grams: amount, unit } : ingredient,
+      ),
+    );
+  }
+
   function toggleUnit(key: string) {
     setIngredients((prev) =>
       prev.map((ingredient) => {
@@ -130,7 +156,7 @@ export function useAddRecipeForm(
           return ingredient;
         }
 
-        const nextUnit = ingredient.unit === "grams" ? "servings" : "grams";
+        const nextUnit = nextAmountUnit(ingredient.product, ingredient.unit);
 
         return {
           ...ingredient,
@@ -140,6 +166,34 @@ export function useAddRecipeForm(
       }),
     );
   }
+
+  function toggleMealType(type: MealType) {
+    setMealTypes((prev) =>
+      MEAL_TYPES.filter((entry) => (entry === type ? !prev.includes(type) : prev.includes(entry))),
+    );
+  }
+
+  function moveIngredient(from: number, to: number) {
+    setIngredients((prev) => moveItem(prev, from, to));
+  }
+
+  function addStep() {
+    setSteps((prev) => [...prev, createStep()]);
+  }
+
+  function updateStep(key: string, text: string) {
+    setSteps((prev) => prev.map((step) => (step.key === key ? { ...step, text } : step)));
+  }
+
+  function removeStep(key: string) {
+    setSteps((prev) => prev.filter((step) => step.key !== key));
+  }
+
+  function moveStep(from: number, to: number) {
+    setSteps((prev) => moveItem(prev, from, to));
+  }
+
+  const stepTexts = steps.map((step) => step.text.trim()).filter(Boolean);
 
   function removeIngredient(key: string) {
     setIngredients((prev) =>
@@ -152,12 +206,16 @@ export function useAddRecipeForm(
     setName,
     description,
     setDescription,
-    mealType,
-    setMealType,
+    mealTypes,
+    toggleMealType,
+    imageUrl,
+    setImageUrl,
     ingredients,
     setIngredients,
     pickerVisible,
     setPickerVisible,
+    incomingProduct,
+    clearIncomingProduct,
     nameError,
     setNameError,
     liveTotals,
@@ -165,7 +223,15 @@ export function useAddRecipeForm(
     validItems,
     addIngredients,
     updateAmount,
+    setAmount,
     toggleUnit,
     removeIngredient,
+    moveIngredient,
+    steps,
+    stepTexts,
+    addStep,
+    updateStep,
+    removeStep,
+    moveStep,
   };
 }

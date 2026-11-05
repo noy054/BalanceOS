@@ -6,10 +6,20 @@ export type MacroStat = {
   pct: number;
 };
 
+export type NutrientKey = "calories" | "protein" | "carbs" | "fat" | "fiber";
+
+export type NutrientTargets = Record<NutrientKey, number>;
+
 export type DayTrendPoint = {
   date: string;
+  logged: boolean;
   calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
   target: number;
+  targets: NutrientTargets;
 };
 
 export type MealDistributionItem = {
@@ -22,12 +32,14 @@ export type TopFoodItem = {
   name: string;
   totalCalories: number;
   count: number;
+  imageUrl: string | null;
 };
 
 export type MostUsedFood = {
   name: string;
   count: number;
   avgCalories: number;
+  imageUrl: string | null;
 };
 
 export type StatisticsSummary = {
@@ -51,12 +63,7 @@ export type StatisticsResponse = {
   endDate: string;
   summary: StatisticsSummary;
   dailyTrend: DayTrendPoint[];
-  macroAccuracy: {
-    calories: MacroStat;
-    protein: MacroStat;
-    carbs: MacroStat;
-    fat: MacroStat;
-  };
+  macroAccuracy: Record<NutrientKey, MacroStat>;
   mealDistribution: MealDistributionItem[];
   topCalorieSources: TopFoodItem[];
   mostUsedFoods: MostUsedFood[];

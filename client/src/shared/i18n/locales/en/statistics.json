@@ -1,13 +1,17 @@
 {
   "title": "Statistics",
   "subtitle": "Expert view of your nutrition data",
-
+  "period": {
+    "thisWeek": "This week",
+    "lastWeek": "Last week",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week"
+  },
   "ranges": {
-    "7D": "7D",
+    "7D": "Week",
     "14D": "14D",
     "30D": "30D"
   },
-
   "summary": {
     "title": "Range Summary",
     "nutritionAccuracy": "Nutrition Accuracy",
@@ -22,50 +26,53 @@
     "proteinGapOver": "over protein target",
     "proteinGapExact": "right on protein target",
     "loggedDays": "Logged Days",
-    "loggedDaysSub": "days with nutrition data",
-    "onTarget": "On Target",
+    "loggedDaysSub": "Days with logs",
+    "onTarget": "Days on target",
     "target": "Target: {{value}}",
     "balanceSub": "cumulative deficit / surplus",
-    "onTargetSub": "days within ±15% of target",
-
+    "onTargetSub": "±15% of target",
     "onExactTarget": "On target",
     "aboveDailyTarget": "Above daily target on average",
     "belowDailyTarget": "Below daily target on average",
     "aboveProteinTarget": "Above protein target",
     "belowProteinTarget": "Below protein target",
     "totalSurplus": "Total surplus in range",
-    "totalDeficit": "Total deficit in range"
+    "totalDeficit": "Total deficit in range",
+    "ofTarget": "of {{value}}"
   },
-
   "trend": {
-    "title": "Calorie Trend",
+    "title": "Daily calories",
     "onTarget": "On target",
     "under": "Under",
     "over": "Over",
     "targetLabel": "target: {{value}}",
-    "summary": "{{on}} / {{total}} days on target"
+    "summary": "{{on}} / {{total}} days on target",
+    "notLogged": "Not logged",
+    "readout": "{{day}}: {{value}} / {{target}} {{unit}}",
+    "readoutEmpty": "{{day}}: not logged",
+    "tapHint": "Tap a day for exact values"
   },
-
   "accuracy": {
     "title": "Macro Accuracy",
     "dailyAverage": "Daily average in selected range",
     "loggedDays": "{{loggedDays}} of {{rangeDays}} days logged",
     "exactTarget": "On target",
     "overTarget": "{{value}} {{unit}} over target",
-    "underTarget": "{{value}} {{unit}} under target"
+    "underTarget": "{{value}} {{unit}} under target",
+    "of": "of",
+    "selectHint": "Shows this nutrient's trend in the chart"
   },
-
   "macros": {
     "calories": "Calories",
     "protein": "Protein",
     "carbs": "Carbs",
-    "fat": "Fat"
+    "fat": "Fat",
+    "fiber": "Fiber"
   },
-
   "distribution": {
-    "title": "Meal Distribution"
+    "title": "Meal Distribution",
+    "subtitle": "Daily average by meal"
   },
-
   "mealTypes": {
     "breakfast": "Breakfast",
     "lunch": "Lunch",
@@ -73,31 +80,29 @@
     "snack1": "Snack 1",
     "snack2": "Snack 2"
   },
-
   "foodInsights": {
     "title": "Food Insights",
-    "topCalories": "Top Calorie Sources",
-    "mostUsed": "Most Used Foods",
+    "topCalories": "Top calorie sources",
+    "mostUsed": "Most frequent foods",
     "usedTimes": "Logged ×{{count}}",
-    "avgCalories": "{{value}} kcal avg"
+    "avgCalories": "{{value}} kcal avg",
+    "topCaloriesSub": "Total calories from each food in this range",
+    "mostUsedSub": "How often each food was logged in this range",
+    "times": "times"
   },
-
   "empty": {
     "title": "No data yet",
     "subtitle": "Start logging meals to see your statistics here."
   },
-
   "errors": {
-    "loadFailed": "Failed to load statistics"
+    "loadFailed": "Failed to load statistics",
+    "retry": "Try again"
   },
-
   "noData": "No data for this range",
-
   "units": {
     "kcal": "kcal",
     "g": "g"
   },
-
   "weekdaysShort": {
     "0": "S",
     "1": "M",
@@ -106,5 +111,33 @@
     "4": "T",
     "5": "F",
     "6": "S"
+  },
+  "nutrientTrend": {
+    "title": "Nutrient trend",
+    "subtitle": "Daily value against that day's target",
+    "readout": "{{day}}: {{value}} / {{target}} {{unit}}"
+  },
+  "comparison": {
+    "title": "Compared with targets",
+    "subtitle": "Daily average in this range against your current targets",
+    "nutrient": "Nutrient",
+    "average": "Average",
+    "target": "Target",
+    "difference": "Difference",
+    "proteinGapSub": "Daily average against the protein target"
+  },
+  "insights": {
+    "title": "Insights",
+    "subtitle": "Based on the logged days in this range",
+    "coverageTitle": "Days without logs",
+    "coverage": "{{count}} of {{range}} days have no logs, and averages count them as zero.",
+    "proteinTitle": "Protein",
+    "protein": "Protein reached at least 90% of target on {{count}} of {{logged}} logged days.",
+    "caloriesTitle": "Calories on logged days",
+    "caloriesWithin": "On logged days, calories averaged within {{pct}}% of target.",
+    "caloriesAbove": "On logged days, calories averaged {{value}} above target.",
+    "caloriesBelow": "On logged days, calories averaged {{value}} below target.",
+    "topSourceTitle": "Top calorie source",
+    "topSource": "{{name}} provided {{pct}}% of logged calories."
   }
 }

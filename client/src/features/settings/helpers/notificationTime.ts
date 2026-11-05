@@ -1,4 +1,4 @@
-export type TimeField = "breakfast" | "lunch" | "dinner" | "daily" | "weekly";
+export type TimeField = "breakfast" | "lunch" | "dinner" | "daily" | "weekly" | "weighIn";
 
 export function formatTime(date: Date) {
   const hours = `${date.getHours()}`.padStart(2, "0");

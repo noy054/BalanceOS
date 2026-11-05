@@ -1,4 +1,4 @@
-import { Alert, ScrollView, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { confirmAction } from "../../../shared/helpers/confirm";
@@ -12,12 +12,16 @@ import { FoodLineItem } from "../components/food/FoodLineItem";
 import { isAmbiguousName, useDuplicateNames } from "../helpers/duplicateNames";
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { SectionHeader } from "../../../shared/components/ui/SectionHeader";
+import { RecipeStepsList } from "../components/recipes/RecipeStepsList";
 import { StateView } from "../../../shared/components/ui/StateView";
 import { IconButton } from "../../../shared/components/ui/IconButton";
 import { useDirection } from "../../../shared/hooks/useDirection";
 import { formatGrams } from "../../../shared/helpers/formatNumber";
 import { useStyles } from "./styles/ItemDetailScreen.styles";
 import { useServingFormat } from "../hooks/useServingFormat";
+import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
+import { Button } from "../../../shared/components/ui/Button";
+import { amountFromStored } from "../helpers/serving";
 
 type Props = {
   id: string;
@@ -84,24 +88,17 @@ export function RecipeDetailScreen({ id }: Props) {
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
+      <AmbientGlow intensity={0.35} />
       <ScreenHeader
         title={t("recipeDetail.title")}
         rightElement={
-          <View style={[styles.headerActions, dir.row]}>
-            <IconButton
-              icon="pencil-outline"
-              iconSize={22}
-              accessibilityLabel={t("common.editItem", { name: recipe.name })}
-              onPress={handleEdit}
-            />
-            <IconButton
-              icon="trash-can-outline"
-              iconSize={22}
-              accessibilityLabel={t("common.deleteItem", { name: recipe.name })}
-              onPress={handleDelete}
-              disabled={deleteRecipe.isPending}
-            />
-          </View>
+          <IconButton
+            icon="trash-can-outline"
+            iconSize={22}
+            accessibilityLabel={t("common.deleteItem", { name: recipe.name })}
+            onPress={handleDelete}
+            disabled={deleteRecipe.isPending}
+          />
         }
       />
 
@@ -119,6 +116,14 @@ export function RecipeDetailScreen({ id }: Props) {
           fallbackIcon={FOOD_ICONS.recipe}
         />
 
+        <Button
+          label={t("recipeDetail.editButton")}
+          icon="pencil-outline"
+          variant="tonal"
+          onPress={handleEdit}
+          fullWidth
+        />
+
         <View>
           <SectionHeader title={t("recipeDetail.totalsSection")} />
           <NutritionTotals totals={recipe.totals} label={t("foodCard.recipeTotal")} />
@@ -126,6 +131,7 @@ export function RecipeDetailScreen({ id }: Props) {
 
         <View>
           <SectionHeader title={t("recipeDetail.ingredientsSection")} />
+          <Text style={[styles.sectionHint, dir.text]}>{t("ingredientEdit.detailHint")}</Text>
 
           <View style={styles.itemsCard}>
             {recipe.items.map((item, index) => {
@@ -136,18 +142,41 @@ export function RecipeDetailScreen({ id }: Props) {
                 <FoodLineItem
                   key={item.id}
                   title={product.name}
+                  imageUrl={product.imageUrl}
+                  fallbackIcon={FOOD_ICONS.product}
                   basis={quantityText}
                   meta={isAmbiguousName(duplicateNames, product.name) ? product.brand : null}
                   calories={item.nutrition.calories}
                   macros={item.nutrition}
                   last={index === recipe.items.length - 1}
-                  onPress={() => router.push(`/(app)/pantry/${product.id}`)}
-                  accessibilityHint={t("common.openDetailsHint")}
+                  onPress={() => {
+                    const current = amountFromStored(product, item);
+                    router.push({
+                      pathname: "/(app)/pantry/[id]",
+                      params: {
+                        id: product.id,
+                        ingredientOf: "recipe",
+                        parentId: recipe.id,
+                        itemId: item.id,
+                        parentName: recipe.name,
+                        amount: current.amount,
+                        unit: current.unit,
+                      },
+                    });
+                  }}
+                  accessibilityHint={t("ingredientEdit.editHint")}
                 />
               );
             })}
           </View>
         </View>
+
+        {recipe.steps && recipe.steps.length > 0 ? (
+          <View>
+            <SectionHeader title={t("recipeDetail.stepsSection")} />
+            <RecipeStepsList steps={recipe.steps} />
+          </View>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );

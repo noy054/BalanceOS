@@ -1,9 +1,10 @@
 import type { ComponentProps } from "react";
+import { recipeMealTypes } from "../helpers/recipeMealTypes";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
 import { useServingFormat } from "./useServingFormat";
-import { PantryProduct, PantryRecipe, SavedMeal } from "../types";
+import { PantryProduct, PantryRecipe, ProductCatalogProduct, SavedMeal } from "../types";
 import { MacroValues } from "../components/food/NutritionLine";
 import { hasServing } from "../helpers/serving";
 import { nutritionPer100g, nutritionPerServing } from "../helpers/nutrition";
@@ -63,7 +64,7 @@ export function useFoodCardModels() {
   function productBasisLabel(
     product: Pick<
       PantryProduct,
-      "nutritionBasis" | "servingSizeG" | "servingQuantity" | "servingUnit"
+      "nutritionBasis" | "servingSizeG" | "servingSizeMl" | "servingQuantity" | "servingUnit"
     >,
   ) {
     return format.perServing(product);
@@ -73,7 +74,30 @@ export function useFoodCardModels() {
     return mealTypes.map((type) => t(`mealTypes.${type}` as Parameters<typeof t>[0]));
   }
 
-  function product(item: PantryProduct, showBrand = false): FoodCardModel {
+  function catalogSource(item: ProductCatalogProduct) {
+    return { ...item, servingSizeG: item.servingSizeGrams };
+  }
+
+  function catalog(item: ProductCatalogProduct): FoodCardModel {
+    return { ...product(catalogSource(item), false), meta: item.brand ?? "" };
+  }
+
+  function product(
+    item: Pick<
+      PantryProduct,
+      | "name"
+      | "brand"
+      | "imageUrl"
+      | "caloriesPer100g"
+      | "proteinPer100g"
+      | "carbsPer100g"
+      | "fatPer100g"
+      | "fiberPer100g"
+    > &
+      Parameters<typeof nutritionPerServing>[0] &
+      Parameters<typeof hasServing>[0],
+    showBrand = false,
+  ): FoodCardModel {
     const values =
       (hasServing(item) ? nutritionPerServing(item) : nutritionPer100g(item)) ??
       nutritionPer100g(item);
@@ -101,7 +125,7 @@ export function useFoodCardModels() {
       meta: "",
       basis: t("foodCard.recipeTotal"),
       summary: t("recipeDetail.itemsCount", { count: item.items.length }),
-      tags: mealTypeLabels(item.mealType ? [item.mealType] : []),
+      tags: mealTypeLabels(recipeMealTypes(item)),
       imageUrl: getRecipeImageUrl(item),
       fallbackIcon: FOOD_ICONS.recipe,
       calories: item.totals.calories,
@@ -123,5 +147,5 @@ export function useFoodCardModels() {
     };
   }
 
-  return { product, recipe, savedMeal, productBasisLabel };
+  return { product, catalog, catalogSource, recipe, savedMeal, productBasisLabel };
 }

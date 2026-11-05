@@ -12,6 +12,9 @@ import { BarcodeModule } from './modules/barcode/barcode.module';
 import { AnnouncementsModule } from './modules/announcements/announcements.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ProgressModule } from './modules/progress/progress.module';
+import { FoodImagesModule } from './modules/food-images/food-images.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { BillingModule } from './modules/billing/billing.module';
 
 @Module({
   imports: [
@@ -28,6 +31,9 @@ import { ProgressModule } from './modules/progress/progress.module';
     AnnouncementsModule,
     AdminModule,
     ProgressModule,
+    FoodImagesModule,
+    AnalyticsModule,
+    BillingModule,
   ],
 })
 export class AppModule {}

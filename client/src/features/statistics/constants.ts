@@ -6,7 +6,8 @@ export const STATISTICS_ENDPOINTS = {
 } as const;
 
 export const STATISTICS_QUERY_KEYS = {
-  stats: (range: StatRange, endDate: DateKey) => ['statistics', range, endDate] as const,
+  stats: (range: StatRange, endDate: DateKey, today: DateKey) =>
+    ['statistics', range, endDate, today] as const,
 };
 
 export const STAT_RANGES: StatRange[] = ['7D', '14D', '30D'];
