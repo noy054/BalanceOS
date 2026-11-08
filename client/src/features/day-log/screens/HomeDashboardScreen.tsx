@@ -13,7 +13,6 @@ import { CopyMealModal } from "../components/CopyMealModal";
 import { MEAL_SHORTCUTS } from "../../meals/constants/mealShortcuts";
 import { DayHeader } from "../components/DayHeader";
 import { DayPickerSheet } from "../components/DayPickerSheet";
-import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
 import { useGreeting } from "../hooks/useGreeting";
 import { prefetchDay, useDayLog, useDayMeals } from "../hooks/useDayLog";
 import { useSelectedDate } from "../hooks/useSelectedDate";
@@ -166,8 +165,6 @@ export function HomeDashboardScreen() {
             />
           }
         >
-          <AmbientGlow />
-
           <DayHeader
             greeting={greeting}
             date={date}

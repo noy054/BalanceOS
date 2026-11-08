@@ -15,7 +15,7 @@ import { mixColors, withAlpha } from "../../../shared/helpers/progressColor";
 import { MacroItem } from "../types";
 import { MACRO_CONFIG } from "../constants/macros";
 import { calorieStatus } from "../helpers/calorieStatus";
-import { useStyles } from "./styles/DailySummaryCard.styles";
+import { macroCardStyle, useStyles } from "./styles/DailySummaryCard.styles";
 
 type Props = {
   eaten: number;
@@ -24,6 +24,13 @@ type Props = {
   isToday?: boolean;
   showPercentages?: boolean;
 };
+
+function heroNumberSize(text: string, gaugeWidth: number) {
+  const digits = text.replace(/[^0-9]/g, "").length;
+  const separators = text.length - digits;
+  const room = gaugeWidth * 0.52;
+  return Math.round(Math.min(gaugeWidth * (gaugeWidth < 290 ? 0.185 : 0.205), room / (digits * 0.6 + separators * 0.3)));
+}
 
 function percentOf(current: number, target: number) {
   return target > 0 ? Math.min(Math.round((current / target) * 100), 999) : 0;
@@ -42,7 +49,7 @@ export function DailySummaryCard({
   const { colors, resolvedTheme } = useAppTheme();
   const { width } = useWindowDimensions();
 
-  const gaugeWidth = Math.round(Math.min(Math.max(width - 48, 272), 380));
+  const gaugeWidth = Math.round(Math.min(Math.max(width * 0.84, 260), 368));
   const dark = resolvedTheme === "dark";
   const palette = useMemo(
     () => ({
@@ -51,8 +58,16 @@ export function DailySummaryCard({
       edge: dark ? mixColors(colors.calorieGauge, colors.gloss, 0.35) : colors.accent,
       canvas: colors.canvas,
       surface: colors.surface,
+      gloss: colors.gloss,
     }),
     [colors, dark],
+  );
+  const cardStyles = useMemo(
+    () =>
+      Object.fromEntries(
+        macros.map((macro) => [macro.key, macroCardStyle(macroColor(macro.key, colors), dark, colors.gloss)]),
+      ),
+    [macros, colors, dark],
   );
 
   const {
@@ -76,6 +91,8 @@ export function DailySummaryCard({
     : Math.max(target - eaten, 0);
 
   const unit = t("calories.unitShort");
+  const numberText = formatCalories(mainNumber);
+  const numberSize = heroNumberSize(numberText, gaugeWidth);
 
   return (
     <View style={styles.container}>
@@ -109,17 +126,23 @@ export function DailySummaryCard({
             </>
           }
         >
-          <MaterialCommunityIcons name="fire" size={26} color={dark ? colors.calorieGauge : colors.accent} />
+          <MaterialCommunityIcons name="fire" size={gaugeWidth < 290 ? 20 : 24} color={dark ? colors.calorieGauge : colors.accent} />
 
-          <Text style={styles.mainLabel} numberOfLines={1}>
+          <Text style={styles.mainLabel} numberOfLines={1} maxFontSizeMultiplier={1.2}>
             {mainLabel}
           </Text>
 
-          <Text style={styles.mainNumber} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
-            {formatCalories(mainNumber)}
+          <Text
+            style={[styles.mainNumber, { fontSize: numberSize, lineHeight: Math.round(numberSize * 1.1) }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
+            maxFontSizeMultiplier={1}
+          >
+            {numberText}
           </Text>
 
-          <Text style={styles.mainTarget} numberOfLines={1}>
+          <Text style={styles.mainTarget} numberOfLines={1} maxFontSizeMultiplier={1.2}>
             {t("calories.ofTargetCalories", {
               target: formatCalories(target),
             })}
@@ -145,13 +168,7 @@ export function DailySummaryCard({
             return (
               <View
                 key={macro.key}
-                style={[
-                  styles.macroCard,
-                  {
-                    backgroundColor: withAlpha(color, resolvedTheme === "dark" ? 0.13 : 0.1),
-                    borderColor: withAlpha(color, resolvedTheme === "dark" ? 0.34 : 0.28),
-                  },
-                ]}
+                style={[styles.macroCard, cardStyles[macro.key]]}
                 accessible
                 accessibilityLabel={t("macros.rowA11y", {
                   name: label,
@@ -166,7 +183,7 @@ export function DailySummaryCard({
                   color={color}
                 />
 
-                <Text style={styles.macroLabel} numberOfLines={1}>
+                <Text style={[styles.macroLabel, width < 360 && styles.macroLabelCompact]} numberOfLines={1}>
                   {label}
                 </Text>
 
@@ -189,7 +206,7 @@ export function DailySummaryCard({
                   </Text>
                 </View>
 
-                <View style={[styles.macroTrack, { backgroundColor: withAlpha(color, 0.18) }, dir.row]}>
+                <View style={[styles.macroTrack, { backgroundColor: withAlpha(color, dark ? 0.16 : 0.18) }, dir.row]}>
                   <View
                     style={[
                       styles.macroFill,

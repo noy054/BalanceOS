@@ -24,8 +24,5 @@ export function useGreeting() {
 
   const name = fullName.trim().split(/\s+/)[0] ?? "";
   const greeting = t(`greeting.${period}`);
-  return {
-    salutation: name ? t("greeting.withName", { greeting }) : greeting,
-    name,
-  };
+  return name ? t("greeting.withName", { greeting, name }) : greeting;
 }

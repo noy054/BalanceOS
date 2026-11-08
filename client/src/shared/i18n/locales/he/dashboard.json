@@ -220,6 +220,6 @@
     "afternoon": "צהריים טובים",
     "evening": "ערב טוב",
     "night": "לילה טוב",
-    "withName": "{{greeting}},"
+    "withName": "{{greeting}}, {{name}}"
   }
 }

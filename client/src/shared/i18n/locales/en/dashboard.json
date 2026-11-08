@@ -214,6 +214,6 @@
     "afternoon": "Good afternoon",
     "evening": "Good evening",
     "night": "Good night",
-    "withName": "{{greeting}},"
+    "withName": "{{greeting}}, {{name}}"
   }
 }

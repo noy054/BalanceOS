@@ -9,6 +9,20 @@ import {
 } from "../../../../shared/theme";
 import { withAlpha } from "../../../../shared/helpers/progressColor";
 
+export function macroCardStyle(color: string, dark: boolean, gloss: string) {
+  return {
+    backgroundColor: dark ? withAlpha(color, 0.05) : withAlpha(color, 0.07),
+    backgroundImage: `linear-gradient(180deg, ${withAlpha(gloss, dark ? 0.08 : 0.5)} 0%, ${withAlpha(
+      color,
+      0.04,
+    )} 45%, ${withAlpha(color, dark ? 0.24 : 0.16)} 100%)`,
+    borderColor: withAlpha(color, dark ? 0.3 : 0.26),
+    borderTopColor: withAlpha(gloss, dark ? 0.16 : 0.9),
+    borderBottomColor: withAlpha(color, dark ? 0.85 : 0.55),
+    boxShadow: `0 8px 18px -8px ${withAlpha(color, dark ? 0.7 : 0.35)}`,
+  };
+}
+
 export const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
@@ -18,8 +32,7 @@ export const useStyles = () =>
 
       hero: {
         alignItems: "center",
-        gap: spacing.xs,
-        paddingTop: spacing.sm,
+        paddingVertical: spacing.xs,
       },
 
       mainLabel: {
@@ -30,10 +43,11 @@ export const useStyles = () =>
 
       mainNumber: {
         ...typography.display,
+        ...typography.number,
         fontFamily: fonts.bold,
-        fontSize: 56,
-        lineHeight: 64,
-        letterSpacing: -1,
+        fontSize: 72,
+        lineHeight: 78,
+        letterSpacing: -1.5,
         maxWidth: "100%",
         textAlign: "center",
         color: colors.textPrimary,
@@ -57,16 +71,11 @@ export const useStyles = () =>
         minWidth: 64,
         alignItems: "center",
         gap: spacing.xs,
-        paddingVertical: spacing.ms,
+        paddingTop: spacing.md,
+        paddingBottom: spacing.ms,
         paddingHorizontal: spacing.xs,
         borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.glassBorder,
-        backgroundColor: colors.glassCard,
-        backgroundImage: `linear-gradient(180deg, ${withAlpha(
-          colors.gloss,
-          0.09,
-        )} 0%, ${withAlpha(colors.gloss, 0)} 55%)`,
+        borderWidth: 1,
       },
 
       macroLabel: {
@@ -76,9 +85,16 @@ export const useStyles = () =>
         color: colors.textPrimary,
       },
 
+      macroLabelCompact: {
+        fontSize: 13,
+        lineHeight: 18,
+      },
+
       macroValue: {
         ...typography.value,
         fontFamily: fonts.bold,
+        fontSize: 20,
+        lineHeight: 26,
       },
 
       macroAmount: {
@@ -103,8 +119,8 @@ export const useStyles = () =>
         ...typography.bodyStrong,
         ...typography.number,
         fontFamily: fonts.bold,
-        fontSize: 18,
-        lineHeight: 22,
+        fontSize: 20,
+        lineHeight: 24,
         color: colors.textPrimary,
       },
 

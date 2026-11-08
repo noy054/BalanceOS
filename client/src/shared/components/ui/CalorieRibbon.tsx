@@ -20,6 +20,7 @@ type Palette = {
   edge: string;
   canvas: string;
   surface: string;
+  gloss: string;
 };
 
 type Props = {
@@ -33,40 +34,69 @@ type Props = {
 
 type Point = { x: number; y: number };
 
-type Strand = {
+type Band = {
   phase: number;
   scale: number;
-  width: number;
-  twist: number;
-  opacity: number;
+  base: number;
+  peak: number;
+  at: number;
+  sharpness: number;
 };
 
-const SAMPLES = 160;
-const START = -Math.PI / 2;
-const BADGE_ANGLE = START + Math.PI * 2 * 0.135;
+type Stroke = { band: Band; edge: number; from: number; to: number; size: number };
 
-const STRANDS: Strand[] = [
-  { phase: 0, scale: 1, width: 0.24, twist: 0.4, opacity: 0.5 },
-  { phase: 0.5, scale: 1.04, width: 0.16, twist: 2.1, opacity: 0.38 },
-  { phase: -0.6, scale: 0.955, width: 0.14, twist: 3.7, opacity: 0.32 },
-  { phase: 1.1, scale: 1.015, width: 0.08, twist: 5.2, opacity: 0.55 },
+const SAMPLES = 200;
+const START = -Math.PI / 2;
+const BADGE_ANGLE = -0.8;
+const OUTER_BIAS = 0.68;
+const CENTER_INSET = 0.78;
+
+const MAIN: Band = { phase: 0, scale: 1, base: 0.08, peak: 0.34, at: Math.PI * 0.78, sharpness: 1 };
+
+const FOLDS: Band[] = [
+  { phase: 0.55, scale: 0.985, base: 0, peak: 0.18, at: Math.PI * 0.3, sharpness: 3 },
+  { phase: -0.45, scale: 1.025, base: 0, peak: 0.13, at: -Math.PI * 0.6, sharpness: 3.6 },
+  { phase: 0.3, scale: 0.935, base: 0, peak: 0.1, at: Math.PI * 1.05, sharpness: 4 },
+];
+
+const SPECULARS: Stroke[] = [
+  { band: MAIN, edge: 0.97, from: Math.PI * 0.66, to: Math.PI * 1.24, size: 3.6 },
+  { band: MAIN, edge: 0.97, from: Math.PI * 0.04, to: Math.PI * 0.56, size: 3.2 },
+  { band: MAIN, edge: 0.97, from: -Math.PI * 0.98, to: -Math.PI * 0.6, size: 2 },
+  { band: MAIN, edge: 0.04, from: Math.PI * 0.7, to: Math.PI * 1.14, size: 2.4 },
+  { band: MAIN, edge: 0.04, from: Math.PI * 0.28, to: Math.PI * 0.58, size: 1.6 },
+  { band: FOLDS[0], edge: 0.9, from: Math.PI * 0.05, to: Math.PI * 0.55, size: 2.2 },
+  { band: FOLDS[1], edge: 0.9, from: -Math.PI * 0.85, to: -Math.PI * 0.38, size: 1.6 },
+  { band: FOLDS[2], edge: 0.9, from: Math.PI * 0.85, to: Math.PI * 1.25, size: 1.6 },
 ];
 
 function radiusAt(theta: number, phase: number) {
   return (
     1 +
-    0.1 * Math.sin(2 * theta + 0.9 + phase) +
-    0.075 * Math.sin(3 * theta + 2.2 + phase * 1.3) +
-    0.03 * Math.sin(5 * theta + 0.3 + phase * 0.7)
+    0.085 * Math.sin(2 * theta + 0.9 + phase) +
+    0.06 * Math.sin(3 * theta + 2.2 + phase * 1.3) +
+    0.025 * Math.sin(5 * theta + 0.3 + phase * 0.7)
   );
 }
 
+function bandWidth(band: Band, theta: number) {
+  const bump = Math.pow((1 + Math.cos(theta - band.at)) / 2, band.sharpness);
+  return band.base + (band.peak - band.base) * bump;
+}
+
+function edgeScale(band: Band, theta: number, fraction: number) {
+  const width = bandWidth(band, theta);
+  const inner = 1 - width * (1 - OUTER_BIAS);
+  const outer = 1 + width * OUTER_BIAS;
+  return band.scale * (inner + (outer - inner) * fraction);
+}
+
 function geometry(width: number) {
-  const height = Math.round(width * 0.84);
+  const height = Math.round(width * 0.74);
   const cx = width / 2;
   const cy = height / 2;
-  const rx = width * 0.37;
-  const ry = height * 0.4;
+  const rx = width * 0.36;
+  const ry = height * 0.385;
 
   const at = (theta: number, phase = 0, scale = 1): Point => {
     const r = radiusAt(theta, phase) * scale;
@@ -75,7 +105,7 @@ function geometry(width: number) {
 
   const angles = Array.from({ length: SAMPLES + 1 }, (_, index) => START + (index / SAMPLES) * Math.PI * 2);
 
-  return { height, cx, cy, rx, ry, at, angles };
+  return { width, height, cx, cy, rx, ry, at, angles };
 }
 
 type Geometry = ReturnType<typeof geometry>;
@@ -85,47 +115,54 @@ function line(points: Point[], close = false) {
   return `${body.join(" ")}${close ? " Z" : ""}`;
 }
 
-function strandPath(geo: Geometry, strand: Strand) {
-  const half = (theta: number) =>
-    (strand.width * (0.12 + 0.88 * (0.5 + 0.5 * Math.sin(2 * theta + strand.twist)))) / 2;
-  const outer = geo.angles.map((theta) => geo.at(theta, strand.phase, strand.scale * (1 + half(theta))));
-  const inner = geo.angles.map((theta) => geo.at(theta, strand.phase, strand.scale * (1 - half(theta))));
-  return {
-    fill: line([...outer, ...[...inner].reverse()], true),
-    edges: `${line(outer, true)} ${line(inner, true)}`,
-  };
+function ring(outer: Point[], inner: Point[]) {
+  return line([...outer, ...[...inner].reverse()], true);
 }
 
-function centerLine(geo: Geometry) {
-  const points = geo.angles.map((theta) => geo.at(theta));
-  let length = 0;
-  const lengths = [0];
-  for (let index = 1; index < points.length; index += 1) {
-    length += Math.hypot(points[index].x - points[index - 1].x, points[index].y - points[index - 1].y);
-    lengths.push(length);
-  }
-  return { d: line(points), points, lengths, length };
+function strip(geo: Geometry, band: Band, from: number, to: number) {
+  const outer = geo.angles.map((theta) => geo.at(theta, band.phase, edgeScale(band, theta, to)));
+  const inner = geo.angles.map((theta) => geo.at(theta, band.phase, edgeScale(band, theta, from)));
+  return ring(outer, inner);
 }
 
-function arcPath(geo: Geometry, from: number, to: number, scale: number) {
-  const steps = 40;
-  return line(Array.from({ length: steps + 1 }, (_, index) => geo.at(from + ((to - from) * index) / steps, 0, scale)));
+function edgeLoop(geo: Geometry, band: Band, fraction: number) {
+  return line(geo.angles.map((theta) => geo.at(theta, band.phase, edgeScale(band, theta, fraction))), true);
+}
+
+function tapered(geo: Geometry, band: Band, edge: number, from: number, to: number, thickness: number) {
+  const steps = Math.max(12, Math.round((Math.abs(to - from) / (Math.PI * 2)) * SAMPLES));
+  const offset = (index: number) => (thickness / geo.rx) * 0.5 * Math.sin((Math.PI * index) / steps);
+  const side = (sign: number) =>
+    Array.from({ length: steps + 1 }, (_, index) => {
+      const theta = from + ((to - from) * index) / steps;
+      return geo.at(theta, band.phase, edgeScale(band, theta, edge) + sign * offset(index));
+    });
+  return ring(side(1), side(-1));
+}
+
+function badgeCenter(geo: Geometry) {
+  return geo.at(BADGE_ANGLE, MAIN.phase, edgeScale(MAIN, BADGE_ANGLE, 1) + 0.02);
 }
 
 export function CalorieRibbon({ width, progress, palette, dark, badge, children }: Props) {
   const geo = useMemo(() => geometry(width), [width]);
-  const badgeSize = Math.max(64, Math.round(width * 0.2));
-  const badgePoint = geo.at(BADGE_ANGLE, 0, 1.02);
+  const badgeSize = Math.max(56, Math.round(width * (width < 290 ? 0.21 : 0.23)));
+  const badgePoint = badgeCenter(geo);
 
   return (
     <View style={{ width, height: geo.height }}>
-      <RibbonArt width={width} palette={palette} dark={dark} badgeSize={badgeSize} showBadge={badge != null} />
-      <RibbonProgress width={width} progress={progress} palette={palette} />
+      <RibbonArt width={width} palette={palette} dark={dark} />
+      <RibbonProgress width={width} progress={progress} palette={palette} dark={dark} />
       <View
         pointerEvents="none"
         style={[
           styles.center,
-          { left: geo.cx - geo.rx * 0.78, right: geo.cx - geo.rx * 0.78, top: geo.cy - geo.ry * 0.72, bottom: geo.cy - geo.ry * 0.72 },
+          {
+            left: geo.cx - geo.rx * 0.74,
+            right: geo.cx - geo.rx * 0.74,
+            top: geo.cy - geo.ry * CENTER_INSET,
+            bottom: geo.cy - geo.ry * CENTER_INSET,
+          },
         ]}
       >
         {children}
@@ -138,6 +175,7 @@ export function CalorieRibbon({ width, progress, palette, dark, badge, children 
             { width: badgeSize, height: badgeSize, left: badgePoint.x - badgeSize / 2, top: badgePoint.y - badgeSize / 2 },
           ]}
         >
+          <BadgeDisc size={badgeSize} palette={palette} dark={dark} />
           {badge}
         </View>
       ) : null}
@@ -145,32 +183,67 @@ export function CalorieRibbon({ width, progress, palette, dark, badge, children 
   );
 }
 
-const RibbonArt = memo(function RibbonArt({
-  width,
-  palette,
-  dark,
-  badgeSize,
-  showBadge,
-}: {
-  width: number;
-  palette: Palette;
-  dark: boolean;
-  badgeSize: number;
-  showBadge: boolean;
-}) {
+function padFor(width: number) {
+  return Math.round(width * 0.18);
+}
+
+const MAIN_LAYERS = [
+  { from: 0, to: 1, opacity: 0.5 },
+  { from: 0.45, to: 1, opacity: 0.3 },
+  { from: 0.76, to: 1, opacity: 0.36 },
+  { from: 0, to: 0.34, opacity: 0.26 },
+  { from: 0, to: 0.12, opacity: 0.32 },
+];
+
+const FOLD_LAYERS = [
+  { from: 0, to: 1, opacity: 0.32 },
+  { from: 0.6, to: 1, opacity: 0.3 },
+  { from: 0, to: 0.25, opacity: 0.18 },
+];
+
+const RibbonArt = memo(function RibbonArt({ width, palette, dark }: { width: number; palette: Palette; dark: boolean }) {
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const id = (key: string) => `${key}-${uid}`;
   const url = (key: string) => `url(#${id(key)})`;
   const geo = useMemo(() => geometry(width), [width]);
-  const center = useMemo(() => centerLine(geo), [geo]);
-  const strands = useMemo(() => STRANDS.map((strand) => strandPath(geo, strand)), [geo]);
-  const pad = Math.round(width * 0.14);
-  const blur = (amount: number) => (width / 320) * amount;
-  const glow = dark ? 1 : 0.45;
-  const badgePoint = geo.at(BADGE_ANGLE, 0, 1.02);
-  const light = mixColors(palette.color, "#FFFFFF", 0.3);
-  const highlightTop = arcPath(geo, START - Math.PI * 0.42, START - Math.PI * 0.08, 1.06);
-  const highlightBottom = arcPath(geo, START + Math.PI * 1.08, START + Math.PI * 1.38, 0.95);
+  const pad = padFor(width);
+  const unit = width / 320;
+  const light = mixColors(palette.color, palette.gloss, 0.7);
+
+  const paths = useMemo(
+    () => ({
+      body: strip(geo, MAIN, 0, 1),
+      main: MAIN_LAYERS.map((layer) => ({ d: strip(geo, MAIN, layer.from, layer.to), opacity: layer.opacity })),
+      folds: FOLDS.flatMap((fold) =>
+        FOLD_LAYERS.map((layer) => ({ d: strip(geo, fold, layer.from, layer.to), opacity: layer.opacity })),
+      ),
+      foldBodies: FOLDS.map((fold) => strip(geo, fold, 0, 1)),
+      fold: strip(geo, MAIN, 0.36, 0.6),
+      rim: edgeLoop(geo, MAIN, 1),
+      hole: edgeLoop(geo, MAIN, 0),
+      speculars: SPECULARS.map((stroke) => ({
+        glow: tapered(geo, stroke.band, stroke.edge, stroke.from, stroke.to, stroke.size * 4 * unit),
+        core: tapered(geo, stroke.band, stroke.edge, stroke.from, stroke.to, stroke.size * unit),
+      })),
+    }),
+    [geo, unit],
+  );
+
+  const tone = dark
+    ? [
+        { offset: 0, color: light, opacity: 1 },
+        { offset: 0.3, color: palette.color, opacity: 0.95 },
+        { offset: 0.62, color: palette.color, opacity: 0.62 },
+        { offset: 0.86, color: palette.color, opacity: 0.26 },
+        { offset: 1, color: palette.color, opacity: 0.5 },
+      ]
+    : [
+        { offset: 0, color: palette.color, opacity: 1 },
+        { offset: 0.35, color: palette.color, opacity: 0.9 },
+        { offset: 0.65, color: palette.deep, opacity: 0.5 },
+        { offset: 0.86, color: palette.deep, opacity: 0.25 },
+        { offset: 1, color: palette.color, opacity: 0.6 },
+      ];
 
   return (
     <Svg
@@ -181,96 +254,94 @@ const RibbonArt = memo(function RibbonArt({
       style={{ position: "absolute", left: -pad, top: -pad }}
     >
       <Defs>
-        {[3, 7, 16].map((amount) => (
+        {[2.5, 8, 14].map((amount) => (
           <Filter
             key={amount}
-            id={id(`blur-${amount}`)}
+            id={id(`blur-${amount}`.replace(".", "-"))}
             x={-pad}
             y={-pad}
             width={width + pad * 2}
             height={geo.height + pad * 2}
             filterUnits="userSpaceOnUse"
           >
-            <FeGaussianBlur stdDeviation={blur(amount)} />
+            <FeGaussianBlur stdDeviation={amount * unit} />
           </Filter>
         ))}
 
-        <RadialGradient id={id("glass")} cx={geo.cx} cy={geo.cy} rx={geo.rx * 1.1} ry={geo.ry * 1.1} gradientUnits="userSpaceOnUse">
-          <Stop offset="0" stopColor={palette.color} stopOpacity={0} />
-          <Stop offset="0.7" stopColor={palette.color} stopOpacity={dark ? 0.03 : 0.04} />
-          <Stop offset="1" stopColor={palette.color} stopOpacity={dark ? 0.16 : 0.14} />
+        <LinearGradient
+          id={id("tone")}
+          x1={width * 0.05}
+          y1={geo.height * 0.95}
+          x2={width * 0.95}
+          y2={geo.height * 0.05}
+          gradientUnits="userSpaceOnUse"
+        >
+          {tone.map((stop) => (
+            <Stop key={stop.offset} offset={stop.offset} stopColor={stop.color} stopOpacity={stop.opacity} />
+          ))}
+        </LinearGradient>
+
+        <RadialGradient id={id("shade")} cx={geo.cx} cy={geo.cy} rx={geo.rx * 1.02} ry={geo.ry * 1.02} gradientUnits="userSpaceOnUse">
+          <Stop offset="0" stopColor={palette.canvas} stopOpacity={dark ? 0.95 : 0.85} />
+          <Stop offset="0.7" stopColor={palette.canvas} stopOpacity={dark ? 0.9 : 0.7} />
+          <Stop offset="1" stopColor={palette.canvas} stopOpacity={0} />
         </RadialGradient>
 
-        <LinearGradient id={id("strand")} x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor={light} stopOpacity={0.95} />
-          <Stop offset="0.28" stopColor={palette.color} stopOpacity={0.85} />
-          <Stop offset="0.62" stopColor={palette.deep} stopOpacity={0.55} />
-          <Stop offset="1" stopColor={palette.color} stopOpacity={0.9} />
-        </LinearGradient>
-
-        <LinearGradient id={id("edge")} x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor={palette.edge} stopOpacity={0.95} />
-          <Stop offset="0.55" stopColor={palette.edge} stopOpacity={0.35} />
-          <Stop offset="1" stopColor={palette.edge} stopOpacity={0.7} />
-        </LinearGradient>
-
-        <RadialGradient id={id("badge")} cx="40%" cy="30%" rx="70%" ry="70%">
-          <Stop offset="0" stopColor={mixColors(palette.surface, palette.color, dark ? 0.12 : 0.06)} />
-          <Stop offset="1" stopColor={palette.surface} />
+        <RadialGradient id={id("glass")} cx={geo.cx} cy={geo.cy} rx={geo.rx} ry={geo.ry} gradientUnits="userSpaceOnUse">
+          <Stop offset="0" stopColor={palette.canvas} stopOpacity={0} />
+          <Stop offset="0.75" stopColor={palette.color} stopOpacity={dark ? 0.02 : 0.03} />
+          <Stop offset="1" stopColor={palette.color} stopOpacity={dark ? 0.1 : 0.08} />
         </RadialGradient>
       </Defs>
 
-      <Path d={center.d} fill={url("glass")} />
+      <Path d={paths.body} fill={url("tone")} opacity={dark ? 0.8 : 0.35} filter={url("blur-14")} />
+      <Path d={paths.body} fill={url("tone")} opacity={dark ? 0.6 : 0.25} filter={url("blur-8")} />
+      <Path d={paths.hole} fill={url("shade")} />
+      <Path d={paths.hole} fill={url("glass")} />
 
-      <Path d={center.d} fill="none" stroke={palette.color} strokeWidth={width * 0.14} opacity={0.24 * glow} filter={url("blur-16")} />
-      <Path d={center.d} fill="none" stroke={palette.deep} strokeWidth={width * 0.05} opacity={0.5 * glow} filter={url("blur-7")} />
-
-      <Path d={arcPath(geo, START, START + Math.PI * 2, 0.86)} fill="none" stroke={palette.canvas} strokeWidth={width * 0.06} opacity={dark ? 0.55 : 0.2} filter={url("blur-7")} />
-
-      {strands.map((strand, index) => (
-        <Path key={`fill-${index}`} d={strand.fill} fill={url("strand")} fillOpacity={STRANDS[index].opacity} />
+      {paths.foldBodies.map((d, index) => (
+        <Path key={`fold-shadow-${index}`} d={d} fill={palette.canvas} opacity={dark ? 0.35 : 0} />
       ))}
-      {strands.map((strand, index) => (
-        <Path
-          key={`edge-${index}`}
-          d={strand.edges}
-          fill="none"
-          stroke={url("edge")}
-          strokeWidth={1.1}
-          strokeOpacity={dark ? 0.85 : 0.5}
-          strokeLinejoin="round"
-        />
+      {paths.main.map((layer, index) => (
+        <Path key={`main-${index}`} d={layer.d} fill={url("tone")} fillOpacity={layer.opacity} />
+      ))}
+      <Path d={paths.fold} fill={palette.canvas} opacity={dark ? 0.24 : 0} />
+      {paths.folds.map((layer, index) => (
+        <Path key={`fold-${index}`} d={layer.d} fill={url("tone")} fillOpacity={layer.opacity} />
       ))}
 
-      <Path d={highlightTop} fill="none" stroke={light} strokeWidth={4} strokeLinecap="round" opacity={0.55 * glow} filter={url("blur-3")} />
-      <Path d={highlightTop} fill="none" stroke={palette.edge} strokeWidth={1.4} strokeLinecap="round" opacity={dark ? 0.85 : 0.3} />
-      <Path d={highlightBottom} fill="none" stroke={light} strokeWidth={3} strokeLinecap="round" opacity={0.45 * glow} filter={url("blur-3")} />
-      <Path d={highlightBottom} fill="none" stroke={palette.edge} strokeWidth={1.1} strokeLinecap="round" opacity={dark ? 0.7 : 0.25} />
+      <Path d={paths.rim} fill="none" stroke={url("tone")} strokeWidth={1} strokeOpacity={dark ? 0.5 : 0.6} />
 
-      {showBadge ? (
-        <>
-          <Circle cx={badgePoint.x} cy={badgePoint.y} r={badgeSize * 0.56} fill={palette.color} opacity={0.35 * glow} filter={url("blur-7")} />
-          <Circle cx={badgePoint.x} cy={badgePoint.y} r={badgeSize / 2} fill={url("badge")} stroke={palette.color} strokeWidth={1.4} />
-          <Circle cx={badgePoint.x} cy={badgePoint.y} r={badgeSize / 2 - 3} fill="none" stroke={palette.edge} strokeWidth={0.6} opacity={0.35} />
-        </>
-      ) : null}
+      {paths.speculars.map((stroke, index) => (
+        <Path key={`spec-glow-${index}`} d={stroke.glow} fill={palette.color} opacity={dark ? 0.55 : 0.35} filter={url("blur-2-5")} />
+      ))}
+      {paths.speculars.map((stroke, index) => (
+        <Path key={`spec-core-${index}`} d={stroke.core} fill={dark ? light : palette.deep} opacity={dark ? 0.95 : 0.75} />
+      ))}
     </Svg>
   );
 });
 
-function RibbonProgress({ width, progress, palette }: { width: number; progress: number; palette: Palette }) {
+function rimPath(geo: Geometry) {
+  const points = geo.angles.map((theta) => geo.at(theta, MAIN.phase, edgeScale(MAIN, theta, 1)));
+  let length = 0;
+  for (let index = 1; index < points.length; index += 1) {
+    length += Math.hypot(points[index].x - points[index - 1].x, points[index].y - points[index - 1].y);
+  }
+  return { d: line(points), length };
+}
+
+function RibbonProgress({ width, progress, palette, dark }: { width: number; progress: number; palette: Palette; dark: boolean }) {
   const geo = useMemo(() => geometry(width), [width]);
-  const center = useMemo(() => centerLine(geo), [geo]);
+  const rim = useMemo(() => rimPath(geo), [geo]);
   const target = Number.isFinite(progress) ? Math.min(Math.max(progress, 0), 1) : 0;
   const value = useAnimatedProgress(target);
   if (value <= 0.002) return null;
 
-  const pad = Math.round(width * 0.14);
-  const drawn = center.length * value;
-  const dash = [drawn, center.length + 1];
-  const tipIndex = Math.max(0, center.lengths.findIndex((entry) => entry >= drawn));
-  const tip = center.points[tipIndex] ?? center.points[center.points.length - 1];
-  const light = mixColors(palette.color, "#FFFFFF", 0.6);
+  const pad = padFor(width);
+  const unit = width / 320;
+  const dash = [rim.length * value, rim.length + 1];
+  const light = mixColors(palette.color, palette.gloss, 0.75);
 
   return (
     <Svg
@@ -280,18 +351,43 @@ function RibbonProgress({ width, progress, palette }: { width: number; progress:
       viewBox={`${-pad} ${-pad} ${width + pad * 2} ${geo.height + pad * 2}`}
       style={{ position: "absolute", left: -pad, top: -pad }}
     >
-      <Path d={center.d} fill="none" stroke={palette.color} strokeWidth={12} strokeOpacity={0.12} strokeDasharray={dash} strokeLinecap="round" />
-      <Path d={center.d} fill="none" stroke={palette.color} strokeWidth={6} strokeOpacity={0.3} strokeDasharray={dash} strokeLinecap="round" />
-      <Path d={center.d} fill="none" stroke={light} strokeWidth={2.4} strokeDasharray={dash} strokeLinecap="round" />
-      {value < 0.995 ? (
-        <>
-          <Circle cx={tip.x} cy={tip.y} r={10} fill={palette.color} opacity={0.22} />
-          <Circle cx={tip.x} cy={tip.y} r={4.5} fill={light} stroke={palette.color} strokeWidth={1.2} />
-        </>
-      ) : null}
+      <Path d={rim.d} fill="none" stroke={palette.color} strokeWidth={14 * unit} strokeOpacity={dark ? 0.14 : 0.18} strokeDasharray={dash} strokeLinecap="round" />
+      <Path d={rim.d} fill="none" stroke={palette.color} strokeWidth={6 * unit} strokeOpacity={dark ? 0.45 : 0.5} strokeDasharray={dash} strokeLinecap="round" />
+      <Path d={rim.d} fill="none" stroke={dark ? light : palette.deep} strokeWidth={2.4 * unit} strokeDasharray={dash} strokeLinecap="round" />
     </Svg>
   );
 }
+
+const BadgeDisc = memo(function BadgeDisc({ size, palette, dark }: { size: number; palette: Palette; dark: boolean }) {
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
+  const fillId = `badge-fill-${uid}`;
+  const blurId = `badge-blur-${uid}`;
+  const pad = Math.round(size * 0.3);
+  const total = size + pad * 2;
+  const c = total / 2;
+  const r = size / 2;
+  const base = dark ? mixColors(palette.canvas, palette.color, 0.05) : palette.surface;
+  const lift = dark ? mixColors(palette.canvas, palette.color, 0.16) : mixColors(palette.surface, palette.color, 0.12);
+  const sheen = `M ${c - r * 0.62} ${c - r * 0.62} A ${r - 3} ${r - 3} 0 0 1 ${c + r * 0.62} ${c - r * 0.62}`;
+
+  return (
+    <Svg pointerEvents="none" width={total} height={total} style={{ position: "absolute", left: -pad, top: -pad }}>
+      <Defs>
+        <RadialGradient id={fillId} cx="50%" cy="28%" rx="62%" ry="62%">
+          <Stop offset="0" stopColor={lift} />
+          <Stop offset="1" stopColor={base} />
+        </RadialGradient>
+        <Filter id={blurId} x={0} y={0} width={total} height={total} filterUnits="userSpaceOnUse">
+          <FeGaussianBlur stdDeviation={size * 0.06} />
+        </Filter>
+      </Defs>
+      <Circle cx={c} cy={c} r={r + 1} fill="none" stroke={palette.color} strokeWidth={size * 0.1} opacity={dark ? 0.35 : 0.2} filter={`url(#${blurId})`} />
+      <Circle cx={c} cy={c} r={r} fill={`url(#${fillId})`} fillOpacity={dark ? 0.96 : 1} />
+      <Circle cx={c} cy={c} r={r - 0.75} fill="none" stroke={dark ? palette.color : palette.edge} strokeWidth={1.5} strokeOpacity={dark ? 0.9 : 0.6} />
+      <Path d={sheen} fill="none" stroke={palette.gloss} strokeWidth={1} strokeLinecap="round" opacity={dark ? 0.1 : 0.4} />
+    </Svg>
+  );
+});
 
 const styles = StyleSheet.create({
   center: {
