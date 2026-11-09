@@ -163,6 +163,15 @@ export type CatalogBrowseItem = ProductCatalogProduct & {
   pantryProductId: string | null;
 };
 
+export type CatalogProductDetail = CatalogBrowseItem & {
+  ingredientsText: string | null;
+  allergensText: string | null;
+  manufacturer: string | null;
+  category: string | null;
+  subCategory: string | null;
+  countryCode: string | null;
+};
+
 export type AddFromCatalogPayload = Partial<ProductNutritionPayload> & {
   name?: string;
   brand?: string | null;

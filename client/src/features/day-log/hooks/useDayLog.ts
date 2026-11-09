@@ -18,6 +18,7 @@ import {
   MealMacros,
   UpdateMealItemPayload,
 } from '../types';
+import { PANTRY_QUERY_KEYS } from '../../pantry/constants';
 import { AnalyticsAction } from '../../analytics/analytics';
 
 function toDayLogSummary(r: DayLogResponse): DayLogSummary {
@@ -41,6 +42,7 @@ function refreshDayLog(queryClient: QueryClient, dates: string[]) {
     ),
     queryClient.invalidateQueries({ queryKey: DAY_LOG_QUERY_KEYS.all }),
     queryClient.invalidateQueries({ queryKey: ['statistics'] }),
+    queryClient.invalidateQueries({ queryKey: PANTRY_QUERY_KEYS.frequent }),
   ]);
 }
 

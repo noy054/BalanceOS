@@ -18,7 +18,6 @@ import { useDirection } from "../../../shared/hooks/useDirection";
 import { formatGrams } from "../../../shared/helpers/formatNumber";
 import { useStyles } from "./styles/ItemDetailScreen.styles";
 import { useServingFormat } from "../hooks/useServingFormat";
-import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
 import { Button } from "../../../shared/components/ui/Button";
 import { amountFromStored } from "../helpers/serving";
 
@@ -92,7 +91,6 @@ export function SavedMealDetailScreen({ id }: Props) {
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
-      <AmbientGlow intensity={0.35} />
       <ScreenHeader
         title={t("savedMealDetail.title")}
         rightElement={

@@ -20,7 +20,7 @@ export function useBillingStatus() {
 
 export function useHasProAccess() {
   const { data, isLoading } = useBillingStatus();
-  return { hasProAccess: data?.hasProAccess ?? false, isLoading };
+  return { hasProAccess: data?.hasFeatureAccess ?? data?.hasProAccess ?? false, isLoading };
 }
 
 function useRefreshBilling() {

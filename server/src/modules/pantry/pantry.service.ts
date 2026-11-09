@@ -1,3 +1,4 @@
+import { utcDayKey } from '../../common/date/day-key';
 import {
   ConflictException,
   Injectable,
@@ -37,6 +38,8 @@ function isUniqueViolation(err: unknown): boolean {
   );
 }
 
+const FREQUENT_WINDOW_DAYS = 90;
+
 @Injectable()
 export class PantryService {
   constructor(
@@ -58,8 +61,21 @@ export class PantryService {
       search,
       dto.cursor,
       dto.sort ?? 'newest',
+      { focus: dto.focus, category: dto.category },
     );
     return toPage(rows, limit);
+  }
+
+  frequent(
+    userId: string,
+    limit = 5,
+    today?: string,
+  ): Promise<PantryProductModel[]> {
+    const end = today ? new Date(`${today}T00:00:00Z`) : new Date();
+    const since = utcDayKey(
+      new Date(end.getTime() - (FREQUENT_WINDOW_DAYS - 1) * 86_400_000),
+    );
+    return this.repo.findFrequent(userId, since, limit);
   }
 
   async getById(userId: string, id: string): Promise<PantryProductModel> {

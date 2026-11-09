@@ -553,7 +553,43 @@
       "SPORTS_NUTRITION": "תזונת ספורט",
       "OTHER": "שונות"
     },
-    "addWithServing": "הגדרת מנה והוספה"
+    "addWithServing": "הגדרת מנה והוספה",
+    "detail": {
+      "verified": "מוצר מאומת",
+      "back": "חזרה",
+      "loadFailed": "לא הצלחנו לטעון את המוצר",
+      "retry": "נסו שוב",
+      "per100g": "ל־100 גרם",
+      "per100ml": "ל־100 מ״ל",
+      "perServing": "למנה",
+      "kcal": "קק״ל",
+      "grams": "ג׳",
+      "mg": "מ״ג",
+      "calories": "קלוריות",
+      "protein": "חלבון",
+      "carbs": "פחמימות",
+      "fat": "שומן",
+      "sugar": "מתוכן סוכרים",
+      "saturatedFat": "מתוכו שומן רווי",
+      "fiber": "סיבים תזונתיים",
+      "sodium": "נתרן",
+      "salt": "מלח",
+      "nutritionTitle": "מידע תזונתי",
+      "ingredientsTitle": "רכיבים",
+      "allergensTitle": "אלרגנים",
+      "brandTitle": "פרטי מותג",
+      "unavailable": "לא זמין",
+      "ingredientsUnavailable": "רשימת הרכיבים אינה זמינה למוצר זה.",
+      "allergensUnavailable": "אין מידע על אלרגנים למוצר זה. יש לבדוק את האריזה.",
+      "brandUnavailable": "פרטי המותג אינם זמינים.",
+      "brand": "מותג",
+      "manufacturer": "יצרן",
+      "barcode": "ברקוד",
+      "country": "מדינה",
+      "serving": "גודל מנה",
+      "expandA11y": "הצגת {{section}}",
+      "collapseA11y": "הסתרת {{section}}"
+    }
   },
   "recipeUsage": {
     "warning_one": "שימו לב: המוצר משמש במתכון {{names}}. הסרתו מהמזווה תסיר אותו גם מהמתכון הזה.",
@@ -611,5 +647,20 @@
   "measure": {
     "grams": "{{value}} גרם",
     "milliliters": "{{value}} מ״ל"
+  },
+  "filters": {
+    "all": "הכל",
+    "protein": "חלבונים",
+    "carbs": "פחמימות",
+    "categories": "קטגוריות",
+    "allCategories": "כל הקטגוריות",
+    "categoryTitle": "סינון לפי קטגוריה",
+    "sortA11y": "מיון: {{sort}}",
+    "categoryNames": {
+      "BREAKFAST": "בוקר",
+      "LUNCH": "צהריים",
+      "DINNER": "ערב",
+      "SNACK": "נשנושים"
+    }
   }
 }

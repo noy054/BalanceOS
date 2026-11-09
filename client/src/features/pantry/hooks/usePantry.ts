@@ -1,3 +1,4 @@
+import { todayKey } from '../../../shared/helpers/dateKey';
 import { useCallback, useEffect, useState } from 'react';
 import {
   InfiniteData,
@@ -8,6 +9,8 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { pantryApi } from '../api/pantryApi';
+import { FoodCategory } from '../helpers/pantryFilters';
+import { ProductCategory } from '../types';
 import {
   BARCODE_QUERY_KEYS,
   CATALOG_QUERY_KEYS,
@@ -72,10 +75,16 @@ function invalidatePantryProducts(queryClient: QueryClient) {
     queryClient.invalidateQueries({ queryKey: RECIPE_QUERY_KEYS.list, refetchType: 'all' }),
     queryClient.invalidateQueries({ queryKey: SAVED_MEAL_QUERY_KEYS.list, refetchType: 'all' }),
     queryClient.invalidateQueries({ queryKey: CATALOG_QUERY_KEYS.browseAll }),
+    queryClient.invalidateQueries({ queryKey: ['product-catalog'], refetchType: 'all' }),
   ]);
 }
 
-export function usePantryProducts(search?: string, sort: PantrySort = 'newest') {
+export function usePantryProducts(
+  search?: string,
+  sort: PantrySort = 'newest',
+  focus: FoodCategory = 'all',
+  category: ProductCategory | null = null,
+) {
   const trimmed = (search ?? '').trim();
   const [debouncedSearch, setDebouncedSearch] = useState(trimmed);
 
@@ -89,13 +98,15 @@ export function usePantryProducts(search?: string, sort: PantrySort = 'newest') 
   }, [trimmed]);
 
   const query = useInfiniteQuery({
-    queryKey: PANTRY_QUERY_KEYS.pages(debouncedSearch, sort),
+    queryKey: PANTRY_QUERY_KEYS.pages(debouncedSearch, sort, focus, category ?? ''),
     queryFn: ({ pageParam }) =>
       pantryApi.list({
         search: debouncedSearch || undefined,
         cursor: pageParam,
         limit: PANTRY_PAGE_SIZE,
         sort,
+        focus: focus === 'all' ? undefined : focus,
+        category: category ?? undefined,
       }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
@@ -128,6 +139,15 @@ export function useCreatePantryProduct() {
       upsertProduct(queryClient, created);
       void invalidatePantryProducts(queryClient);
     },
+  });
+}
+
+export function useFrequentProducts(enabled = true) {
+  return useQuery({
+    queryKey: PANTRY_QUERY_KEYS.frequent,
+    queryFn: () => pantryApi.frequent(5, todayKey()),
+    staleTime: 5 * 60 * 1000,
+    enabled,
   });
 }
 

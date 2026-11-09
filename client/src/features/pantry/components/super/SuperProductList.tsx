@@ -1,6 +1,7 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { ActivityIndicator, FlatList, ListRenderItem, Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from "expo-router";
 
 import { CatalogBrowseItem } from "../../types";
 import { useSuperPantry } from "../../hooks/useSuperCatalog";
@@ -8,7 +9,6 @@ import { ListGap } from "../../../../shared/components/ui/ListGap";
 import { StateView } from "../../../../shared/components/ui/StateView";
 import { spacing, useAppTheme } from "../../../../shared/theme";
 import { SuperProductCard } from "./SuperProductCard";
-import { SuperProductSheet } from "./SuperProductSheet";
 
 type Props = {
   items: CatalogBrowseItem[];
@@ -35,10 +35,11 @@ export function SuperProductList({
 }: Props) {
   const { add, remove, pendingIds } = useSuperPantry();
   const insets = useSafeAreaInsets();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const { colors } = useAppTheme();
-  const selected = items.find((item) => item.id === selectedId) ?? null;
-  const openItem = useCallback((entry: CatalogBrowseItem) => setSelectedId(entry.id), []);
+  const openItem = useCallback(
+    (entry: CatalogBrowseItem) => router.push(`/(app)/pantry/super/product/${encodeURIComponent(entry.id)}`),
+    [],
+  );
   const renderItem = useCallback<ListRenderItem<CatalogBrowseItem>>(
     ({ item }) => (
       <SuperProductCard
@@ -61,8 +62,7 @@ export function SuperProductList({
   if (items.length === 0) return <StateView variant="empty" icon="basket-outline" title={emptyMessage} />;
 
   return (
-    <>
-      <FlatList
+    <FlatList
         data={items}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
@@ -88,15 +88,6 @@ export function SuperProductList({
         onEndReached={onEndReached}
         onEndReachedThreshold={1.5}
       />
-
-      <SuperProductSheet
-        item={selected}
-        isAdding={selected ? pendingIds.has(selected.id) : false}
-        onAdd={add}
-        onRemove={remove}
-        onClose={() => setSelectedId(null)}
-      />
-    </>
   );
 }
 

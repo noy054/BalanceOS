@@ -25,7 +25,6 @@ import { ProductBasicInfoForm } from "../components/products/ProductBasicInfoFor
 import { ProductCategoryPicker } from "../components/products/ProductCategoryPicker";
 import { FormImageHeader } from "../components/form/FormImageHeader";
 import { FormToneProvider } from "../../../shared/components/FormTone";
-import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
 import { FOOD_ICONS } from "../hooks/useFoodCardModels";
 import { ProductNutritionForm } from "../components/products/ProductNutritionForm";
 import { ProductFormPrefill, useAddProductForm } from "../hooks/useAddProductForm";
@@ -217,7 +216,6 @@ export function AddProductScreen() {
   return (
     <FormToneProvider tone="glass">
     <SafeAreaView key={i18n.language} style={styles.root} edges={["top"]}>
-      <AmbientGlow intensity={0.3} />
       <ScreenHeader
         title={title}
         fallbackRoute="/(app)/pantry"

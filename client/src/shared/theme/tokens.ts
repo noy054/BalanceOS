@@ -33,6 +33,7 @@ export const fonts = {
   headingMedium: "Rubik_500Medium",
   headingSemibold: "Rubik_600SemiBold",
   headingBold: "Rubik_700Bold",
+  displayHeavy: "Rubik_800ExtraBold",
 };
 
 const tabularNums: TextStyle["fontVariant"] = ["tabular-nums"];

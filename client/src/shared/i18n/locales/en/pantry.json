@@ -547,7 +547,43 @@
       "SPORTS_NUTRITION": "Sports nutrition",
       "OTHER": "Other"
     },
-    "addWithServing": "Define serving and add"
+    "addWithServing": "Define serving and add",
+    "detail": {
+      "verified": "Verified product",
+      "back": "Back",
+      "loadFailed": "We couldn't load this product",
+      "retry": "Try again",
+      "per100g": "Per 100 g",
+      "per100ml": "Per 100 ml",
+      "perServing": "Per serving",
+      "kcal": "kcal",
+      "grams": "g",
+      "mg": "mg",
+      "calories": "Calories",
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fat",
+      "sugar": "of which sugars",
+      "saturatedFat": "of which saturated",
+      "fiber": "Fiber",
+      "sodium": "Sodium",
+      "salt": "Salt",
+      "nutritionTitle": "Nutrition facts",
+      "ingredientsTitle": "Ingredients",
+      "allergensTitle": "Allergens",
+      "brandTitle": "Brand details",
+      "unavailable": "Not available",
+      "ingredientsUnavailable": "The ingredient list isn't available for this product.",
+      "allergensUnavailable": "No allergen information is available for this product. Check the package.",
+      "brandUnavailable": "Brand details aren't available.",
+      "brand": "Brand",
+      "manufacturer": "Manufacturer",
+      "barcode": "Barcode",
+      "country": "Country",
+      "serving": "Serving size",
+      "expandA11y": "Show {{section}}",
+      "collapseA11y": "Hide {{section}}"
+    }
   },
   "recipeUsage": {
     "warning_one": "Heads up: this product is used in the recipe {{names}}. Removing it from your pantry will also remove it from that recipe.",
@@ -599,5 +635,20 @@
   "measure": {
     "grams": "{{value}} g",
     "milliliters": "{{value}} ml"
+  },
+  "filters": {
+    "all": "All",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "categories": "Categories",
+    "allCategories": "All categories",
+    "categoryTitle": "Filter by category",
+    "sortA11y": "Sort: {{sort}}",
+    "categoryNames": {
+      "BREAKFAST": "Breakfast",
+      "LUNCH": "Lunch",
+      "DINNER": "Dinner",
+      "SNACK": "Snacks"
+    }
   }
 }

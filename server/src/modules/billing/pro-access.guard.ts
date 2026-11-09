@@ -20,7 +20,7 @@ export class ProAccessGuard implements CanActivate {
     const user = request.user;
     if (!user) throw new UnauthorizedException();
     if (user.role === UserRole.ADMIN) return true;
-    if (await this.billing.hasProAccess(user.id)) return true;
+    if (await this.billing.hasFeatureAccess(user.id)) return true;
     throw new ForbiddenException({
       statusCode: 403,
       code: SUBSCRIPTION_REQUIRED,

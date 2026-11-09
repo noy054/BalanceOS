@@ -6,6 +6,7 @@ import { toJson } from './catalog-data';
 import { CatalogDepartment } from './catalog-departments';
 import { classifyCatalogItem } from './catalog-subcategories';
 import {
+  CATALOG_ITEM_DETAIL_SELECT,
   CATALOG_ITEM_PUBLIC_SELECT,
   ProductCatalogItemDto,
 } from './types/product-catalog.types';
@@ -39,6 +40,13 @@ export class ProductCatalogRepository {
       select: { archivedAt: true },
     });
     return Boolean(item?.archivedAt);
+  }
+
+  findDetailById(id: string) {
+    return this.prisma.productCatalogItem.findFirst({
+      where: { id, archivedAt: null },
+      select: CATALOG_ITEM_DETAIL_SELECT,
+    });
   }
 
   findById(id: string): Promise<ProductCatalogItemDto | null> {

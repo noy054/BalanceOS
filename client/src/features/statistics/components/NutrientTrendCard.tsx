@@ -382,7 +382,6 @@ const useStyles = () =>
         color: colors.textSecondary,
       },
       chartRow: {
-        direction: "ltr",
         gap: spacing.xs,
       },
       axis: {

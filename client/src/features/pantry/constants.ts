@@ -1,5 +1,6 @@
 export const PANTRY_ENDPOINTS = {
   BASE: "/pantry/products",
+  FREQUENT: "/pantry/products/frequent",
   BY_ID: (id: string) => `/pantry/products/${id}`,
   FROM_CATALOG: (catalogItemId: string) =>
     `/pantry/products/from-catalog/${encodeURIComponent(catalogItemId)}`,
@@ -61,8 +62,10 @@ export const SAVED_MEAL_ENDPOINTS = {
 
 export const PANTRY_QUERY_KEYS = {
   list: ["pantry", "products"] as const,
-  pages: (search: string, sort: string = "newest") => ["pantry", "products", "pages", search, sort] as const,
+  pages: (search: string, sort: string = "newest", focus: string = "all", category: string = "") =>
+    ["pantry", "products", "pages", search, sort, focus, category] as const,
   detail: (id: string) => ["pantry", "products", "detail", id] as const,
+  frequent: ["pantry", "products", "frequent"] as const,
 };
 
 export const RECIPE_QUERY_KEYS = {

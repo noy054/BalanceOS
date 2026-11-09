@@ -6,8 +6,14 @@ import { useTranslation } from "react-i18next";
 import { useDirection } from "../../../shared/hooks/useDirection";
 import { useAppTheme } from "../../../shared/theme";
 import { IconButton } from "../../../shared/components/ui/IconButton";
+import { ActionSheet } from "../../../shared/components/ui/ActionSheet";
 import { Collapsible } from "../../../shared/components/ui/Collapsible";
-import { formatCalories, formatGrams } from "../../../shared/helpers/formatNumber";
+import {
+  formatCalories,
+  formatGrams,
+} from "../../../shared/helpers/formatNumber";
+import { FoodThumb } from "../../pantry/components/food/FoodThumb";
+import { FOOD_ICONS } from "../../pantry/hooks/useFoodCardModels";
 import { useItemAmountLabel } from "../hooks/useItemAmountLabel";
 import { CopyTarget, MealEntrySummary, MealItemSummary } from "../types";
 import { MealItemIngredients } from "./MealItemIngredients";
@@ -24,6 +30,14 @@ type Props = {
   onCopy?: (target: CopyTarget) => void;
   onRemoveItem?: (item: MealItemSummary, mealLabel: string) => void;
 };
+
+const THUMB_WIDTH = 56;
+
+function fallbackIcon(item: MealItemSummary) {
+  if (item.source === "RECIPE") return FOOD_ICONS.recipe;
+  if (item.source === "SAVED_MEAL") return FOOD_ICONS.savedMeal;
+  return FOOD_ICONS.product;
+}
 
 export function MealSectionCard({
   date,
@@ -42,6 +56,7 @@ export function MealSectionCard({
   const dir = useDirection();
   const amountLabel = useItemAmountLabel();
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set());
+  const [menuItem, setMenuItem] = useState<MealItemSummary | null>(null);
 
   function toggleItem(id: string) {
     setOpenIds((prev) => {
@@ -56,118 +71,212 @@ export function MealSectionCard({
   const items = meal?.items ?? [];
   const hasItems = Boolean(meal) && items.length > 0;
   const isMealPending = meal ? Boolean(pendingIds?.has(meal.id)) : false;
-  const endText = { textAlign: dir.isRTL ? ("left" as const) : ("right" as const) };
 
   return (
-    <View style={[styles.card, isMealPending && styles.pending]}>
+    <View style={[styles.section, isMealPending && styles.pending]}>
       <View style={[styles.header, dir.row]}>
         <View style={[styles.titleRow, dir.row]}>
-          <Text style={[styles.mealLabel, dir.text]} numberOfLines={1} accessibilityRole="header">
+          <Text
+            style={[styles.mealLabel, dir.text]}
+            numberOfLines={1}
+            accessibilityRole="header"
+          >
             {mealLabel}
           </Text>
           {meal && hasItems ? (
             <Text style={styles.total} numberOfLines={1}>
-              {t("meals.itemCalories", { calories: formatCalories(meal.calories) })}
+              {t("meals.itemCalories", {
+                calories: formatCalories(meal.calories),
+              })}
             </Text>
           ) : null}
         </View>
-
-        <View style={styles.iconSpacer} />
-
         <IconButton
           icon="plus"
-          variant="accent"
-          size={40}
-          iconSize={22}
+          variant="glass"
+          size={34}
+          iconSize={20}
+          color={colors.accent}
           accessibilityLabel={t("meals.addToMeal", { meal: mealLabel })}
           onPress={() => onAdd(mealType)}
-          style={styles.endAction}
+          style={styles.emptyAdd}
         />
       </View>
 
       {hasItems ? (
         <Collapsible expanded={expanded}>
           <View style={styles.items}>
-            {items.map((item, index) => {
-              const isPending = Boolean(pendingIds?.has(item.id));
-              const amount = amountLabel(item);
-              const detail = [amount, t("meals.itemProtein", { protein: formatGrams(item.protein) })]
-                .filter(Boolean)
-                .join(" · ");
-
+            {items.map((item) => {
+              const isPending =
+                Boolean(pendingIds?.has(item.id)) || isMealPending;
               const isOpen = openIds.has(item.id);
+              const amount = amountLabel(item);
+              const protein = t("meals.itemProtein", {
+                protein: formatGrams(item.protein),
+              });
+              const detail = [amount, protein].filter(Boolean).join(" · ");
 
               return (
                 <View
                   key={item.id}
                   style={[
-                    styles.itemBlock,
-                    index === items.length - 1 && styles.itemRowLast,
+                    styles.itemCard,
+                    isOpen && styles.itemCardOpen,
                     isPending && styles.pending,
                   ]}
                 >
-                  <View style={[styles.itemRow, dir.row]}>
-                  <Pressable
-                    onPress={() => toggleItem(item.id)}
-                    disabled={isPending || isMealPending}
-                    accessibilityRole="button"
-                    accessibilityState={{ expanded: isOpen }}
-                    accessibilityLabel={`${item.name}, ${detail}, ${t("meals.itemCalories", {
-                      calories: formatCalories(item.calories),
-                    })}`}
-                    accessibilityHint={isOpen ? t("meals.collapseItemHint") : t("meals.expandItemHint")}
-                    style={({ pressed }) => [styles.itemMain, dir.row, pressed && styles.actionPressed]}
-                  >
-                    <MaterialCommunityIcons
-                      name={isOpen ? "chevron-up" : "chevron-down"}
-                      size={18}
-                      color={colors.textMuted}
-                    />
-                    <View style={styles.itemText}>
-                      <Text style={[styles.itemName, dir.text]} numberOfLines={2}>
-                        {item.name}
-                      </Text>
-                      <Text style={[styles.itemDetail, dir.text]} numberOfLines={1}>
-                        {detail}
-                      </Text>
-                    </View>
-
-                    <Text style={[styles.itemCalories, endText]} numberOfLines={1}>
-                      {formatCalories(item.calories)}
-                    </Text>
-                  </Pressable>
-
-                  {onRemoveItem ? (
-                    <IconButton
-                      icon="trash-can-outline"
-                      size={40}
-                      iconSize={20}
-                      color={colors.textMuted}
-                      accessibilityLabel={t("remove.itemA11y", { name: item.name })}
-                      onPress={() => onRemoveItem(item, mealLabel)}
-                      disabled={isPending || isMealPending}
-                    />
-                  ) : null}
-
-                  {onCopy ? (
-                    <IconButton
-                      icon="content-copy"
-                      size={40}
-                      iconSize={19}
-                      accessibilityLabel={t("meals.copyItemA11y", { name: item.name })}
-                      onPress={() => onCopy({ kind: "item", id: item.id, name: item.name })}
-                      disabled={isPending || isMealPending}
-                      style={styles.endAction}
-                    />
-                  ) : null}
+                  <View style={[styles.itemRowWrap, dir.row]}>
+                    <Pressable
+                      onPress={() => toggleItem(item.id)}
+                      disabled={isPending}
+                      accessibilityRole="button"
+                      accessibilityState={{ expanded: isOpen }}
+                      accessibilityLabel={`${item.name}, ${detail}, ${t(
+                        "meals.itemCalories",
+                        {
+                          calories: formatCalories(item.calories),
+                        },
+                      )}`}
+                      accessibilityHint={
+                        isOpen
+                          ? t("meals.collapseItemHint")
+                          : t("meals.expandItemHint")
+                      }
+                      style={({ pressed }) => [
+                        styles.itemRow,
+                        dir.row,
+                        (onCopy || onRemoveItem) && styles.itemRowWithMore,
+                        pressed && styles.pressed,
+                      ]}
+                    >
+                      {item.imageUrl ? (
+                        <View style={styles.thumb}>
+                          <FoodThumb
+                            imageUrl={item.imageUrl}
+                            fallbackIcon={fallbackIcon(item)}
+                            size={THUMB_WIDTH}
+                          />
+                        </View>
+                      ) : (
+                        <View style={[styles.thumb, styles.thumbIcon]}>
+                          <MaterialCommunityIcons
+                            name={fallbackIcon(item)}
+                            size={22}
+                            color={colors.textSecondary}
+                          />
+                        </View>
+                      )}
+                      <View style={[styles.itemText, dir.alignStart]}>
+                        <Text
+                          style={[styles.itemName, dir.text]}
+                          numberOfLines={2}
+                        >
+                          {item.name}
+                        </Text>
+                        <Text
+                          style={[styles.itemDetail, dir.text]}
+                          numberOfLines={1}
+                        >
+                          {amount ? (
+                            <>
+                              {amount}
+                              <Text style={styles.detailDivider}>
+                                {"  |  "}
+                              </Text>
+                            </>
+                          ) : null}
+                          {protein}
+                        </Text>
+                      </View>
+                      <View style={[styles.calorieBlock, dir.row]}>
+                        <Text style={styles.itemCalories} numberOfLines={1}>
+                          {formatCalories(item.calories)}
+                        </Text>
+                        <Text style={styles.itemCaloriesUnit} numberOfLines={1}>
+                          {t("meals.calUnit")}
+                        </Text>
+                      </View>
+                      <View style={styles.chevron}>
+                        <MaterialCommunityIcons
+                          name={isOpen ? "chevron-up" : "chevron-down"}
+                          size={18}
+                          color={colors.textPrimary}
+                        />
+                      </View>
+                    </Pressable>
+                    {onCopy || onRemoveItem ? (
+                      <IconButton
+                        icon="dots-horizontal"
+                        size={34}
+                        iconSize={20}
+                        color={colors.textSecondary}
+                        accessibilityLabel={t("meals.itemActionsA11y", {
+                          name: item.name,
+                        })}
+                        onPress={() => setMenuItem(item)}
+                        disabled={isPending}
+                        style={styles.moreButton}
+                      />
+                    ) : null}
                   </View>
-                  {isOpen ? <MealItemIngredients item={item} date={date} /> : null}
+
+                  {isOpen ? (
+                    <View style={styles.expanded}>
+                      <MealItemIngredients item={item} date={date} />
+                      <View style={[styles.footer, dir.row]}>
+                        <Text
+                          style={[styles.footerHint, dir.text]}
+                          numberOfLines={2}
+                        >
+                          {t("ingredients.dayOnly")}
+                        </Text>
+                      </View>
+                    </View>
+                  ) : null}
                 </View>
               );
             })}
           </View>
         </Collapsible>
       ) : null}
+
+      <ActionSheet
+        visible={menuItem !== null}
+        title={menuItem?.name}
+        actions={
+          menuItem
+            ? [
+                ...(onCopy
+                  ? [
+                      {
+                        key: "copy",
+                        label: t("meals.copyToMoreDays"),
+                        icon: "content-copy" as const,
+                        onPress: () =>
+                          onCopy({
+                            kind: "item",
+                            id: menuItem.id,
+                            name: menuItem.name,
+                          }),
+                      },
+                    ]
+                  : []),
+                ...(onRemoveItem
+                  ? [
+                      {
+                        key: "remove",
+                        label: t("remove.confirm"),
+                        icon: "trash-can-outline" as const,
+                        destructive: true,
+                        onPress: () => onRemoveItem(menuItem, mealLabel),
+                      },
+                    ]
+                  : []),
+              ]
+            : []
+        }
+        onClose={() => setMenuItem(null)}
+      />
     </View>
   );
 }

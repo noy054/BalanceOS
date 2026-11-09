@@ -67,7 +67,12 @@ export class BillingService {
     }));
   }
 
-  async hasProAccess(userId: string, now = new Date()): Promise<boolean> {
+  featureAccessOpen(): boolean {
+    return this.config.get<string>('BILLING_ENFORCE_ACCESS') !== 'true';
+  }
+
+  async hasFeatureAccess(userId: string, now = new Date()): Promise<boolean> {
+    if (this.featureAccessOpen()) return true;
     return hasProAccess(await this.repo.findSubscription(userId), now);
   }
 
@@ -80,6 +85,7 @@ export class BillingService {
     return {
       plan: pro ? ('PRO' as const) : ('FREE' as const),
       hasProAccess: pro,
+      hasFeatureAccess: pro || this.featureAccessOpen(),
       checkoutAvailable: this.provider.isConfigured(),
       plans: this.plans(),
       subscription: subscription

@@ -421,6 +421,7 @@ export class DayLogsRepository {
                 savedMealId: true,
                 pantryProduct: {
                   select: {
+                    imageUrl: true,
                     nutritionBasis: true,
                     servingSizeG: true,
                     servingSizeMl: true,
@@ -428,6 +429,8 @@ export class DayLogsRepository {
                     servingUnit: true,
                   },
                 },
+                pantryRecipe: { select: { imageUrl: true } },
+                savedMeal: { select: { imageUrl: true } },
                 components: {
                   select: COMPONENT_SELECT,
                   orderBy: { position: 'asc' },

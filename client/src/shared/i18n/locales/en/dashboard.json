@@ -1,6 +1,6 @@
 {
   "calories": {
-    "ofTargetShort": "of target",
+    "ofTargetShort": "of goal",
     "remaining": "Remaining Today",
     "unit": "Calories",
     "eaten": "Eaten",
@@ -25,7 +25,8 @@
     "ofTarget": "of {{target}} g",
     "overValue": "{{value}} over",
     "rowA11y": "{{name}}: {{eaten}} of {{target}} grams, {{left}} left",
-    "ofTargetShort": "{{target}} g"
+    "ofTargetShort": "{{target}} g",
+    "progressGrams": "{{current}}/{{target}} g"
   },
   "actions": {
     "addMeal": "Add Meal"
@@ -48,6 +49,8 @@
     "calUnit": "cal",
     "proUnit": "g pro",
     "andMore": "+{{count}} more",
+    "addItemToMeal": "Add item to meal",
+    "itemActionsA11y": "Actions for {{name}}",
     "copyToMoreDays": "Copy to other days",
     "sectionTitle": "Meals",
     "summary": "{{calories}} kcal · {{protein}} g protein",
@@ -140,7 +143,27 @@
     "removedItems": "This meal includes a product or recipe that was removed from your pantry, so it can’t be calculated. Edit the meal to remove or replace it.",
     "editMeal": "Edit meal",
     "enterQuantity": "Enter an amount to calculate",
-    "quantityPlaceholder": "Amount"
+    "quantityPlaceholder": "Amount",
+    "screenTitle": "Add food",
+    "chooseMeal": "Choose meal",
+    "mealPickerTitle": "Add to which meal?",
+    "mealSelectA11y": "Meal: {{meal}}. Tap to change",
+    "searchFood": "Search product or brand...",
+    "frequentTitle": "Frequently used",
+    "allProductsTitle": "All products",
+    "showAll": "Show all",
+    "showFrequent": "Show frequent",
+    "addA11y": "Select {{name}}",
+    "selectedA11y": "{{name}} selected",
+    "back": "Back",
+    "categories": {
+      "all": "All",
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fats",
+      "vegetables": "Vegetables",
+      "fruits": "Fruits"
+    }
   },
   "header": {
     "today": "Today"

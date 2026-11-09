@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { RefreshControl, ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
@@ -19,6 +19,7 @@ import { useSelectedDate } from "../hooks/useSelectedDate";
 import { HomeAnnouncements } from "../../announcements/components/HomeAnnouncements";
 import { addDays } from "../../../shared/helpers/dateKey";
 import { useMealRemoval } from "../hooks/useMealRemoval";
+import { DAY_LOG_QUERY_KEYS } from "../constants";
 import { CopyTarget, DayLogSummary, MealEntrySummary } from "../types";
 import { useNutritionSettings } from "../../settings/hooks/useSettings";
 import { useAppTheme } from "../../../shared/theme";
@@ -72,6 +73,12 @@ export function HomeDashboardScreen() {
     prefetchDay(queryClient, addDays(date, -1));
     prefetchDay(queryClient, addDays(date, 1));
   }, [queryClient, date]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void queryClient.refetchQueries({ queryKey: DAY_LOG_QUERY_KEYS.day(date), stale: true });
+    }, [queryClient, date]),
+  );
   const { data: settings } = useNutritionSettings();
 
   const meals = useMemo(() => mealsData?.meals ?? [], [mealsData]);
@@ -149,7 +156,7 @@ export function HomeDashboardScreen() {
   }
 
   return (
-    <TabScreenLayout activeTab="home" backgroundColor={colors.canvas}>
+    <TabScreenLayout activeTab="home" backgroundColor={colors.homeCanvas}>
       <View key={i18n.language} style={styles.root}>
         <ScrollView
           style={styles.scroll}

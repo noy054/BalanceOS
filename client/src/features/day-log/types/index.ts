@@ -55,6 +55,7 @@ export type MealItemServing = {
 export type MealItemSummary = MealMacros & {
   id: string;
   name: string;
+  imageUrl?: string | null;
   source?: MealItemSource | null;
   grams?: number | null;
   servings?: number | null;

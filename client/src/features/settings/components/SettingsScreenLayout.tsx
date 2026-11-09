@@ -4,7 +4,6 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { FormToneProvider } from "../../../shared/components/FormTone";
-import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
 import { spacing, useThemedStyles } from "../../../shared/theme";
 
 type Props = {
@@ -19,7 +18,6 @@ export function SettingsScreenLayout({ title, rightElement, children }: Props) {
   return (
     <FormToneProvider tone="glass">
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <AmbientGlow intensity={0.45} />
         <ScreenHeader title={title} rightElement={rightElement} />
         <View style={styles.body}>{children}</View>
       </SafeAreaView>

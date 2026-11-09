@@ -13,7 +13,9 @@ type Props = {
   tone?: "surface" | "muted" | "glass";
   autoFocus?: boolean;
   trailing?: ReactNode;
+  accessory?: ReactNode;
   style?: StyleProp<ViewStyle>;
+  fieldStyle?: StyleProp<ViewStyle>;
 };
 
 export function SearchField({
@@ -23,7 +25,9 @@ export function SearchField({
   tone = "surface",
   autoFocus,
   trailing,
+  accessory,
   style,
+  fieldStyle,
 }: Props) {
   const { t } = useTranslation("common");
   const { colors } = useAppTheme();
@@ -32,7 +36,7 @@ export function SearchField({
 
   return (
     <View style={[styles.row, dir.row, style]}>
-      <View style={[styles.field, tone === "muted" && styles.fieldMuted, tone === "glass" && styles.fieldGlass, dir.row]}>
+      <View style={[styles.field, tone === "muted" && styles.fieldMuted, tone === "glass" && styles.fieldGlass, dir.row, fieldStyle]}>
         <MaterialCommunityIcons name="magnify" size={20} color={colors.textMuted} />
 
         <TextInput
@@ -57,6 +61,7 @@ export function SearchField({
             <MaterialCommunityIcons name="close" size={18} color={colors.textMuted} />
           </Pressable>
         ) : null}
+        {accessory}
       </View>
 
       {trailing}

@@ -8,7 +8,6 @@ import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { Button } from "../../../shared/components/ui/Button";
 import { StateView } from "../../../shared/components/ui/StateView";
 import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
-import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
 import { FormToneProvider } from "../../../shared/components/FormTone";
 import { useCreateRecipe, useRecipe, useUpdateRecipe } from "../hooks/useRecipes";
 import { usePantryProducts } from "../hooks/usePantry";
@@ -137,7 +136,6 @@ export function AddRecipeScreen() {
   return (
     <FormToneProvider tone="glass">
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <AmbientGlow intensity={0.3} />
         <ScreenHeader title={title} />
 
         <KeyboardAvoidingView style={styles.flex} behavior={keyboardBehavior}>

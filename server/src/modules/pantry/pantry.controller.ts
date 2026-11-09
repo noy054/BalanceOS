@@ -13,7 +13,10 @@ import {
 import { PantryService } from './pantry.service';
 import { CreatePantryProductDto } from './dto/create-pantry-product.dto';
 import { UpdatePantryProductDto } from './dto/update-pantry-product.dto';
-import { ListPantryProductsDto } from './dto/list-pantry-products.dto';
+import {
+  FrequentPantryProductsDto,
+  ListPantryProductsDto,
+} from './dto/list-pantry-products.dto';
 import { AddFromCatalogDto } from './dto/add-from-catalog.dto';
 import { JwtGuard } from '../../common/guards/jwt.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -37,6 +40,14 @@ export class PantryController {
   }
 
   // barcode route must come before :id to avoid parameter collision
+  @Get('frequent')
+  frequent(
+    @CurrentUser() user: UserPublic,
+    @Query() dto: FrequentPantryProductsDto,
+  ): Promise<PantryProductModel[]> {
+    return this.service.frequent(user.id, dto.limit, dto.today);
+  }
+
   @Get('barcode/:barcode')
   getByBarcode(
     @CurrentUser() user: UserPublic,

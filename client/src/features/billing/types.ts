@@ -46,6 +46,7 @@ export type BillingPayment = {
 export type BillingStatus = {
   plan: "FREE" | "PRO";
   hasProAccess: boolean;
+  hasFeatureAccess: boolean;
   checkoutAvailable: boolean;
   plans: BillingPlan[];
   subscription: SubscriptionSummary | null;

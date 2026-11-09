@@ -19,7 +19,13 @@ export const useStyles = () =>
 
       toolbar: {
         paddingHorizontal: spacing.md,
-        paddingVertical: spacing.ms,
+        paddingTop: spacing.ms,
+        paddingBottom: spacing.sm,
+      },
+
+      filters: {
+        paddingHorizontal: spacing.md,
+        paddingBottom: spacing.ms,
       },
 
       content: {

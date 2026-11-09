@@ -18,6 +18,7 @@ import {
   CatalogBrowseItemDto,
   CatalogDepartmentCountDto,
   CatalogSubcategoryCountDto,
+  ProductCatalogItemDetailDto,
   ProductCatalogItemDto,
 } from './types/product-catalog.types';
 import { CATALOG_DEPARTMENTS, CatalogDepartment } from './catalog-departments';
@@ -79,6 +80,20 @@ export class ProductCatalogService {
     );
     this.inFlight.set(barcode.canonical, lookup);
     return lookup;
+  }
+
+  async getDetail(
+    userId: string,
+    id: string,
+  ): Promise<ProductCatalogItemDetailDto> {
+    const item = await this.repo.findDetailById(id);
+    if (!item) throw new NotFoundException('Product not found in catalog');
+    const [match] = await this.repo.findPantryMatches(
+      userId,
+      [item.id],
+      item.normalizedBarcode ? [item.normalizedBarcode] : [],
+    );
+    return { ...item, pantryProductId: match?.id ?? null };
   }
 
   async getById(id: string): Promise<ProductCatalogItemDto> {

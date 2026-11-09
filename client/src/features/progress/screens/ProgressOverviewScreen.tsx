@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
-import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
 import { Button } from "../../../shared/components/ui/Button";
 import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
 import { FormToneProvider } from "../../../shared/components/FormTone";
@@ -145,7 +144,6 @@ export function ProgressOverviewScreen() {
   return (
     <FormToneProvider tone="glass">
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <AmbientGlow intensity={0.45} />
         <ScreenHeader title={t("overview.title")} />
         {body}
         {data && data.entryCount > 0 ? (

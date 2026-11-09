@@ -19,7 +19,6 @@ import { FOOD_ICONS } from "../hooks/useFoodCardModels";
 import { ProductCalculatorCard } from "../components/products/ProductCalculatorCard";
 import { getDirectionStyles, useStyles } from "./styles/ProductDetailScreen.styles";
 import { keyboardBehavior } from "../../../shared/components/ui/KeyboardAvoider";
-import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
 import { Button } from "../../../shared/components/ui/Button";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useAppTheme } from "../../../shared/theme";
@@ -124,7 +123,6 @@ export function ProductDetailScreen({ id, ingredient = null }: Props) {
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
-      <AmbientGlow intensity={0.35} />
       <ScreenHeader
         title={ingredient ? t("ingredientEdit.title") : t("productDetail.title")}
         fallbackRoute="/(app)/pantry"

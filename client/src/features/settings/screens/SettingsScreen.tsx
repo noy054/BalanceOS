@@ -5,7 +5,6 @@ import { router } from "expo-router";
 
 import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
 import { TabHeader } from "../../../shared/components/TabHeader";
-import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
 import { FormToneProvider } from "../../../shared/components/FormTone";
 import { useAppTheme } from "../../../shared/theme";
 import { useDirection } from "../../../shared/hooks/useDirection";
@@ -58,7 +57,6 @@ export function SettingsScreen() {
 
   return (
     <TabScreenLayout activeTab="settings" backgroundColor={colors.canvas}>
-      <AmbientGlow intensity={0.6} />
       <FormToneProvider tone="glass">
         <ScrollView
           style={styles.scroll}

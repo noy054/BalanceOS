@@ -88,7 +88,7 @@ export function SelectionPanel({
 
       {hasQuantity ? (
         <View style={[styles.controls, dir.row]}>
-          <View style={[styles.stepper, dir.row]}>
+          <View style={[styles.stepper, styles.stepperLtr]}>
             <IconButton
               icon="minus"
               variant="tonal"
@@ -181,6 +181,9 @@ const useStyles = () =>
       controls: {
         alignItems: 'center',
         gap: spacing.sm,
+      },
+      stepperLtr: {
+        flexDirection: "row",
       },
       stepper: {
         alignItems: 'center',

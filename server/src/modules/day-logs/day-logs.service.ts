@@ -342,9 +342,19 @@ export class DayLogsService {
           carbs += s.carbs ?? 0;
           fat += s.fat ?? 0;
           fiber += s.fiber ?? 0;
+          const { imageUrl: productImage, ...serving } = item.pantryProduct ?? {
+            imageUrl: null,
+          };
           return {
             id: item.id,
             name: s.name,
+            imageUrl:
+              productImage ??
+              item.pantryRecipe?.imageUrl ??
+              item.savedMeal?.imageUrl ??
+              item.components.find((component) => component.imageUrl)
+                ?.imageUrl ??
+              null,
             source: item.pantryProductId
               ? ('PRODUCT' as const)
               : item.pantryRecipeId
@@ -355,7 +365,7 @@ export class DayLogsService {
             grams: item.grams,
             servings: item.servings,
             milliliters: item.milliliters,
-            serving: item.pantryProduct,
+            serving: item.pantryProduct ? serving : null,
             calories: s.calories,
             protein: s.protein,
             carbs: s.carbs ?? 0,

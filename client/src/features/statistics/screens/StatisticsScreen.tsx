@@ -8,7 +8,6 @@ import { TabScreenLayout } from "../../../shared/components/TabScreenLayout";
 import { TabHeader } from "../../../shared/components/TabHeader";
 import { SegmentedControl } from "../../../shared/components/ui/SegmentedControl";
 import { StateView } from "../../../shared/components/ui/StateView";
-import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
 import { useAppTheme } from "../../../shared/theme";
 import { useMacroVisibility } from "../../pantry/hooks/useMacroVisibility";
 import { ProgressEntryCard } from "../../progress/components/ProgressEntryCard";
@@ -72,7 +71,6 @@ export function StatisticsScreen() {
 
   return (
     <TabScreenLayout activeTab="statistics" backgroundColor={colors.canvas}>
-      <AmbientGlow intensity={0.6} />
       <View style={styles.root}>
         <TabHeader title={t("title")} subtitle={t("subtitle")} />
 

@@ -11,6 +11,7 @@ import {
   CatalogBrowseItemDto,
   CatalogDepartmentCountDto,
   CatalogSubcategoryCountDto,
+  ProductCatalogItemDetailDto,
   ProductCatalogItemDto,
 } from './types/product-catalog.types';
 
@@ -47,7 +48,10 @@ export class ProductCatalogController {
   }
 
   @Get(':id')
-  getById(@Param('id') id: string): Promise<ProductCatalogItemDto> {
-    return this.service.getById(id);
+  getById(
+    @CurrentUser() user: UserPublic,
+    @Param('id') id: string,
+  ): Promise<ProductCatalogItemDetailDto> {
+    return this.service.getDetail(user.id, id);
   }
 }

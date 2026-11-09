@@ -6,7 +6,7 @@
     "eaten": "אכלת",
     "target": "יעד",
     "summary": "{{eaten}} / {{target}} קלוריות",
-    "remainingLabel": "נשאר להיום",
+    "remainingLabel": "נשאר לך היום",
     "overTargetLabel": "מעל היעד",
     "targetReachedLabel": "היעד הושג",
     "unitShort": "קק״ל",
@@ -25,7 +25,8 @@
     "ofTarget": "מתוך {{target}} ג׳",
     "overValue": "{{value}} מעל",
     "rowA11y": "{{name}}: {{eaten}} מתוך {{target}} גרם, נותרו {{left}}",
-    "ofTargetShort": "{{target}} ג׳"
+    "ofTargetShort": "{{target}} ג׳",
+    "progressGrams": "{{current}}/{{target}} ג׳"
   },
   "actions": {
     "addMeal": "הוסף ארוחה"
@@ -48,6 +49,8 @@
     "calUnit": "קל'",
     "proUnit": "גר' חלב'",
     "andMore": "+{{count}} עוד",
+    "addItemToMeal": "הוספת פריט לארוחה",
+    "itemActionsA11y": "פעולות עבור {{name}}",
     "copyToMoreDays": "העתקה לימים אחרים",
     "sectionTitle": "ארוחות",
     "summary": "{{calories}} קק״ל · {{protein}} ג׳ חלבון",
@@ -144,7 +147,27 @@
     "removedItems": "הארוחה כוללת מוצר או מתכון שהוסרו מהמזווה, ולכן אי אפשר לחשב אותה. ערכו את הארוחה כדי להסיר או להחליף אותם.",
     "editMeal": "עריכת ארוחה",
     "enterQuantity": "הזינו כמות כדי לחשב",
-    "quantityPlaceholder": "כמות"
+    "quantityPlaceholder": "כמות",
+    "screenTitle": "הוספת מזון",
+    "chooseMeal": "בחירת ארוחה",
+    "mealPickerTitle": "לאיזו ארוחה להוסיף?",
+    "mealSelectA11y": "ארוחה: {{meal}}. הקשה לשינוי",
+    "searchFood": "חיפוש מוצר או מותג...",
+    "frequentTitle": "מוצרים נפוצים",
+    "allProductsTitle": "כל המוצרים",
+    "showAll": "הצג הכל",
+    "showFrequent": "הצג נפוצים",
+    "addA11y": "בחירת {{name}}",
+    "selectedA11y": "{{name}} נבחר",
+    "back": "חזרה",
+    "categories": {
+      "all": "הכל",
+      "protein": "חלבונים",
+      "carbs": "פחמימות",
+      "fat": "שומנים",
+      "vegetables": "ירקות",
+      "fruits": "פירות"
+    }
   },
   "header": {
     "today": "היום"

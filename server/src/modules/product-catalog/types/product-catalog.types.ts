@@ -36,6 +36,20 @@ export const CATALOG_ITEM_PUBLIC_SELECT = {
   updatedAt: true,
 } as const satisfies Prisma.ProductCatalogItemSelect;
 
+export const CATALOG_ITEM_DETAIL_SELECT = {
+  ...CATALOG_ITEM_PUBLIC_SELECT,
+  ingredientsText: true,
+  allergensText: true,
+  manufacturer: true,
+  category: true,
+  subCategory: true,
+  countryCode: true,
+} as const satisfies Prisma.ProductCatalogItemSelect;
+
+export type ProductCatalogItemDetailDto = Prisma.ProductCatalogItemGetPayload<{
+  select: typeof CATALOG_ITEM_DETAIL_SELECT;
+}> & { pantryProductId: string | null };
+
 export const CATALOG_ITEM_REVIEW_SELECT = {
   ...CATALOG_ITEM_PUBLIC_SELECT,
   externalId: true,

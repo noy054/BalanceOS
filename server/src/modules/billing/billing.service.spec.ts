@@ -213,3 +213,33 @@ describe('PayPlusProvider.verifyCallback', () => {
     ).toBeNull();
   });
 });
+
+describe('BillingService feature access', () => {
+  function service(values: Record<string, string>, subscription: unknown) {
+    const repo = {
+      findSubscription: jest.fn().mockResolvedValue(subscription),
+    };
+    const provider = { name: 'test' } as unknown as PaymentProvider;
+    return {
+      repo,
+      billing: new BillingService(
+        repo as unknown as BillingRepository,
+        {} as UsersService,
+        {} as BillingRenewalService,
+        config(values),
+        provider,
+      ),
+    };
+  }
+
+  it('opens every feature while enforcement is off', async () => {
+    const { billing, repo } = service({}, null);
+    await expect(billing.hasFeatureAccess('u1')).resolves.toBe(true);
+    expect(repo.findSubscription).not.toHaveBeenCalled();
+  });
+
+  it('requires an active subscription once enforcement is on', async () => {
+    const { billing } = service({ BILLING_ENFORCE_ACCESS: 'true' }, null);
+    await expect(billing.hasFeatureAccess('u1')).resolves.toBe(false);
+  });
+});

@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
+import { withAlpha } from "../../../shared/helpers/progressColor";
 import { useDirection } from "../../../shared/hooks/useDirection";
 import {
   fonts,
@@ -22,7 +23,7 @@ import {
 
 const COMMIT_DELAY_MS = 500;
 const SERVING_MULTIPLIERS = [0.5, 1, 2, 3] as const;
-const CONTROL_HEIGHT = 36;
+const CONTROL_HEIGHT = 32;
 
 export type AmountChange = ReturnType<EditableAmount["toPayload"]>;
 
@@ -133,7 +134,7 @@ export function InlineQuantityEditor({
 
   return (
     <View style={styles.editor}>
-      <View style={[styles.stepper, focused && styles.stepperFocused, dir.row]}>
+      <View style={[styles.stepper, focused && styles.stepperFocused, styles.stepperRow]}>
         <StepButton
           icon="minus"
           label={t("ingredients.decrease", { name })}
@@ -234,12 +235,16 @@ function StepButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled }}
-      style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+      style={({ pressed }) => [
+        styles.button,
+        icon === "plus" && styles.buttonAccent,
+        pressed && (icon === "plus" ? styles.buttonAccentPressed : styles.buttonPressed),
+      ]}
     >
       <MaterialCommunityIcons
         name={icon}
-        size={18}
-        color={disabled ? colors.textMuted : colors.textPrimary}
+        size={16}
+        color={disabled ? colors.textMuted : icon === "plus" ? colors.accent : colors.textPrimary}
       />
     </Pressable>
   );
@@ -253,21 +258,18 @@ const useStyles = () =>
       },
       multipliers: {
         justifyContent: "space-between",
-        gap: spacing.xs,
+        gap: 6,
       },
       multiplier: {
         flex: 1,
-        height: 30,
+        height: 26,
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: radius.round,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.glassBorder,
-        backgroundColor: colors.surface,
+        borderRadius: 8,
+        backgroundColor: withAlpha(colors.gloss, 0.05),
       },
       multiplierSelected: {
-        borderColor: colors.accentFill,
-        backgroundColor: colors.accentFill,
+        backgroundColor: withAlpha(colors.calorieGauge, 0.2),
       },
       multiplierText: {
         ...typography.caption,
@@ -276,36 +278,47 @@ const useStyles = () =>
         color: colors.textSecondary,
       },
       multiplierTextSelected: {
-        color: colors.onAccent,
+        color: colors.accent,
       },
       stepper: {
         alignItems: "center",
-        height: CONTROL_HEIGHT + 4,
-        padding: 2,
-        borderRadius: radius.round,
+        height: CONTROL_HEIGHT,
+        padding: 3,
+        borderRadius: CONTROL_HEIGHT / 2,
         borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.glassBorder,
-        backgroundColor: colors.surface,
+        borderColor: withAlpha(colors.gloss, 0.08),
+        backgroundColor: withAlpha(colors.canvas, 0.55),
+      },
+      stepperRow: {
+        flexDirection: "row",
       },
       stepperFocused: {
-        borderColor: colors.accent,
+        borderColor: withAlpha(colors.calorieGauge, 0.6),
       },
       button: {
-        width: CONTROL_HEIGHT + 4,
-        height: CONTROL_HEIGHT,
+        width: 36,
+        height: CONTROL_HEIGHT - 6,
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: radius.round,
-        backgroundColor: colors.surfaceMuted,
+        borderRadius: (CONTROL_HEIGHT - 6) / 2,
+        backgroundColor: withAlpha(colors.gloss, 0.1),
       },
       buttonPressed: {
-        backgroundColor: colors.border,
+        backgroundColor: withAlpha(colors.gloss, 0.18),
+      },
+      buttonAccent: {
+        backgroundColor: withAlpha(colors.calorieGauge, 0.28),
+        backgroundImage: `linear-gradient(180deg, ${withAlpha(colors.calorieGauge, 0.42)} 0%, ${withAlpha(colors.calorieGaugeDeep, 0.5)} 100%)`,
+      },
+      buttonAccentPressed: {
+        backgroundColor: withAlpha(colors.calorieGauge, 0.4),
       },
       field: {
-        width: 84,
+        width: 64,
         alignItems: "center",
+        justifyContent: "center",
         gap: 3,
-        paddingHorizontal: spacing.xs,
+        paddingHorizontal: 4,
       },
       input: {
         flex: 1,
@@ -320,7 +333,7 @@ const useStyles = () =>
       unit: {
         ...typography.caption,
         color: colors.textSecondary,
-        maxWidth: 44,
+        maxWidth: 40,
       },
     }),
   );

@@ -190,7 +190,6 @@ const useStyles = () =>
       },
       chart: {
         flexDirection: "row",
-        direction: "ltr",
         alignItems: "flex-end",
       },
       slot: {

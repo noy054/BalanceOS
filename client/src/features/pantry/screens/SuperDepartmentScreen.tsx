@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { SearchField } from "../../../shared/components/ui/SearchField";
-import { AmbientGlow } from "../../../shared/components/ui/AmbientGlow";
 import { spacing, useThemedStyles } from "../../../shared/theme";
 import { useCatalogBrowse, useCatalogSubcategories } from "../hooks/useSuperCatalog";
 import { SuperProductList } from "../components/super/SuperProductList";
@@ -28,7 +27,6 @@ export function SuperDepartmentScreen({ department }: Props) {
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
-      <AmbientGlow intensity={0.3} />
       <ScreenHeader title={name} fallbackRoute="/(app)/pantry/super" />
 
       <SearchField

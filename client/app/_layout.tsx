@@ -14,6 +14,7 @@ import {
   Rubik_500Medium,
   Rubik_600SemiBold,
   Rubik_700Bold,
+  Rubik_800ExtraBold,
 } from "@expo-google-fonts/rubik";
 
 import "../src/shared/i18n/i18n";
@@ -82,6 +83,7 @@ export default function RootLayout() {
     Rubik_500Medium,
     Rubik_600SemiBold,
     Rubik_700Bold,
+    Rubik_800ExtraBold,
   });
   const [initialThemeMode, setInitialThemeMode] = useState<AppThemeMode>("DARK");
 

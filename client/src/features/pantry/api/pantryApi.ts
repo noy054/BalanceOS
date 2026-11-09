@@ -3,6 +3,7 @@ import { CATALOG_ENDPOINTS, PANTRY_ENDPOINTS } from '../constants';
 import {
   AddFromCatalogPayload,
   CatalogBrowseItem,
+  CatalogProductDetail,
   CatalogDepartment,
   CatalogDepartmentCount,
   CatalogSubcategoryCount,
@@ -10,9 +11,11 @@ import {
   Page,
   PantryProduct,
   ProductCatalogProduct,
+  ProductCategory,
   UpdatePantryProductPayload,
 } from '../types';
 import { PantrySort } from "../helpers/pantrySort";
+import { FoodCategory } from "../helpers/pantryFilters";
 
 export const pantryApi = {
   list(params: {
@@ -20,6 +23,8 @@ export const pantryApi = {
     cursor?: string;
     limit?: number;
     sort?: PantrySort;
+    focus?: Exclude<FoodCategory, "all">;
+    category?: ProductCategory;
   }): Promise<Page<PantryProduct>> {
     return apiClient
       .get<Page<PantryProduct>>(PANTRY_ENDPOINTS.BASE, { params })
@@ -38,9 +43,15 @@ export const pantryApi = {
       .then((r) => r.data);
   },
 
-  getCatalogItem(id: string): Promise<ProductCatalogProduct> {
+  frequent(limit: number, today: string): Promise<PantryProduct[]> {
     return apiClient
-      .get<ProductCatalogProduct>(CATALOG_ENDPOINTS.BY_ID(id))
+      .get<PantryProduct[]>(PANTRY_ENDPOINTS.FREQUENT, { params: { limit, today } })
+      .then((r) => r.data);
+  },
+
+  getCatalogItem(id: string): Promise<CatalogProductDetail> {
+    return apiClient
+      .get<CatalogProductDetail>(CATALOG_ENDPOINTS.BY_ID(id))
       .then((r) => r.data);
   },
 

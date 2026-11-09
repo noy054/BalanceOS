@@ -40,7 +40,6 @@ const useStyles = () =>
     StyleSheet.create({
       row: {
         flexDirection: "row",
-        direction: "ltr",
         alignItems: "flex-end",
         gap: 1,
       },

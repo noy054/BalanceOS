@@ -6,16 +6,13 @@ import { useTranslation } from "react-i18next";
 import { CalorieRibbon } from "../../../shared/components/ui/CalorieRibbon";
 import { useDirection } from "../../../shared/hooks/useDirection";
 import { useAppTheme } from "../../../shared/theme";
-import {
-  formatCalories,
-  formatGrams,
-} from "../../../shared/helpers/formatNumber";
+import { formatCalories, formatGrams } from "../../../shared/helpers/formatNumber";
 import { macroColor } from "../../../shared/helpers/macroColors";
-import { mixColors, withAlpha } from "../../../shared/helpers/progressColor";
+import { withAlpha } from "../../../shared/helpers/progressColor";
 import { MacroItem } from "../types";
 import { MACRO_CONFIG } from "../constants/macros";
 import { calorieStatus } from "../helpers/calorieStatus";
-import { macroCardStyle, useStyles } from "./styles/DailySummaryCard.styles";
+import { HERO_SCALE, macroCardStyle, useStyles } from "./styles/DailySummaryCard.styles";
 
 type Props = {
   eaten: number;
@@ -25,57 +22,32 @@ type Props = {
   showPercentages?: boolean;
 };
 
-function heroNumberSize(text: string, gaugeWidth: number) {
-  const digits = text.replace(/[^0-9]/g, "").length;
-  const separators = text.length - digits;
-  const room = gaugeWidth * 0.52;
-  return Math.round(Math.min(gaugeWidth * (gaugeWidth < 290 ? 0.185 : 0.205), room / (digits * 0.6 + separators * 0.3)));
-}
-
 function percentOf(current: number, target: number) {
   return target > 0 ? Math.min(Math.round((current / target) * 100), 999) : 0;
 }
 
-export function DailySummaryCard({
-  eaten,
-  target,
-  macros,
-  isToday = true,
-  showPercentages = false,
-}: Props) {
+function heroNumberSize(text: string, ribbonWidth: number) {
+  const digits = text.replace(/[^0-9]/g, "").length;
+  const separators = text.length - digits;
+  const room = ribbonWidth * 0.5;
+  return Math.round(Math.min(ribbonWidth * HERO_SCALE.value, room / (digits * 0.62 + separators * 0.28)));
+}
+
+export function DailySummaryCard({ eaten, target, macros, isToday = true, showPercentages = false }: Props) {
   const { t } = useTranslation("dashboard");
   const styles = useStyles();
   const dir = useDirection();
   const { colors, resolvedTheme } = useAppTheme();
   const { width } = useWindowDimensions();
-
-  const gaugeWidth = Math.round(Math.min(Math.max(width * 0.84, 260), 368));
   const dark = resolvedTheme === "dark";
-  const palette = useMemo(
-    () => ({
-      color: colors.calorieGauge,
-      deep: colors.calorieGaugeDeep,
-      edge: dark ? mixColors(colors.calorieGauge, colors.gloss, 0.35) : colors.accent,
-      canvas: colors.canvas,
-      surface: colors.surface,
-      gloss: colors.gloss,
-    }),
-    [colors, dark],
-  );
+
+  const ribbonWidth = Math.round(Math.min(width * HERO_SCALE.ribbon, 470));
   const cardStyles = useMemo(
-    () =>
-      Object.fromEntries(
-        macros.map((macro) => [macro.key, macroCardStyle(macroColor(macro.key, colors), dark, colors.gloss)]),
-      ),
+    () => Object.fromEntries(macros.map((macro) => [macro.key, macroCardStyle(macroColor(macro.key, colors), dark, colors.gloss)])),
     [macros, colors, dark],
   );
 
-  const {
-    isOver: isOverTarget,
-    isReached: isTargetReached,
-    progress,
-  } = calorieStatus(eaten, target);
-
+  const { isOver: isOverTarget, isReached: isTargetReached } = calorieStatus(eaten, target);
   const percent = percentOf(eaten, target);
 
   const mainLabel = isOverTarget
@@ -86,13 +58,11 @@ export function DailySummaryCard({
         ? t("calories.remainingLabel")
         : t("calories.remainingDayLabel");
 
-  const mainNumber = isOverTarget
-    ? eaten - target
-    : Math.max(target - eaten, 0);
-
+  const mainNumber = isOverTarget ? eaten - target : Math.max(target - eaten, 0);
   const unit = t("calories.unitShort");
   const numberText = formatCalories(mainNumber);
-  const numberSize = heroNumberSize(numberText, gaugeWidth);
+  const numberSize = heroNumberSize(numberText, ribbonWidth);
+  const badgeSize = Math.round(ribbonWidth * HERO_SCALE.badgeValue);
 
   return (
     <View style={styles.container}>
@@ -100,54 +70,57 @@ export function DailySummaryCard({
         style={styles.hero}
         accessible
         accessibilityRole="progressbar"
-        accessibilityLabel={`${mainLabel}: ${formatCalories(
-          mainNumber,
-        )} ${unit}. ${t("calories.progressA11y", {
+        accessibilityLabel={`${mainLabel}: ${numberText} ${unit}. ${t("calories.progressA11y", {
           eaten: formatCalories(eaten),
           target: formatCalories(target),
         })}`}
-        accessibilityValue={{
-          min: 0,
-          max: 100,
-          now: Math.min(percent, 100),
-        }}
+        accessibilityValue={{ min: 0, max: 100, now: Math.min(percent, 100) }}
       >
         <CalorieRibbon
-          width={gaugeWidth}
-          progress={progress}
-          palette={palette}
-          dark={dark}
-          badge={
-            <>
-              <Text style={styles.badgeValue} numberOfLines={1}>{`${percent}%`}</Text>
-              <Text style={styles.badgeLabel} numberOfLines={1}>
-                {t("calories.ofTargetShort")}
-              </Text>
-            </>
+          width={ribbonWidth}
+          icon={
+            <MaterialCommunityIcons
+              name="fire"
+              size={Math.round(ribbonWidth * HERO_SCALE.icon)}
+              color={dark ? colors.calorieGauge : colors.accent}
+            />
           }
-        >
-          <MaterialCommunityIcons name="fire" size={gaugeWidth < 290 ? 20 : 24} color={dark ? colors.calorieGauge : colors.accent} />
-
-          <Text style={styles.mainLabel} numberOfLines={1} maxFontSizeMultiplier={1.2}>
-            {mainLabel}
-          </Text>
-
-          <Text
-            style={[styles.mainNumber, { fontSize: numberSize, lineHeight: Math.round(numberSize * 1.1) }]}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.7}
-            maxFontSizeMultiplier={1}
-          >
-            {numberText}
-          </Text>
-
-          <Text style={styles.mainTarget} numberOfLines={1} maxFontSizeMultiplier={1.2}>
-            {t("calories.ofTargetCalories", {
-              target: formatCalories(target),
-            })}
-          </Text>
-        </CalorieRibbon>
+          label={
+            <Text style={styles.mainLabel} numberOfLines={1} maxFontSizeMultiplier={1.2}>
+              {mainLabel}
+            </Text>
+          }
+          value={
+            <Text
+              style={[styles.mainNumber, { fontSize: numberSize, lineHeight: Math.round(numberSize * 1.18) }]}
+              numberOfLines={1}
+              maxFontSizeMultiplier={1}
+            >
+              {numberText}
+            </Text>
+          }
+          caption={
+            <Text style={styles.mainTarget} numberOfLines={1} maxFontSizeMultiplier={1.2}>
+              {t("calories.ofTargetCalories", { target: formatCalories(target) })}
+            </Text>
+          }
+          badgeValue={
+            <Text
+              style={[styles.badgeValue, { fontSize: badgeSize, lineHeight: Math.round(badgeSize * 1.2) }]}
+              numberOfLines={1}
+              maxFontSizeMultiplier={1}
+            >{`${percent}%`}</Text>
+          }
+          badgeLabel={
+            <Text
+              style={[styles.badgeLabel, { fontSize: Math.min(11, Math.round(ribbonWidth * 0.031)) }]}
+              numberOfLines={1}
+              maxFontSizeMultiplier={1}
+            >
+              {t("calories.ofTargetShort")}
+            </Text>
+          }
+        />
       </View>
 
       {macros.length > 0 ? (
@@ -158,12 +131,11 @@ export function DailySummaryCard({
             const color = macroColor(macro.key, colors);
             const left = macro.target - macro.current;
             const isOver = macro.target > 0 && left < 0;
-
-            const leftText = isOver
-              ? t("macros.overValue", {
-                  value: formatGrams(-left),
-                })
-              : formatGrams(Math.max(left, 0));
+            const leftText = isOver ? t("macros.overValue", { value: formatGrams(-left) }) : formatGrams(Math.max(left, 0));
+            const amounts = t("macros.progressGrams", {
+              current: formatGrams(macro.current),
+              target: formatGrams(macro.target),
+            });
 
             return (
               <View
@@ -177,45 +149,36 @@ export function DailySummaryCard({
                   left: leftText,
                 })}
               >
-                <MaterialCommunityIcons
-                  name={config.icon}
-                  size={22}
-                  color={color}
-                />
-
-                <Text style={[styles.macroLabel, width < 360 && styles.macroLabelCompact]} numberOfLines={1}>
-                  {label}
-                </Text>
-
-                <View style={styles.macroAmount}>
-                  <Text
-                    style={[styles.macroValue, { color }]}
-                    numberOfLines={1}
-                  >
-                    {showPercentages
-                      ? `${percentOf(macro.current, macro.target)}%`
-                      : formatGrams(macro.current)}
-                  </Text>
-
-                  <Text style={styles.macroTarget} numberOfLines={1}>
-                    {showPercentages
-                      ? `${formatGrams(
-                          macro.current,
-                        )}/${formatGrams(macro.target)}`
-                      : `/${formatGrams(macro.target)}`}
+                <View style={styles.macroIconRow}>
+                  <MaterialCommunityIcons name={config.icon} size={20} color={color} />
+                </View>
+                <View style={styles.macroLabelRow}>
+                  <Text style={styles.macroLabel} numberOfLines={1}>
+                    {label}
                   </Text>
                 </View>
-
-                <View style={[styles.macroTrack, { backgroundColor: withAlpha(color, dark ? 0.16 : 0.18) }, dir.row]}>
-                  <View
-                    style={[
-                      styles.macroFill,
-                      {
-                        backgroundColor: color,
-                        width: `${macro.target > 0 ? Math.min((macro.current / macro.target) * 100, 100) : 0}%`,
-                      },
-                    ]}
-                  />
+                <View style={styles.macroValueRow}>
+                  <Text style={[styles.macroValue, { color }]} numberOfLines={1}>
+                    {showPercentages ? `${percentOf(macro.current, macro.target)}%` : formatGrams(macro.current)}
+                  </Text>
+                </View>
+                <View style={styles.macroTargetRow}>
+                  <Text style={styles.macroTarget} numberOfLines={1}>
+                    {showPercentages ? amounts : t("macros.ofTargetShort", { target: formatGrams(macro.target) })}
+                  </Text>
+                </View>
+                <View style={styles.macroTrackRow}>
+                  <View style={[styles.macroTrack, { backgroundColor: withAlpha(color, dark ? 0.22 : 0.2) }, dir.row]}>
+                    <View
+                      style={[
+                        styles.macroFill,
+                        {
+                          backgroundColor: color,
+                          width: `${macro.target > 0 ? Math.min((macro.current / macro.target) * 100, 100) : 0}%`,
+                        },
+                      ]}
+                    />
+                  </View>
                 </View>
               </View>
             );

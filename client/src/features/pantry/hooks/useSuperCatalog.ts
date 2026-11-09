@@ -15,7 +15,7 @@ import { track } from "../../analytics/analytics";
 
 import { pantryApi } from "../api/pantryApi";
 import { CATALOG_BROWSE_PAGE_SIZE, CATALOG_QUERY_KEYS } from "../constants";
-import { CatalogBrowseItem, CatalogDepartment, Page } from "../types";
+import { CatalogBrowseItem, CatalogDepartment, CatalogProductDetail, Page } from "../types";
 import { useAddPantryProductFromCatalog, useDeletePantryProduct } from "./usePantry";
 import { useProductUsageWarning } from "./useRecipes";
 import { getProductSaveErrorKey } from "../helpers/barcode";
@@ -119,6 +119,9 @@ function setPantryLink(
   catalogItemId: string,
   pantryProductId: string | null,
 ) {
+  queryClient.setQueryData<CatalogProductDetail>(CATALOG_QUERY_KEYS.detail(catalogItemId), (data) =>
+    data ? { ...data, pantryProductId } : data,
+  );
   queryClient.setQueriesData<BrowsePages>({ queryKey: CATALOG_QUERY_KEYS.browseAll }, (data) =>
     data
       ? {
