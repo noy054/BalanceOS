@@ -6,21 +6,17 @@ import { SettingsSection } from "../components/SettingsSection";
 import { SettingsRow } from "../components/SettingsRow";
 import { useStyles, getDirectionStyles } from "./styles/AboutScreen.styles";
 
-const APP_NAME = "BalanceOS";
+const APP_NAME = "TrackMode";
 
 const LINKS = {
-  terms: "https://balanceos.app/terms",
-  privacy: "https://balanceos.app/privacy",
-  contact: "mailto:support@balanceos.app",
-  website: "https://balanceos.app",
-
-  // TODO: להחליף אחרי שיש App Store ID אמיתי
+  terms: "https://peakmode.app/terms",
+  privacy: "https://peakmode.app/privacy",
+  contact: "mailto:support@peakmode.app",
+  website: "https://peakmode.app",
   iosStore: "https://apps.apple.com/app/id0000000000",
-
-  // TODO: להחליף אחרי שיש package name אמיתי בחנות
-  androidStore: "market://details?id=com.balanceos.app",
+  androidStore: "market://details?id=com.peakmode.app",
   androidStoreWeb:
-    "https://play.google.com/store/apps/details?id=com.balanceos.app",
+    "https://play.google.com/store/apps/details?id=com.peakmode.app",
 };
 
 async function openUrl(url: string, failureMessage: string) {
@@ -78,8 +74,8 @@ export function AboutScreen() {
       <ScrollView contentContainerStyle={[styles.content, bottomPadding]} showsVerticalScrollIndicator={false}>
         <View style={styles.appCard}>
           <View style={[styles.logoMark, dir.logoRow]}>
-            <Text style={styles.logoBalance}>Balance</Text>
-            <Text style={styles.logoOS}>OS</Text>
+            <Text style={styles.logoTrack}>Track</Text>
+            <Text style={styles.logoMode}>Mode</Text>
           </View>
 
           <Text style={styles.tagline}>{t("about.tagline")}</Text>

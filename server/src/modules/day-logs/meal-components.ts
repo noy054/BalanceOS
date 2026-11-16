@@ -1,6 +1,7 @@
 import {
   MacrosSnapshot,
   NutritionCalculatorService,
+  baseMacrosOf,
 } from '../nutrition-calculator/nutrition-calculator.service';
 import {
   MealComponentInput,
@@ -231,7 +232,7 @@ export function mergeTemplateComponents(
       sameAmount(own, before) ||
       !sameUnit(own, component) ||
       !nextAmount ||
-      !ownAmount
+      ownAmount == null
     ) {
       return component;
     }
@@ -245,6 +246,7 @@ export function mergeTemplateComponents(
         component.macrosSnapshot,
         ownAmount / nextAmount,
       ),
+      baseMacros: baseMacrosOf(component.macrosSnapshot, nextAmount),
     };
   });
 

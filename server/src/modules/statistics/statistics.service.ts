@@ -3,6 +3,7 @@ import { MacrosSnapshot } from '../nutrition-calculator/nutrition-calculator.ser
 import { StatRange } from './dto/statistics-query.dto';
 import {
   DayTrendPoint,
+  FoodBasis,
   FoodItem,
   MealDistributionItem,
   MostUsedFood,
@@ -43,6 +44,53 @@ export function snapshotTargets(
     carbs: pick('carbs'),
     fat: pick('fat'),
     fiber: pick('fiber'),
+  };
+}
+
+type FoodAmount = {
+  grams: number | null;
+  servings: number | null;
+  milliliters: number | null;
+  savedMealId: string | null;
+};
+
+type BasisTally = { calories: number; amount: number; count: number };
+
+type FoodTally = {
+  totalCalories: number;
+  count: number;
+  snackCount: number;
+  imageUrl: string | null;
+  bases: Partial<Record<FoodBasis, BasisTally>>;
+};
+
+function amountBasis(
+  item: FoodAmount,
+): { basis: FoodBasis; amount: number } | null {
+  if (item.savedMealId) return { basis: 'meal', amount: 1 };
+  if (item.servings && item.servings > 0)
+    return { basis: 'serving', amount: item.servings };
+  if (item.grams && item.grams > 0)
+    return { basis: '100g', amount: item.grams / 100 };
+  if (item.milliliters && item.milliliters > 0)
+    return { basis: '100ml', amount: item.milliliters / 100 };
+  return null;
+}
+
+function unitCaloriesOf(tally: FoodTally) {
+  let best: [FoodBasis, BasisTally] | null = null;
+  for (const entry of Object.entries(tally.bases) as [
+    FoodBasis,
+    BasisTally,
+  ][]) {
+    if (!best || entry[1].count > best[1].count) best = entry;
+  }
+  if (!best || best[1].amount <= 0) {
+    return { unitCalories: null, unitBasis: null };
+  }
+  return {
+    unitCalories: Math.round(best[1].calories / best[1].amount),
+    unitBasis: best[0],
   };
 }
 
@@ -162,10 +210,7 @@ export class StatisticsService {
     const totalDays = allDates.filter((date) => date <= lastCountedDate).length;
 
     const mealCaloriesSum: Record<string, number> = {};
-    const foodMap = new Map<
-      string,
-      { totalCalories: number; count: number; imageUrl: string | null }
-    >();
+    const foodMap = new Map<string, FoodTally>();
     const dailyTrend: DayTrendPoint[] = [];
 
     for (const date of allDates) {
@@ -243,20 +288,30 @@ export class StatisticsService {
 
           entryCalories += snap.calories;
 
-          const existing = foodMap.get(snap.name);
-          const imageUrl = itemImage(item);
-
-          if (existing) {
-            existing.totalCalories += snap.calories;
-            existing.count += 1;
-            existing.imageUrl = existing.imageUrl ?? imageUrl;
-          } else {
-            foodMap.set(snap.name, {
-              totalCalories: snap.calories,
-              count: 1,
-              imageUrl,
-            });
+          const tally: FoodTally = foodMap.get(snap.name) ?? {
+            totalCalories: 0,
+            count: 0,
+            snackCount: 0,
+            imageUrl: null,
+            bases: {},
+          };
+          tally.totalCalories += snap.calories;
+          tally.count += 1;
+          if (entry.mealType.startsWith('SNACK')) tally.snackCount += 1;
+          tally.imageUrl = tally.imageUrl ?? itemImage(item);
+          const measured = amountBasis(item);
+          if (measured) {
+            const basis = tally.bases[measured.basis] ?? {
+              calories: 0,
+              amount: 0,
+              count: 0,
+            };
+            basis.calories += snap.calories;
+            basis.amount += measured.amount;
+            basis.count += 1;
+            tally.bases[measured.basis] = basis;
           }
+          foodMap.set(snap.name, tally);
         }
 
         mealCaloriesSum[entry.mealType] =
@@ -352,6 +407,7 @@ export class StatisticsService {
         totalCalories: Math.round(data.totalCalories),
         count: data.count,
         imageUrl: data.imageUrl,
+        ...unitCaloriesOf(data),
       }))
       .sort((a, b) => b.totalCalories - a.totalCalories);
 
@@ -363,9 +419,11 @@ export class StatisticsService {
         count: data.count,
         avgCalories: Math.round(data.totalCalories / data.count),
         imageUrl: data.imageUrl,
+        isSnack: data.snackCount * 2 > data.count,
       }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+      .slice(0, 5)
+      .sort((a, b) => Number(a.isSnack) - Number(b.isSnack));
 
     return {
       range,

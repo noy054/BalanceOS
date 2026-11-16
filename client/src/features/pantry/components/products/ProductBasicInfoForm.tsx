@@ -8,7 +8,6 @@ type Props = {
   t: TFunction<"pantry">;
   language: string;
   errors: ProductFormErrors;
-  autoFocus: boolean;
   field: (key: keyof ProductFormState) => {
     value: string;
     onChangeText: (text: string) => void;
@@ -19,7 +18,6 @@ export function ProductBasicInfoForm({
   t,
   language,
   errors,
-  autoFocus,
   field,
 }: Props) {
   return (
@@ -28,7 +26,6 @@ export function ProductBasicInfoForm({
         key={`name-${language}`}
         label={t("product.nameLabel")}
         error={errors.name}
-        autoFocus={autoFocus}
         {...field("name")}
       />
 

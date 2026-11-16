@@ -1,9 +1,18 @@
+import { useEffect, useRef } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import type { TextInputInstance } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { IconButton } from "../../../../shared/components/ui/IconButton";
 import { useDirection } from "../../../../shared/hooks/useDirection";
-import { fonts, radius, spacing, typography, useAppTheme, useThemedStyles } from "../../../../shared/theme";
+import {
+  fonts,
+  radius,
+  spacing,
+  typography,
+  useAppTheme,
+  useThemedStyles,
+} from "../../../../shared/theme";
 import { RecipeStepDraft } from "../../hooks/useAddRecipeForm";
 import { DraggableList } from "../form/DraggableList";
 import { IngredientSection } from "../form/IngredientSection";
@@ -29,18 +38,36 @@ export function RecipeStepsCard({
   const styles = useStyles();
   const dir = useDirection();
   const { colors } = useAppTheme();
+  const inputs = useRef(new Map<string, TextInputInstance>());
+  const focusNewStep = useRef(false);
+  const lastKey = steps[steps.length - 1]?.key;
+
+  useEffect(() => {
+    if (!focusNewStep.current || !lastKey) return;
+    focusNewStep.current = false;
+    inputs.current.get(lastKey)?.focus();
+  }, [lastKey]);
+
+  function handleAddStep() {
+    focusNewStep.current = true;
+    onAddStep();
+  }
 
   return (
     <IngredientSection
       title={t("recipe.stepsSection")}
       emptyText={t("recipe.stepsEmpty")}
       isEmpty={steps.length === 0}
-      actions={[{ key: "add", label: t("recipe.addStep"), onPress: onAddStep }]}
+      actions={[
+        { key: "add", label: t("recipe.addStep"), onPress: handleAddStep },
+      ]}
     >
       <DraggableList
         items={steps}
         keyOf={(step) => step.key}
-        labelOf={(step) => t("recipe.stepLabel", { number: steps.indexOf(step) + 1 })}
+        labelOf={(step) =>
+          t("recipe.stepLabel", { number: steps.indexOf(step) + 1 })
+        }
         onMove={onMoveStep}
         onDragActiveChange={onDragActiveChange}
         renderItem={(step, handle) => {
@@ -49,11 +76,21 @@ export function RecipeStepsCard({
           const label = t("recipe.stepLabel", { number });
 
           return (
-            <View style={[styles.row, dir.row, index < steps.length - 1 && styles.divider]}>
+            <View
+              style={[
+                styles.row,
+                dir.row,
+                index < steps.length - 1 && styles.divider,
+              ]}
+            >
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{number}</Text>
               </View>
               <TextInput
+                ref={(input) => {
+                  if (input) inputs.current.set(step.key, input);
+                  else inputs.current.delete(step.key);
+                }}
                 style={[styles.input, dir.text]}
                 value={step.text}
                 onChangeText={(text) => onChangeStep(step.key, text)}
@@ -61,7 +98,6 @@ export function RecipeStepsCard({
                 placeholderTextColor={colors.textMuted}
                 multiline
                 maxLength={1000}
-                autoFocus={!step.text && index === steps.length - 1}
                 accessibilityLabel={label}
               />
               <View style={[styles.actions, dir.row]}>
@@ -110,7 +146,7 @@ const useStyles = () =>
       badgeText: {
         ...typography.footnote,
         ...typography.number,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
       },
       input: {

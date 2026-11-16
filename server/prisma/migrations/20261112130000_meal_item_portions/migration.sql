@@ -1,0 +1,1 @@
+ALTER TABLE "MealItem" ADD COLUMN "portions" DOUBLE PRECISION;

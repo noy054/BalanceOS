@@ -31,7 +31,7 @@ export const useStyles = () =>
       successText: {
         flex: 1,
         ...typography.callout,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.success,
       },
     }),

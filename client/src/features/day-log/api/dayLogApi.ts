@@ -54,17 +54,23 @@ export const dayLogApi = {
       .then((r) => r.data);
   },
 
+  moveMealItem(itemId: string, mealType: string): Promise<{ id: string; mealEntryId: string }> {
+    return apiClient
+      .post<{ id: string; mealEntryId: string }>(DAY_LOG_ENDPOINTS.MOVE_MEAL_ITEM(itemId), { mealType })
+      .then((r) => r.data);
+  },
+
   removeMealItem(itemId: string): Promise<void> {
     return apiClient
       .delete(DAY_LOG_ENDPOINTS.REMOVE_MEAL_ITEM(itemId))
       .then(() => undefined);
   },
 
-  copyToDays({ target, targetDates }: CopyToDaysPayload): Promise<void> {
+  copyToDays({ target, targetDates, today }: CopyToDaysPayload): Promise<void> {
     const endpoint =
       target.kind === "meal"
         ? DAY_LOG_ENDPOINTS.COPY_MEAL_ENTRY(target.id)
         : DAY_LOG_ENDPOINTS.COPY_MEAL_ITEM(target.id);
-    return apiClient.post(endpoint, { targetDates }).then(() => undefined);
+    return apiClient.post(endpoint, { targetDates, ...(today ? { today } : {}) }).then(() => undefined);
   },
 };

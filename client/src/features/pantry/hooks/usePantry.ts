@@ -62,7 +62,7 @@ function upsertProduct(queryClient: QueryClient, product: PantryProduct) {
   if (!found) {
     patchProductPages(queryClient, (items, index) =>
       index === 0
-        ? [...items, product].sort((a, b) => a.name.localeCompare(b.name))
+        ? [product, ...items]
         : items,
     );
   }

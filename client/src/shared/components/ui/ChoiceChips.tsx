@@ -70,7 +70,7 @@ const useStyles = () =>
         color: colors.textSecondary,
       },
       labelSelected: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.accent,
       },
     }),

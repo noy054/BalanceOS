@@ -36,7 +36,7 @@ export function StatusBadge({ label, tone }: Props) {
 const styles = StyleSheet.create({
   badge: {
     ...typography.caption,
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     borderRadius: radius.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,

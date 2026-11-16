@@ -13,7 +13,11 @@ import {
 import { DayLogsService } from './day-logs.service';
 import { AddMealItemDto } from './dto/add-meal-item.dto';
 import { CopyMealDto } from './dto/copy-meal.dto';
-import { UpdateMealItemDto } from './dto/update-meal-item.dto';
+import { MoveMealItemDto } from './dto/move-meal-item.dto';
+import {
+  UpdateMealComponentDto,
+  UpdateMealItemDto,
+} from './dto/update-meal-item.dto';
 import { JwtGuard } from '../../common/guards/jwt.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { UserPublic } from '../users/types/user.types';
@@ -104,6 +108,16 @@ export class DayLogsController {
     return this.service.copyMealItem(user.id, itemId, dto);
   }
 
+  @Post('meal-items/:itemId/move')
+  @HttpCode(200)
+  moveMealItem(
+    @CurrentUser() user: UserPublic,
+    @Param('itemId') itemId: string,
+    @Body() dto: MoveMealItemDto,
+  ) {
+    return this.service.moveMealItem(user.id, itemId, dto);
+  }
+
   @Patch('meal-items/:itemId')
   updateMealItem(
     @CurrentUser() user: UserPublic,
@@ -126,7 +140,7 @@ export class DayLogsController {
     @CurrentUser() user: UserPublic,
     @Param('itemId') itemId: string,
     @Param('componentId') componentId: string,
-    @Body() dto: UpdateMealItemDto,
+    @Body() dto: UpdateMealComponentDto,
   ) {
     return this.service.updateMealItemComponent(
       user.id,

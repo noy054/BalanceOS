@@ -31,6 +31,36 @@ export const useStyles = () =>
         color: colors.textPrimary,
       },
 
+      calculated: {
+        padding: spacing.md,
+        gap: spacing.sm,
+      },
+
+      upToDate: {
+        ...typography.footnote,
+        color: colors.textSecondary,
+      },
+
+      missingCard: {
+        gap: spacing.sm,
+        padding: spacing.md,
+        borderRadius: radius.lg,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
+        marginBottom: spacing.lg,
+      },
+
+      missingTitle: {
+        ...typography.bodyStrong,
+        color: colors.textPrimary,
+      },
+
+      missingBody: {
+        ...typography.footnote,
+        color: colors.textSecondary,
+      },
+
       formCard: {
         paddingHorizontal: spacing.md,
         paddingTop: spacing.md,

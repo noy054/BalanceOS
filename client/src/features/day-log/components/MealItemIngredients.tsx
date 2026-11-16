@@ -7,7 +7,7 @@ import { showToast } from "../../../shared/helpers/toast";
 import { fonts, spacing, typography, useAppTheme, useThemedStyles } from "../../../shared/theme";
 import { useLiveAmountEdit, useMealItemComponents } from "../hooks/useDayLog";
 import { MealItemSummary } from "../types";
-import { AmountSource } from "../helpers/itemAmount";
+import { AmountSource, editableAmount } from "../helpers/itemAmount";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { InlineQuantityEditor } from "./InlineQuantityEditor";
 import { FoodThumb } from "../../pantry/components/food/FoodThumb";
@@ -25,18 +25,19 @@ export function MealItemIngredients({ item, date }: Props) {
   const dir = useDirection();
   const { colors } = useAppTheme();
   const components = item.components ?? [];
-  const isComposite = item.source === "RECIPE" || item.source === "SAVED_MEAL";
-  const legacy = useMealItemComponents(item.id, date, isComposite && components.length === 0);
+  const isSavedMeal = item.source === "SAVED_MEAL";
+  const legacy = useMealItemComponents(item.id, date, isSavedMeal && components.length === 0);
 
-  if (!isComposite || (components.length === 0 && legacy.isError)) {
+  if (!isSavedMeal || (components.length === 0 && legacy.isError)) {
+    const isTotalWeight = item.source === "RECIPE" && editableAmount(item)?.kind === "grams";
     return (
       <View style={styles.panel}>
-        {isComposite ? <Text style={[styles.note, dir.text]}>{t("ingredients.unavailable")}</Text> : null}
+        {isSavedMeal ? <Text style={[styles.note, dir.text]}>{t("ingredients.unavailable")}</Text> : null}
         <AmountRow
           itemId={item.id}
           date={date}
           name={item.name}
-          title={t("ingredients.amount")}
+          title={isTotalWeight ? t("ingredients.totalAmount") : t("ingredients.amount")}
           calories={item.calories}
           source={item}
           last
@@ -67,6 +68,7 @@ export function MealItemIngredients({ item, date }: Props) {
           imageUrl={component.imageUrl}
           icon={component.source === "RECIPE" ? FOOD_ICONS.recipe : FOOD_ICONS.product}
           source={component}
+          allowZero
           last={index === components.length - 1}
         />
       ))}
@@ -85,6 +87,7 @@ function AmountRow({
   last,
   imageUrl,
   icon,
+  allowZero = false,
 }: {
   itemId: string;
   componentId?: string;
@@ -96,6 +99,7 @@ function AmountRow({
   last: boolean;
   imageUrl?: string | null;
   icon?: (typeof FOOD_ICONS)[keyof typeof FOOD_ICONS];
+  allowZero?: boolean;
 }) {
   const { t } = useTranslation("dashboard");
   const styles = useStyles();
@@ -104,7 +108,7 @@ function AmountRow({
   const { colors } = useAppTheme();
 
   return (
-    <View style={[styles.row, dir.row, !last && styles.divider]}>
+    <View style={[styles.row, styles.rowPhysical, !last && styles.divider]}>
       {icon ? (
         imageUrl ? (
           <View style={styles.tile}>
@@ -127,6 +131,7 @@ function AmountRow({
       <InlineQuantityEditor
         name={name}
         source={source}
+        allowZero={allowZero}
         onPreview={edit.preview}
         onCommit={(change) =>
           edit.save(change, { onError: () => showToast({ message: t("ingredients.saveFailed") }) })
@@ -145,7 +150,7 @@ const useStyles = () =>
         paddingHorizontal: 12,
         borderRadius: 14,
         borderWidth: StyleSheet.hairlineWidth,
-        borderColor: withAlpha(colors.gloss, 0.07),
+        borderColor: withAlpha(colors.tint, 0.07),
         backgroundColor: withAlpha(colors.canvas, 0.35),
       },
       tile: {
@@ -173,9 +178,12 @@ const useStyles = () =>
         minHeight: 58,
         paddingVertical: 8,
       },
+      rowPhysical: {
+        flexDirection: "row",
+      },
       divider: {
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: withAlpha(colors.gloss, 0.08),
+        borderBottomColor: withAlpha(colors.tint, 0.08),
       },
       info: {
         flex: 1,
@@ -183,7 +191,7 @@ const useStyles = () =>
         gap: 2,
       },
       name: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         fontSize: 15,
         lineHeight: 20,
         color: colors.textPrimary,

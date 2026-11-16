@@ -1,0 +1,1 @@
+ALTER TABLE "PantryRecipeItem" ADD COLUMN "weightG" DOUBLE PRECISION;

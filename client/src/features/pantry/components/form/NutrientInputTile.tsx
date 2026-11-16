@@ -129,7 +129,7 @@ const useStyles = () =>
         paddingVertical: 0,
         textAlign: "center",
         ...typography.value,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         fontSize: 20,
         color: colors.textPrimary,
       },

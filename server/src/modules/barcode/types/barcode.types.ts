@@ -8,4 +8,13 @@ export type BarcodeResolveResult =
       barcode: string;
       catalogItem: ProductCatalogItemDto;
     }
-  | { status: 'NOT_FOUND'; barcode: string };
+  | { status: 'NOT_FOUND'; barcode: string; reference?: MarketReference };
+
+export type MarketReference = {
+  marketCode: string;
+  name: string;
+  brand: string | null;
+  packageQuantity: number | null;
+  packageUnit: string | null;
+  originCountry: string | null;
+};

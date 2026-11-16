@@ -23,6 +23,10 @@ import {
 } from './types/product-catalog.types';
 import { CATALOG_DEPARTMENTS, CatalogDepartment } from './catalog-departments';
 import { findSubcategory, subcategoriesFor } from './catalog-subcategories';
+import {
+  LookupContext,
+  lookupContext,
+} from '../../common/market/lookup-context';
 
 const MISS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const DEFAULT_SEARCH_LIMIT = 20;
@@ -30,7 +34,11 @@ const DEFAULT_SEARCH_LIMIT = 20;
 interface ExternalProvider {
   breaker: ExternalCircuitBreaker;
   isEnabled: () => boolean;
-  fetch: (barcode: NormalizedBarcode) => Promise<ExternalLookupResult>;
+  preferredMarkets: readonly string[];
+  fetch: (
+    barcode: NormalizedBarcode,
+    context: LookupContext,
+  ) => Promise<ExternalLookupResult>;
 }
 
 @Injectable()
@@ -50,19 +58,37 @@ export class ProductCatalogService {
       {
         breaker: new ExternalCircuitBreaker('OpenFoodFacts'),
         isEnabled: () => true,
-        fetch: (b) => offClient.fetchByBarcode(b),
+        preferredMarkets: [],
+        fetch: (b, context) => offClient.fetchByBarcode(b, context),
       },
       {
         breaker: new ExternalCircuitBreaker('USDA-FDC'),
         isEnabled: () => usdaClient.isConfigured(),
+        preferredMarkets: ['US'],
         fetch: (b) => usdaClient.fetchByBarcode(b),
       },
     ];
   }
 
+  async lookupContextFor(userId: string): Promise<LookupContext> {
+    const settings = await this.repo.findLookupSettings(userId);
+    return lookupContext(
+      settings?.marketCode,
+      settings?.preferredLanguage ?? null,
+    );
+  }
+
+  findMarketReference(barcode: NormalizedBarcode, context: LookupContext) {
+    return this.repo.findMarketReference(
+      barcode.canonical,
+      context.market.code,
+    );
+  }
+
   async lookupByBarcode(
     userId: string,
     barcode: NormalizedBarcode,
+    context: LookupContext = lookupContext(),
   ): Promise<ProductCatalogItemDto | null> {
     const internal = await this.repo.findByNormalizedBarcode(barcode.canonical);
     if (internal) return internal;
@@ -75,7 +101,7 @@ export class ProductCatalogService {
     const pending = this.inFlight.get(barcode.canonical);
     if (pending) return pending;
 
-    const lookup = this.lookupExternal(userId, barcode).finally(() =>
+    const lookup = this.lookupExternal(userId, barcode, context).finally(() =>
       this.inFlight.delete(barcode.canonical),
     );
     this.inFlight.set(barcode.canonical, lookup);
@@ -177,20 +203,27 @@ export class ProductCatalogService {
     };
   }
 
+  private providersFor(context: LookupContext): ExternalProvider[] {
+    const preferred = (provider: ExternalProvider) =>
+      provider.preferredMarkets.includes(context.market.code) ? 0 : 1;
+    return [...this.providers].sort((a, b) => preferred(a) - preferred(b));
+  }
+
   private async lookupExternal(
     userId: string,
     barcode: NormalizedBarcode,
+    context: LookupContext,
   ): Promise<ProductCatalogItemDto | null> {
     let hadError = false;
 
-    for (const provider of this.providers) {
+    for (const provider of this.providersFor(context)) {
       if (!provider.isEnabled()) continue;
       if (provider.breaker.isOpen()) {
         hadError = true;
         continue;
       }
 
-      const result = await provider.fetch(barcode);
+      const result = await provider.fetch(barcode, context);
       if (result.status === 'error') {
         provider.breaker.recordFailure();
         hadError = true;
@@ -199,12 +232,37 @@ export class ProductCatalogService {
 
       provider.breaker.recordSuccess();
       if (result.status === 'found') {
-        return this.saveExternal(result.data, userId);
+        const data = await this.withReferenceName(result.data, context);
+        if (!data) continue;
+        return this.saveExternal(data, userId);
       }
     }
 
     if (!hadError) await this.repo.recordMiss(barcode.canonical);
     return null;
+  }
+
+  private async withReferenceName(
+    data: NormalizedProductData,
+    context: LookupContext,
+  ): Promise<NormalizedProductData | null> {
+    if (!data.nameMissing) return data;
+    const reference = await this.repo.findMarketReference(
+      data.normalizedBarcode,
+      context.market.code,
+    );
+    if (reference) {
+      return {
+        ...data,
+        name: reference.name,
+        brand: data.brand ?? reference.brand,
+        nameMissing: false,
+      };
+    }
+    const hasNutrition =
+      data.caloriesPer100g !== null ||
+      Boolean(data.nutrients && 'energy' in data.nutrients);
+    return hasNutrition ? data : null;
   }
 
   private async saveExternal(

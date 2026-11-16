@@ -15,8 +15,19 @@ export function useItemAmountLabel() {
         return t("meals.savedMeal");
       }
 
-      if (item.grams == null && item.servings == null && item.milliliters == null) {
+      if (item.grams == null && item.servings == null && item.milliliters == null && item.portions == null) {
         return null;
+      }
+
+      if (item.source === "RECIPE" && item.portions != null) {
+        const portions = t("meals.recipePortions", { count: Number(formatAmount(item.portions)) });
+        return item.grams != null
+          ? `${portions} · ${t("meals.recipeGrams", { value: formatAmount(item.grams) })}`
+          : portions;
+      }
+
+      if (item.source === "RECIPE" && item.grams != null) {
+        return t("meals.recipeGrams", { value: formatAmount(item.grams) });
       }
 
       if (item.source === "RECIPE" && item.servings != null) {

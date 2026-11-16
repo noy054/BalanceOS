@@ -96,14 +96,18 @@ export function BottomTabBar({ activeTab = "home", onTabPress }: Props) {
           if (tab.id === "add") {
             return (
               <View key={tab.id} style={styles.addSlot}>
-                <View pointerEvents="none" style={styles.addHalo} />
                 <Pressable
                   onPress={() => handlePress(tab)}
                   accessibilityRole="button"
                   accessibilityLabel={label}
+                  hitSlop={8}
                   style={({ pressed }) => [styles.addButton, pressed && styles.addButtonPressed]}
                 >
-                  <MaterialCommunityIcons name="plus" size={30} color={colors.onAccent} />
+                  <View pointerEvents="none" style={styles.addSheen} />
+                  <View pointerEvents="none" style={styles.plus}>
+                    <View style={[styles.plusBar, styles.plusHorizontal]} />
+                    <View style={[styles.plusBar, styles.plusVertical]} />
+                  </View>
                 </Pressable>
               </View>
             );

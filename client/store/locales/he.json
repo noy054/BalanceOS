@@ -1,0 +1,5 @@
+{
+  "CFBundleDisplayName": "TrackMode",
+  "NSCameraUsageDescription": "TrackMode משתמשת במצלמה כדי לסרוק ברקודים של מוצרים ולצלם מאכלים שאתם מוסיפים.",
+  "NSPhotoLibraryUsageDescription": "TrackMode ניגשת לתמונות רק כשאתם בוחרים תמונה למאכל או לרשומת התקדמות."
+}

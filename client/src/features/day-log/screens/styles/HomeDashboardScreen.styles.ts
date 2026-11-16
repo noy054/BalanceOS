@@ -7,7 +7,6 @@ export const useStyles = () =>
     StyleSheet.create({
       root: {
         flex: 1,
-        backgroundColor: colors.homeCanvas,
       },
 
       scroll: {
@@ -24,7 +23,7 @@ export const useStyles = () =>
       content: {
         paddingHorizontal: spacing.md,
         paddingTop: spacing.ml,
-        gap: spacing.xl,
+        gap: spacing.lg,
       },
 
       body: {
@@ -36,7 +35,7 @@ export const useStyles = () =>
       },
 
       meals: {
-        gap: spacing.sm2,
+        gap: spacing.md,
       },
     }),
   );

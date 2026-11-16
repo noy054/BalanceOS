@@ -7,17 +7,58 @@ import { useAuthStore } from "../../auth/hooks/useAuthStore";
 import {
   ChangePasswordPayload,
   NutritionSettings,
+  TargetSuggestion,
+  TargetValues,
   UpdateProfilePayload,
   UpdateSettingsPayload,
 } from "../types";
 
 const SETTINGS_KEY = ["nutrition-settings"];
+export const TARGET_SUGGESTION_KEY = [...SETTINGS_KEY, "target-suggestion"];
+
+export function fetchTargetSuggestion(queryClient: ReturnType<typeof useQueryClient>) {
+  return queryClient.fetchQuery<TargetSuggestion>({
+    queryKey: TARGET_SUGGESTION_KEY,
+    queryFn: () => settingsApi.getTargetSuggestion(),
+    staleTime: 0,
+  });
+}
+
+export function useTargetSuggestion(enabled = true) {
+  return useQuery({
+    queryKey: TARGET_SUGGESTION_KEY,
+    queryFn: () => settingsApi.getTargetSuggestion(),
+    enabled,
+  });
+}
+
+export function useApplyTargets() {
+  const update = useUpdateSettings();
+  return useMutation({
+    mutationFn: (targets: TargetValues) =>
+      update.mutateAsync({
+        dailyCaloriesTarget: targets.calories,
+        proteinTarget: targets.protein,
+        carbsTarget: targets.carbs,
+        fatTarget: targets.fat,
+        fiberTarget: targets.fiber,
+      }),
+  });
+}
 
 export function useNutritionSettings() {
   return useQuery({
     queryKey: SETTINGS_KEY,
     queryFn: () => settingsApi.getSettings(),
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useMarkets() {
+  return useQuery({
+    queryKey: [...SETTINGS_KEY, "markets"],
+    queryFn: () => settingsApi.getMarkets(),
+    staleTime: 24 * 60 * 60 * 1000,
   });
 }
 

@@ -185,7 +185,16 @@ export type AddFromCatalogPayload = Partial<ProductNutritionPayload> & {
 export type BarcodeResolveResult =
   | { status: "IN_PANTRY"; barcode: string; pantryProduct: PantryProduct }
   | { status: "IN_CATALOG"; barcode: string; catalogItem: ProductCatalogProduct }
-  | { status: "NOT_FOUND"; barcode: string };
+  | { status: "NOT_FOUND"; barcode: string; reference?: MarketReference };
+
+export type MarketReference = {
+  marketCode: string;
+  name: string;
+  brand: string | null;
+  packageQuantity: number | null;
+  packageUnit: string | null;
+  originCountry: string | null;
+};
 
 // ── Shared ──────────────────────────────────────────────────────────────────
 
@@ -246,6 +255,8 @@ export type RecipeItem = {
   grams: number | null;
   servings?: number | null;
   milliliters?: number | null;
+  weightG?: number | null;
+  resolvedWeightG?: number | null;
   product: RecipeItemProduct;
   nutrition: NutritionTotals;
 };
@@ -263,9 +274,54 @@ export type PantryRecipe = {
   totals: NutritionTotals;
   createdAt: string;
   updatedAt: string;
+} & RecipeYieldFields & {
+  rawWeightG?: number | null;
+  portionPlan?: PortionPlan;
 };
 
-export type CreateRecipePayload = {
+export type PortionMode = "COUNT" | "TARGET";
+export type PortionTarget = "GRAMS" | "CALORIES" | "PROTEIN";
+export type LeftoverMode = "SEPARATE" | "REDISTRIBUTE" | "UNALLOCATED";
+
+export type RecipeYieldFields = {
+  rawWeightG?: number | null;
+  emptyPotWeightG?: number | null;
+  potWithFoodWeightG?: number | null;
+  cookedWeightG?: number | null;
+  portionMode?: PortionMode | null;
+  portionCount?: number | null;
+  portionTarget?: PortionTarget | null;
+  portionTargetValue?: number | null;
+  leftoverMode?: LeftoverMode | null;
+};
+
+export type PortionValues = {
+  fraction: number;
+  grams: number | null;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+};
+
+export type PortionIssue = "weight" | "calories" | "protein" | "count" | "targetValue" | "tooLarge";
+
+export type PortionPlan =
+  | {
+      status: "ok";
+      mode: PortionMode;
+      weightBasis: "cooked" | "raw" | null;
+      portion: PortionValues;
+      basePortion: PortionValues;
+      fullPortions: number;
+      leftover: PortionValues | null;
+      leftoverMode: LeftoverMode;
+    }
+  | { status: "incomplete"; issue: PortionIssue }
+  | { status: "none" };
+
+export type CreateRecipePayload = RecipeYieldFields & {
   name: string;
   description?: string;
   mealTypes?: MealType[];
@@ -279,9 +335,10 @@ export type RecipeItemPayload = {
   grams?: number;
   servings?: number;
   milliliters?: number;
+  weightG?: number | null;
 };
 
-export type UpdateRecipePayload = {
+export type UpdateRecipePayload = RecipeYieldFields & {
   logsFrom?: string;
   name?: string;
   description?: string;

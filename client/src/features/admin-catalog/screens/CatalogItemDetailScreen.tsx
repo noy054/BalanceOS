@@ -201,7 +201,6 @@ export function CatalogItemDetailScreen() {
                 t={tPantry}
                 language={i18n.language}
                 errors={form.errors}
-                autoFocus={false}
                 field={form.field}
               />
               <ProductNutritionForm
@@ -337,7 +336,7 @@ const useStyles = () =>
       badges: { gap: spacing.xs, flexWrap: "wrap" },
       metaTitle: { ...typography.headline, color: colors.textPrimary, marginTop: spacing.xs },
       metaText: { ...typography.footnote, color: colors.textSecondary },
-      metaStrong: { ...typography.footnote, fontFamily: fonts.semibold, color: colors.danger },
+      metaStrong: { ...typography.footnote, fontFamily: fonts.medium, color: colors.danger },
       privacyNote: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
       sectionIntro: {
         ...typography.callout,

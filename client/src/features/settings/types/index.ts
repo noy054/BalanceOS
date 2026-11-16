@@ -10,6 +10,40 @@ export type ThemeMode = "LIGHT" | "DARK" | "SYSTEM";
 
 export type FoodUnit = "GRAMS" | "SERVING" | "PIECE";
 
+export type TargetValues = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+};
+
+export type TargetProfileField =
+  | "gender"
+  | "birthDate"
+  | "heightCm"
+  | "weightKg"
+  | "trainingDaysPerWeek"
+  | "goalType";
+
+export type TargetSuggestion = {
+  available: boolean;
+  missing: TargetProfileField[];
+  targetMode: TargetMode;
+  experienceMode: ExperienceMode;
+  weight: {
+    value: number;
+    basis: "average" | "latest" | "profile";
+    count: number;
+    from: string | null;
+    to: string | null;
+  } | null;
+  current: TargetValues | null;
+  suggested: (TargetValues & { bmr: number; tdee: number; activityFactor: number }) | null;
+  calorieDifference: number | null;
+  meaningful: boolean;
+};
+
 export type NutritionSettings = {
   id: string;
   userId: string;
@@ -18,6 +52,7 @@ export type NutritionSettings = {
   targetMode: TargetMode;
   onboardingCompleted: boolean;
   preferredLanguage: string;
+  marketCode: string;
 
   dailyCaloriesTarget: number | null;
   proteinTarget: number | null;
@@ -73,6 +108,11 @@ export type NutritionSettings = {
 export type UpdateSettingsPayload = Partial<
   Omit<NutritionSettings, "id" | "userId" | "createdAt" | "updatedAt">
 >;
+
+export type MarketsResponse = {
+  markets: { code: string }[];
+  defaultCode: string;
+};
 
 export type UpdateProfilePayload = {
   fullName?: string;

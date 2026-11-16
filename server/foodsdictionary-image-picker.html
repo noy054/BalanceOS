@@ -1,0 +1,204 @@
+﻿<!doctype html>
+<html lang="he" dir="rtl">
+<meta charset="utf-8">
+<title>בחירת תמונות למוצרי הסופר</title>
+<style>
+body{font:16px Arial,sans-serif;background:#f4f6f8;color:#19232e;margin:24px}
+header{position:sticky;top:0;background:#f4f6f8;padding:12px 0;z-index:1}
+button,input{font:inherit;padding:8px;margin:4px}
+button{cursor:pointer} button:disabled{cursor:default}
+section{background:white;padding:16px;margin:14px 0;border-radius:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:8px}
+.card{display:flex;flex-direction:column;align-items:center;min-width:0;overflow-wrap:anywhere}
+.card button{width:100%;background:white;border:2px solid #dbe1e7;border-radius:10px}
+.card button[aria-pressed=true]{border-color:#18754b;background:#dff7eb}
+img{width:100%;height:140px;object-fit:contain}
+</style>
+<style id="scroll-style">
+#prev, #next { display: none }
+</style>
+<header>
+  <h1>בחירת תמונות למוצרים</h1>
+  <label>דוח חריגים <input id="exceptions" type="file" accept=".json"></label>
+  <label>תוצאות החיפוש <input id="searches" type="file" accept=".json"></label>
+  <br>
+  <input id="query" type="search" placeholder="חיפוש לפי שם מוצר">
+  <button id="prev" hidden>הקודם</button><button id="next" hidden>הבא</button>
+  <button id="save" disabled>שמירת בחירות</button>
+  <span id="status" role="status"></span>
+</header>
+<main id="list"></main>
+<dialog id="viewer" style="max-width:94vw;max-height:94vh;border:0;border-radius:12px">
+  <form method="dialog"><button>סגירה</button></form>
+  <img id="viewerImage" alt="" referrerpolicy="no-referrer"
+       style="display:block;width:auto;height:auto;max-width:85vw;max-height:78vh;margin:auto">
+</dialog>
+<script>
+const el = id => document.getElementById(id);
+const storageKey = 'balanceos-foodsdictionary-manual-images-v1';
+let saved = [];
+try { saved = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch {}
+const choices = new Map(saved.map(row => [row.sourceUrl, row]));
+const byProduct = new Map();
+const products = [];
+const pageSize = Infinity;
+let page = 0;
+
+function safeUrl(value) {
+  if (typeof value !== 'string') return '';
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+  } catch { return ''; }
+}
+
+function key(value) {
+  if (typeof value !== 'string') return '';
+  try { value = decodeURIComponent(value); } catch {}
+  return value.trim().normalize('NFC').toLowerCase();
+}
+
+function addCandidates(label, candidates) {
+  const id = key(label);
+  if (!id) return;
+  const images = byProduct.get(id) || new Map();
+  for (const item of candidates) {
+    const imageUrl = safeUrl(typeof item === 'string' ? item :
+      item?.imageUrl || item?.original || item?.image || item?.url || item?.link);
+    if (!imageUrl || images.has(imageUrl)) continue;
+    images.set(imageUrl, {
+      imageUrl,
+      title: item?.title || '',
+      pageUrl: safeUrl(item?.pageUrl || item?.link)
+    });
+  }
+  if (images.size) byProduct.set(id, images);
+}
+
+function index(value, inherited = '') {
+  if (!value || typeof value !== 'object') return;
+  if (Array.isArray(value)) {
+    if (inherited) addCandidates(inherited, value);
+    for (const row of value) index(row, inherited);
+    return;
+  }
+  const labels = [value.sourceUrl, value.name, value.productName, value.query, inherited].filter(Boolean);
+  for (const [field, child] of Object.entries(value)) {
+    if (['candidates', 'images', 'imageCandidates', 'imageResults', 'results', 'items'].includes(field) &&
+        Array.isArray(child)) {
+      for (const label of labels) addCandidates(label, child);
+    }
+    if (child && typeof child === 'object') {
+      index(child, ['candidates','images','imageCandidates','imageResults','results','items','searches','products','data'].includes(field)
+        ? (labels[0] || '') : field);
+    }
+  }
+}
+
+async function load() {
+  const exceptions = el('exceptions').files[0];
+  const searches = el('searches').files[0];
+  if (!exceptions || !searches) return;
+  try {
+    const read = async file => JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
+    const [report, cache] = await Promise.all([read(exceptions), read(searches)]);
+    if (!Array.isArray(report)) throw new Error('בחרי את image-exceptions.json בשדה הראשון.');
+    byProduct.clear();
+    index(cache);
+    products.splice(0, products.length, ...report.filter(row => row.name && row.sourceUrl));
+    page = 0;
+    render();
+  } catch (error) {
+    el('status').textContent = error.message;
+  }
+}
+
+function choose(product, image) {
+  if (choices.get(product.sourceUrl)?.imageUrl === image.imageUrl) {
+    choices.delete(product.sourceUrl);
+  } else {
+    choices.set(product.sourceUrl, { sourceUrl: product.sourceUrl, name: product.name, ...image });
+  }
+  try { localStorage.setItem(storageKey, JSON.stringify([...choices.values()])); } catch {}
+  render();
+}
+
+function render() {
+  const filtered = products.filter(product => key(product.name).includes(key(el('query').value)));
+  const lastPage = Math.max(0, 0);
+  page = Math.max(0, Math.min(page, lastPage));
+  el('prev').disabled = page === 0;
+  el('next').disabled = page === lastPage;
+  el('save').disabled = choices.size === 0;
+  el('status').textContent = `${filtered.length} מוצרים | ${choices.size} נבחרו`;
+  el('list').replaceChildren();
+
+  for (const product of filtered) {
+    const section = document.createElement('section');
+    const title = document.createElement('h2');
+    title.textContent = product.name;
+    section.append(title);
+
+    const images = new Map([
+      ...(byProduct.get(key(product.sourceUrl)) || []),
+      ...(byProduct.get(key(product.name)) || [])
+    ]);
+    if (!images.size) section.append('לא נמצאו תמונות שמורות למוצר הזה.');
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    for (const image of images.values()) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const button = document.createElement('button');
+      button.setAttribute('aria-pressed', String(choices.get(product.sourceUrl)?.imageUrl === image.imageUrl));
+      const picture = document.createElement('img');
+      picture.loading = 'lazy';
+      picture.referrerPolicy = 'no-referrer';
+      picture.src = image.imageUrl;
+      picture.alt = image.title || 'תמונת מוצר';
+      const label = document.createElement('span');
+      label.textContent = button.getAttribute('aria-pressed') === 'true' ? 'נבחרה' : 'בחרי תמונה';
+      button.append(picture, label);
+      button.onclick = () => choose(product, image);
+      const link = document.createElement('a');
+      link.href = image.pageUrl || image.imageUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = 'פתיחת מקור';
+      const zoom = document.createElement('button');
+      zoom.type = 'button';
+      zoom.textContent = 'הגדלה';
+      zoom.onclick = () => {
+        const full = el('viewerImage');
+        full.alt = image.title || product.name;
+        full.src = image.imageUrl;
+        el('viewer').showModal();
+      };
+      card.append(button, zoom, link);
+      grid.append(card);
+    }
+
+    section.append(grid);
+    el('list').append(section);
+  }
+}
+
+el('exceptions').onchange = load;
+el('searches').onchange = load;
+el('query').oninput = () => { page = 0; render(); };
+el('prev').onclick = () => { page--; render(); };
+el('next').onclick = () => { page++; render(); };
+el('save').onclick = () => {
+  const file = new Blob([JSON.stringify([...choices.values()], null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(file);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'manual-image-choices.json';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+</script>
+</html>
+
+

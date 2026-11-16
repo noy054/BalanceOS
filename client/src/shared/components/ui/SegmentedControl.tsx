@@ -128,7 +128,7 @@ const useStyles = () =>
         textAlign: "center",
       },
       labelSelected: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.onAccent,
       },
     }),

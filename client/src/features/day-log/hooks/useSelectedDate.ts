@@ -9,6 +9,7 @@ export function useSelectedDate() {
   const today = useTodayKey();
   const stored = useSelectedDateStore((state) => state.selectedDate);
   const setStored = useSelectedDateStore((state) => state.setSelectedDate);
+  const shiftStored = useSelectedDateStore((state) => state.shiftSelectedDate);
 
   const maxDate = addDays(today, MAX_FUTURE_DAYS);
   const date = stored && stored <= maxDate ? stored : today;
@@ -22,6 +23,7 @@ export function useSelectedDate() {
   );
 
   const goToToday = useCallback(() => setStored(null), [setStored]);
+  const shiftDate = useCallback((delta: number) => shiftStored(delta, today, maxDate), [shiftStored, today, maxDate]);
 
-  return { date, today, maxDate, isToday: date === today, setDate, goToToday };
+  return { date, today, maxDate, isToday: date === today, setDate, shiftDate, goToToday };
 }

@@ -126,7 +126,7 @@ const useStyles = () =>
       },
       headerText: {
         ...typography.caption,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textSecondary,
       },
       highlightText: { color: colors.accent },
@@ -145,7 +145,7 @@ const useStyles = () =>
       },
       changedCell: {
         color: colors.accent,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
       },
     }),
   );

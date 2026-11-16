@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Prisma } from '../../../generated/prisma/client';
+import {
+  Prisma,
+  RecipeLeftoverMode,
+  RecipePortionMode,
+  RecipePortionTarget,
+} from '../../../generated/prisma/client';
 import { RecipeItemDto } from './dto/create-recipe.dto';
 import { PRODUCT_NUTRITION_SELECT } from './product-select';
 
@@ -27,7 +32,18 @@ const RECIPE_INCLUDE = {
   },
 } as const;
 
-export type RecipeHeader = {
+export type RecipeYield = {
+  emptyPotWeightG?: number | null;
+  potWithFoodWeightG?: number | null;
+  cookedWeightG?: number | null;
+  portionMode?: RecipePortionMode | null;
+  portionCount?: number | null;
+  portionTarget?: RecipePortionTarget | null;
+  portionTargetValue?: number | null;
+  leftoverMode?: RecipeLeftoverMode | null;
+};
+
+export type RecipeHeader = RecipeYield & {
   name?: string;
   description?: string;
   mealType?: string | null;
@@ -35,6 +51,26 @@ export type RecipeHeader = {
   imageUrl?: string | null;
   steps?: string[];
 };
+
+const YIELD_KEYS = [
+  'emptyPotWeightG',
+  'potWithFoodWeightG',
+  'cookedWeightG',
+  'portionMode',
+  'portionCount',
+  'portionTarget',
+  'portionTargetValue',
+  'leftoverMode',
+] as const;
+
+function pickYield(header: RecipeHeader): RecipeYield {
+  return Object.fromEntries(
+    YIELD_KEYS.filter((key) => header[key] !== undefined).map((key) => [
+      key,
+      header[key],
+    ]),
+  ) as RecipeYield;
+}
 
 export type RecipeRow = Awaited<
   ReturnType<RecipesRepository['findByIdAndUserId']>
@@ -69,12 +105,14 @@ export class RecipesRepository {
         mealTypes: header.mealTypes ?? [],
         imageUrl: header.imageUrl ?? null,
         steps: header.steps ?? [],
+        ...pickYield(header),
         items: {
           create: items.map((item, position) => ({
             productId: item.productId,
             grams: item.grams ?? null,
             servings: item.servings ?? null,
             milliliters: item.milliliters ?? null,
+            weightG: item.weightG ?? null,
             position,
           })),
         },
@@ -114,6 +152,7 @@ export class RecipesRepository {
             grams: item.grams ?? null,
             servings: item.servings ?? null,
             milliliters: item.milliliters ?? null,
+            weightG: item.weightG ?? null,
             position,
           })),
         });
@@ -132,6 +171,7 @@ export class RecipesRepository {
           : {}),
         ...(header.imageUrl !== undefined ? { imageUrl: header.imageUrl } : {}),
         ...(header.steps !== undefined ? { steps: header.steps } : {}),
+        ...pickYield(header),
       },
       include: RECIPE_INCLUDE,
     });

@@ -387,7 +387,7 @@ async function getPage(page, redirects = 0) {
   const response = await fetch(page, {
     redirect: 'manual',
     headers: {
-      'User-Agent': 'BalanceOSCatalog/4.0',
+      'User-Agent': 'TrackModeCatalog/4.0',
       Accept: 'text/html',
     },
     signal: AbortSignal.timeout(20000),

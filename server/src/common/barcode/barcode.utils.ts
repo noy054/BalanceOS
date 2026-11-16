@@ -35,3 +35,10 @@ export function normalizeBarcode(
   }
   return { canonical, digits };
 }
+
+export function gtinVariants(barcode: NormalizedBarcode): string[] {
+  const variants = [barcode.digits, barcode.canonical];
+  if (barcode.canonical.startsWith('0'))
+    variants.push(barcode.canonical.slice(1));
+  return [...new Set(variants)];
+}

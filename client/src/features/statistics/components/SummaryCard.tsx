@@ -144,7 +144,7 @@ const useStyles = () =>
       },
       heroValue: {
         ...typography.display,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         fontSize: 36,
         lineHeight: 44,
         textAlign: "center",
@@ -175,7 +175,7 @@ const useStyles = () =>
       },
       statValue: {
         ...typography.value,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         fontSize: 20,
         color: colors.textPrimary,
       },

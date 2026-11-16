@@ -1,4 +1,6 @@
+import { useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import type { TextInputInstance } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
@@ -19,13 +21,17 @@ type Props = {
 };
 
 const STEP = 0.1;
+const DIGIT_WIDTH = 15.5;
 
 export function WeightInputCard({ value, onChange, previous, formatDate, error, disabled = false }: Props) {
   const { t, i18n } = useTranslation("progress");
   const styles = useStyles();
   const dir = useDirection();
   const { colors } = useAppTheme();
+  const inputRef = useRef<TextInputInstance>(null);
+  const [focused, setFocused] = useState(false);
   const unit = t("units.kg");
+  const label = t("metrics.withUnit", { metric: t("metrics.weightKg"), unit });
   const parsed = parseMeasurement(value);
   const current = typeof parsed === "number" ? parsed : null;
   const range = METRIC_RANGES.weightKg;
@@ -39,50 +45,57 @@ export function WeightInputCard({ value, onChange, previous, formatDate, error, 
 
   const change = current != null && previous ? Math.round((current - previous.value) * 10) / 10 : null;
   const canStep = !disabled && (current != null || previous != null);
+  const inputWidth = Math.max(3, (value || "0.0").length) * DIGIT_WIDTH + 6;
+
+  const hint = previous
+    ? change != null && change !== 0
+      ? t("entry.changeFromPrevious", { change: formatChange(change, i18n.language), unit, date: formatDate(previous.date) })
+      : t("entry.previousValue", {
+          value: formatMetricNumber(previous.value, i18n.language),
+          unit,
+          date: formatDate(previous.date),
+        })
+    : t("entry.weightOptional");
 
   return (
-    <View style={styles.card}>
-      <View style={[styles.row, dir.row]}>
+    <View style={styles.group}>
+      <Text style={[styles.label, dir.text]}>{label}</Text>
+      <View style={[styles.row, styles.ltr]}>
         <StepButton icon="minus" label={t("entry.decreaseWeight")} disabled={!canStep} onPress={() => step(-1)} />
-        <View style={[styles.field, dir.row]}>
+        <Pressable
+          onPress={() => inputRef.current?.focus()}
+          disabled={disabled}
+          accessible={false}
+          style={[styles.frame, dir.row, focused && styles.frameFocused, error ? styles.frameError : null]}
+        >
           <TextInput
+            ref={inputRef}
             value={value}
             onChangeText={onChange}
-            placeholder={previous ? formatMetricNumber(previous.value, i18n.language) : "0.0"}
+            placeholder="0.0"
             placeholderTextColor={colors.textMuted}
             keyboardType="decimal-pad"
             returnKeyType="done"
             editable={!disabled}
             maxLength={5}
-            selectTextOnFocus
-            style={[styles.input, { textAlign: dir.isRTL ? "left" : "right" }]}
-            accessibilityLabel={t("metrics.withUnit", { metric: t("metrics.weightKg"), unit })}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            style={[styles.input, { width: inputWidth }]}
+            accessibilityLabel={label}
+            accessibilityHint={error ?? hint}
           />
           <Text style={styles.unit}>{unit}</Text>
-        </View>
+        </Pressable>
         <StepButton icon="plus" label={t("entry.increaseWeight")} disabled={!canStep} onPress={() => step(1)} />
       </View>
 
       {error ? (
-        <Text style={styles.error} accessibilityLiveRegion="polite">
-          {error}
-        </Text>
-      ) : previous ? (
-        <Text style={styles.hint}>
-          {change != null && change !== 0
-            ? t("entry.changeFromPrevious", {
-                change: formatChange(change, i18n.language),
-                unit,
-                date: formatDate(previous.date),
-              })
-            : t("entry.previousValue", {
-                value: formatMetricNumber(previous.value, i18n.language),
-                unit,
-                date: formatDate(previous.date),
-              })}
-        </Text>
+        <View style={[styles.messageRow, dir.row]} accessibilityLiveRegion="polite">
+          <MaterialCommunityIcons name="alert-circle-outline" size={14} color={colors.danger} />
+          <Text style={[styles.error, dir.text]}>{error}</Text>
+        </View>
       ) : (
-        <Text style={styles.hint}>{t("entry.weightOptional")}</Text>
+        <Text style={[styles.hint, dir.text]}>{hint}</Text>
       )}
     </View>
   );
@@ -108,6 +121,7 @@ function StepButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled }}
+      hitSlop={4}
       style={({ pressed }) => [styles.step, pressed && styles.stepPressed]}
     >
       <MaterialCommunityIcons name={icon} size={22} color={disabled ? colors.textMuted : colors.textPrimary} />
@@ -118,56 +132,88 @@ function StepButton({
 const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
-      card: {
-        gap: spacing.sm,
-        paddingVertical: spacing.xs,
+      group: {
+        marginBottom: spacing.md,
+      },
+      label: {
+        ...typography.label,
+        fontFamily: fonts.medium,
+        color: colors.textSecondary,
+        marginBottom: spacing.xs + 2,
       },
       row: {
         alignItems: "center",
-        justifyContent: "space-between",
         gap: spacing.sm,
       },
-      field: {
+      ltr: {
+        flexDirection: "row",
+      },
+      frame: {
         flex: 1,
-        alignItems: "baseline",
+        minWidth: 0,
+        height: 56,
+        alignItems: "center",
         justifyContent: "center",
         gap: spacing.xs,
+        paddingHorizontal: spacing.ms,
+        borderRadius: radius.lg,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
+      },
+      frameFocused: {
+        borderColor: colors.accent,
+      },
+      frameError: {
+        borderColor: colors.danger,
       },
       input: {
-        width: 128,
-        ...typography.display,
+        height: 40,
         ...typography.number,
-        fontFamily: fonts.bold,
-        fontSize: 44,
-        lineHeight: 52,
+        fontFamily: fonts.medium,
+        fontSize: 26,
+        textAlign: "center",
+        textAlignVertical: "center",
+        includeFontPadding: false,
         color: colors.textPrimary,
         paddingVertical: 0,
+        paddingHorizontal: 0,
       },
       unit: {
-        ...typography.headline,
+        fontFamily: fonts.regular,
+        fontSize: 15,
+        lineHeight: 20,
         color: colors.textSecondary,
       },
       step: {
-        width: 48,
-        height: 48,
+        flexShrink: 0,
+        width: 56,
+        height: 56,
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: radius.round,
-        backgroundColor: colors.surfaceMuted,
+        borderRadius: radius.lg,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
       },
       stepPressed: {
-        backgroundColor: colors.border,
+        opacity: 0.7,
+      },
+      messageRow: {
+        alignItems: "center",
+        gap: 4,
+        marginTop: spacing.xs + 2,
       },
       hint: {
-        ...typography.footnote,
+        ...typography.caption,
         ...typography.number,
-        color: colors.textSecondary,
-        textAlign: "center",
+        fontFamily: fonts.regular,
+        color: colors.textMuted,
+        marginTop: spacing.xs + 2,
       },
       error: {
-        ...typography.footnote,
+        ...typography.caption,
         color: colors.danger,
-        textAlign: "center",
       },
     }),
   );

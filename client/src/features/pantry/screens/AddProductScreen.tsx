@@ -1,3 +1,4 @@
+import { AppBackdrop } from "../../../shared/components/ui/AppBackdrop";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -51,11 +52,15 @@ export function AddProductScreen() {
     returnTo?: string;
     barcode?: string;
     catalogId?: string;
+    name?: string;
+    brand?: string;
   }>();
 
   const productId = param(params.id);
   const catalogId = param(params.catalogId);
   const barcode = param(params.barcode);
+  const prefillName = param(params.name);
+  const prefillBrand = param(params.brand);
   const isEditMode = params.mode === "edit" && Boolean(productId);
   const isCatalogMode = !isEditMode && Boolean(catalogId);
   const fromRecipePicker = params.returnTo === "recipe";
@@ -89,8 +94,22 @@ export function AddProductScreen() {
         mealCategories: [],
       };
     }
+    if (prefillName) {
+      return {
+        id: `reference:${barcode ?? prefillName}`,
+        name: prefillName,
+        brand: prefillBrand || null,
+        caloriesPer100g: null,
+        proteinPer100g: null,
+        carbsPer100g: null,
+        fatPer100g: null,
+        fiberPer100g: null,
+        servingSizeG: null,
+        servingSizeText: null,
+      };
+    }
     return null;
-  }, [isEditMode, isCatalogMode, productToEdit, catalogItem]);
+  }, [isEditMode, isCatalogMode, productToEdit, catalogItem, prefillName, prefillBrand, barcode]);
 
   const servingRefs = useMemo(() => servingReferences(source), [source]);
 
@@ -216,6 +235,7 @@ export function AddProductScreen() {
   return (
     <FormToneProvider tone="glass">
     <SafeAreaView key={i18n.language} style={styles.root} edges={["top"]}>
+      <AppBackdrop />
       <ScreenHeader
         title={title}
         fallbackRoute="/(app)/pantry"
@@ -248,7 +268,6 @@ export function AddProductScreen() {
             t={t}
             language={i18n.language}
             errors={form.errors}
-            autoFocus={!isEditMode && !isCatalogMode && !fromRecipePicker}
             field={form.field}
           />
 
@@ -270,6 +289,11 @@ export function AddProductScreen() {
             onLinkedFocus={form.beginLinkedEdit}
             onLinkedBlur={form.endLinkedEdit}
             onApplyReference={form.applyServingReference}
+            productName={form.form.name}
+            servingBasis={form.servingBasis}
+            onPatchServing={form.patchServing}
+            lockedServingBasis={form.servingBasisLocked ? form.servingBasis : null}
+            caloriesUncalculable={form.caloriesUncalculable}
             scaledBy={form.scaledBy}
             field={form.field}
           />

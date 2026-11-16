@@ -29,8 +29,52 @@ export type MealCartEntry = {
 
 export type SelectedAmount =
   | { kind: 'product'; product: PantryProduct; grams?: number; servings?: number; milliliters?: number }
-  | { kind: 'recipe'; servings: number }
+  | { kind: 'recipe'; servings?: number; portions?: number; grams?: number }
   | { kind: 'savedMeal' };
+
+export type SelectionUnit = AmountUnit | 'portions';
+
+export function recipeUnits(recipe: PantryRecipe): SelectionUnit[] {
+  const units: SelectionUnit[] = [];
+  if (recipe.portionPlan?.status === 'ok') units.push('portions');
+  if (recipeWeight(recipe)) units.push('grams');
+  units.push('servings');
+  return units;
+}
+
+export function recipeWeight(recipe: PantryRecipe) {
+  return recipe.cookedWeightG ?? recipe.rawWeightG ?? null;
+}
+
+function portionFraction(recipe: PantryRecipe) {
+  return recipe.portionPlan?.status === 'ok' ? recipe.portionPlan.portion.fraction : null;
+}
+
+function recipeBatchFraction(recipe: PantryRecipe, unit: SelectionUnit, quantity: number): number | null {
+  if (unit === 'portions') {
+    const fraction = portionFraction(recipe);
+    return fraction ? fraction * quantity : null;
+  }
+  const weight = recipeWeight(recipe);
+  if (unit === 'grams') return weight ? quantity / weight : null;
+  return quantity;
+}
+
+function recipeQuantity(recipe: PantryRecipe, unit: SelectionUnit, batchFraction: number): number | null {
+  if (unit === 'portions') {
+    const fraction = portionFraction(recipe);
+    return fraction ? batchFraction / fraction : null;
+  }
+  const weight = recipeWeight(recipe);
+  if (unit === 'grams') return weight ? batchFraction * weight : null;
+  return batchFraction;
+}
+
+export function leftoverPortionQuantity(recipe: PantryRecipe): number | null {
+  const plan = recipe.portionPlan;
+  if (plan?.status !== 'ok' || !plan.leftover || plan.leftoverMode !== 'SEPARATE') return null;
+  return plan.leftover.fraction / plan.portion.fraction;
+}
 
 function parseQuantity(value: string) {
   const parsed = parseFloat(value.replace(',', '.'));
@@ -53,7 +97,7 @@ function scaleTotals(
 export function useMealSelection() {
   const [selected, setSelected] = useState<SelectedItem | null>(null);
   const [quantity, setQuantity] = useState('1');
-  const [unit, setUnit] = useState<AmountUnit>('servings');
+  const [unit, setUnit] = useState<SelectionUnit>('servings');
 
   function isSelected(kind: SelectedItem['kind'], id: string) {
     return selected?.kind === kind && selected.item.id === id;
@@ -69,6 +113,11 @@ export function useMealSelection() {
       const nextUnit = defaultAmountUnit(next.item);
       setUnit(nextUnit);
       setQuantity(defaultAmount(next.item, nextUnit));
+    } else if (next.kind === 'recipe') {
+      const nextUnit = recipeUnits(next.item)[0];
+      setUnit(nextUnit);
+      const portion = next.item.portionPlan?.status === 'ok' ? next.item.portionPlan.portion : null;
+      setQuantity(nextUnit === 'grams' ? formatAmount(portion?.grams ?? 100) : '1');
     } else {
       setUnit('servings');
       setQuantity('1');
@@ -79,37 +128,67 @@ export function useMealSelection() {
     setSelected(null);
   }
 
-  function changeUnit(next: AmountUnit) {
-    if (selected?.kind !== 'product' || next === unit) return;
+  function changeUnit(next: SelectionUnit) {
+    if (next === unit) return;
+    if (selected?.kind === 'recipe') {
+      const current = parseQuantity(quantity);
+      const fraction = current ? recipeBatchFraction(selected.item, unit, current) : null;
+      const converted = fraction != null ? recipeQuantity(selected.item, next, fraction) : null;
+      if (converted != null) setQuantity(formatAmount(Math.round(converted * 100) / 100));
+      setUnit(next);
+      return;
+    }
+    if (selected?.kind !== 'product' || next === 'portions' || unit === 'portions') return;
     setQuantity(convertAmount(selected.item, quantity, unit, next));
     setUnit(next);
   }
 
+  function pickLeftoverPortion() {
+    if (selected?.kind !== 'recipe') return;
+    const leftover = leftoverPortionQuantity(selected.item);
+    if (leftover == null) return;
+    setUnit('portions');
+    setQuantity(formatAmount(Math.round(leftover * 100) / 100));
+  }
+
   function step(direction: 1 | -1) {
     const current = parseQuantity(quantity) ?? 0;
-    const increment = unit !== 'servings' && selected?.kind === 'product' ? 10 : current < 1 ? 0.5 : 1;
+    const increment = unit === 'grams' || unit === 'milliliters' ? 10 : current < 1 ? 0.5 : 1;
     const next = Math.max(increment, current + direction * increment);
     setQuantity(formatAmount(next));
   }
 
   const product = selected?.kind === 'product' ? selected.item : null;
   const parsed = parseQuantity(quantity);
-  const unitOptions: AmountUnit[] = product
+  const unitOptions: SelectionUnit[] = product
     ? amountUnits(product)
-    : [];
+    : selected?.kind === 'recipe'
+      ? recipeUnits(selected.item)
+      : [];
 
   let amount: SelectedAmount | null = null;
   let nutrition: CalculatedNutrition | null = null;
 
   const productPayload =
-    selected?.kind === 'product' && parsed ? toAmountPayload(selected.item, parsed, unit) : null;
+    selected?.kind === 'product' && parsed && unit !== 'portions' ? toAmountPayload(selected.item, parsed, unit) : null;
+  const recipeFraction =
+    selected?.kind === 'recipe' && parsed ? recipeBatchFraction(selected.item, unit, parsed) : null;
 
   if (selected?.kind === 'product' && productPayload && isAmountPayloadValid(productPayload)) {
     amount = { kind: 'product', product: selected.item, ...productPayload };
     nutrition = nutritionForAmount(selected.item, productPayload);
-  } else if (selected?.kind === 'recipe' && parsed) {
-    amount = { kind: 'recipe', servings: parsed };
-    nutrition = scaleTotals(selected.item.totals, parsed);
+  } else if (selected?.kind === 'recipe' && parsed && recipeFraction) {
+    amount =
+      unit === 'portions'
+        ? { kind: 'recipe', portions: parsed }
+        : unit === 'grams'
+          ? { kind: 'recipe', grams: parsed }
+          : { kind: 'recipe', servings: parsed };
+    const plan = selected.item.portionPlan;
+    nutrition =
+      unit === 'portions' && plan?.status === 'ok'
+        ? scaleTotals(plan.portion, parsed)
+        : scaleTotals(selected.item.totals, recipeFraction);
   } else if (selected?.kind === 'savedMeal') {
     amount = { kind: 'savedMeal' };
     nutrition = scaleTotals(selected.item.totals, 1);
@@ -126,7 +205,9 @@ export function useMealSelection() {
       if (amount.milliliters != null) payload.milliliters = amount.milliliters;
     } else if (amount.kind === 'recipe') {
       payload.pantryRecipeId = selected.item.id;
-      payload.servings = amount.servings;
+      if (amount.portions != null) payload.portions = amount.portions;
+      else if (amount.grams != null) payload.grams = amount.grams;
+      else payload.servings = amount.servings;
     } else {
       payload.savedMealId = selected.item.id;
     }
@@ -152,6 +233,7 @@ export function useMealSelection() {
     deselect,
     setQuantity,
     changeUnit,
+    pickLeftoverPortion,
     step,
     buildEntry,
   };

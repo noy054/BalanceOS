@@ -92,6 +92,7 @@ export function SuperScreen() {
         <StateView variant="empty" icon="storefront-outline" title={t("super.empty")} />
       ) : (
         <ScrollView
+          keyboardShouldPersistTaps="handled"
           style={styles.scroll}
           contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
           showsVerticalScrollIndicator={false}

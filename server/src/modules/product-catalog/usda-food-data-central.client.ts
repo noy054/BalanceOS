@@ -96,7 +96,7 @@ export class UsdaFoodDataCentralClient {
 
       const response = await fetch(url, {
         signal: AbortSignal.timeout(8000),
-        headers: { 'User-Agent': 'BalanceOS/1.0' },
+        headers: { 'User-Agent': 'TrackMode/1.0' },
       });
 
       if (!response.ok) return { status: 'error' };

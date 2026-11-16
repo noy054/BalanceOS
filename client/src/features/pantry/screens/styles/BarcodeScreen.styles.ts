@@ -130,7 +130,7 @@ export const useStyles = () =>
 
       loadingText: {
         ...typography.callout,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: cameraColors.foreground,
       },
 

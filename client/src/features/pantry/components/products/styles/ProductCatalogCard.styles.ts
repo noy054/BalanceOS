@@ -144,7 +144,7 @@ export const useStyles = () =>
       previewText: {
         ...typography.callout,
         ...typography.number,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
       },
 

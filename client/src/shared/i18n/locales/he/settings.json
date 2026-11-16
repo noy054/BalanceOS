@@ -36,9 +36,11 @@
   "languageDisplay": {
     "screenTitle": "שפה ותצוגה",
     "row": "שפה ותצוגה",
-    "rowSubtitle": "שפה, ערכת נושא",
+    "rowSubtitle": "שפה, אזור קנייה, ערכת נושא",
     "languageSection": "שפה",
     "themeSection": "ערכת נושא",
+    "marketSection": "אזור קנייה",
+    "marketNote": "משמש לזיהוי ברקודים ושמות מוצרים מהחנויות שבהן אתם קונים. ההגדרה נפרדת משפת האפליקציה.",
     "rtlNote": "שינוי כיוון הטקסט ייכנס לתוקף לאחר הפעלה מחדש של האפליקציה"
   },
   "language": {
@@ -187,7 +189,7 @@
   },
   "about": {
     "screenTitle": "אודות",
-    "row": "אודות BalanceOS",
+    "row": "אודות TrackMode",
     "rowSubtitlePrefix": "גרסה",
     "versionValue": "1.0.0",
     "versionLabel": "גרסת אפליקציה",
@@ -656,5 +658,36 @@
     "empty": "אין רישומים בתקופה הזו.",
     "footnote": "הממוצעים מחושבים לפי הימים שתועדו בלבד. היעדים הם היעדים שנשמרו לכל יום.",
     "wholeMeal": "ארוחה שלמה"
+  },
+  "targetSuggestion": {
+    "title": "לעדכן את היעדים?",
+    "titleCalculated": "יעדים מחושבים",
+    "basisAverage": "לפי ממוצע של {{count}} שקילות ({{weight}} ק״ג) בין {{from}} ל־{{to}}.",
+    "basisLatest": "לפי השקילה האחרונה ({{weight}} ק״ג).",
+    "basisProfile": "לפי המשקל בפרופיל ({{weight}} ק״ג).",
+    "nutrient": "יעד יומי",
+    "current": "נוכחי",
+    "suggested": "מוצע",
+    "notSet": "—",
+    "method": "נוסחת מיפלין–סט ג׳אור: BMR {{bmr}} קק״ל × פעילות {{factor}} = {{tdee}} קק״ל ליום, ואז התאמה למטרה. חלבון {{protein}} ג׳ לק״ג, שומן 25% מהקלוריות, והפחמימות משלימות.",
+    "apply": "עדכון היעדים",
+    "keep": "השארת היעדים הנוכחיים",
+    "applied": "היעדים עודכנו",
+    "applyFailed": "לא הצלחנו לעדכן את היעדים. אפשר לנסות שוב.",
+    "missingTitle": "כדי לחשב יעדים צריך להשלים את הפרופיל",
+    "missingBody": "חסרים: {{fields}}.",
+    "completeProfile": "השלמת הפרופיל",
+    "applyCalculated": "החלת היעדים המחושבים",
+    "upToDate": "היעדים שלך תואמים לחישוב.",
+    "fields": {
+      "gender": "מגדר",
+      "birthDate": "תאריך לידה",
+      "heightCm": "גובה",
+      "weightKg": "משקל",
+      "trainingDaysPerWeek": "ימי אימון",
+      "goalType": "מטרה"
+    },
+    "kcalUnit": "קק״ל",
+    "gramsUnit": "ג׳"
   }
 }

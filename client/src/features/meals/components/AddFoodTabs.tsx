@@ -67,13 +67,13 @@ const useStyles = () =>
         lineHeight: 18,
       },
       labelActive: {
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
       },
       underline: {
         alignSelf: "stretch",
         height: StyleSheet.hairlineWidth,
         marginTop: 6,
-        backgroundColor: withAlpha(colors.gloss, 0.1),
+        backgroundColor: withAlpha(colors.tint, 0.1),
       },
       underlineActive: {
         height: 2.5,

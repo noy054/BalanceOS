@@ -79,7 +79,7 @@ const useStyles = () =>
       },
       name: {
         ...typography.bodyStrong,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         flex: 1,
         minWidth: 0,
         color: colors.onImage,

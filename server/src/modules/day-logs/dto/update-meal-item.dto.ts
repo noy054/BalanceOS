@@ -22,4 +22,34 @@ export class UpdateMealItemDto {
   @Max(10000)
   @Type(() => Number)
   servings?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0.01)
+  @Max(1000)
+  @Type(() => Number)
+  portions?: number;
+}
+
+export class UpdateMealComponentDto {
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100000)
+  @Type(() => Number)
+  grams?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100000)
+  @Type(() => Number)
+  milliliters?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(10000)
+  @Type(() => Number)
+  servings?: number;
 }

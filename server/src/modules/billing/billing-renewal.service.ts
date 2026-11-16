@@ -121,7 +121,7 @@ export class BillingRenewalService implements OnModuleInit, OnModuleDestroy {
           customerId: sub.providerCustomerId,
           amount: sub.priceAmount,
           currency: sub.currency,
-          description: `BalanceOS Pro (${sub.interval.toLowerCase()})`,
+          description: `TrackMode Pro (${sub.interval.toLowerCase()})`,
           reference: `renewal_${sub.id}_${sub.currentPeriodEnd.getTime()}_${sub.failedAttempts}`,
         })
       : {

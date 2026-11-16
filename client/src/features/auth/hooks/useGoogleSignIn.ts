@@ -34,6 +34,7 @@ export function useGoogleSignIn() {
     }
 
     const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+
     const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
 
     if (!webClientId || (Platform.OS === "ios" && !iosClientId)) {
@@ -67,7 +68,9 @@ export function useGoogleSignIn() {
 
       const response = await GoogleSignin.signIn();
 
-      if (!isSuccessResponse(response)) return;
+      if (!isSuccessResponse(response)) {
+        return;
+      }
 
       const idToken = response.data.idToken;
 
@@ -76,7 +79,9 @@ export function useGoogleSignIn() {
         return;
       }
 
-      await googleLogin.mutateAsync({ idToken });
+      await googleLogin.mutateAsync({
+        idToken,
+      });
     } catch (error) {
       if (googleModule?.isErrorWithCode(error)) {
         if (

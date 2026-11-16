@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
@@ -29,6 +29,8 @@ export const FoodPickRow = memo(function FoodPickRow({ model, selected, onPress 
   const macro = pickMainMacro(model.macros, visibility);
   const macroValue = model.macros[macro];
   const detail = [model.meta, model.basis].filter(Boolean).join(" · ");
+  const compact = useWindowDimensions().width < COMPACT_WIDTH;
+  const thumbSize = compact ? 44 : 52;
 
   return (
     <Pressable
@@ -37,10 +39,16 @@ export const FoodPickRow = memo(function FoodPickRow({ model, selected, onPress 
       accessibilityState={{ selected }}
       accessibilityLabel={`${model.title}, ${formatCalories(model.calories)} ${t("product.calUnit")}`}
       accessibilityHint={selected ? tDashboard("addItem.tapToDeselect") : undefined}
-      style={({ pressed }) => [styles.row, dir.row, selected && styles.rowSelected, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.row,
+        dir.row,
+        compact && styles.rowCompact,
+        selected && styles.rowSelected,
+        pressed && styles.pressed,
+      ]}
     >
-      <View style={styles.thumb}>
-        <FoodThumb imageUrl={model.imageUrl} fallbackIcon={model.fallbackIcon} size={52} />
+      <View style={[styles.thumb, { width: thumbSize, height: thumbSize }]}>
+        <FoodThumb imageUrl={model.imageUrl} fallbackIcon={model.fallbackIcon} size={thumbSize} />
       </View>
 
       <View style={[styles.text, dir.alignStart]}>
@@ -54,9 +62,9 @@ export const FoodPickRow = memo(function FoodPickRow({ model, selected, onPress 
         ) : null}
       </View>
 
-      <View style={styles.divider} />
+      {compact ? null : <View style={styles.divider} />}
 
-      <View style={[styles.values, dir.alignStart]}>
+      <View style={[styles.values, compact && styles.valuesCompact, dir.alignStart]}>
         <Text style={styles.calories} numberOfLines={1}>
           <Text style={styles.caloriesValue}>{formatCalories(model.calories)}</Text>
           {` ${t("product.calUnit")}`}
@@ -71,7 +79,7 @@ export const FoodPickRow = memo(function FoodPickRow({ model, selected, onPress 
         ) : null}
       </View>
 
-      <View style={[styles.add, selected && styles.addSelected]}>
+      <View style={[styles.add, compact && styles.addCompact, selected && styles.addSelected]}>
         <MaterialCommunityIcons
           name={selected ? "check" : "plus"}
           size={20}
@@ -81,6 +89,8 @@ export const FoodPickRow = memo(function FoodPickRow({ model, selected, onPress 
     </Pressable>
   );
 });
+
+const COMPACT_WIDTH = 360;
 
 const useStyles = () =>
   useThemedStyles((colors) =>
@@ -93,9 +103,13 @@ const useStyles = () =>
         paddingHorizontal: 12,
         borderRadius: 16,
         borderWidth: 1,
-        borderColor: withAlpha(colors.gloss, 0.07),
+        borderColor: withAlpha(colors.tint, 0.07),
         backgroundColor: colors.glassCard,
         backgroundImage: `linear-gradient(160deg, ${withAlpha(colors.gloss, 0.05)} 0%, ${withAlpha(colors.gloss, 0)} 60%)`,
+      },
+      rowCompact: {
+        gap: 8,
+        paddingHorizontal: 10,
       },
       rowSelected: {
         borderColor: withAlpha(colors.accent, 0.6),
@@ -116,7 +130,7 @@ const useStyles = () =>
         gap: 2,
       },
       name: {
-        fontFamily: fonts.bold,
+        fontFamily: fonts.medium,
         fontSize: 15,
         lineHeight: 20,
         color: colors.textPrimary,
@@ -128,11 +142,14 @@ const useStyles = () =>
       divider: {
         width: StyleSheet.hairlineWidth,
         height: 30,
-        backgroundColor: withAlpha(colors.gloss, 0.14),
+        backgroundColor: withAlpha(colors.tint, 0.14),
       },
       values: {
         minWidth: 70,
         gap: 2,
+      },
+      valuesCompact: {
+        minWidth: 62,
       },
       calories: {
         fontFamily: fonts.regular,
@@ -141,7 +158,7 @@ const useStyles = () =>
       },
       caloriesValue: {
         ...typography.number,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         fontSize: 17,
         color: colors.textPrimary,
       },
@@ -152,7 +169,7 @@ const useStyles = () =>
       },
       macroValue: {
         ...typography.number,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
       },
       add: {
         width: 38,
@@ -163,6 +180,11 @@ const useStyles = () =>
         borderWidth: 1,
         borderColor: withAlpha(colors.calorieGauge, 0.3),
         backgroundColor: withAlpha(colors.calorieGauge, 0.14),
+      },
+      addCompact: {
+        width: 34,
+        height: 34,
+        borderRadius: 17,
       },
       addSelected: {
         borderColor: colors.accentFill,

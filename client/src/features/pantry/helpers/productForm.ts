@@ -125,7 +125,7 @@ export function getProductFormFromProduct(
     };
   }
 
-  if (base && !options.preferPer100g && !isVolume) {
+  if (base && !options.preferPer100g) {
     const factor = base / 100;
     return {
       nutritionMode: "perServing" as NutritionMode,
@@ -162,6 +162,7 @@ type BuildPayloadArgs = {
   requireCoreValues?: boolean;
   requiredFieldError: string;
   invalidNumberError: string;
+  servingBasis?: "grams" | "milliliters";
 };
 
 type ParsedServing = {
@@ -236,6 +237,7 @@ export function buildProductPayload({
   form,
   serving,
   nutritionMode,
+  servingBasis,
   requireCoreValues = false,
   requiredFieldError,
   invalidNumberError,
@@ -295,7 +297,8 @@ export function buildProductPayload({
     fiberPerServing: null,
   };
 
-  const servingBase = parsedServing.grams ?? parsedServing.milliliters;
+  const baseUnit = servingBasis ?? (parsedServing.grams ? "grams" : "milliliters");
+  const servingBase = baseUnit === "grams" ? parsedServing.grams : parsedServing.milliliters;
 
   if (nutritionMode === "perServing" && servingBase) {
     const factor = 100 / servingBase;
@@ -305,7 +308,7 @@ export function buildProductPayload({
         ...identity,
         ...servingFields,
         ...emptyPerServing,
-        nutritionBasis: parsedServing.grams ? "PER_100G" : "PER_100ML",
+        nutritionBasis: baseUnit === "grams" ? "PER_100G" : "PER_100ML",
         caloriesPer100g: round2((calories ?? 0) * factor),
         proteinPer100g: round2((protein ?? 0) * factor),
         carbsPer100g: round2((carbs ?? 0) * factor),

@@ -8,6 +8,7 @@ export const DAY_LOG_ENDPOINTS = {
   REMOVE_MEAL_ITEM: (itemId: string) => `/day-logs/meal-items/${itemId}`,
   COPY_MEAL_ENTRY: (mealEntryId: string) => `/day-logs/meal-entries/${mealEntryId}/copy`,
   COPY_MEAL_ITEM: (itemId: string) => `/day-logs/meal-items/${itemId}/copy`,
+  MOVE_MEAL_ITEM: (itemId: string) => `/day-logs/meal-items/${itemId}/move`,
   ITEM_COMPONENTS: (itemId: string) => `/day-logs/meal-items/${itemId}/components`,
   ITEM_COMPONENT: (itemId: string, componentId: string) =>
     `/day-logs/meal-items/${itemId}/components/${componentId}`,

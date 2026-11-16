@@ -3,7 +3,16 @@ import {
   ProductSource,
   ProductVerificationStatus,
 } from '../../../generated/prisma/enums';
-import { NormalizedBarcode } from '../../common/barcode/barcode.utils';
+import {
+  gtinVariants,
+  NormalizedBarcode,
+} from '../../common/barcode/barcode.utils';
+import {
+  LookupContext,
+  lookupContext,
+  nameLanguages,
+} from '../../common/market/lookup-context';
+import { marketForCountryTag } from '../../common/market/markets';
 import {
   ExternalLookupResult,
   NormalizedProductData,
@@ -31,13 +40,15 @@ function extractPer100g(nutriments: OFFNutriments): NutrientMap {
   return result;
 }
 
+const REQUESTS_PER_MINUTE = 80;
+
 interface OFFProduct {
   product_name?: string;
-  product_name_he?: string;
+  lang?: string;
+  countries_tags?: string[];
   brands?: string;
   image_url?: string;
   image_front_url?: string;
-  /** 400px display-size variant provided by OFF v2 API */
   image_front_display_url?: string;
   nutriments?: OFFNutriments;
   serving_size?: string;
@@ -55,31 +66,81 @@ interface OFFResponse {
 @Injectable()
 export class OpenFoodFactsClient {
   private readonly BASE_URL = 'https://world.openfoodfacts.org/api/v2/product';
+  private recentRequests: number[] = [];
 
   async fetchByBarcode(
     barcode: NormalizedBarcode,
+    context: LookupContext = lookupContext(),
   ): Promise<ExternalLookupResult> {
-    try {
-      const response = await fetch(`${this.BASE_URL}/${barcode.digits}.json`, {
-        signal: AbortSignal.timeout(8000),
-        headers: { 'User-Agent': 'BalanceOS/1.0' },
-      });
-
-      if (response.status === 404) return { status: 'not_found' };
-      if (!response.ok) return { status: 'error' };
-
-      const data = (await response.json()) as OFFResponse;
-      if (data.status !== 1 || !data.product) return { status: 'not_found' };
-
-      return { status: 'found', data: this.normalize(data.product, barcode) };
-    } catch {
-      return { status: 'error' };
+    for (const code of gtinVariants(barcode)) {
+      const result = await this.fetchCode(code);
+      if (result === 'not_found') continue;
+      if (result === 'error') return { status: 'error' };
+      return {
+        status: 'found',
+        data: this.normalize(result, barcode, context),
+      };
     }
+    return { status: 'not_found' };
+  }
+
+  private takeRequestSlot(): boolean {
+    const now = Date.now();
+    this.recentRequests = this.recentRequests.filter(
+      (time) => now - time < 60_000,
+    );
+    if (this.recentRequests.length >= REQUESTS_PER_MINUTE) return false;
+    this.recentRequests.push(now);
+    return true;
+  }
+
+  private async fetchCode(
+    code: string,
+  ): Promise<OFFProduct | 'not_found' | 'error'> {
+    if (!this.takeRequestSlot()) return 'error';
+    try {
+      const response = await fetch(`${this.BASE_URL}/${code}.json`, {
+        signal: AbortSignal.timeout(8000),
+        headers: { 'User-Agent': 'TrackMode/1.0' },
+      });
+      if (response.status === 404) return 'not_found';
+      if (!response.ok) return 'error';
+      const data = (await response.json()) as OFFResponse;
+      if (data.status !== 1 || !data.product) return 'not_found';
+      return data.product;
+    } catch {
+      return 'error';
+    }
+  }
+
+  private localizedName(
+    product: OFFProduct,
+    context: LookupContext,
+  ): { name: string; language: string | null } | null {
+    for (const language of nameLanguages(context)) {
+      const value = product[`product_name_${language}`];
+      if (typeof value === 'string' && value.trim()) {
+        return { name: value.trim(), language };
+      }
+    }
+    const fallback = product.product_name?.trim();
+    return fallback ? { name: fallback, language: product.lang ?? null } : null;
+  }
+
+  private countryCode(product: OFFProduct, context: LookupContext) {
+    const tags = product.countries_tags ?? [];
+    if (tags.includes(context.market.offCountryTag)) return context.market.code;
+    for (const tag of tags) {
+      const market = marketForCountryTag(tag);
+      if (market) return market.code;
+    }
+    return null;
   }
 
   private normalize(
     product: OFFProduct,
     barcode: NormalizedBarcode,
+    context: LookupContext,
   ): NormalizedProductData {
     const nutrients = extractPer100g(product.nutriments ?? {});
     const value = (key: string): number | null => nutrients[key] ?? null;
@@ -92,10 +153,8 @@ export class OpenFoodFactsClient {
         ? servingQuantity
         : null;
 
-    const name =
-      product.product_name_he?.trim() ||
-      product.product_name?.trim() ||
-      barcode.digits;
+    const localized = this.localizedName(product, context);
+    const name = localized?.name ?? barcode.digits;
 
     const brand = product.brands
       ? product.brands.split(',')[0].trim() || null
@@ -111,6 +170,7 @@ export class OpenFoodFactsClient {
       barcode: barcode.digits,
       normalizedBarcode: barcode.canonical,
       name,
+      nameMissing: localized === null,
       brand,
       imageUrl,
       caloriesPer100g: value('energy-kcal'),
@@ -125,6 +185,8 @@ export class OpenFoodFactsClient {
       nutrients: Object.keys(nutrients).length > 0 ? nutrients : null,
       servingSizeGrams,
       servingSizeText: product.serving_size?.trim() || null,
+      countryCode: this.countryCode(product, context),
+      languageCode: localized?.language ?? null,
       source: ProductSource.OPEN_FOOD_FACTS,
       verificationStatus: ProductVerificationStatus.AUTO_IMPORTED,
       externalProvider: 'open_food_facts',

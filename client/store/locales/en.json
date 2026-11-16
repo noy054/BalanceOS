@@ -1,0 +1,5 @@
+{
+  "CFBundleDisplayName": "TrackMode",
+  "NSCameraUsageDescription": "TrackMode uses the camera to scan product barcodes and take photos of foods you add.",
+  "NSPhotoLibraryUsageDescription": "TrackMode uses your photos only when you choose an image for a food or a progress entry."
+}

@@ -2,13 +2,17 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { confirmAction } from "../../../shared/helpers/confirm";
 import { useTodayKey } from "../../../shared/hooks/useTodayKey";
-import { MAX_PHOTOS_PER_ENTRY } from "../constants";
+import { MAX_PHOTOS_PER_ENTRY, PROGRESS_ROUTES } from "../constants";
 import { buildEntryPayload, emptyEntryForm, EntryFormErrors, EntryFormState, formFromEntry } from "../helpers/entryForm";
 import { BodyMetric } from "../types";
 import { PhotoSyncError, useBodyEntry, useDeleteBodyEntry, useSaveBodyEntry } from "./useProgress";
+import { fetchTargetSuggestion } from "../../settings/hooks/useSettings";
+import { shouldOfferWeightSuggestion } from "../../settings/helpers/targetSuggestion";
+import { TargetSuggestion } from "../../settings/types";
 
 export type DraftPhoto = {
   key: string;
@@ -23,6 +27,11 @@ function nextKey(): string {
   return `draft-${draftCounter}`;
 }
 
+function leaveEditor() {
+  if (router.canGoBack()) router.back();
+  else router.replace(PROGRESS_ROUTES.overview);
+}
+
 export function useBodyEntryEditor(routeId: string) {
   const { t } = useTranslation("progress");
   const today = useTodayKey();
@@ -31,6 +40,8 @@ export function useBodyEntryEditor(routeId: string) {
   const entry = query.data;
   const save = useSaveBodyEntry();
   const remove = useDeleteBodyEntry();
+  const queryClient = useQueryClient();
+  const [suggestion, setSuggestion] = useState<TargetSuggestion | null>(null);
 
   const [form, setForm] = useState<EntryFormState>(() => emptyEntryForm(today));
   const [errors, setErrors] = useState<EntryFormErrors>({});
@@ -88,6 +99,20 @@ export function useBodyEntryEditor(routeId: string) {
     }
   }
 
+  async function suggestionAfterWeighIn(): Promise<TargetSuggestion | null> {
+    try {
+      const next = await fetchTargetSuggestion(queryClient);
+      return shouldOfferWeightSuggestion(next) ? next : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function dismissSuggestion() {
+    setSuggestion(null);
+    leaveEditor();
+  }
+
   async function handleSave() {
     if (busy) return;
     const result = buildEntryPayload(form, { isNew, photoCount: photos.length }, messages);
@@ -103,7 +128,14 @@ export function useBodyEntryEditor(routeId: string) {
           removed: removedIds,
         },
       });
-      router.back();
+      const weightChanged =
+        result.payload.weightKg != null && result.payload.weightKg !== (entry?.weightKg ?? null);
+      const next = weightChanged ? await suggestionAfterWeighIn() : null;
+      if (next) {
+        setSuggestion(next);
+        return;
+      }
+      leaveEditor();
     } catch (err: unknown) {
       if (err instanceof PhotoSyncError && err.rolledBack) {
         Alert.alert("", t("photos.uploadFailed"));
@@ -112,7 +144,7 @@ export function useBodyEntryEditor(routeId: string) {
       if (err instanceof PhotoSyncError) {
         Alert.alert("", t("photos.partialFailure", { count: err.failed }));
         if (!isNew) {
-          router.back();
+          leaveEditor();
         } else {
           router.replace({ pathname: "/(app)/progress/[id]", params: { id: err.entry.id } });
         }
@@ -134,7 +166,7 @@ export function useBodyEntryEditor(routeId: string) {
     if (!confirmed) return;
     try {
       await remove.mutateAsync(entry);
-      router.back();
+      leaveEditor();
     } catch {
       Alert.alert("", t("entry.deleteFailed"));
     }
@@ -156,5 +188,7 @@ export function useBodyEntryEditor(routeId: string) {
     removePhoto,
     handleSave,
     handleDelete,
+    suggestion,
+    dismissSuggestion,
   };
 }

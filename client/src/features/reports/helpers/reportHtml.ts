@@ -133,7 +133,7 @@ export function buildReportHtml({ report, text, nutrients, language, isRTL }: Op
   body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, "Noto Sans Hebrew", "Arial Hebrew", Arial, sans-serif; color: #191C26; font-size: 11pt; line-height: 1.45; text-align: start; }
   .num { unicode-bidi: isolate; font-variant-numeric: tabular-nums; font-weight: 600; }
   .unit { color: #586176; font-size: 0.85em; }
-  header { border-bottom: 3px solid #C5F87F; padding-bottom: 10px; margin-bottom: 18px; }
+  header { border-bottom: 3px solid #D1FF62; padding-bottom: 10px; margin-bottom: 18px; }
   .brand { font-size: 10pt; font-weight: 700; letter-spacing: 0.04em; color: #586176; }
   h1 { font-size: 20pt; margin: 2px 0 4px; }
   .meta { color: #586176; font-size: 10pt; }
@@ -161,7 +161,7 @@ export function buildReportHtml({ report, text, nutrients, language, isRTL }: Op
 </head>
 <body>
   <header>
-    <div class="brand">BalanceOS</div>
+    <div class="brand">TrackMode</div>
     <h1>${escape(text.title)}</h1>
     <div class="meta">${escape(text.periodLabel)}${text.person ? ` · ${escape(text.person)}` : ""}</div>
     <div class="meta">${escape(text.generatedLabel)}</div>

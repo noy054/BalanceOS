@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useStyles } from "./styles/TabScreenLayout.styles";
+import { AppBackdrop } from "./ui/AppBackdrop";
 
 type Props = {
   activeTab?: string;
@@ -16,7 +17,10 @@ export function TabScreenLayout({ backgroundColor, children }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, background]} edges={["top"]}>
-      <View style={[styles.content, background]}>{children}</View>
+      <View style={[styles.content, background]}>
+        <AppBackdrop />
+        {children}
+      </View>
     </SafeAreaView>
   );
 }

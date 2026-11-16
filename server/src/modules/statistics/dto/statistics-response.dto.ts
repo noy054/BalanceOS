@@ -32,11 +32,15 @@ export type MealDistributionItem = {
   pct: number;
 };
 
+export type FoodBasis = 'serving' | '100g' | '100ml' | 'meal';
+
 export type FoodItem = {
   name: string;
   totalCalories: number;
   count: number;
   imageUrl: string | null;
+  unitCalories: number | null;
+  unitBasis: FoodBasis | null;
 };
 
 export type MostUsedFood = {
@@ -44,6 +48,7 @@ export type MostUsedFood = {
   count: number;
   avgCalories: number;
   imageUrl: string | null;
+  isSnack: boolean;
 };
 
 export type StatisticsResponseDto = {

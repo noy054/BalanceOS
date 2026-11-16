@@ -1,12 +1,12 @@
 import { StyleSheet } from "react-native";
 
-import { fonts, typography, useThemedStyles } from "../../../../shared/theme";
+import { fonts, spacing, typography, useThemedStyles } from "../../../../shared/theme";
 import { withAlpha } from "../../../../shared/helpers/progressColor";
 
 export const HERO_SCALE = {
   ribbon: (634 / 698) * 1.12,
-  value: 0.1593,
-  badgeValue: 0.0585,
+  value: 0.13,
+  badgeValue: 0.05,
   icon: 0.085,
 };
 
@@ -33,7 +33,20 @@ export const useStyles = () =>
 
       hero: {
         alignItems: "center",
-        marginTop: -33,
+        marginTop: -spacing.ml,
+      },
+
+      centerStack: {
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 2,
+        maxWidth: "100%",
+      },
+
+      badgeStack: {
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 1,
       },
 
       mainLabel: {
@@ -45,7 +58,8 @@ export const useStyles = () =>
       },
 
       mainNumber: {
-        fontFamily: fonts.displayHeavy,
+        fontFamily: fonts.medium,
+        includeFontPadding: false,
         maxWidth: "100%",
         textAlign: "center",
         color: colors.textPrimary,
@@ -62,7 +76,7 @@ export const useStyles = () =>
 
       badgeValue: {
         ...typography.number,
-        fontFamily: fonts.displayHeavy,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
       },
 
@@ -74,8 +88,7 @@ export const useStyles = () =>
       },
 
       macros: {
-        gap: 8,
-        marginHorizontal: 3,
+        gap: spacing.sm,
       },
 
       macroCard: {
@@ -119,7 +132,7 @@ export const useStyles = () =>
       },
 
       macroLabel: {
-        fontFamily: fonts.bold,
+        fontFamily: fonts.medium,
         fontSize: 12,
         lineHeight: 16,
         textAlign: "center",
@@ -128,7 +141,7 @@ export const useStyles = () =>
 
       macroValue: {
         ...typography.number,
-        fontFamily: fonts.displayHeavy,
+        fontFamily: fonts.medium,
         fontSize: 17,
         lineHeight: 21,
       },

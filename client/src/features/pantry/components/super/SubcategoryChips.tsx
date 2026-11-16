@@ -23,6 +23,7 @@ export function SubcategoryChips({ options, value, onChange }: Props) {
 
   return (
     <ScrollView
+      keyboardShouldPersistTaps="handled"
       ref={scrollRef}
       horizontal
       showsHorizontalScrollIndicator={false}
@@ -91,7 +92,7 @@ const useStyles = () =>
         color: colors.textSecondary,
       },
       labelSelected: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.onAccent,
       },
     }),

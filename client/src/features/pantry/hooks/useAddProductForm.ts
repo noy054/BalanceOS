@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { formatAmount } from "../helpers/serving";
+import { ServingAmountField } from "../helpers/servingEstimates";
 
 import { ProductCategory } from "../types";
 import {
@@ -68,6 +69,12 @@ function numberText(value: number | null | undefined) {
   return value == null ? "" : String(value);
 }
 
+function per100Text(value: string, amount: number) {
+  const parsed = parseFloat(value.replace(",", "."));
+  if (!value.trim() || !Number.isFinite(parsed)) return "";
+  return String(Math.round(((parsed * 100) / amount) * 1000) / 1000);
+}
+
 function isNutrientKey(key: keyof ProductFormState): key is NutrientKey {
   return (NUTRIENT_KEYS as readonly string[]).includes(key);
 }
@@ -86,8 +93,11 @@ export function useAddProductForm({
   const [serving, setServing] = useState<ServingFormState>(INITIAL_SERVING_FORM);
   const [mealCategories, setMealCategories] = useState<ProductCategory[]>([]);
   const [scaledBy, setScaledBy] = useState<number | null>(null);
+  const [caloriesUncalculable, setCaloriesUncalculable] = useState(false);
   const linkedStart = useRef<{ form: ProductFormState; serving: ServingFormState } | null>(null);
   const baseline = useRef<NutritionBaseline | null>(null);
+  const drafts = useRef<Partial<Record<NutritionMode, Pick<ProductFormState, NutrientKey>>>>({});
+  const editedSinceSwitch = useRef(false);
 
   useEffect(() => {
     if (!source || hydratedIdRef.current === source.id) {
@@ -100,7 +110,7 @@ export function useAddProductForm({
     baseline.current =
       productForm.nutritionMode === "perServing" && source.nutritionBasis !== "PER_SERVING" && source.caloriesPer100g != null
         ? {
-            unit: "grams",
+            unit: source.nutritionBasis === "PER_100ML" ? "milliliters" : "grams",
             form: {
               ...productForm.form,
               caloriesPer100g: numberText(source.caloriesPer100g),
@@ -111,6 +121,8 @@ export function useAddProductForm({
             },
           }
         : null;
+    drafts.current = {};
+    editedSinceSwitch.current = false;
     setForm(productForm.form);
     setNutritionMode(productForm.nutritionMode);
     setServing(productForm.serving);
@@ -122,7 +134,10 @@ export function useAddProductForm({
       linkedChange("calories", value);
     } else {
       linkedStart.current = null;
-      if (isNutrientKey(key)) baseline.current = null;
+      if (isNutrientKey(key)) {
+        editedSinceSwitch.current = true;
+        updateBaselineNutrient(key, value);
+      }
       setForm((prev) => ({
         ...prev,
         [key]: value,
@@ -135,6 +150,16 @@ export function useAddProductForm({
         [key]: undefined,
       }));
     }
+  }
+
+  function updateBaselineNutrient(key: NutrientKey, value: string) {
+    const base = baseline.current;
+    const amount = base ? parseNumber(serving[base.unit]) : null;
+    if (!base || nutritionMode !== "perServing" || !amount) {
+      baseline.current = null;
+      return;
+    }
+    baseline.current = { ...base, form: { ...base.form, [key]: per100Text(value, amount) } };
   }
 
   function field(key: keyof ProductFormState) {
@@ -175,12 +200,18 @@ export function useAddProductForm({
       converted = scaleNutrition(form, mode === "per100ml" ? grams / milliliters : milliliters / grams, false);
     }
 
+    const saved = drafts.current[mode];
+    const next = saved && (!editedSinceSwitch.current || !converted) ? saved : converted ? nutrientsOf(converted) : EMPTY_NUTRIENTS;
+    drafts.current = { ...drafts.current, [nutritionMode]: nutrientsOf(form) };
+    editedSinceSwitch.current = false;
+
     if (mode !== "perServing") baseline.current = null;
+    setCaloriesUncalculable(false);
     linkedStart.current = null;
     setScaledBy(null);
     setNutritionMode(mode);
     setErrors({});
-    setForm((prev) => ({ ...prev, ...(converted ? nutrientsOf(converted) : EMPTY_NUTRIENTS) }));
+    setForm((prev) => ({ ...prev, ...next }));
   }
 
   function updateServing(key: keyof ServingFormState, value: string) {
@@ -230,22 +261,40 @@ export function useAddProductForm({
         ? parseNumber(start.form.caloriesPer100g)
         : parseNumber(start.serving[changed]);
     const after = parseNumber(value);
-    if ((!before || !after) && after && applyBaseline(changed, value, after)) return;
+    if (changed === "calories" && baseline.current) {
+      editedSinceSwitch.current = true;
+      if (after && applyBaseline("calories", value, after)) {
+        setCaloriesUncalculable(false);
+        return;
+      }
+      setCaloriesUncalculable(Boolean(after) && !parseNumber(baseline.current.form.caloriesPer100g));
+      setForm((prev) => ({ ...prev, caloriesPer100g: value }));
+      return;
+    }
+    const fromBaseline = (changed === "grams" || changed === "milliliters") && baseline.current?.unit === changed;
+    if (after && (fromBaseline || !before) && applyBaseline(changed, value, after)) return;
+    if (changed === "calories") editedSinceSwitch.current = true;
     const ratio = before && after ? after / before : 1;
+    const base = baseline.current;
+    const startAmount = base ? parseNumber(start.serving[base.unit]) : null;
+    const scaled =
+      changed === "quantity" && base && startAmount
+        ? { ...start.form, ...nutrientsOf(scaleNutrition(base.form, (startAmount * ratio) / 100, false)) }
+        : scaleNutrition(start.form, ratio, false);
 
     setForm({
-      ...scaleNutrition(start.form, ratio, false),
+      ...scaled,
       name: form.name,
       brand: form.brand,
       imageUrl: form.imageUrl,
       ...(changed === "calories" ? { caloriesPer100g: value } : {}),
     });
-    setServing({
-      ...serving,
+    setServing((prev) => ({
+      ...prev,
       quantity: changed === "quantity" ? value : scaleText(start.serving.quantity, ratio, "amount"),
       grams: changed === "grams" ? value : scaleText(start.serving.grams, ratio, "grams"),
       milliliters: changed === "milliliters" ? value : scaleText(start.serving.milliliters, ratio, "grams"),
-    });
+    }));
     setScaledBy(ratio !== 1 ? ratio : null);
   }
 
@@ -266,10 +315,19 @@ export function useAddProductForm({
       ...nutrientsOf(scaleNutrition(base.form, amount / 100, false)),
       ...(changed === "calories" ? { caloriesPer100g: value } : {}),
     });
-    setServing({
-      ...serving,
-      quantity: serving.quantity.trim() ? serving.quantity : "1",
-      [base.unit]: changed === base.unit ? value : String(Math.round(amount * 10) / 10),
+    const other = base.unit === "grams" ? "milliliters" : "grams";
+    setServing((prev) => {
+      const previousAmount = parseNumber(prev[base.unit]);
+      const otherAmount = parseNumber(prev[other]);
+      return {
+        ...prev,
+        quantity: prev.quantity.trim() ? prev.quantity : "1",
+        [base.unit]: changed === base.unit ? value : formatAmount(Math.round(amount * 10) / 10),
+        [other]:
+          otherAmount && previousAmount
+            ? formatAmount(Math.round(((otherAmount * amount) / previousAmount) * 10) / 10)
+            : prev[other],
+      };
     });
     setScaledBy(null);
     return true;
@@ -283,17 +341,24 @@ export function useAddProductForm({
     linkedStart.current = null;
   }
 
-  function applyServingReference(quantity: number, grams: number) {
-    const oldGrams = parseNumber(serving.grams);
-    if (nutritionMode === "perServing" && baseline.current?.unit === "grams") {
-      setForm((prev) => ({ ...prev, ...nutrientsOf(scaleNutrition(baseline.current!.form, grams / 100, false)) }));
+  function applyServingReference(quantity: number, amount: number, unit: ServingAmountField = "grams") {
+    const oldAmount = parseNumber(serving[unit]);
+    const base = baseline.current;
+    if (nutritionMode === "perServing" && base?.unit === unit) {
+      setForm((prev) => ({ ...prev, ...nutrientsOf(scaleNutrition(base.form, amount / 100, false)) }));
       setScaledBy(null);
-    } else if (nutritionMode === "perServing" && oldGrams && oldGrams !== grams) {
-      const ratio = grams / oldGrams;
+    } else if (nutritionMode === "perServing" && oldAmount && oldAmount !== amount) {
+      const ratio = amount / oldAmount;
       setForm((prev) => scaleNutrition(prev, ratio, false));
       setScaledBy(ratio);
     }
-    setServing((prev) => ({ ...prev, quantity: formatAmount(quantity), grams: formatAmount(grams) }));
+    linkedStart.current = null;
+    setServing((prev) => ({ ...prev, quantity: formatAmount(quantity), [unit]: formatAmount(amount) }));
+  }
+
+  function patchServing(patch: Partial<ServingFormState>) {
+    linkedStart.current = null;
+    setServing((prev) => ({ ...prev, ...patch }));
   }
 
   function toggleCategory(cat: ProductCategory) {
@@ -307,6 +372,7 @@ export function useAddProductForm({
       form,
       serving,
       nutritionMode,
+      servingBasis: nutritionMode === "perServing" ? baseline.current?.unit : undefined,
       requireCoreValues,
       requiredFieldError,
       invalidNumberError,
@@ -338,6 +404,11 @@ export function useAddProductForm({
     };
   }
 
+  const servingBasis: ServingAmountField =
+    nutritionMode === "per100ml" || (nutritionMode === "perServing" && baseline.current?.unit === "milliliters")
+      ? "milliliters"
+      : "grams";
+
   return {
     form,
     errors,
@@ -346,6 +417,9 @@ export function useAddProductForm({
     mealCategories,
     isPerServing: nutritionMode === "perServing",
     isPerVolume: nutritionMode === "per100ml",
+    servingBasis,
+    servingBasisLocked: nutritionMode === "perServing" && baseline.current !== null,
+    caloriesUncalculable,
     hasImagePreview: Boolean(form.imageUrl.trim()),
 
     field,
@@ -356,6 +430,7 @@ export function useAddProductForm({
     beginLinkedEdit,
     endLinkedEdit,
     applyServingReference,
+    patchServing,
     scaledBy,
     toggleCategory,
     validate,

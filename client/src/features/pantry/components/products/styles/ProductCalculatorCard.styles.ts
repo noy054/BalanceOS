@@ -33,7 +33,7 @@ export const useStyles = () =>
       quantityInput: {
         alignSelf: "stretch",
         ...typography.number,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         fontSize: 48,
         lineHeight: 56,
         minHeight: 56,
@@ -95,7 +95,7 @@ export const useStyles = () =>
 
       columnValue: {
         ...typography.value,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         fontSize: 18,
         color: colors.textPrimary,
       },

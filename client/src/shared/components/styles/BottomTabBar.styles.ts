@@ -1,13 +1,18 @@
 import { StyleSheet } from "react-native";
 
-import { fonts, radius, spacing, states, typography, useThemedStyles } from "../../theme";
+import { darkColors, fonts, radius, spacing, states, typography, useThemedStyles } from "../../theme";
+import { withAlpha } from "../../helpers/progressColor";
 
 const BAR_HEIGHT = 64;
-const ADD_SIZE = 58;
+const ADD_SIZE = 56;
+const PLUS_SIZE = 24;
+const PLUS_STROKE = 3.5;
 
 export const useStyles = () =>
-  useThemedStyles((colors) =>
-    StyleSheet.create({
+  useThemedStyles((colors) => {
+    const dark = colors.canvas === darkColors.canvas;
+    const lime = colors.accentFill;
+    return StyleSheet.create({
       container: {
         paddingHorizontal: spacing.md,
         paddingTop: spacing.sm,
@@ -75,7 +80,7 @@ export const useStyles = () =>
 
       tabLabelActive: {
         color: colors.accent,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
       },
 
       addSlot: {
@@ -85,35 +90,61 @@ export const useStyles = () =>
         justifyContent: "center",
       },
 
-      addHalo: {
-        position: "absolute",
-        width: ADD_SIZE + 16,
-        height: ADD_SIZE + 16,
-        borderRadius: (ADD_SIZE + 16) / 2,
-        backgroundColor: colors.accentFill,
-        opacity: 0.16,
-        top: (BAR_HEIGHT - ADD_SIZE - 16) / 2 - 14,
-      },
-
       addButton: {
         width: ADD_SIZE,
         height: ADD_SIZE,
-        marginTop: -28,
-        borderRadius: ADD_SIZE / 2,
+        marginTop: -18,
+        borderRadius: 18,
+        overflow: "hidden",
         backgroundColor: colors.accentFill,
+        backgroundImage: dark
+          ? `linear-gradient(165deg, #EEFFB8 0%, ${lime} 42%, #A7E23B 100%)`
+          : `linear-gradient(165deg, #E3F6A8 0%, ${lime} 45%, #9CCB34 100%)`,
+        borderWidth: 1,
+        borderColor: withAlpha("#FFFFFF", dark ? 0.55 : 0.75),
+        borderBottomColor: withAlpha("#5E9420", dark ? 0.55 : 0.35),
         alignItems: "center",
         justifyContent: "center",
-        borderWidth: 3,
-        borderColor: colors.background,
-        shadowColor: colors.accentFill,
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.45,
-        shadowRadius: 14,
-        elevation: 10,
+        boxShadow: dark
+          ? `0 0 14px ${withAlpha(lime, 0.32)}, 0 0 3px ${withAlpha(lime, 0.45)}, 0 6px 12px -4px rgba(0, 0, 0, 0.55)`
+          : `0 0 10px ${withAlpha(lime, 0.35)}, 0 5px 10px -4px rgba(40, 60, 10, 0.35)`,
       },
 
       addButtonPressed: {
-        backgroundColor: colors.accentFillPressed,
+        backgroundImage: `linear-gradient(165deg, #E2FF94 0%, ${colors.accentFillPressed} 55%, #94CF2E 100%)`,
+        transform: [{ scale: 0.96 }],
       },
-    }),
-  );
+
+      addSheen: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: ADD_SIZE / 2,
+        backgroundImage: `linear-gradient(180deg, ${withAlpha("#FFFFFF", 0.38)} 0%, ${withAlpha("#FFFFFF", 0)} 100%)`,
+      },
+
+      plus: {
+        width: PLUS_SIZE,
+        height: PLUS_SIZE,
+        alignItems: "center",
+        justifyContent: "center",
+      },
+
+      plusBar: {
+        position: "absolute",
+        borderRadius: PLUS_STROKE / 2,
+        backgroundColor: colors.onAccent,
+      },
+
+      plusHorizontal: {
+        width: PLUS_SIZE,
+        height: PLUS_STROKE,
+      },
+
+      plusVertical: {
+        width: PLUS_STROKE,
+        height: PLUS_SIZE,
+      },
+    });
+  });

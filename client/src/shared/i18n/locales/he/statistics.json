@@ -86,9 +86,22 @@
     "mostUsed": "מזונות בשימוש תכוף",
     "usedTimes": "נרשם ×{{count}}",
     "avgCalories": "{{value}} קל׳ בממוצע",
-    "topCaloriesSub": "סך הקלוריות מכל מזון בטווח",
-    "mostUsedSub": "כמה פעמים כל מזון נרשם בטווח",
-    "times": "פעמים"
+    "topCaloriesSub": "מדורג לפי סך הקלוריות בטווח · קלוריות ליחידה",
+    "mostUsedSub": "כמה פעמים כל מזון נרשם · נשנושים בסוף",
+    "times": "פעמים",
+    "loggedCount_one": "נרשם פעם אחת",
+    "loggedCount_two": "נרשם פעמיים",
+    "loggedCount_many": "נרשם {{count}} פעמים",
+    "loggedCount_other": "נרשם {{count}} פעמים",
+    "perBasis": {
+      "serving": "קק״ל למנה",
+      "100g": "קק״ל ל־100 ג׳",
+      "100ml": "קק״ל ל־100 מ״ל",
+      "meal": "קק״ל לארוחה",
+      "entry": "קק״ל לרישום"
+    },
+    "mealTag": "ארוחה",
+    "snackTag": "נשנוש"
   },
   "empty": {
     "title": "אין נתונים עדיין",
@@ -124,7 +137,14 @@
     "average": "ממוצע",
     "target": "יעד",
     "difference": "הפרש",
-    "proteinGapSub": "ממוצע יומי מול יעד החלבון"
+    "proteinGapSub": "ממוצע יומי מול יעד החלבון",
+    "summaryTitle": "סיכום",
+    "perDay": "ליום",
+    "total": "מצטבר",
+    "over": "מעל היעד",
+    "under": "מתחת ליעד",
+    "onTarget": "ביעד",
+    "unitLabel": "ביחידות {{unit}}"
   },
   "insights": {
     "title": "תובנות",

@@ -90,7 +90,7 @@ const useStyles = () =>
       value: {
         ...typography.value,
         fontSize: 15,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
       },
       separator: {

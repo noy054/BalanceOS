@@ -14,6 +14,8 @@ import {
   DayLogMealsResponse,
   DayLogResponse,
   DayLogSummary,
+  MealEntrySummary,
+  MealItemComponent,
   MealItemSummary,
   MealMacros,
   UpdateMealItemPayload,
@@ -210,15 +212,16 @@ function addMacros<T extends MealMacros>(target: T, delta: MealMacros): T {
   return next;
 }
 
-type StoredAmounts = { grams?: number | null; servings?: number | null; milliliters?: number | null };
+type StoredAmounts = { grams?: number | null; servings?: number | null; milliliters?: number | null; portions?: number | null };
 
 function storedAmount(entry: StoredAmounts) {
-  return entry.grams ?? entry.milliliters ?? entry.servings ?? null;
+  return entry.grams ?? entry.milliliters ?? entry.portions ?? entry.servings ?? null;
 }
 
 function matchingAmount(entry: StoredAmounts, payload: StoredAmounts) {
   if (entry.grams != null) return payload.grams ?? null;
   if (entry.milliliters != null) return payload.milliliters ?? null;
+  if (entry.portions != null) return payload.portions ?? null;
   return payload.servings ?? null;
 }
 
@@ -228,8 +231,25 @@ function scaleAmounts<T extends MealMacros & StoredAmounts>(entry: T, ratio: num
     grams: entry.grams != null ? Math.round(entry.grams * ratio * 100) / 100 : entry.grams,
     servings: entry.servings != null ? Math.round(entry.servings * ratio * 10000) / 10000 : entry.servings,
     milliliters: entry.milliliters != null ? Math.round(entry.milliliters * ratio * 100) / 100 : entry.milliliters,
+    portions: entry.portions != null ? Math.round(entry.portions * ratio * 10000) / 10000 : entry.portions,
   };
   for (const key of MACRO_FIELDS) next[key] = roundMacro(key, entry[key] * ratio);
+  return next;
+}
+
+function componentAtAmount(component: MealItemComponent, amount: number): MealItemComponent | null {
+  const stored = storedAmount(component);
+  const base = component.baseMacros ?? (stored ? { ...component, amount: stored } : null);
+  if (!base || !(base.amount > 0)) return null;
+  const ratio = amount / base.amount;
+  const next: MealItemComponent = {
+    ...component,
+    grams: component.grams != null ? amount : component.grams,
+    servings: component.servings != null ? amount : component.servings,
+    milliliters: component.milliliters != null ? amount : component.milliliters,
+    baseMacros: base,
+  };
+  for (const key of MACRO_FIELDS) next[key] = roundMacro(key, base[key] * ratio);
   return next;
 }
 
@@ -324,6 +344,45 @@ export function useRemoveMealItem(date: string) {
   });
 }
 
+export function moveItemBetweenMeals(
+  data: DayLogMealsResponse,
+  itemId: string,
+  mealType: string,
+): DayLogMealsResponse | null {
+  const source = data.meals.find((meal) => meal.items.some((entry) => entry.id === itemId));
+  const item = source?.items.find((entry) => entry.id === itemId);
+  if (!source || !item || source.mealType === mealType) return null;
+  const existing = data.meals.find((meal) => meal.mealType === mealType);
+  const target: MealEntrySummary = existing ?? { id: `pending-${mealType}`, mealType, items: [], ...ZERO_MACROS };
+  const moved = { ...addMacros(target, item), items: [...target.items, item] };
+  const meals = data.meals
+    .map((meal) => {
+      if (meal === source) return { ...subtractMacros(meal, item), items: meal.items.filter((entry) => entry.id !== itemId) };
+      if (meal === existing) return moved;
+      return meal;
+    })
+    .filter((meal) => meal.items.length > 0);
+  return { meals: existing ? meals : [...meals, moved] };
+}
+
+export function useMoveMealItem(date: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    meta: { analytics: 'meal_item_updated' },
+    mutationFn: ({ itemId, mealType }: { itemId: string; mealType: string }) =>
+      dayLogApi.moveMealItem(itemId, mealType),
+    onMutate: async ({ itemId, mealType }) => {
+      await cancelDayLogQueries(queryClient, date);
+      const snapshot = takeSnapshot(queryClient, date);
+      const next = snapshot.meals ? moveItemBetweenMeals(snapshot.meals, itemId, mealType) : null;
+      if (next) queryClient.setQueryData<DayLogMealsResponse>(DAY_LOG_QUERY_KEYS.meals(date), next);
+      return snapshot;
+    },
+    onError: (_error, _variables, snapshot) => restore(queryClient, snapshot),
+    onSettled: () => refreshDayLog(queryClient, [date]),
+  });
+}
+
 export function useCopyToDays() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -334,7 +393,7 @@ export function useCopyToDays() {
 }
 
 type AmountTarget = { itemId: string; componentId?: string };
-type AmountPayload = { grams?: number; servings?: number; milliliters?: number };
+type AmountPayload = { grams?: number; servings?: number; milliliters?: number; portions?: number };
 
 function findItem(queryClient: QueryClient, date: string, itemId: string) {
   return queryClient
@@ -361,10 +420,10 @@ export function useLiveAmountEdit(date: string, target: AmountTarget) {
     if (target.componentId) {
       const from = original.components?.find((part) => part.id === target.componentId);
       const current = item.components?.find((part) => part.id === target.componentId);
-      const before = from ? storedAmount(from) : null;
       const next = from ? matchingAmount(from, payload) : null;
-      if (!from || !current || !before || !next) return;
-      const updated = scaleAmounts(from, next / before);
+      if (!from || !current || next == null) return;
+      const updated = componentAtAmount(from, next);
+      if (!updated) return;
       const delta = macroDelta(current, updated);
       applyItemChange(
         queryClient,

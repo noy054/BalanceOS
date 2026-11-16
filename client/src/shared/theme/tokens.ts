@@ -29,18 +29,15 @@ export const fonts = {
   regular: "Heebo_400Regular",
   medium: "Heebo_500Medium",
   semibold: "Heebo_600SemiBold",
-  bold: "Heebo_700Bold",
   headingMedium: "Rubik_500Medium",
   headingSemibold: "Rubik_600SemiBold",
-  headingBold: "Rubik_700Bold",
-  displayHeavy: "Rubik_800ExtraBold",
 };
 
 const tabularNums: TextStyle["fontVariant"] = ["tabular-nums"];
 
 export const typography = {
   display: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: 34,
     lineHeight: 40,
     letterSpacing: -0.4,
@@ -94,7 +91,7 @@ export const typography = {
     letterSpacing: 0.3,
   },
   value: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: 17,
     lineHeight: 24,
     fontVariant: tabularNums,
@@ -149,5 +146,5 @@ export const cameraColors = {
   overlay: "rgba(15, 18, 26, 0.72)",
   foreground: "#FFFFFF",
   corner: "rgba(255, 255, 255, 0.92)",
-  scanLine: "#C5F87F",
+  scanLine: "#D1FF62",
 };

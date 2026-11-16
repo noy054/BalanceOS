@@ -82,7 +82,8 @@
     "reviewSubtitle": "Check the scanned details and correct anything before saving. Your changes are saved to your pantry only and sent for review.",
     "reviewValuesHint": "Fill in any missing values. Values the source didn't provide are left empty.",
     "scaledNotice": "Serving and nutrition were scaled proportionally (×{{factor}}).",
-    "per100ml": "per 100ml"
+    "per100ml": "per 100ml",
+    "caloriesNoBase": "This product has no calorie value per 100 {{unit}}, so the serving can’t be calculated from calories. Enter the amount instead."
   },
   "macros": {
     "protein": "Protein",
@@ -300,11 +301,14 @@
     },
     "createProduct": "Create product",
     "notFoundCreateHint": "Create it yourself with its nutrition values, serving and a photo. It will be saved with this barcode.",
+    "identifiedTitle": "We know this product, but not its nutrition",
+    "identifiedHint": "The name and brand are filled in. Add the nutrition values from the label to save it with this barcode.",
+    "completeProduct": "Add nutrition",
     "reviewAndEdit": "Review & edit",
     "missingValuesNotice": "Some nutrition values are missing. Review the product and fill them in before adding it.",
     "sourceOpenFoodFacts": "Values from Open Food Facts",
     "sourceUsda": "Values from USDA FoodData Central",
-    "sourceVerified": "Verified by BalanceOS",
+    "sourceVerified": "Verified by TrackMode",
     "sourceCommunity": "Shared catalog"
   },
   "empty": {
@@ -427,7 +431,11 @@
     "weightFromProduct": "Weight filled from this product’s data",
     "volumeLabelRequired": "Volume (ml) *",
     "volumeLabelOptional": "Volume (ml)",
-    "millilitersShort": "ml"
+    "millilitersShort": "ml",
+    "estimateVolume": "Estimated with a standard measure: 1 {{unit}} ≈ {{amount}} {{measure}}. You can edit it.",
+    "estimateFood": "Estimated from a typical value for this food: 1 {{unit}} ≈ {{amount}} {{measure}}. You can edit it.",
+    "noEstimate": "There’s no reliable conversion for this unit. Enter the weight in grams yourself.",
+    "noEstimateVolume": "There’s no standard volume for this unit. Enter the volume in ml yourself."
   },
   "strip": {
     "gramsUnit": "g",
@@ -449,6 +457,9 @@
     "saveFailed": "The item could not be added. Check your connection and try again."
   },
   "super": {
+    "pick": "Select",
+    "pickFor": "Select {{name}} for your meal",
+    "pickForMeal": "Use in my meal",
     "title": "Super",
     "openHint": "Browse the product catalog by department",
     "subtitle": "Browse by department and add products to your pantry.",
@@ -640,6 +651,7 @@
     "all": "All",
     "protein": "Protein",
     "carbs": "Carbs",
+    "fat": "Fats",
     "categories": "Categories",
     "allCategories": "All categories",
     "categoryTitle": "Filter by category",
@@ -650,5 +662,56 @@
       "DINNER": "Dinner",
       "SNACK": "Snacks"
     }
+  },
+  "portions": {
+    "title": "Cooked yield & portions",
+    "hint": "Optional. Weigh the cooked food to split the batch accurately.",
+    "methodPot": "Weigh with the pot",
+    "methodNet": "Net cooked weight",
+    "emptyPot": "Empty pot (g)",
+    "potWithFood": "Pot + cooked food (g)",
+    "netWeight": "Cooked weight (g)",
+    "cookedResult": "Cooked food: {{grams}} g",
+    "weightInvalid": "The pot with food must weigh more than the empty pot.",
+    "per100": "Per 100 g cooked: {{calories}} kcal · {{protein}} g protein",
+    "splitTitle": "Split into portions",
+    "choiceNone": "No split",
+    "choiceCount": "Equal portions",
+    "choiceTarget": "Per portion",
+    "countLabel": "Number of portions",
+    "targetGrams": "Grams",
+    "targetCalories": "Calories",
+    "targetProtein": "Protein",
+    "targetValueGrams": "Grams per portion",
+    "targetValueCalories": "Calories per portion",
+    "targetValueProtein": "Protein per portion (g)",
+    "portionCount_one": "{{count}} portion",
+    "portionCount_other": "{{count}} portions",
+    "perPortion": "Each portion",
+    "weightUnknown": "Add the cooked weight to see grams",
+    "leftoverTitle": "Left over",
+    "leftoverAsk": "What should happen to the leftover?",
+    "leftoverSeparate": "Save as a smaller portion",
+    "leftoverRedistribute": "Spread across the portions",
+    "leftoverUnallocated": "Leave unallocated",
+    "updatedPortion": "Each portion after spreading",
+    "smallPortion": "Smaller portion",
+    "chooseLeftover": "Choose what to do with the leftover before saving.",
+    "incompleteSave": "Finish the portion setup or choose No split.",
+    "kcal": "kcal",
+    "grams": "{{value}} g",
+    "issue": {
+      "calories": "The ingredients have no calories to split by.",
+      "protein": "The ingredients have no protein to split by.",
+      "count": "Enter a whole number of portions.",
+      "targetValue": "Enter the amount per portion.",
+      "tooLarge": "That target is more than the whole batch.",
+      "weight": "Enter the cooked weight, or the weight of every ingredient, to split by grams."
+    },
+    "perPortionBasis": "Per portion",
+    "perPortionBasisGrams": "Per portion · {{grams}} g",
+    "rawResult": "Before cooking: {{grams}} g of ingredients",
+    "gramsRaw": "{{value}} g before cooking",
+    "ingredientWeight": "Weight of {{name}} (g)"
   }
 }

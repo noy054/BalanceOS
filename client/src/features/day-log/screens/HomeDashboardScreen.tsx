@@ -10,11 +10,13 @@ import { DailySummaryCard } from "../components/DailySummaryCard";
 import { MealSectionCard } from "../components/MealSectionCard";
 import { MealsSectionHeader } from "../components/MealsSectionHeader";
 import { CopyMealModal } from "../components/CopyMealModal";
+import { MoveMealOption, MoveMealSheet, MoveTarget } from "../components/MoveMealSheet";
+import { showToast } from "../../../shared/helpers/toast";
 import { MEAL_SHORTCUTS } from "../../meals/constants/mealShortcuts";
 import { DayHeader } from "../components/DayHeader";
 import { DayPickerSheet } from "../components/DayPickerSheet";
 import { useGreeting } from "../hooks/useGreeting";
-import { prefetchDay, useDayLog, useDayMeals } from "../hooks/useDayLog";
+import { prefetchDay, useDayLog, useDayMeals, useMoveMealItem } from "../hooks/useDayLog";
 import { useSelectedDate } from "../hooks/useSelectedDate";
 import { HomeAnnouncements } from "../../announcements/components/HomeAnnouncements";
 import { addDays } from "../../../shared/helpers/dateKey";
@@ -49,7 +51,7 @@ export function HomeDashboardScreen() {
   const styles = useStyles();
   const { colors } = useAppTheme();
   const queryClient = useQueryClient();
-  const { date, today, maxDate, isToday, setDate, goToToday } = useSelectedDate();
+  const { date, today, maxDate, isToday, setDate, shiftDate, goToToday } = useSelectedDate();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const greeting = useGreeting();
 
@@ -58,6 +60,7 @@ export function HomeDashboardScreen() {
     isLoading: isSummaryLoading,
     isError: isSummaryError,
     isPlaceholderData: isSummaryStale,
+    isFetching: isSummaryFetching,
     refetch: refetchSummary,
   } = useDayLog(date);
   const {
@@ -65,9 +68,10 @@ export function HomeDashboardScreen() {
     isLoading: isMealsLoading,
     isError: isMealsError,
     isPlaceholderData: isMealsStale,
+    isFetching: isMealsFetching,
     refetch: refetchMeals,
   } = useDayMeals(date);
-  const isSwitchingDay = isSummaryStale || isMealsStale;
+  const isSwitchingDay = (isSummaryStale && isSummaryFetching) || (isMealsStale && isMealsFetching);
 
   useEffect(() => {
     prefetchDay(queryClient, addDays(date, -1));
@@ -138,6 +142,33 @@ export function HomeDashboardScreen() {
   }, [meals]);
 
   const [copyTarget, setCopyTarget] = useState<CopyTarget | null>(null);
+  const [moveTarget, setMoveTarget] = useState<MoveTarget | null>(null);
+  const moveItem = useMoveMealItem(date);
+
+  const moveOptions = useMemo<MoveMealOption[]>(() => {
+    const options: MoveMealOption[] = MEAL_SHORTCUTS.map((shortcut) => ({
+      mealType: shortcut.type,
+      label: t(`mealTypes.${shortcut.labelKey}`),
+      icon: shortcut.icon as MoveMealOption["icon"],
+    }));
+    for (const section of sections) {
+      if (!options.some((option) => option.mealType === section.mealType)) {
+        options.push({ mealType: section.mealType, label: t(`mealTypes.${section.labelKey}`), icon: "food-apple" });
+      }
+    }
+    return options;
+  }, [sections, t]);
+
+  function handleMove(target: MoveTarget, option: MoveMealOption) {
+    setMoveTarget(null);
+    moveItem.mutate(
+      { itemId: target.itemId, mealType: option.mealType },
+      {
+        onSuccess: () => showToast({ message: t("moveMeal.success", { name: target.name, meal: option.label }) }),
+        onError: () => showToast({ message: t("moveMeal.failed") }),
+      },
+    );
+  }
   const [mealsExpanded, setMealsExpanded] = useState(true);
   const removal = useMealRemoval(date);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -159,6 +190,7 @@ export function HomeDashboardScreen() {
     <TabScreenLayout activeTab="home" backgroundColor={colors.homeCanvas}>
       <View key={i18n.language} style={styles.root}>
         <ScrollView
+          keyboardShouldPersistTaps="handled"
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
@@ -176,8 +208,8 @@ export function HomeDashboardScreen() {
             greeting={greeting}
             date={date}
             today={today}
-            onPrevious={() => setDate(addDays(date, -1))}
-            onNext={() => setDate(addDays(date, 1))}
+            onPrevious={() => shiftDate(-1)}
+            onNext={() => shiftDate(1)}
             canGoNext={date < maxDate}
             onToday={goToToday}
             onOpenCalendar={() => setIsCalendarOpen(true)}
@@ -240,6 +272,7 @@ export function HomeDashboardScreen() {
                     pendingIds={removal.pendingIds}
                     onAdd={handleMealTypeSelect}
                     onCopy={setCopyTarget}
+                    onMoveItem={(item, mealType) => setMoveTarget({ itemId: item.id, name: item.name, mealType })}
                     onRemoveItem={(item, mealLabel) => void removal.removeItem(item, mealLabel)}
                   />
                 ))
@@ -253,6 +286,13 @@ export function HomeDashboardScreen() {
         target={copyTarget}
         sourceDate={date}
         onClose={() => setCopyTarget(null)}
+      />
+
+      <MoveMealSheet
+        target={moveTarget}
+        options={moveOptions}
+        onSelect={handleMove}
+        onClose={() => setMoveTarget(null)}
       />
 
       <DayPickerSheet

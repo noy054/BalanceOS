@@ -1,3 +1,4 @@
+import { AppBackdrop } from "../../../shared/components/ui/AppBackdrop";
 import { Alert, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -91,6 +92,7 @@ export function SavedMealDetailScreen({ id }: Props) {
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
+      <AppBackdrop />
       <ScreenHeader
         title={t("savedMealDetail.title")}
         rightElement={
@@ -105,6 +107,7 @@ export function SavedMealDetailScreen({ id }: Props) {
       />
 
       <ScrollView
+        keyboardShouldPersistTaps="handled"
         style={styles.scroll}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}

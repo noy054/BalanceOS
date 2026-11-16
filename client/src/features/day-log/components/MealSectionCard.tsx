@@ -13,6 +13,11 @@ import {
   formatGrams,
 } from "../../../shared/helpers/formatNumber";
 import { FoodThumb } from "../../pantry/components/food/FoodThumb";
+import {
+  FoodCardValues,
+  pickMainMacro,
+} from "../../pantry/components/food/FoodCardValues";
+import { useMacroVisibility } from "../../pantry/hooks/useMacroVisibility";
 import { FOOD_ICONS } from "../../pantry/hooks/useFoodCardModels";
 import { useItemAmountLabel } from "../hooks/useItemAmountLabel";
 import { CopyTarget, MealEntrySummary, MealItemSummary } from "../types";
@@ -28,6 +33,7 @@ type Props = {
   pendingIds?: ReadonlySet<string>;
   onAdd: (mealType: string) => void;
   onCopy?: (target: CopyTarget) => void;
+  onMoveItem?: (item: MealItemSummary, mealType: string) => void;
   onRemoveItem?: (item: MealItemSummary, mealLabel: string) => void;
 };
 
@@ -48,6 +54,7 @@ export function MealSectionCard({
   pendingIds,
   onAdd,
   onCopy,
+  onMoveItem,
   onRemoveItem,
 }: Props) {
   const { t } = useTranslation("dashboard");
@@ -55,6 +62,8 @@ export function MealSectionCard({
   const { colors } = useAppTheme();
   const dir = useDirection();
   const amountLabel = useItemAmountLabel();
+  const { t: tPantry } = useTranslation("pantry");
+  const visibility = useMacroVisibility();
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set());
   const [menuItem, setMenuItem] = useState<MealItemSummary | null>(null);
 
@@ -91,6 +100,19 @@ export function MealSectionCard({
             </Text>
           ) : null}
         </View>
+        {meal && hasItems && onCopy ? (
+          <IconButton
+            icon="content-copy"
+            variant="glass"
+            size={34}
+            iconSize={17}
+            color={colors.accent}
+            accessibilityLabel={t("meals.copyMealA11y", { meal: mealLabel })}
+            onPress={() => onCopy({ kind: "meal", id: meal.id, name: mealLabel })}
+            disabled={isMealPending}
+            style={styles.emptyAdd}
+          />
+        ) : null}
         <IconButton
           icon="plus"
           variant="glass"
@@ -111,10 +133,18 @@ export function MealSectionCard({
                 Boolean(pendingIds?.has(item.id)) || isMealPending;
               const isOpen = openIds.has(item.id);
               const amount = amountLabel(item);
-              const protein = t("meals.itemProtein", {
-                protein: formatGrams(item.protein),
-              });
-              const detail = [amount, protein].filter(Boolean).join(" · ");
+              const mainMacro = pickMainMacro(item, visibility);
+              const nutrition = [
+                t("meals.itemCalories", {
+                  calories: formatCalories(item.calories),
+                }),
+                `${tPantry(`macros.${mainMacro}`)} ${formatGrams(item[mainMacro])} ${tPantry("product.gramsShort")}`,
+                ...(mainMacro === "carbs" && visibility.showFiber && item.fiber > 0
+                  ? [
+                      `${tPantry("macros.fiber")} ${formatGrams(item.fiber)} ${tPantry("product.gramsShort")}`,
+                    ]
+                  : []),
+              ].join(", ");
 
               return (
                 <View
@@ -131,12 +161,9 @@ export function MealSectionCard({
                       disabled={isPending}
                       accessibilityRole="button"
                       accessibilityState={{ expanded: isOpen }}
-                      accessibilityLabel={`${item.name}, ${detail}, ${t(
-                        "meals.itemCalories",
-                        {
-                          calories: formatCalories(item.calories),
-                        },
-                      )}`}
+                      accessibilityLabel={[item.name, amount, nutrition]
+                        .filter(Boolean)
+                        .join(", ")}
                       accessibilityHint={
                         isOpen
                           ? t("meals.collapseItemHint")
@@ -145,7 +172,7 @@ export function MealSectionCard({
                       style={({ pressed }) => [
                         styles.itemRow,
                         dir.row,
-                        (onCopy || onRemoveItem) && styles.itemRowWithMore,
+                        (onCopy || onMoveItem || onRemoveItem) && styles.itemRowWithMore,
                         pressed && styles.pressed,
                       ]}
                     >
@@ -173,28 +200,24 @@ export function MealSectionCard({
                         >
                           {item.name}
                         </Text>
-                        <Text
-                          style={[styles.itemDetail, dir.text]}
-                          numberOfLines={1}
+                        {amount ? (
+                          <Text
+                            style={[styles.itemDetail, dir.text]}
+                            numberOfLines={1}
+                          >
+                            {amount}
+                          </Text>
+                        ) : null}
+                        <View
+                          style={styles.itemValues}
+                          importantForAccessibility="no-hide-descendants"
+                          accessibilityElementsHidden
                         >
-                          {amount ? (
-                            <>
-                              {amount}
-                              <Text style={styles.detailDivider}>
-                                {"  |  "}
-                              </Text>
-                            </>
-                          ) : null}
-                          {protein}
-                        </Text>
-                      </View>
-                      <View style={[styles.calorieBlock, dir.row]}>
-                        <Text style={styles.itemCalories} numberOfLines={1}>
-                          {formatCalories(item.calories)}
-                        </Text>
-                        <Text style={styles.itemCaloriesUnit} numberOfLines={1}>
-                          {t("meals.calUnit")}
-                        </Text>
+                          <FoodCardValues
+                            calories={item.calories}
+                            macros={{ ...item, fiber: item.fiber > 0 ? item.fiber : null }}
+                          />
+                        </View>
                       </View>
                       <View style={styles.chevron}>
                         <MaterialCommunityIcons
@@ -204,7 +227,7 @@ export function MealSectionCard({
                         />
                       </View>
                     </Pressable>
-                    {onCopy || onRemoveItem ? (
+                    {onCopy || onMoveItem || onRemoveItem ? (
                       <IconButton
                         icon="dots-horizontal"
                         size={34}
@@ -258,6 +281,16 @@ export function MealSectionCard({
                             id: menuItem.id,
                             name: menuItem.name,
                           }),
+                      },
+                    ]
+                  : []),
+                ...(onMoveItem
+                  ? [
+                      {
+                        key: "move",
+                        label: t("meals.moveToMeal"),
+                        icon: "swap-vertical" as const,
+                        onPress: () => onMoveItem(menuItem, mealType),
                       },
                     ]
                   : []),

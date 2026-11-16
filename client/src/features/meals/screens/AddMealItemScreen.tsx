@@ -1,11 +1,12 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Alert, FlatList, Pressable, Text, View } from 'react-native';
+import { Alert, FlatList, Keyboard, Pressable, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '../../../shared/components/ui/Button';
+import { AppBackdrop } from '../../../shared/components/ui/AppBackdrop';
 import { IconButton } from '../../../shared/components/ui/IconButton';
 import { SearchField } from '../../../shared/components/ui/SearchField';
 import { StateView } from '../../../shared/components/ui/StateView';
@@ -22,7 +23,7 @@ import { useMealReturn } from '../../pantry/mealReturnStore';
 import { sortByMealCategory } from '../../pantry/helpers/sortByMealCategory';
 import { recipeMealTypes } from '../../pantry/helpers/recipeMealTypes';
 import { hasRemovedSavedMealItems } from '../../pantry/helpers/savedMealItems';
-import { FOOD_CATEGORIES, FoodCategory, MACRO_CATEGORIES, matchesFocus } from '../../pantry/helpers/pantryFilters';
+import { FOOD_CATEGORIES, FoodCategory } from '../../pantry/helpers/pantryFilters';
 import { useDirection } from '../../../shared/hooks/useDirection';
 import { showToast } from '../../../shared/helpers/toast';
 import { DateKey } from '../../../shared/helpers/dateKey';
@@ -32,9 +33,9 @@ import { useDayLabels } from '../../day-log/hooks/useDayLabels';
 import { SelectionPanel } from '../components/SelectionPanel';
 import { AddFoodTabs } from '../components/AddFoodTabs';
 import { FoodCategoryTiles } from '../components/FoodCategoryTiles';
-import { FoodPickRow } from '../components/FoodPickRow';
+import { ProductPickRow, RecipePickRow, SavedMealPickRow } from '../components/PickListRows';
 import { MealPicker } from '../components/MealPicker';
-import { useMealSelection } from '../hooks/useMealSelection';
+import { SelectedItem, useMealSelection } from '../hooks/useMealSelection';
 import { useStyles } from './styles/AddMealItemScreen.styles';
 import { matchesAllTerms } from '../../../shared/helpers/searchTerms';
 
@@ -98,8 +99,10 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<FoodCategory>('all');
   const [showAll, setShowAll] = useState(false);
+  const [quantityFocused, setQuantityFocused] = useState(false);
   const selection = useMealSelection();
   const selectionRef = useRef(selection);
+  const compactForQuantity = quantityFocused && selection.selected !== null;
   selectionRef.current = selection;
 
   const productCategory = activeTab === 'products' ? category : 'all';
@@ -115,6 +118,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
 
   useFocusEffect(
     useCallback(() => {
+      useMealReturn.getState().endSuperPick();
       const pending = useMealReturn.getState().take('meal');
       if (!pending) return;
       setActiveTab('products');
@@ -125,6 +129,21 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
       }
     }, []),
   );
+
+  function openCreateProduct() {
+    router.push('/(app)/pantry/add-product?returnTo=meal');
+  }
+
+  function openSuper() {
+    const params: Record<string, string> = {};
+    if (mealTypeProp) params.mealType = mealTypeProp;
+    if (dateProp) params.date = dateProp;
+    useMealReturn.getState().startSuperPick({
+      target: 'meal',
+      returnHref: { pathname: '/(app)/meal/add-item', params },
+    });
+    router.push('/(app)/pantry/super');
+  }
 
   const mealTypeLabel = MEAL_TYPE_KEY[activeMealType] ? t(`mealTypes.${MEAL_TYPE_KEY[activeMealType]}`) : '';
 
@@ -142,24 +161,20 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
   );
   const filteredRecipes = useMemo(
     () =>
-      matchesSearch(matchesMealType(recipes, activeMealType, (recipe) => recipeMealTypes(recipe)), search).filter(
-        (recipe) => matchesFocus(recipe.totals, category),
-      ),
-    [recipes, search, activeMealType, category],
+      matchesSearch(matchesMealType(recipes, activeMealType, (recipe) => recipeMealTypes(recipe)), search),
+    [recipes, search, activeMealType],
   );
   const filteredMeals = useMemo(
     () =>
-      matchesSearch(matchesMealType(savedMeals, activeMealType, (meal) => meal.mealTypes), search).filter((meal) =>
-        matchesFocus(meal.totals, category),
-      ),
-    [savedMeals, search, activeMealType, category],
+      matchesSearch(matchesMealType(savedMeals, activeMealType, (meal) => meal.mealTypes), search),
+    [savedMeals, search, activeMealType],
   );
 
   function handleTabPress(tab: Tab) {
     setActiveTab(tab);
     selection.deselect();
     setSearch('');
-    if (tab !== 'products' && !MACRO_CATEGORIES.includes(category)) setCategory('all');
+    if (tab !== 'products') setCategory('all');
   }
 
   function handleMealTypeChange(nextMealType: string) {
@@ -228,36 +243,44 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
         ? t('addItem.searchRecipes')
         : t('addItem.searchSavedMeals');
 
-  function renderItem({ item }: { item: ListItem }) {
-    if (activeTab === 'products') {
-      const product = item as PantryProduct;
+  const selectItem = useCallback((entry: SelectedItem) => selectionRef.current.select(entry), []);
+  const selectedKind = selection.selected?.kind ?? null;
+  const selectedId = selection.selected?.item.id ?? null;
+
+  const renderItem = useCallback(
+    ({ item }: { item: ListItem }) => {
+      if (activeTab === 'products') {
+        const product = item as PantryProduct;
+        return (
+          <ProductPickRow
+            product={product}
+            ambiguous={isAmbiguousName(duplicateNames, product.name)}
+            selected={selectedKind === 'product' && selectedId === product.id}
+            onSelect={selectItem}
+          />
+        );
+      }
+      if (activeTab === 'recipes') {
+        const recipe = item as PantryRecipe;
+        return (
+          <RecipePickRow
+            recipe={recipe}
+            selected={selectedKind === 'recipe' && selectedId === recipe.id}
+            onSelect={selectItem}
+          />
+        );
+      }
+      const meal = item as SavedMeal;
       return (
-        <FoodPickRow
-          model={models.product(product, isAmbiguousName(duplicateNames, product.name))}
-          selected={selection.isSelected('product', product.id)}
-          onPress={() => selection.select({ kind: 'product', item: product })}
+        <SavedMealPickRow
+          meal={meal}
+          selected={selectedKind === 'savedMeal' && selectedId === meal.id}
+          onSelect={selectItem}
         />
       );
-    }
-    if (activeTab === 'recipes') {
-      const recipe = item as PantryRecipe;
-      return (
-        <FoodPickRow
-          model={models.recipe(recipe)}
-          selected={selection.isSelected('recipe', recipe.id)}
-          onPress={() => selection.select({ kind: 'recipe', item: recipe })}
-        />
-      );
-    }
-    const meal = item as SavedMeal;
-    return (
-      <FoodPickRow
-        model={models.savedMeal(meal)}
-        selected={selection.isSelected('savedMeal', meal.id)}
-        onPress={() => selection.select({ kind: 'savedMeal', item: meal })}
-      />
-    );
-  }
+    },
+    [activeTab, duplicateNames, selectedKind, selectedId, selectItem],
+  );
 
   const sectionHeader =
     activeTab === 'products' && isBrowsing ? (
@@ -291,6 +314,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
 
   return (
     <SafeAreaView style={styles.root} edges={['top']} key={i18n.language}>
+      <AppBackdrop />
       <View style={[styles.header, dir.row]}>
         <IconButton
           icon={dir.backIcon}
@@ -311,7 +335,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
       </View>
 
       <KeyboardAvoider>
-        <View style={styles.controls}>
+        <View style={[styles.controls, compactForQuantity && styles.hidden]}>
           <MealPicker value={activeMealType} label={mealTypeLabel} onChange={handleMealTypeChange} />
 
           <AddFoodTabs options={tabs} value={activeTab} onChange={handleTabPress} />
@@ -340,11 +364,36 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
             }
           />
 
-          <FoodCategoryTiles
-            categories={activeTab === 'products' ? FOOD_CATEGORIES : MACRO_CATEGORIES}
-            value={category}
-            onChange={handleCategoryChange}
-          />
+          {activeTab === 'products' ? (
+            <View style={[styles.sourceActions, dir.row]}>
+              <Pressable
+                onPress={openCreateProduct}
+                accessibilityRole="button"
+                accessibilityLabel={t('addItem.createManuallyA11y')}
+                style={({ pressed }) => [styles.sourceAction, dir.row, pressed && styles.sourceActionPressed]}
+              >
+                <MaterialCommunityIcons name="pencil-plus-outline" size={18} color={colors.accent} />
+                <Text style={styles.sourceActionText} numberOfLines={2}>
+                  {t('addItem.createManually')}
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={openSuper}
+                accessibilityRole="button"
+                accessibilityLabel={t('addItem.browseSuperA11y')}
+                style={({ pressed }) => [styles.sourceAction, dir.row, pressed && styles.sourceActionPressed]}
+              >
+                <MaterialCommunityIcons name="storefront-outline" size={18} color={colors.accent} />
+                <Text style={styles.sourceActionText} numberOfLines={2}>
+                  {t('addItem.browseSuper')}
+                </Text>
+              </Pressable>
+            </View>
+          ) : null}
+
+          {activeTab === 'products' ? (
+            <FoodCategoryTiles categories={FOOD_CATEGORIES} value={category} onChange={handleCategoryChange} />
+          ) : null}
         </View>
 
         {isLoading ? (
@@ -353,7 +402,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
           <FlatList
             data={listData}
             keyExtractor={(item) => item.id}
-            style={styles.list}
+            style={[styles.list, compactForQuantity && styles.hidden]}
             contentContainerStyle={styles.listContent}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
@@ -366,7 +415,7 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
             ListFooterComponent={
               activeTab === 'products' && listData.length > 0 ? (
                 <Pressable
-                  onPress={() => router.push('/(app)/pantry/add-product?returnTo=meal')}
+                  onPress={openCreateProduct}
                   accessibilityRole="button"
                   style={[styles.createLink, dir.row]}
                 >
@@ -382,14 +431,20 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
                 icon={search.trim() ? 'magnify' : 'tray'}
                 title={t(emptyKey as Parameters<typeof t>[0])}
                 actionLabel={activeTab === 'products' ? t('addItem.createProduct') : undefined}
-                onAction={
-                  activeTab === 'products' ? () => router.push('/(app)/pantry/add-product?returnTo=meal') : undefined
-                }
+                onAction={activeTab === 'products' ? openCreateProduct : undefined}
               />
             }
             renderItem={renderItem}
           />
         )}
+
+        {compactForQuantity ? (
+          <Pressable
+            style={styles.list}
+            onPress={Keyboard.dismiss}
+            accessible={false}
+          />
+        ) : null}
 
         {selection.selected ? (
           <View style={[styles.dock, { paddingBottom: Math.max(insets.bottom, DOCK_MIN_BOTTOM) }]}>
@@ -401,8 +456,13 @@ export function AddMealItemScreen({ mealType: mealTypeProp, date: dateProp }: Pr
               nutrition={selection.nutrition}
               onChangeQuantity={selection.setQuantity}
               onChangeUnit={selection.changeUnit}
+              onPickLeftover={selection.pickLeftoverPortion}
               onStep={selection.step}
-              onDeselect={selection.deselect}
+              onDeselect={() => {
+                setQuantityFocused(false);
+                selection.deselect();
+              }}
+              onQuantityFocusChange={setQuantityFocused}
             />
 
             {selectedMeal && hasRemovedItems ? (

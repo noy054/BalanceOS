@@ -68,7 +68,7 @@ export const useStyles = () =>
         gap: 2,
       },
       name: {
-        fontFamily: fonts.headingBold,
+        fontFamily: fonts.headingSemibold,
         fontSize: 22,
         lineHeight: 28,
         color: colors.textPrimary,
@@ -89,7 +89,7 @@ export const useStyles = () =>
         backgroundColor: withAlpha(colors.accentFill, 0.1),
       },
       verifiedLabel: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         fontSize: 13,
         color: colors.accentFill,
       },
@@ -118,7 +118,7 @@ export const useStyles = () =>
       },
       panelValue: {
         ...typography.number,
-        fontFamily: fonts.displayHeavy,
+        fontFamily: fonts.medium,
         fontSize: 20,
         lineHeight: 24,
         color: colors.textPrimary,
@@ -173,7 +173,7 @@ export const useStyles = () =>
         gap: 2,
       },
       sectionTitle: {
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         fontSize: 15,
         lineHeight: 20,
         color: colors.textPrimary,
@@ -226,7 +226,7 @@ export const useStyles = () =>
       },
       factValue: {
         ...typography.number,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         fontSize: 14,
         color: colors.textPrimary,
       },

@@ -13,7 +13,9 @@ import { SettingsScreenLayout } from "../components/SettingsScreenLayout";
 import { FormInput } from "../../../shared/components/FormInput";
 import { SettingsSection } from "../components/SettingsSection";
 import { SettingsSelectRow } from "../components/SettingsSelectRow";
-import { useNutritionSettings, useUpdateSettings } from "../hooks/useSettings";
+import { useNutritionSettings, useTargetSuggestion, useUpdateSettings } from "../hooks/useSettings";
+import { TargetComparisonTable } from "../components/TargetComparisonTable";
+import { differsFromCurrent } from "../helpers/targetSuggestion";
 import { TargetMode } from "../types";
 import { Button } from "../../../shared/components/ui/Button";
 import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
@@ -64,6 +66,7 @@ export function NutritionTargetsScreen() {
   const updateSettings = useUpdateSettings();
 
   const isExpertMode = settings?.experienceMode === "EXPERT";
+  const { data: suggestion } = useTargetSuggestion(Boolean(settings) && !isExpertMode);
 
   const [targetMode, setTargetMode] = useState<TargetMode>("AUTO");
   const [calories, setCalories] = useState("");
@@ -110,6 +113,9 @@ export function NutritionTargetsScreen() {
     [effectiveTargetMode, calories, protein, carbs, fat, fiber],
   );
 
+  const appliesCalculated =
+    effectiveTargetMode === "AUTO" && Boolean(suggestion?.suggested) && differsFromCurrent(suggestion);
+
   const hasChanges = useMemo(() => {
     const initialValues = initialValuesRef.current;
 
@@ -118,6 +124,7 @@ export function NutritionTargetsScreen() {
     }
 
     return (
+      appliesCalculated ||
       currentValues.targetMode !== initialValues.targetMode ||
       currentValues.calories !== initialValues.calories ||
       currentValues.protein !== initialValues.protein ||
@@ -125,7 +132,7 @@ export function NutritionTargetsScreen() {
       currentValues.fat !== initialValues.fat ||
       currentValues.fiber !== initialValues.fiber
     );
-  }, [currentValues]);
+  }, [currentValues, appliesCalculated]);
 
   const isSaveDisabled = isSaving || !hasChanges;
 
@@ -137,14 +144,26 @@ export function NutritionTargetsScreen() {
     setIsSaving(true);
 
     try {
-      await updateSettings.mutateAsync({
-        targetMode: effectiveTargetMode,
-        dailyCaloriesTarget: parseTarget(calories),
-        proteinTarget: parseTarget(protein),
-        carbsTarget: parseTarget(carbs),
-        fatTarget: parseTarget(fat),
-        fiberTarget: parseTarget(fiber),
-      });
+      const calculated = effectiveTargetMode === "AUTO" ? suggestion?.suggested : null;
+      await updateSettings.mutateAsync(
+        calculated
+          ? {
+              targetMode: "AUTO",
+              dailyCaloriesTarget: calculated.calories,
+              proteinTarget: calculated.protein,
+              carbsTarget: calculated.carbs,
+              fatTarget: calculated.fat,
+              fiberTarget: calculated.fiber,
+            }
+          : {
+              targetMode: effectiveTargetMode,
+              dailyCaloriesTarget: parseTarget(calories),
+              proteinTarget: parseTarget(protein),
+              carbsTarget: parseTarget(carbs),
+              fatTarget: parseTarget(fat),
+              fiberTarget: parseTarget(fiber),
+            },
+      );
 
       initialValuesRef.current = currentValues;
 
@@ -192,11 +211,42 @@ export function NutritionTargetsScreen() {
           )}
 
           {!shouldShowManualTargets ? (
-            <View style={styles.infoBanner}>
-              <Text style={[styles.infoBannerText, dir.text]}>
-                {t("nutritionTargets.targetModeAutoHint")}
-              </Text>
-            </View>
+            <>
+              <View style={styles.infoBanner}>
+                <Text style={[styles.infoBannerText, dir.text]}>
+                  {t("nutritionTargets.targetModeAutoHint")}
+                </Text>
+              </View>
+
+              {suggestion?.available && suggestion.suggested ? (
+                <SettingsSection title={t("targetSuggestion.titleCalculated")}>
+                  <View style={styles.calculated}>
+                    <TargetComparisonTable
+                      suggestion={suggestion}
+                      goalIsCutting={settings?.goalType === "CUTTING"}
+                    />
+                    {!differsFromCurrent(suggestion) ? (
+                      <Text style={[styles.upToDate, dir.text]}>{t("targetSuggestion.upToDate")}</Text>
+                    ) : null}
+                  </View>
+                </SettingsSection>
+              ) : suggestion && !suggestion.available ? (
+                <View style={styles.missingCard}>
+                  <Text style={[styles.missingTitle, dir.text]}>{t("targetSuggestion.missingTitle")}</Text>
+                  <Text style={[styles.missingBody, dir.text]}>
+                    {t("targetSuggestion.missingBody", {
+                      fields: suggestion.missing.map((field) => t(`targetSuggestion.fields.${field}`)).join(", "),
+                    })}
+                  </Text>
+                  <Button
+                    label={t("targetSuggestion.completeProfile")}
+                    variant="secondary"
+                    size="sm"
+                    onPress={() => router.push("/(app)/settings/profile")}
+                  />
+                </View>
+              ) : null}
+            </>
           ) : (
             <SettingsSection title={t("nutritionTargets.targetsSection")}>
               <View style={styles.formCard}>
@@ -256,7 +306,9 @@ export function NutritionTargetsScreen() {
             label={
               isSaving
                 ? t("nutritionTargets.saving")
-                : t("nutritionTargets.saveButton")
+                : appliesCalculated
+                  ? t("targetSuggestion.applyCalculated")
+                  : t("nutritionTargets.saveButton")
             }
             onPress={handleSave}
             loading={isSaving}

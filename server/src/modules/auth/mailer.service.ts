@@ -35,14 +35,14 @@ export class MailerService {
 
     const from =
       this.config.get<string>('SMTP_FROM') ??
-      'BalanceOS <noreply@balanceos.com>';
+      'TrackMode <noreply@balanceos.com>';
 
     await transporter.sendMail({
       from,
       to,
-      subject: 'Reset your BalanceOS password',
+      subject: 'Reset your TrackMode password',
       text: [
-        'You requested a password reset for your BalanceOS account.',
+        'You requested a password reset for your TrackMode account.',
         '',
         'Your reset code:',
         token,
@@ -54,9 +54,9 @@ export class MailerService {
       ].join('\n'),
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; background: #ffffff;">
-          <p style="font-size: 11px; font-weight: 800; letter-spacing: 2.8px; color: #1FAE5B; text-transform: uppercase; margin: 0 0 24px;">BalanceOS</p>
+          <p style="font-size: 11px; font-weight: 800; letter-spacing: 2.8px; color: #1FAE5B; text-transform: uppercase; margin: 0 0 24px;">TrackMode</p>
           <h1 style="font-size: 24px; font-weight: 900; color: #101510; margin: 0 0 8px; letter-spacing: -0.5px;">Reset your password</h1>
-          <p style="font-size: 15px; color: rgba(16,21,16,0.68); margin: 0 0 28px; line-height: 1.5;">Enter the code below in the BalanceOS app to set a new password.</p>
+          <p style="font-size: 15px; color: rgba(16,21,16,0.68); margin: 0 0 28px; line-height: 1.5;">Enter the code below in the TrackMode app to set a new password.</p>
           <div style="background: rgba(11,13,11,0.05); border-radius: 10px; padding: 20px 24px; font-family: 'Courier New', monospace; font-size: 15px; letter-spacing: 1.5px; color: #101510; word-break: break-all; line-height: 1.6; border: 1px solid rgba(16,21,16,0.10);">
             ${token}
           </div>

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { useDirection } from "../../../shared/hooks/useDirection";
 import { IconButton } from "../../../shared/components/ui/IconButton";
-import { spacing, typography, useThemedStyles } from "../../../shared/theme";
+import { fonts, spacing, typography, useThemedStyles } from "../../../shared/theme";
 
 type Props = {
   expanded: boolean;
@@ -43,20 +43,22 @@ const useStyles = () =>
         alignItems: "center",
         justifyContent: "space-between",
         gap: spacing.md,
-        marginBottom: spacing.xxs,
+        minHeight: 40,
+        marginBottom: -spacing.xs,
       },
       title: {
         ...typography.title,
+        fontFamily: fonts.headingMedium,
         fontSize: 20,
         lineHeight: 26,
         flexShrink: 1,
         color: colors.textPrimary,
       },
       alignRight: {
-        marginRight: spacing.md - spacing.xs,
+        marginRight: -spacing.xs,
       },
       alignLeft: {
-        marginLeft: spacing.md - spacing.xs,
+        marginLeft: -spacing.xs,
       },
     }),
   );

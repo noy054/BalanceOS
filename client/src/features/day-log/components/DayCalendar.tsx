@@ -234,11 +234,11 @@ const useStyles = () =>
       },
       dayNumberToday: {
         color: colors.accent,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
       },
       dayNumberSelected: {
         color: colors.onAccent,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
       },
       marker: {
         width: 4,

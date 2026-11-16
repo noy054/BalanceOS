@@ -7,7 +7,6 @@ export const useStyles = () =>
     StyleSheet.create({
       root: {
         flex: 1,
-        backgroundColor: colors.canvas,
       },
 
       tabs: {

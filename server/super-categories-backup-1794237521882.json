@@ -1,0 +1,776 @@
+[
+  {
+    "id": "fd_650fba47705326ff420fe7fc6ef019b7",
+    "name": "be FIT - מאפה בטעם חמאה (קיטו), א.ג.ת.ד. בע\"מ",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_5aa0ec343920d78141b63b202cb6c23f",
+    "name": "be FIT - מאפה להמבורגר (קיטו), א.ג.ת.ד. בע\"מ",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_42682b8c92e02d4b31d9af621fdc93ce",
+    "name": "green - באגט ללא גלוטן, שופרסל",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_dae941285844d461cb129a36e0569dd8",
+    "name": "Less&More - לחם לס פרוס, טאוברד",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_42d22f91c16403075ee278ccfba25b2a",
+    "name": "Less&More - לחמניות לס, טאוברד",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_f7a2879938a2b44c017be49041d6d9cd",
+    "name": "באגט לבן, פילסברי",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_8831e493a367e2fe9c79112734f3c788",
+    "name": "לחם לבן פרוס, דגנית עין בר",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_87754ccb04e5e8ed976c807e615f3601",
+    "name": "לחם מחמצת 100% כוסמין מלא, טאוברד",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_3fa71ce0102aca3606222b12c3a84c31",
+    "name": "לחם קמח מלא אורגני, עינת תעשיות מזון",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_6ed3b369a2027b48d3046b507ab8bfbf",
+    "name": "לחמניות קלות 100% קמח כוסמין אורגני, טאוברד",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_c607bbbd1b5f93b5bdc3edf3ee81cd04",
+    "name": "מיני פיתות כוסמין 100% קמח כוסמין מלא, טאוברד",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_bdd6dc9eadd6eb89c6e2b6feee2d6ca4",
+    "name": "פיתה רגילה, דגנית עין בר",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_9f425974402397d660d6cc278a5bc075",
+    "name": "פיתות כוסמין 100% קמח כוסמין מלא, טאוברד",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_0cd4b05b6d00803758fa68024daf6c9e",
+    "name": "קרואסון גבינה",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_102e5571d97bc496bdde985ce2854de9",
+    "name": "קרואסון חמאה",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_dd6000dd2d8caf606eabccbde4e6b68f",
+    "name": "קרואסון תפוחים",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_3d4f578930cd769a666f789341c75a02",
+    "name": "רוגעלך, אחוה",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_8ff78741874aafbb4e8e111dfb5ffc77",
+    "name": "שיפון של פעם - שיפון עגול, מאפית אחדות",
+    "from": "OTHER",
+    "to": "BAKERY"
+  },
+  {
+    "id": "fd_c80ed21b8fea5fac95964b3fa0cb45fd",
+    "name": "אבקת משקה פורמולה 1 בטעם מלון, הרבלייף",
+    "from": "OTHER",
+    "to": "BEVERAGES"
+  },
+  {
+    "id": "fd_6a9a5c005ee3c91594e03ca39715343b",
+    "name": "אבקת משקה פורמולה 1 בטעם קרם שוקולד, הרבלייף",
+    "from": "OTHER",
+    "to": "BEVERAGES"
+  },
+  {
+    "id": "fd_e9daefea2193454f32f25618a2a75f0e",
+    "name": "בירה",
+    "from": "OTHER",
+    "to": "BEVERAGES"
+  },
+  {
+    "id": "fd_973e2b6e87446c9ad7bc7b4168b63d51",
+    "name": "בירה שחורה",
+    "from": "OTHER",
+    "to": "BEVERAGES"
+  },
+  {
+    "id": "fd_2278a9477c919270a27bfbcbf2413eb9",
+    "name": "גרגרים להכנת משקה על בסיס סוכר בתוספת תמציות צמחים, ריקולה בע\"מ",
+    "from": "OTHER",
+    "to": "BEVERAGES"
+  },
+  {
+    "id": "fd_c83fb743314eed92cf928be9dd68c542",
+    "name": "green - קורנפלקס ללא גלוטן - פתיתי תירס קלויים, שופרסל",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_eb462cb12d671b7f072d63241ccc3bf3",
+    "name": "TWISTER - דגנים במילוי קרם בטעם וניל, מאנדיי בע\"מ",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_be60f110f92a9126990f164392473547",
+    "name": "TWISTER - דגנים במילוי קרם נוגט, מאנדיי בע\"מ",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_200144f6f648a9575bfaea710896ff95",
+    "name": "גרנולה בסילאן, מנדל גרנולה",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_8661e542ac378794cbdc944ea96acb9d",
+    "name": "גרנולה חלבה תמרים, מנדל גרנולה",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_f1bc5e76c684d18a84262b8c847d03e1",
+    "name": "גרנולה טבעית אגוזים, זרעים ופירות, רפאל`ס",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_50c4639e33f8219a2edc8a1c7969bbeb",
+    "name": "גרנולה טבעית חלבה, תמרים ושקדים, רפאל`ס",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_6682e11ef0c8a8986ddbda8d24f35ab9",
+    "name": "גרנולה טבעית ללא תוספת סוכר, רפאל`ס",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_dcfcfe3a329e2c40efe9c8efbe8d2e21",
+    "name": "גרנולה טבעית פירות יער וקשיו, רפאל`ס",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_0d32593b822a3a63b14e3e4d87819813",
+    "name": "גרנולה ללא תוספת סוכר, מנדל גרנולה",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_edc3f5ef530996147faa2342b01455d8",
+    "name": "גרנולה שוקולד, מנדל גרנולה",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_f20676a64f0fe619108453ef159ffa95",
+    "name": "גרנולה שקדים וצימוקים, מנדל גרנולה",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_0bcc108c3a38a2d242d932d41cc44ce9",
+    "name": "גרנולה תמרים, מנדל גרנולה",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_36b5c56e01039bb83241bfb9de6bd35b",
+    "name": "קורנפלקס מלא, תלמה",
+    "from": "OTHER",
+    "to": "BREAKFAST"
+  },
+  {
+    "id": "fd_99bcb8eb8517b7631d3a7e26d1679316",
+    "name": "Biraghi - גבינה קשה 30% שומן, א.ג.ת.ד. בע\"מ",
+    "from": "OTHER",
+    "to": "DAIRY_EGGS"
+  },
+  {
+    "id": "fd_49e56187107c6164e70d2fe23abae413",
+    "name": "Biraghi - חטיפי גבינה קשה 30% שומן, א.ג.ת.ד. בע\"מ",
+    "from": "OTHER",
+    "to": "DAIRY_EGGS"
+  },
+  {
+    "id": "fd_dc7ae7f4da0caed26e9da605f3d4b2e4",
+    "name": "דנונה PRO עשיר בחלבון - יוגורט לבן 2.9% שומן, שטראוס עלית",
+    "from": "OTHER",
+    "to": "DAIRY_EGGS"
+  },
+  {
+    "id": "fd_6fafeaa6488d8e32c76b8b56bb3e527a",
+    "name": "דנונה PRO עשיר בחלבון - יוגורט עם אננס 2.4% שומן, שטראוס עלית",
+    "from": "OTHER",
+    "to": "DAIRY_EGGS"
+  },
+  {
+    "id": "fd_d240bce998a2386b7382c649db90b590",
+    "name": "דנונה PRO עשיר בחלבון - יוגורט עם אפרסק 2.4% שומן, שטראוס עלית",
+    "from": "OTHER",
+    "to": "DAIRY_EGGS"
+  },
+  {
+    "id": "fd_16cf48a5b76cec2ff2a6eab41f6a4a2e",
+    "name": "דנונה PRO עשיר בחלבון - יוגורט עם פירות יער 2.4% שומן, שטראוס עלית",
+    "from": "OTHER",
+    "to": "DAIRY_EGGS"
+  },
+  {
+    "id": "fd_53e6378fb60e6dbb27b5ddb617069715",
+    "name": "יוגורט כבשים בסגנון בלקני 5% שומן, מחלבות גד",
+    "from": "OTHER",
+    "to": "DAIRY_EGGS"
+  },
+  {
+    "id": "fd_f87412f7097b357654e8c911732207f6",
+    "name": "מה - עז, משק צוריאל",
+    "from": "OTHER",
+    "to": "DAIRY_EGGS"
+  },
+  {
+    "id": "fd_589a1d00f6f2721133a8eb2cf21648fd",
+    "name": "קסם הרימון - גרגירי רימון, יוגורט Bio 3% ודבש, עינת תעשיות מזון",
+    "from": "OTHER",
+    "to": "DAIRY_EGGS"
+  },
+  {
+    "id": "cmvtpd6yk000xux00oiev7zze",
+    "name": "אבקת אפייה",
+    "from": "BAKERY",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_184ab7294af5270d23d79d9069671a04",
+    "name": "אבקת סוכר",
+    "from": "BAKERY",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_42ef6b718d60c5902a05dee4983611bb",
+    "name": "סוכר חום",
+    "from": "BAKERY",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_10ef25a7e156805d03d12a4018bae513",
+    "name": "סוכר לבן",
+    "from": "BAKERY",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "store_hahishook_2904",
+    "name": "שמרים יבשים",
+    "from": "BAKERY",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_dc4c572ece9c7d12fffd2663b9aedb17",
+    "name": "green - ניוקי תפוחי אדמה ללא גלוטן, שופרסל",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_166f3d412bc3e6082f7b4e42f61884db",
+    "name": "גרגירי חומוס (יבשים)",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_3ba98f0df26d4dad9b76d58513d5e638",
+    "name": "גרגירי חומוס מבושלים עם מלח",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_9d1a26ebe42ba07805346c4baffbb7b3",
+    "name": "כמוסוכר - אבקת ממתיק דל קלוריות להמתקה, בישול ואפיה, סוכרזית",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_3ba0a56465a771d651b4a79c90c79166",
+    "name": "מפאלדה - פסטה מ- 100% סמולינה חיטת דורום, ישרקו בע\"מ",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_644559af1d9cff47494c3970e4ec4bbe",
+    "name": "משפר אפייה, שמרית",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_c19c2a5fcef002eb93ad08a604dd1d27",
+    "name": "סוכר וניל, מיה",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_43f7c234e187c104a5329ac7681c711c",
+    "name": "סטיוויה - ממתיק צמחי על בסיס צמח הסטיוויה, סוכרזית",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_c0de8ac8e8204aad355de4a8b31e216e",
+    "name": "עדשים טריות",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_0f2bc12d17f7070b1f92a78028dd726d",
+    "name": "עדשים מבושלות ללא מלח",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_13bb604014cf97396cb188845dbc143e",
+    "name": "עדשים מבושלות עם מלח",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_f1d943b423bb080ef3fe3d4230488248",
+    "name": "עמילן תירס (קורנפלור)",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_300334866ab9a6452d530e8a7d5843e7",
+    "name": "פול טרי",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_9ad95d89f9162a788a5cc514687686dc",
+    "name": "פול מבושל עם מלח",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_d329e6c88dbcfc1bfdd294c4faaa0d6f",
+    "name": "פולי סויה טריים",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_00f2e01ebb997cbcf82d9f4e97710fd9",
+    "name": "פולי סויה מורתחים ללא מלח - אדממה",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_6c19780c6ed344283278a3c3dfdd3b11",
+    "name": "פנה - פתיתים על בסיס אורז וקינואה ללא גלוטן אורגני, נוטרה זן",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_7815a3fdf25cd5261ecb3695199f9271",
+    "name": "פתיתים פלוס עדשים, אסם",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_20a5610233a3d278c4507c0a01968ef6",
+    "name": "קמח אורז לבן",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_c6da49e3ddbb52c4a3d9d04d82cd01a2",
+    "name": "קמח תירס לבן",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_b51cf603f65acb8dcae2d04edabb246e",
+    "name": "קמח תירס צהוב",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_96c8b2fcfb01773b8e0465ad447ab82f",
+    "name": "קמח תפוחי אדמה",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_1d70ed8ad231a6d40ae8212cb0cd431b",
+    "name": "שעועית אדומה מבושלת ללא מלח",
+    "from": "OTHER",
+    "to": "GRAINS_LEGUMES"
+  },
+  {
+    "id": "fd_4efccf656501a0644e6574a718553286",
+    "name": "DELI - דיילי נקניקיות גבינה כחולה, מעדני מזרע",
+    "from": "OTHER",
+    "to": "MEAT_FISH"
+  },
+  {
+    "id": "fd_22f2b1c4f1c65ff46ecb5b8262bd20a3",
+    "name": "DELI - דיילי נקניקיות עגל פורטבלו פורצ`, מעדני מזרע",
+    "from": "OTHER",
+    "to": "MEAT_FISH"
+  },
+  {
+    "id": "fd_3f7bf1243e039411dbc737274323210d",
+    "name": "DELI - דיילי נקניקיות פרגית קארי ירוק, מעדני מזרע",
+    "from": "OTHER",
+    "to": "MEAT_FISH"
+  },
+  {
+    "id": "fd_a366940db0e98ab1bb41cc83931be800",
+    "name": "DELI - דיילי נקניקיות פרגית ראס אל חנות, מעדני מזרע",
+    "from": "OTHER",
+    "to": "MEAT_FISH"
+  },
+  {
+    "id": "fd_afdc232f43a6384c0b373d18514299f6",
+    "name": "בקלה אטלנטי",
+    "from": "OTHER",
+    "to": "MEAT_FISH"
+  },
+  {
+    "id": "fd_efc7e1dd9a30a1b8a27f6a46a104d331",
+    "name": "טונה צהובת סנפיר מבושלת (טונה טרייה מבושלת)",
+    "from": "OTHER",
+    "to": "MEAT_FISH"
+  },
+  {
+    "id": "fd_26b1b28a3d2234b16d72c1905e32ea03",
+    "name": "לברק",
+    "from": "OTHER",
+    "to": "MEAT_FISH"
+  },
+  {
+    "id": "fd_94ebd503334bfebd4f1039c8dc7b243a",
+    "name": "פורל",
+    "from": "OTHER",
+    "to": "MEAT_FISH"
+  },
+  {
+    "id": "fd_7b6ff7a3244963c54837b760de48a369",
+    "name": "קרפיון",
+    "from": "OTHER",
+    "to": "MEAT_FISH"
+  },
+  {
+    "id": "fd_c04d22709ec78cf325ababad507943c9",
+    "name": "כרובית אלמוגים טריה (כרובית ירוקה)",
+    "from": "OTHER",
+    "to": "PRODUCE"
+  },
+  {
+    "id": "fd_0d6c415894097f5d2d0e83e27577ebb8",
+    "name": "פטריות שיטאקי מיובשות, חוות תקוע",
+    "from": "OTHER",
+    "to": "PRODUCE"
+  },
+  {
+    "id": "fd_aaafde1734574fda9a62fb1e94762cab",
+    "name": "שעועית ירוקה מבושלת עם מלח",
+    "from": "OTHER",
+    "to": "PRODUCE"
+  },
+  {
+    "id": "fd_bfb61028ce7cbbc0a163d66495c7e788",
+    "name": "תמר הינדי",
+    "from": "OTHER",
+    "to": "PRODUCE"
+  },
+  {
+    "id": "fd_795ab0b21d3c9fa7147f081609a72f25",
+    "name": "MAILLE - חרדל דיז`ון מקורי, א. סיימן סחר בע\"מ",
+    "from": "OTHER",
+    "to": "SAUCES_OILS"
+  },
+  {
+    "id": "fd_41d01c956dc627a171332e45a92b7c6c",
+    "name": "Mazola - מזולה לאפייה ובישול בטעם חמאה 79% שומן, מזולה",
+    "from": "OTHER",
+    "to": "SAUCES_OILS"
+  },
+  {
+    "id": "fd_a5f475b67997ab17f59cf57af4d949bf",
+    "name": "Mazola - מזולה לאפייה ובישול ללא תוספת מלח 79% שומן, מזולה",
+    "from": "OTHER",
+    "to": "SAUCES_OILS"
+  },
+  {
+    "id": "fd_8a22c4a5952c653f25a50c5133ff9af0",
+    "name": "wok - רוטב צ`ילי מתוק (חריף), טומין שיווק (2001) בע\"מ",
+    "from": "OTHER",
+    "to": "SAUCES_OILS"
+  },
+  {
+    "id": "fd_e61740de058c34da04b7b586b900b67d",
+    "name": "זרעי חרדל",
+    "from": "OTHER",
+    "to": "SAUCES_OILS"
+  },
+  {
+    "id": "fd_c8c9ba62da2d7715b3f9b9ced8861f1c",
+    "name": "mooi - גלילי וופל בטעם אגוזים עטופים בשוקולד חלב משובח, דנשר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_aed02619b8d96db8f8716ab20d59672d",
+    "name": "mooi - שכבות ביסקוויט ושוקולד במילוי קרם בטעם אגוזים-קקאו עשיר, דנשר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_824d1f5a841bfd45dfeefb75687a9631",
+    "name": "mooi - שכבות ביסקוויט ושוקולד במילוי קרם שמנת-זביונה עשיר, דנשר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_52cac568e37b5309b2dc6749bef417f4",
+    "name": "SNICKERS MAX CARAMEL, סידס",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_22fde24b3f5d7e188d8db78313bd3fb5",
+    "name": "soletti - מקלות מלוחים עם שומשום, ר.ב. מוצרי דגנים בע\"מ",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_b3f4e813539c1391189cabce4c0ce6f6",
+    "name": "בוטנים מצופים בטעם גריל, קולומבוס - מוצרים מעולם אחר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_64eb915fff046fdd5ae81cd5bc8fef60",
+    "name": "בוטנים מצופים בטעם צ`ילי, קולומבוס - מוצרים מעולם אחר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_f2b0c2ed1cc03a6106ab3b87e17a2b72",
+    "name": "בוטנים מצופים בטעם תירס, קולומבוס - מוצרים מעולם אחר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_ac36e944967d57abd65ec28f43cb13f1",
+    "name": "בייגלה - שמיניות מלוחות, בייגל בייגל",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_898e3b516e9aa62f6acf784d9a8e0540",
+    "name": "במבה במילוי קרם נוגט, אסם",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_6bbf1463174adb242052cc93b3d0ccb0",
+    "name": "ופלים משובחים בטעם שוקולד, מן",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_e340c6789a6f5eb8814064a8eb71fa42",
+    "name": "חטיף אורז מתוק אורגינלי, דנשר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_d386f66f82bd581007cc8069c4bc0034",
+    "name": "חטיף אורז צ`ילי מתוק, דנשר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_4571105b7573d1a4dc64d3e877c97c8b",
+    "name": "חטיף חלבון בטעם וניל שקדים, הרבלייף",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_fe2e9ead659a4904eec867fc98d218ee",
+    "name": "חטיף חלבון בטעם לימון, הרבלייף",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_8f9c0e618e0046a1435435c3b942b810",
+    "name": "חטיפי אורז אקזוטיים, קולומבוס - מוצרים מעולם אחר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_b25ef87df2e45754e0dc7cb33f2ca508",
+    "name": "טרולי - סוכריות גומי בטעם בננה, סידס",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_19a2fd0ace0abee5cd85c2eb1e15409c",
+    "name": "טרולי - סוכריות גומי חמוצות בטעם פירות, סידס",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_4cefab0870c0f5abc9aa85c32b808f72",
+    "name": "לינדט אקסלנס - שוקולד מריר עם דומדמניות שחורות ושבבי שקדים, משה סידס ובנו בע\"מ",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_e616676e8a3347ce1555715d83b7424f",
+    "name": "לינדט קריאשן מנטה - מעטפת שוקולד מריר 70% מוצקי קקאו במילוי טראפל לבן ומחית מנטה, משה סידס ובנו בע\"מ",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_21a9343e7b8989b0a8e788ee7bc280cd",
+    "name": "נשנושי שעועית בטעם פיקנטי, קולומבוס - מוצרים מעולם אחר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_8587440f38434592aa1538534b4ec648",
+    "name": "סוכריות קשות ללא תוספת סוכר בטעם צמחים תפוח ומנטה, ריקולה בע\"מ",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_e1122dd86fbc9a9ca4dc724836d97885",
+    "name": "עוגיות בראוניס עם שוקולד צ`יפס, אחוה",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_70395adfa8244e9ba5befaf8116af1dd",
+    "name": "עוגיות מובחרות - עוגיות בטעם שוקולד, מן",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_e2efcc62ebf13a9fde367f1f8a5b130a",
+    "name": "עוגיות מובחרות - עוגיות גרנולה, מן",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_2317fcc6523801596f50b0d54d1ab7b9",
+    "name": "עוגיות מחיטה מלאה, מן",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_e25e656b08df5ab769ec790ea323cd5d",
+    "name": "פול פריך בציפוי שום, קולומבוס - מוצרים מעולם אחר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_f38d723938348d5ff0cded17f71b13b3",
+    "name": "פופ סטאר בטעם חמאה, דנשר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_7c097fb3414b07b189b261312a1a4513",
+    "name": "פופ סטאר בטעם טבעי, דנשר",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_01bcfaec85db43e3482d4ddfc3643a57",
+    "name": "פופקורן",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_34f24b72999ab33975975b4381bd1560",
+    "name": "תנת`ה - ממתק ג`מבו תות חתוך על בסיס עמילן, טופ-גאם תעשיות ממתקים בע\"מ",
+    "from": "OTHER",
+    "to": "SNACKS_SWEETS"
+  },
+  {
+    "id": "fd_6daa70b4e679fb51c8b57efe6aa61bd8",
+    "name": "חצי חצי - קרם מובחר למריחה וממרח חלב, השחר העולה",
+    "from": "OTHER",
+    "to": "SPREADS_CANNED"
+  },
+  {
+    "id": "fd_cb7facf8b05e6dfdf1f9dc430848a113",
+    "name": "ממרח נוגט אגוזים, השחר העולה",
+    "from": "OTHER",
+    "to": "SPREADS_CANNED"
+  },
+  {
+    "id": "fd_aa259f0a95e66f019fa3d0374b83e311",
+    "name": "סילאן - סירופ תמרים טהור 100% טבעי, מכוורת עמק חפר בע\"מ",
+    "from": "OTHER",
+    "to": "SPREADS_CANNED"
+  },
+  {
+    "id": "fd_930b0b1c630b0c6ecbdfa1d4f78434d7",
+    "name": "סילאן - סירופ תמרים מובחרים, מכוורת עמק חפר בע\"מ",
+    "from": "OTHER",
+    "to": "SPREADS_CANNED"
+  },
+  {
+    "id": "fd_d6599e9cb494f5eeee3c5f7802193300",
+    "name": "קרם מובחר בטעם שוקולד פרווה, השחר העולה",
+    "from": "OTHER",
+    "to": "SPREADS_CANNED"
+  },
+  {
+    "id": "fd_36a06a433ed08f0f5c92b5f5b4c3b1bd",
+    "name": "קרם מובחר בטעם שוקולד, השחר העולה",
+    "from": "OTHER",
+    "to": "SPREADS_CANNED"
+  }
+]

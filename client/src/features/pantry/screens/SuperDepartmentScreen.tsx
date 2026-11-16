@@ -1,3 +1,4 @@
+import { AppBackdrop } from "../../../shared/components/ui/AppBackdrop";
 import { useState } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -27,6 +28,7 @@ export function SuperDepartmentScreen({ department }: Props) {
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
+      <AppBackdrop />
       <ScreenHeader title={name} fallbackRoute="/(app)/pantry/super" />
 
       <SearchField

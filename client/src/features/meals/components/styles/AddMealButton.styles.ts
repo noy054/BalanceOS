@@ -54,7 +54,7 @@ export const useStyles = () =>
 
       label: {
         fontSize: 17,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
         letterSpacing: 0.1,
         textAlign: "center",

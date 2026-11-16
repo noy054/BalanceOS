@@ -17,9 +17,17 @@ type Props = {
   onPress: (item: CatalogBrowseItem) => void;
   onAdd: (item: CatalogBrowseItem) => void;
   onRemove: (item: CatalogBrowseItem) => void;
+  onPick?: (item: CatalogBrowseItem) => void;
 };
 
-export const SuperProductCard = memo(function SuperProductCard({ item, isAdding, onPress, onAdd, onRemove }: Props) {
+export const SuperProductCard = memo(function SuperProductCard({
+  item,
+  isAdding,
+  onPress,
+  onAdd,
+  onRemove,
+  onPick,
+}: Props) {
   const { t } = useTranslation("pantry");
   const { colors } = useAppTheme();
   const styles = useStyles();
@@ -37,6 +45,19 @@ export const SuperProductCard = memo(function SuperProductCard({ item, isAdding,
           <View style={styles.loading}>
             <ActivityIndicator size="small" color={colors.accent} />
           </View>
+        ) : onPick ? (
+          <Pressable
+            onPress={() => onPick(item)}
+            accessibilityRole="button"
+            accessibilityLabel={t("super.pickFor", { name: item.name })}
+            hitSlop={4}
+            style={({ pressed }) => [styles.pick, dir.row, pressed && styles.pressed]}
+          >
+            <MaterialCommunityIcons name="plus" size={16} color={colors.onAccent} />
+            <Text style={styles.pickText} numberOfLines={1}>
+              {t("super.pick")}
+            </Text>
+          </Pressable>
         ) : inPantry ? (
           <Pressable
             onPress={() => onRemove(item)}
@@ -80,6 +101,18 @@ const useStyles = () =>
       inPantryText: {
         ...typography.label,
         color: colors.success,
+      },
+      pick: {
+        alignItems: "center",
+        gap: spacing.xs,
+        minHeight: 40,
+        paddingHorizontal: spacing.ms,
+        borderRadius: radius.round,
+        backgroundColor: colors.accentFill,
+      },
+      pickText: {
+        ...typography.label,
+        color: colors.onAccent,
       },
       add: {
         borderRadius: 20,

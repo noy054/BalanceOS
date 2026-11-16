@@ -1,15 +1,25 @@
+import { AppBackdrop } from "../../../shared/components/ui/AppBackdrop";
 import { useCallback, useRef, useState } from "react";
-import { Alert, KeyboardAvoidingView, ScrollView } from "react-native";
+import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
+import {
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { Button } from "../../../shared/components/ui/Button";
 import { StateView } from "../../../shared/components/ui/StateView";
 import { StickyFooter } from "../../../shared/components/ui/StickyFooter";
 import { FormToneProvider } from "../../../shared/components/FormTone";
-import { useCreateRecipe, useRecipe, useUpdateRecipe } from "../hooks/useRecipes";
+import {
+  useCreateRecipe,
+  useRecipe,
+  useUpdateRecipe,
+} from "../hooks/useRecipes";
 import { usePantryProducts } from "../hooks/usePantry";
 import { FOOD_ICONS } from "../hooks/useFoodCardModels";
 import { RecipeIngredientPickerModal } from "../components/recipes/RecipeIngredientPickerModal";
@@ -17,6 +27,8 @@ import { NutritionTotals } from "../components/nutrition/NutritionTotals";
 import { RecipeBasicInfoCard } from "../components/recipes/RecipeBasicInfoCard";
 import { RecipeIngredientsCard } from "../components/recipes/RecipeIngredientsCard";
 import { RecipeStepsCard } from "../components/recipes/RecipeStepsCard";
+import { RecipePortionsCard } from "../components/recipes/RecipePortionsCard";
+import { useRecipeYieldForm } from "../hooks/useRecipeYieldForm";
 import { FormImageHeader } from "../components/form/FormImageHeader";
 import { useAddRecipeForm } from "../hooks/useAddRecipeForm";
 import { prepareFoodImage } from "../helpers/foodImage";
@@ -24,6 +36,7 @@ import { AmountUnit } from "../helpers/serving";
 import { useIngredientEdit } from "../ingredientEditStore";
 import { useStyles } from "./styles/FormScreen.styles";
 import { keyboardBehavior } from "../../../shared/components/ui/KeyboardAvoider";
+import { useReturnToSection } from "../../../shared/hooks/useReturnToSection";
 
 type RouteParams = {
   id?: string;
@@ -43,12 +56,17 @@ export function AddRecipeScreen() {
 
   const createRecipe = useCreateRecipe();
   const updateRecipe = useUpdateRecipe(recipeId);
-  const { data: existingRecipe, isLoading: isRecipeLoading } = useRecipe(recipeId);
+  const { data: existingRecipe, isLoading: isRecipeLoading } =
+    useRecipe(recipeId);
 
   const [pickerSearch, setPickerSearch] = useState("");
-  const { data: products = [], loadMore: loadMoreProducts } = usePantryProducts(pickerSearch);
+  const { data: products = [], loadMore: loadMoreProducts } =
+    usePantryProducts(pickerSearch);
 
   const form = useAddRecipeForm(existingRecipe, isEditMode);
+  const yieldForm = useRecipeYieldForm(form.liveTotals, form.ingredients, isEditMode ? existingRecipe : undefined);
+  const [showYieldHint, setShowYieldHint] = useState(false);
+  const ingredientsSection = useReturnToSection(form.pickerVisible);
   const setAmountRef = useRef(form.setAmount);
   setAmountRef.current = form.setAmount;
 
@@ -59,16 +77,29 @@ export function AddRecipeScreen() {
     }, []),
   );
 
-  function openProductEditor(key: string, productId: string, amount: string, unit: AmountUnit) {
+  function openProductEditor(
+    key: string,
+    productId: string,
+    amount: string,
+    unit: AmountUnit,
+  ) {
     router.push({
       pathname: "/(app)/pantry/[id]",
-      params: { id: productId, ingredientOf: "recipe", ingredientKey: key, parentName: form.name.trim(), amount, unit },
+      params: {
+        id: productId,
+        ingredientOf: "recipe",
+        ingredientKey: key,
+        parentName: form.name.trim(),
+        amount,
+        unit,
+      },
     });
   }
   const [dragging, setDragging] = useState(false);
 
   const [isPreparing, setIsPreparing] = useState(false);
-  const isSaving = isPreparing || createRecipe.isPending || updateRecipe.isPending;
+  const isSaving =
+    isPreparing || createRecipe.isPending || updateRecipe.isPending;
 
   function handleDragActive(active: boolean) {
     setDragging(active);
@@ -93,9 +124,28 @@ export function AddRecipeScreen() {
       return;
     }
 
+    if (yieldForm.weightInvalid) {
+      Alert.alert("", t("portions.weightInvalid"));
+      return;
+    }
+
+    if (yieldForm.portionChoice !== "NONE" && yieldForm.plan.status !== "ok") {
+      Alert.alert("", t("portions.incompleteSave"));
+      return;
+    }
+
+    if (yieldForm.needsLeftoverChoice) {
+      setShowYieldHint(true);
+      Alert.alert("", t("portions.chooseLeftover"));
+      return;
+    }
+
     setIsPreparing(true);
     try {
-      const image = await prepareFoodImage(form.imageUrl.trim(), existingRecipe?.imageUrl);
+      const image = await prepareFoodImage(
+        form.imageUrl.trim(),
+        existingRecipe?.imageUrl,
+      );
       const payload = {
         name: form.name.trim(),
         description: form.description.trim() || undefined,
@@ -103,6 +153,7 @@ export function AddRecipeScreen() {
         mealTypes: form.mealTypes,
         items: form.validItems,
         steps: form.stepTexts,
+        ...yieldForm.payload(),
       };
       setIsPreparing(false);
 
@@ -117,7 +168,9 @@ export function AddRecipeScreen() {
       setIsPreparing(false);
       Alert.alert(
         "",
-        isEditMode ? t("errors.updateRecipeFailed") : t("errors.saveRecipeFailed"),
+        isEditMode
+          ? t("errors.updateRecipeFailed")
+          : t("errors.saveRecipeFailed"),
       );
     }
   }
@@ -136,10 +189,12 @@ export function AddRecipeScreen() {
   return (
     <FormToneProvider tone="glass">
       <SafeAreaView style={styles.root} edges={["top"]}>
+        <AppBackdrop />
         <ScreenHeader title={title} />
 
         <KeyboardAvoidingView style={styles.flex} behavior={keyboardBehavior}>
           <ScrollView
+            ref={ingredientsSection.scrollRef}
             style={styles.flex}
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
@@ -160,29 +215,45 @@ export function AddRecipeScreen() {
               mealTypes={form.mealTypes}
               nameError={form.nameError}
               isRTL={isRTL}
-              autoFocus={!isEditMode}
               onChangeName={form.setName}
               onChangeDescription={form.setDescription}
               onToggleMealType={form.toggleMealType}
             />
 
-            <RecipeIngredientsCard
-              ingredients={form.ingredients}
-              isRTL={isRTL}
-              onOpenProduct={(ingredient) =>
-                openProductEditor(ingredient.key, ingredient.product.id, ingredient.grams, ingredient.unit)
-              }
-              onChangeAmount={form.updateAmount}
-              onToggleUnit={form.toggleUnit}
-              onRemoveIngredient={form.removeIngredient}
-              onAddIngredient={() => form.setPickerVisible(true)}
-              onMoveIngredient={form.moveIngredient}
-              onDragActiveChange={handleDragActive}
-            />
+            <View onLayout={ingredientsSection.onSectionLayout}>
+              <RecipeIngredientsCard
+                ingredients={form.ingredients}
+                isRTL={isRTL}
+                onOpenProduct={(ingredient) =>
+                  openProductEditor(
+                    ingredient.key,
+                    ingredient.product.id,
+                    ingredient.grams,
+                    ingredient.unit,
+                  )
+                }
+                onChangeAmount={form.updateAmount}
+                onToggleUnit={form.toggleUnit}
+                onRemoveIngredient={form.removeIngredient}
+                onAddIngredient={() => form.setPickerVisible(true)}
+                onMoveIngredient={form.moveIngredient}
+                onDragActiveChange={handleDragActive}
+              />
+            </View>
 
             {form.hasTotals ? (
-              <NutritionTotals totals={form.liveTotals} label={t("recipe.totalsSection")} />
+              <NutritionTotals
+                totals={form.liveTotals}
+                label={t("recipe.totalsSection")}
+              />
             ) : null}
+
+            <RecipePortionsCard
+              form={yieldForm}
+              totals={form.liveTotals}
+              showSaveHint={showYieldHint}
+              onIngredientWeight={form.setIngredientWeight}
+            />
 
             <RecipeStepsCard
               steps={form.steps}

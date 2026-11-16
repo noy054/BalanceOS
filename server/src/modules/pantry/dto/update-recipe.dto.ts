@@ -20,9 +20,10 @@ const MEAL_TYPES = [
 ] as const;
 import { Type } from 'class-transformer';
 import { RecipeItemDto } from './create-recipe.dto';
+import { RecipePortionsDto } from './recipe-portions.dto';
 import { IsDayKey } from '../../../common/date/is-day-key.validator';
 
-export class UpdateRecipeDto {
+export class UpdateRecipeDto extends RecipePortionsDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()

@@ -13,6 +13,7 @@ import {
   ServingFormState,
 } from "../../helpers/productForm";
 import { NutrientInputTile } from "../form/NutrientInputTile";
+import { ServingAmountField } from "../../helpers/servingEstimates";
 import { ServingFields } from "./ServingFields";
 import { ServingReference } from "../../helpers/servingReferences";
 import { useStyles } from "./styles/ProductNutritionForm.styles";
@@ -32,7 +33,12 @@ type Props = {
   onChangeServing: (key: keyof ServingFormState, value: string) => void;
   onLinkedFocus?: () => void;
   onLinkedBlur?: (key: "calories" | "quantity" | "grams" | "milliliters") => void;
-  onApplyReference?: (quantity: number, grams: number) => void;
+  onApplyReference?: (quantity: number, amount: number, field: ServingAmountField) => void;
+  productName?: string;
+  servingBasis?: ServingAmountField;
+  onPatchServing?: (patch: Partial<ServingFormState>) => void;
+  lockedServingBasis?: ServingAmountField | null;
+  caloriesUncalculable?: boolean;
   scaledBy?: number | null;
   field: (key: keyof ProductFormState) => {
     value: string;
@@ -68,6 +74,11 @@ export function ProductNutritionForm({
   onLinkedFocus,
   onLinkedBlur,
   onApplyReference,
+  productName = "",
+  servingBasis = "grams",
+  onPatchServing,
+  lockedServingBasis = null,
+  caloriesUncalculable = false,
   scaledBy = null,
   field,
 }: Props) {
@@ -79,6 +90,10 @@ export function ProductNutritionForm({
     <View style={isPerServing || servingFirst ? styles.servingFirst : styles.servingLast}>
       <ServingFields
         references={servingReferences}
+        productName={productName}
+        basis={servingBasis}
+        onPatch={onPatchServing}
+        lockedBasis={lockedServingBasis}
         serving={serving}
         perServingMode={isPerServing}
         language={language}
@@ -152,6 +167,14 @@ export function ProductNutritionForm({
           ))}
         </View>
       </View>
+
+      {isPerServing && caloriesUncalculable ? (
+        <Text style={[styles.scaledNote, { textAlign: isRTL ? "right" : "left" }]} accessibilityLiveRegion="polite">
+          {t("addProduct.caloriesNoBase", {
+            unit: lockedServingBasis === "milliliters" ? t("serving.millilitersShort") : t("serving.gramsShort"),
+          })}
+        </Text>
+      ) : null}
 
       {isPerServing && scaledBy ? (
         <Text style={[styles.scaledNote, { textAlign: isRTL ? "right" : "left" }]}>

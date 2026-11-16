@@ -89,7 +89,7 @@ const useStyles = () =>
         lineHeight: 16,
       },
       labelActive: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.onAccent,
       },
     }),

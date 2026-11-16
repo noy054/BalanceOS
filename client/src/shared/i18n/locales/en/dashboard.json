@@ -46,18 +46,18 @@
     "settings": "Settings"
   },
   "meals": {
-    "calUnit": "cal",
     "proUnit": "g pro",
     "andMore": "+{{count}} more",
     "addItemToMeal": "Add item to meal",
     "itemActionsA11y": "Actions for {{name}}",
+    "copyMealA11y": "Copy {{meal}} to other days",
     "copyToMoreDays": "Copy to other days",
+    "moveToMeal": "Move to another meal",
     "sectionTitle": "Meals",
     "summary": "{{calories}} kcal · {{protein}} g protein",
     "emptyMeal": "Nothing logged yet",
     "addToMeal": "Add to {{meal}}",
     "itemCalories": "{{calories}} kcal",
-    "itemProtein": "{{protein}} g protein",
     "itemsCount_one": "{{count}} item",
     "itemsCount_other": "{{count}} items",
     "addFood": "Add food",
@@ -65,18 +65,26 @@
     "expandItemHint": "Shows the amount so you can change it",
     "collapseItemHint": "Hides the amount editor",
     "savedMeal": "Saved meal",
-    "recipeServings_one": "{{count}} serving",
-    "recipeServings_other": "{{count}} servings",
+    "recipeServings_one": "{{count}} × whole recipe",
+    "recipeServings_other": "{{count}} × whole recipe",
     "copyItemA11y": "Copy {{name}} to other days",
     "collapseAll": "Collapse all",
-    "expandAll": "Expand all"
+    "expandAll": "Expand all",
+    "recipePortions_one": "{{count}} portion",
+    "recipePortions_other": "{{count}} portions",
+    "recipeGrams": "{{value}} g"
+  },
+  "moveMeal": {
+    "title": "Move to another meal",
+    "subtitle": "Choose where {{name}} belongs today",
+    "optionA11y": "Move {{name}} to {{meal}}",
+    "success": "Moved {{name}} to {{meal}}",
+    "failed": "Couldn't move the item. Try again."
   },
   "copyMeal": {
     "title": "Copy to other days",
-    "subtitle": "Select days to copy this meal to",
     "confirm_one": "Copy to {{count}} day",
     "confirm_other": "Copy to {{count}} days",
-    "cancel": "Cancel",
     "today": "Today",
     "weekdays": {
       "0": "Sun",
@@ -87,7 +95,12 @@
       "5": "Fri",
       "6": "Sat"
     },
-    "subtitleItem": "Select days to copy {{name}} to"
+    "subtitleItem": "Select days to copy {{name}} to",
+    "subtitleMeal": "Choose the days to copy {{name}} to",
+    "selectDays": "Select days",
+    "success": "Copied to {{days}}",
+    "failed": "Couldn't copy. Check your connection and try again.",
+    "retry": "Try again"
   },
   "addItem": {
     "title": "Add to {{mealType}}",
@@ -131,6 +144,10 @@
     "searchSavedMeals": "Search saved meals",
     "selectionPreview": "{{grams}} g · {{calories}} kcal",
     "createProduct": "Create product",
+    "createManually": "Create manually",
+    "createManuallyA11y": "Create a product manually and return to this meal",
+    "browseSuper": "Browse Super",
+    "browseSuperA11y": "Browse the Super catalog and pick a product for this meal",
     "deselect": "Clear selection of {{name}}",
     "tapToDeselect": "Tap again to clear the selection",
     "decrease": "Decrease amount",
@@ -163,7 +180,12 @@
       "fat": "Fats",
       "vegetables": "Vegetables",
       "fruits": "Fruits"
-    }
+    },
+    "unitPortions": "Portions",
+    "unitCookedGrams": "Grams",
+    "unitBatch": "Whole recipe",
+    "leftoverPick": "Smaller portion · {{grams}}",
+    "portionsLabel": "portions"
   },
   "header": {
     "today": "Today"
@@ -220,7 +242,8 @@
     "invalidAmount": "Enter an amount greater than zero",
     "saveFailed": "Couldn't save the change. Try again.",
     "fixedAmount": "Saved meals are logged as a whole. To change it, remove it and add the meal again.",
-    "nutritionA11y": "{{calories}} kcal, protein {{protein}} g, carbs {{carbs}} g, fat {{fat}} g"
+    "nutritionA11y": "{{calories}} kcal, protein {{protein}} g, carbs {{carbs}} g, fat {{fat}} g",
+    "unitPortions": "portions"
   },
   "ingredients": {
     "servingsA11y": "{{name}}: {{count}} servings",
@@ -230,7 +253,8 @@
     "increase": "Increase {{name}}",
     "amountA11y": "{{name}} amount in {{unit}}",
     "saveFailed": "Couldn't save the change. The previous amount was restored.",
-    "dayOnly": "Changes apply to this day only"
+    "dayOnly": "Changes apply to this day only",
+    "totalAmount": "Total weight"
   },
   "greeting": {
     "morning": "Good morning",

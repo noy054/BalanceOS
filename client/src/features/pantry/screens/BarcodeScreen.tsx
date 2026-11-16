@@ -15,7 +15,7 @@ import { ProductCatalogCard } from "../components/products/ProductCatalogCard";
 import { useBarcodeResolver } from "../hooks/useBarcodeResolver";
 import { getBarcodeLookupErrorKey, isScannableBarcode } from "../helpers/barcode";
 import { SCANNABLE_BARCODE_TYPES } from "../constants";
-import { PantryProduct, ProductCatalogProduct } from "../types";
+import { MarketReference, PantryProduct, ProductCatalogProduct } from "../types";
 import { useRecipeReturn } from "../recipeReturnStore";
 import { isProductReturnTarget, ProductReturnTarget, useMealReturn } from "../mealReturnStore";
 import { usePantryHighlight } from "../pantryHighlightStore";
@@ -79,6 +79,7 @@ export function BarcodeScreen() {
   const [product, setProduct] = useState<ProductCatalogProduct | null>(null);
   const [existingPantryProduct, setExistingPantryProduct] = useState<PantryProduct | null>(null);
   const [scannedBarcode, setScannedBarcode] = useState("");
+  const [reference, setReference] = useState<MarketReference | null>(null);
   const scanLocked = useRef(false);
   const resolveBarcode = useBarcodeResolver();
 
@@ -119,6 +120,7 @@ export function BarcodeScreen() {
         setProduct(result.catalogItem);
         setPhase("found");
       } else {
+        setReference(result.reference ?? null);
         setPhase("not_found");
       }
     } catch (err: unknown) {
@@ -141,23 +143,30 @@ export function BarcodeScreen() {
     setProduct(null);
     setExistingPantryProduct(null);
     setScannedBarcode("");
+    setReference(null);
     setPhase("scanning");
   }
 
-  function openEditor(params: { barcode?: string; catalogId?: string }) {
+  function openEditor(params: { barcode?: string; catalogId?: string; name?: string; brand?: string }) {
     productWasSavedRef.current = true;
     router.replace({
       pathname: "/(app)/pantry/add-product",
       params: {
         ...(params.barcode ? { barcode: params.barcode } : {}),
         ...(params.catalogId ? { catalogId: params.catalogId } : {}),
+        ...(params.name ? { name: params.name } : {}),
+        ...(params.brand ? { brand: params.brand } : {}),
         ...(fromRecipePicker || fromMealFlow ? { returnTo } : {}),
       },
     });
   }
 
   function handleOpenManual() {
-    openEditor({ barcode: scannedBarcode || undefined });
+    openEditor({
+      barcode: scannedBarcode || undefined,
+      name: reference?.name,
+      brand: reference?.brand ?? undefined,
+    });
   }
 
   const header = (
@@ -286,14 +295,23 @@ export function BarcodeScreen() {
             <View style={[styles.resultIcon, styles.resultIconWarning]}>
               <MaterialCommunityIcons name="barcode-off" size={26} color={colors.warning} />
             </View>
-            <Text style={styles.resultTitle}>{t("barcode.notFound")}</Text>
+            <Text style={styles.resultTitle}>
+              {reference ? t("barcode.identifiedTitle") : t("barcode.notFound")}
+            </Text>
+            {reference ? (
+              <Text style={styles.resultTitle}>
+                {[reference.name, reference.brand].filter(Boolean).join(" · ")}
+              </Text>
+            ) : null}
             {scannedBarcode ? <Text style={styles.resultMeta}>{scannedBarcode}</Text> : null}
-            <Text style={styles.resultHint}>{t("barcode.notFoundCreateHint")}</Text>
+            <Text style={styles.resultHint}>
+              {reference ? t("barcode.identifiedHint") : t("barcode.notFoundCreateHint")}
+            </Text>
           </View>
 
           <View style={styles.actionsStack}>
             <Button
-              label={t("barcode.createProduct")}
+              label={reference ? t("barcode.completeProduct") : t("barcode.createProduct")}
               icon="plus"
               onPress={handleOpenManual}
               fullWidth

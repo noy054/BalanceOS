@@ -1,3 +1,4 @@
+import { AppBackdrop } from "../../../shared/components/ui/AppBackdrop";
 import { useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -120,6 +121,7 @@ export function ProgressOverviewScreen() {
   } else {
     body = (
       <FlatList
+        keyboardShouldPersistTaps="handled"
         data={history.entries}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
@@ -144,6 +146,7 @@ export function ProgressOverviewScreen() {
   return (
     <FormToneProvider tone="glass">
       <SafeAreaView style={styles.root} edges={["top"]}>
+        <AppBackdrop />
         <ScreenHeader title={t("overview.title")} />
         {body}
         {data && data.entryCount > 0 ? (

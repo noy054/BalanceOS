@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { LayoutChangeEvent, ScrollView, View } from "react-native";
+import type { ScrollViewInstance } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
@@ -43,6 +44,17 @@ export function StatisticsScreen() {
   const [range, setRange] = useState<StatRange>("7D");
   const [nutrientKey, setNutrientKey] = useState<NutrientKey>("calories");
   const [weekOffset, setWeekOffset] = useState(0);
+  const scrollRef = useRef<ScrollViewInstance>(null);
+  const trendY = useRef(0);
+
+  const handleTrendLayout = useCallback((event: LayoutChangeEvent) => {
+    trendY.current = event.nativeEvent.layout.y;
+  }, []);
+
+  const showNutrientTrend = useCallback((key: NutrientKey) => {
+    setNutrientKey(key);
+    scrollRef.current?.scrollTo({ y: Math.max(0, trendY.current - 12), animated: true });
+  }, []);
 
   const { t: tBilling } = useTranslation("billing");
   const access = useHasProAccess();
@@ -66,6 +78,7 @@ export function StatisticsScreen() {
     : "calories";
   const insights = useMemo(() => (data ? buildInsights(data) : []), [data]);
   const hasNoData = Boolean(data) && data?.summary.loggedDays === 0;
+  const showStats = !needsPro && Boolean(data) && !hasNoData;
 
   const rangeOptions = STAT_RANGES.map((item) => ({ value: item, label: t(`ranges.${item}`) }));
 
@@ -93,6 +106,8 @@ export function StatisticsScreen() {
         </View>
 
         <ScrollView
+          keyboardShouldPersistTaps="handled"
+          ref={scrollRef}
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
@@ -129,31 +144,30 @@ export function StatisticsScreen() {
             <>
               <SummaryCard summary={data.summary} />
               <CalorieBarsCard trend={data.dailyTrend} />
-              <MealDistributionCard distribution={data.mealDistribution} />
               <NutrientProgressCard
                 nutrients={nutrients}
                 accuracy={data.macroAccuracy}
                 loggedDays={data.summary.loggedDays}
                 rangeDays={data.summary.rangeDays}
                 selected={selectedNutrient}
-                onSelect={setNutrientKey}
+                onSelect={showNutrientTrend}
               />
-              <NutrientTrendCard
-                trend={data.dailyTrend}
-                nutrients={nutrients}
-                selected={selectedNutrient}
-                onSelect={setNutrientKey}
-              />
+              <View onLayout={handleTrendLayout}>
+                <NutrientTrendCard
+                  trend={data.dailyTrend}
+                  nutrients={nutrients}
+                  selected={selectedNutrient}
+                  onSelect={setNutrientKey}
+                />
+              </View>
               <FoodRankingCard
                 title={t("foodInsights.topCalories")}
                 subtitle={t("foodInsights.topCaloriesSub")}
-                valueLabel={t("units.kcal")}
                 rows={rankingRows.byCalories(data.topCalorieSources)}
               />
               <FoodRankingCard
                 title={t("foodInsights.mostUsed")}
                 subtitle={t("foodInsights.mostUsedSub")}
-                valueLabel={t("foodInsights.times")}
                 rows={rankingRows.byFrequency(data.mostUsedFoods)}
               />
               <TargetComparisonCard
@@ -165,7 +179,9 @@ export function StatisticsScreen() {
             </>
           )}
 
+          {showStats && data ? <MealDistributionCard distribution={data.mealDistribution} /> : null}
           <ProgressEntryCard />
+
         </ScrollView>
       </View>
     </TabScreenLayout>

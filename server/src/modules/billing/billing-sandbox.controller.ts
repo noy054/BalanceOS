@@ -69,7 +69,7 @@ export class BillingSandboxController {
     const id = escapeHtml(checkout.id);
     const title =
       checkout.purpose === 'SUBSCRIBE'
-        ? `BalanceOS Pro · ${escapeHtml((checkout.interval ?? '').toLowerCase())}`
+        ? `TrackMode Pro · ${escapeHtml((checkout.interval ?? '').toLowerCase())}`
         : 'Update payment method';
     const button = (outcome: string, label: string, tone: string) =>
       [

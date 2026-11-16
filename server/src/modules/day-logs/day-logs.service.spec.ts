@@ -26,6 +26,7 @@ function setup() {
     findMealEntryWithItems: jest.fn(),
     findMealItemForCopy: jest.fn(),
     createMealItem: jest.fn().mockResolvedValue({ id: 'item' }),
+    createMealItems: jest.fn().mockResolvedValue(undefined),
     recalculateAndSaveTotals: jest.fn().mockResolvedValue({}),
     findDaysInRange: jest.fn(),
   };
@@ -76,7 +77,9 @@ describe('DayLogsService dated days', () => {
       '2026-10-25',
       targets,
     );
-    expect(repo.recalculateAndSaveTotals).toHaveBeenCalledWith(
+    expect(repo.createMealItem).toHaveBeenCalledWith(
+      'entry',
+      expect.objectContaining({ pantryProductId: 'p1' }),
       'log-2026-10-25',
     );
   });
@@ -87,12 +90,12 @@ describe('DayLogsService dated days', () => {
       {
         date: '2026-10-27',
         caloriesTotal: 1840.4,
-        mealEntries: [{ _count: { items: 2 } }, { _count: { items: 1 } }],
+        itemCount: 3,
       },
       {
         date: '2026-10-29',
         caloriesTotal: 0,
-        mealEntries: [{ _count: { items: 0 } }],
+        itemCount: 0,
       },
     ]);
     const result = await service.getCalendar('u1', '2026-10-01', '2026-10-31');
@@ -178,9 +181,11 @@ describe('DayLogsService dated days', () => {
       mealEntry: { mealType: 'BREAKFAST' },
     });
 
+    jest.useFakeTimers({ now: new Date('2026-11-02T10:00:00Z') });
     await service.copyMealItem('u1', 'i1', {
       targetDates: ['2026-11-03', '2026-11-04'],
     });
+    jest.useRealTimers();
 
     expect(repo.findMealItemForCopy).toHaveBeenCalledWith('i1', 'u1');
     expect(repo.findOrCreateMealEntry).toHaveBeenCalledWith(
@@ -191,24 +196,56 @@ describe('DayLogsService dated days', () => {
       'log-2026-11-04',
       'BREAKFAST',
     );
-    expect(repo.createMealItem).toHaveBeenCalledTimes(2);
-    expect(repo.createMealItem).toHaveBeenCalledWith('entry', {
-      pantryProductId: 'p1',
-      pantryRecipeId: undefined,
-      savedMealId: undefined,
-      grams: 50,
-      servings: undefined,
-      macrosSnapshot: snapshot,
-    });
-    expect(repo.recalculateAndSaveTotals).toHaveBeenCalledTimes(2);
+    expect(repo.createMealItems).toHaveBeenCalledTimes(2);
+    expect(repo.createMealItems).toHaveBeenCalledWith(
+      'entry',
+      [
+        {
+          pantryProductId: 'p1',
+          pantryRecipeId: undefined,
+          savedMealId: undefined,
+          grams: 50,
+          servings: undefined,
+          macrosSnapshot: snapshot,
+        },
+      ],
+      'log-2026-11-04',
+    );
+  });
+
+  it('copies only to days after the user today, even from a past day', async () => {
+    jest.useFakeTimers({ now: new Date('2026-11-14T22:30:00Z') });
+    const { service, repo } = setup();
+    for (const targetDates of [
+      ['2026-11-14'],
+      ['2026-11-15'],
+      ['2026-11-10'],
+    ]) {
+      await expect(
+        service.copyMealEntry('u1', 'e1', { targetDates, today: '2026-11-15' }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    }
+    await expect(
+      service.copyMealEntry('u1', 'e1', { targetDates: ['2026-11-14'] }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    await expect(
+      service.copyMealEntry('u1', 'e1', {
+        targetDates: ['2026-11-16'],
+        today: '2026-11-20',
+      }),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    expect(repo.createMealItem).not.toHaveBeenCalled();
+    jest.useRealTimers();
   });
 
   it('does not copy a meal item owned by another user', async () => {
+    jest.useFakeTimers({ now: new Date('2026-11-02T10:00:00Z') });
     const { service, repo } = setup();
     repo.findMealItemForCopy.mockResolvedValue(null);
     await expect(
       service.copyMealItem('u1', 'i1', { targetDates: ['2026-11-03'] }),
     ).rejects.toBeInstanceOf(NotFoundException);
     expect(repo.createMealItem).not.toHaveBeenCalled();
+    jest.useRealTimers();
   });
 });

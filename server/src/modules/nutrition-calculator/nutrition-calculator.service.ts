@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import {
+  planPortions,
+  PortionSetup,
+  rawBatchWeight,
+  WeighableItem,
+} from './recipe-portions';
+import {
   MacroValues,
   ProductAmount,
   ProductNutritionSource,
@@ -16,6 +22,39 @@ export type MacrosSnapshot = {
   fat: number;
   fiber: number;
 };
+
+export type BaseMacros = Omit<MacrosSnapshot, 'name'> & { amount: number };
+
+export function baseMacrosOf(
+  snapshot: MacrosSnapshot,
+  amount: number | null | undefined,
+): BaseMacros | null {
+  if (amount == null || !(amount > 0)) return null;
+  return {
+    amount,
+    calories: snapshot.calories,
+    protein: snapshot.protein,
+    carbs: snapshot.carbs ?? 0,
+    fat: snapshot.fat ?? 0,
+    fiber: snapshot.fiber ?? 0,
+  };
+}
+
+export function isBaseMacros(value: unknown): value is BaseMacros {
+  if (!value || typeof value !== 'object') return false;
+  const record = value as Record<string, unknown>;
+  const valid = [
+    'amount',
+    'calories',
+    'protein',
+    'carbs',
+    'fat',
+    'fiber',
+  ].every(
+    (key) => typeof record[key] === 'number' && Number.isFinite(record[key]),
+  );
+  return valid && (record.amount as number) > 0;
+}
 
 type RecipeItemLike = ProductAmount & { product: ProductNutritionSource };
 
@@ -76,6 +115,40 @@ export class NutritionCalculatorService {
       name: recipe.name,
       ...scaledRecipeTotals(recipe.items, servings),
     };
+  }
+
+  recipeWeight(recipe: {
+    cookedWeightG?: number | null;
+    items: WeighableItem[];
+  }): number | null {
+    return recipe.cookedWeightG ?? rawBatchWeight(recipe.items);
+  }
+
+  recipeFraction(
+    recipe: {
+      items: (RecipeItemLike & WeighableItem)[];
+    } & Partial<PortionSetup>,
+    amount: { servings?: number; portions?: number; grams?: number },
+  ): number | 'noPortions' | 'noCookedWeight' {
+    if (amount.portions != null) {
+      const plan = planPortions(rawRecipeTotals(recipe.items), {
+        cookedWeightG: recipe.cookedWeightG ?? null,
+        rawWeightG: rawBatchWeight(recipe.items),
+        portionMode: recipe.portionMode ?? null,
+        portionCount: recipe.portionCount ?? null,
+        portionTarget: recipe.portionTarget ?? null,
+        portionTargetValue: recipe.portionTargetValue ?? null,
+        leftoverMode: recipe.leftoverMode ?? null,
+      });
+      if (plan.status !== 'ok') return 'noPortions';
+      return plan.portion.fraction * amount.portions;
+    }
+    if (amount.grams != null) {
+      const weight = this.recipeWeight(recipe);
+      if (!weight) return 'noCookedWeight';
+      return amount.grams / weight;
+    }
+    return amount.servings ?? 0;
   }
 
   scaleSnapshot(snapshot: MacrosSnapshot, ratio: number): MacrosSnapshot {

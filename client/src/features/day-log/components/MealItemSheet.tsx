@@ -218,7 +218,7 @@ const useStyles = () =>
         minWidth: 0,
         ...typography.value,
         fontSize: 18,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
         textAlign: "center",
         paddingVertical: spacing.sm,

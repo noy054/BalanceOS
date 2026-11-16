@@ -3,7 +3,7 @@ import { Text, useWindowDimensions, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
-import { CalorieRibbon } from "../../../shared/components/ui/CalorieRibbon";
+import { CalorieRibbon, RIBBON_SLOTS } from "../../../shared/components/ui/CalorieRibbon";
 import { useDirection } from "../../../shared/hooks/useDirection";
 import { useAppTheme } from "../../../shared/theme";
 import { formatCalories, formatGrams } from "../../../shared/helpers/formatNumber";
@@ -31,6 +31,11 @@ function heroNumberSize(text: string, ribbonWidth: number) {
   const separators = text.length - digits;
   const room = ribbonWidth * 0.5;
   return Math.round(Math.min(ribbonWidth * HERO_SCALE.value, room / (digits * 0.62 + separators * 0.28)));
+}
+
+function badgeValueSize(text: string, ribbonWidth: number) {
+  const room = ribbonWidth * RIBBON_SLOTS.badge.width;
+  return Math.round(Math.min(ribbonWidth * HERO_SCALE.badgeValue, room / (text.length * 0.6)));
 }
 
 export function DailySummaryCard({ eaten, target, macros, isToday = true, showPercentages = false }: Props) {
@@ -62,7 +67,10 @@ export function DailySummaryCard({ eaten, target, macros, isToday = true, showPe
   const unit = t("calories.unitShort");
   const numberText = formatCalories(mainNumber);
   const numberSize = heroNumberSize(numberText, ribbonWidth);
-  const badgeSize = Math.round(ribbonWidth * HERO_SCALE.badgeValue);
+  const percentText = `${percent}%`;
+  const supportSize = Math.max(12, Math.min(14, Math.round(ribbonWidth * 0.035)));
+  const supportText = { fontSize: supportSize, lineHeight: Math.round(supportSize * 1.35) };
+  const badgeSize = badgeValueSize(percentText, ribbonWidth);
 
   return (
     <View style={styles.container}>
@@ -77,48 +85,49 @@ export function DailySummaryCard({ eaten, target, macros, isToday = true, showPe
         accessibilityValue={{ min: 0, max: 100, now: Math.min(percent, 100) }}
       >
         <CalorieRibbon
+          over={isOverTarget}
           width={ribbonWidth}
           icon={
             <MaterialCommunityIcons
               name="fire"
               size={Math.round(ribbonWidth * HERO_SCALE.icon)}
-              color={dark ? colors.calorieGauge : colors.accent}
+              color={isOverTarget ? colors.overTarget : dark ? colors.calorieGauge : colors.accent}
             />
           }
-          label={
-            <Text style={styles.mainLabel} numberOfLines={1} maxFontSizeMultiplier={1.2}>
-              {mainLabel}
-            </Text>
+          center={
+            <View style={styles.centerStack}>
+              <Text style={[styles.mainLabel, supportText]} numberOfLines={1} maxFontSizeMultiplier={1.2}>
+                {mainLabel}
+              </Text>
+              <Text
+                style={[styles.mainNumber, { fontSize: numberSize, lineHeight: Math.round(numberSize * 1.2) }]}
+                numberOfLines={1}
+                maxFontSizeMultiplier={1}
+              >
+                {numberText}
+              </Text>
+              <Text style={[styles.mainTarget, supportText]} numberOfLines={1} maxFontSizeMultiplier={1.2}>
+                {t("calories.ofTargetCalories", { target: formatCalories(target) })}
+              </Text>
+            </View>
           }
-          value={
-            <Text
-              style={[styles.mainNumber, { fontSize: numberSize, lineHeight: Math.round(numberSize * 1.18) }]}
-              numberOfLines={1}
-              maxFontSizeMultiplier={1}
-            >
-              {numberText}
-            </Text>
-          }
-          caption={
-            <Text style={styles.mainTarget} numberOfLines={1} maxFontSizeMultiplier={1.2}>
-              {t("calories.ofTargetCalories", { target: formatCalories(target) })}
-            </Text>
-          }
-          badgeValue={
-            <Text
-              style={[styles.badgeValue, { fontSize: badgeSize, lineHeight: Math.round(badgeSize * 1.2) }]}
-              numberOfLines={1}
-              maxFontSizeMultiplier={1}
-            >{`${percent}%`}</Text>
-          }
-          badgeLabel={
-            <Text
-              style={[styles.badgeLabel, { fontSize: Math.min(11, Math.round(ribbonWidth * 0.031)) }]}
-              numberOfLines={1}
-              maxFontSizeMultiplier={1}
-            >
-              {t("calories.ofTargetShort")}
-            </Text>
+          badge={
+            <View style={styles.badgeStack}>
+              <Text
+                style={[styles.badgeValue, { fontSize: badgeSize, lineHeight: Math.round(badgeSize * 1.1) }]}
+                numberOfLines={1}
+                maxFontSizeMultiplier={1}
+              >
+                {percentText}
+              </Text>
+              <Text
+                style={[styles.badgeLabel, { fontSize: Math.min(10, Math.round(ribbonWidth * 0.027)), lineHeight: 12 }]}
+                numberOfLines={1}
+                maxFontSizeMultiplier={1}
+              >
+                {t("calories.ofTargetShort")}
+              </Text>
+            </View>
           }
         />
       </View>

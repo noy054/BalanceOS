@@ -1,3 +1,4 @@
+import { MARKET_CODES } from '../../../common/market/markets';
 import {
   ArrayMaxSize,
   ArrayUnique,
@@ -64,6 +65,11 @@ export class UpsertNutritionSettingsDto {
   @IsString()
   @IsIn(['he', 'en'])
   preferredLanguage?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(MARKET_CODES)
+  marketCode?: string;
 
   // --- Nutrition targets ---
   @IsOptional()

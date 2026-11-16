@@ -1,3 +1,4 @@
+import { AppBackdrop } from "../../../shared/components/ui/AppBackdrop";
 import { useLayoutEffect, useState } from "react";
 import { ScrollView, Alert, KeyboardAvoidingView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -123,6 +124,7 @@ export function ProductDetailScreen({ id, ingredient = null }: Props) {
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
+      <AppBackdrop />
       <ScreenHeader
         title={ingredient ? t("ingredientEdit.title") : t("productDetail.title")}
         fallbackRoute="/(app)/pantry"

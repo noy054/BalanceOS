@@ -29,16 +29,16 @@ export const useStyles = () =>
         justifyContent: "center",
       },
 
-      logoBalance: {
+      logoTrack: {
         fontSize: 26,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
         letterSpacing: -0.5,
       },
 
-      logoOS: {
+      logoMode: {
         fontSize: 26,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         color: colors.accent,
         letterSpacing: -0.5,
       },

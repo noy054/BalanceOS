@@ -35,3 +35,14 @@ export function isWithinFutureLimit(
 ): boolean {
   return daysBetween(utcDayKey(now), date) <= MAX_FUTURE_DAYS + 1;
 }
+
+export function resolveClientToday(
+  clientToday: string | undefined,
+  now: Date = new Date(),
+): string {
+  const serverToday = utcDayKey(now);
+  if (!clientToday || !isDayKey(clientToday)) return serverToday;
+  return Math.abs(daysBetween(serverToday, clientToday)) <= 1
+    ? clientToday
+    : serverToday;
+}

@@ -41,20 +41,19 @@ export function NutrientProgressCard({
           const unit = t(`units.${nutrient.unit}`);
           const name = t(`macros.${nutrient.key}`);
           const pct = percentOf(stat.avg, stat.target);
-          const active = nutrient.key === selected;
 
           return (
             <Pressable
               key={nutrient.key}
               onPress={() => onSelect(nutrient.key)}
               accessibilityRole="button"
-              accessibilityState={{ selected: active }}
-              accessibilityLabel={`${name}: ${formatStat(stat.avg, nutrient.unit)} ${t("accuracy.of")} ${formatStat(stat.target, nutrient.unit)} ${unit}, ${pct}%`}
+              accessibilityState={{ selected: selected === nutrient.key }}
               accessibilityHint={t("accuracy.selectHint")}
+              accessibilityLabel={`${name}: ${formatStat(stat.avg, nutrient.unit)} ${t("accuracy.of")} ${formatStat(stat.target, nutrient.unit)} ${unit}, ${pct}%`}
               style={({ pressed }) => [
                 styles.row,
                 dir.row,
-                active && styles.rowActive,
+                selected === nutrient.key && styles.rowActive,
                 pressed && styles.pressed,
               ]}
             >
@@ -146,7 +145,7 @@ const useStyles = () =>
         color: colors.textSecondary,
       },
       avg: {
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         fontSize: 16,
         color: colors.textPrimary,
       },

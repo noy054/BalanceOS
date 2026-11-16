@@ -1,3 +1,4 @@
+import { AppBackdrop } from "../../../shared/components/ui/AppBackdrop";
 import { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,6 +19,7 @@ export function SettingsScreenLayout({ title, rightElement, children }: Props) {
   return (
     <FormToneProvider tone="glass">
       <SafeAreaView style={styles.root} edges={["top"]}>
+        <AppBackdrop />
         <ScreenHeader title={title} rightElement={rightElement} />
         <View style={styles.body}>{children}</View>
       </SafeAreaView>

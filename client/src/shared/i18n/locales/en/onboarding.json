@@ -8,7 +8,7 @@
     "englishSub": "English — LTR"
   },
   "mode": {
-    "title": "How do you want to use BalanceOS?",
+    "title": "How do you want to use TrackMode?",
     "subtitle": "You can change this later in settings.",
     "expertTitle": "I know what I'm doing",
     "expertDesc": "Set your own calorie and macro targets. Full control, no hand-holding.",
@@ -27,7 +27,7 @@
   },
   "guided": {
     "title": "We'll help you get set up",
-    "body1": "BalanceOS will guide you through choosing calorie and macro targets based on your goals. You can adjust everything manually at any time.",
+    "body1": "TrackMode will guide you through choosing calorie and macro targets based on your goals. You can adjust everything manually at any time.",
     "body2": "Guided target setup is coming soon. For now, we'll apply sensible defaults and you can update them from settings.",
     "startButton": "Get started"
   }

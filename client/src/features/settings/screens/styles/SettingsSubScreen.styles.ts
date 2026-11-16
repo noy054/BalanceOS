@@ -22,6 +22,19 @@ export const useSubScreenStyles = () =>
         ...typography.footnote,
         color: colors.textSecondary,
       },
+      marketRow: {
+        alignItems: "center",
+        gap: spacing.ms,
+        minHeight: 44,
+      },
+      marketRowPressed: {
+        opacity: 0.7,
+      },
+      marketLabel: {
+        flex: 1,
+        ...typography.body,
+        color: colors.textPrimary,
+      },
       formCard: {
         paddingHorizontal: spacing.md,
         paddingTop: spacing.md,
@@ -51,7 +64,7 @@ export const useSubScreenStyles = () =>
       successText: {
         flex: 1,
         ...typography.callout,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.success,
       },
     }),

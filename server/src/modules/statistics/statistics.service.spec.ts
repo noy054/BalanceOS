@@ -9,8 +9,22 @@ const CURRENT_TARGETS = {
   fiber: 25,
 };
 
-function item(name: string, calories: number, imageUrl: string | null = null) {
+function item(
+  name: string,
+  calories: number,
+  imageUrl: string | null = null,
+  amount: Partial<{
+    grams: number;
+    servings: number;
+    milliliters: number;
+    savedMealId: string;
+  }> = {},
+) {
   return {
+    grams: amount.grams ?? null,
+    servings: amount.servings ?? null,
+    milliliters: amount.milliliters ?? null,
+    savedMealId: amount.savedMealId ?? null,
     macrosSnapshot: { name, calories, protein: 0, carbs: 0, fat: 0, fiber: 0 },
     pantryProduct: imageUrl ? { imageUrl } : null,
     pantryRecipe: null,
@@ -143,9 +157,65 @@ describe('StatisticsService', () => {
       totalCalories: 600,
       count: 2,
       imageUrl: 'file:///yogurt.jpg',
+      unitCalories: null,
+      unitBasis: null,
     });
     expect(stats.mostUsedFoods[0]).toMatchObject({ name: 'Yogurt', count: 2 });
     expect(stats.topCalorieSources[1].imageUrl).toBeNull();
+  });
+
+  it('reports calories per logged basis and keeps snacks below meals', async () => {
+    const { service, repo } = setup();
+    repo.findDayLogsInRange.mockResolvedValue([
+      {
+        date: '2026-10-30',
+        caloriesTotal: 1200,
+        proteinTotal: 0,
+        carbsTotal: 0,
+        fatTotal: 0,
+        fiberTotal: 0,
+        targetsSnapshot: CURRENT_TARGETS,
+        mealEntries: [
+          {
+            mealType: 'SNACK_1',
+            items: [
+              item('Bar', 200, null, { servings: 1 }),
+              item('Bar', 400, null, { servings: 2 }),
+              item('Bar', 200, null, { servings: 1 }),
+            ],
+          },
+          {
+            mealType: 'LUNCH',
+            items: [
+              item('Rice', 260, null, { grams: 200 }),
+              item('Bowl', 500, null, { savedMealId: 'm1' }),
+            ],
+          },
+        ],
+      },
+    ]);
+
+    const stats = await service.getStatistics('u1', '7D', '2026-10-31');
+
+    expect(stats.topCalorieSources[0]).toMatchObject({
+      name: 'Bar',
+      totalCalories: 800,
+      count: 3,
+      unitCalories: 200,
+      unitBasis: 'serving',
+    });
+    expect(
+      stats.topCalorieSources.find((food) => food.name === 'Rice'),
+    ).toMatchObject({ unitCalories: 130, unitBasis: '100g' });
+    expect(
+      stats.topCalorieSources.find((food) => food.name === 'Bowl'),
+    ).toMatchObject({ unitCalories: 500, unitBasis: 'meal' });
+    expect(stats.mostUsedFoods.map((food) => food.name)).toEqual([
+      'Rice',
+      'Bowl',
+      'Bar',
+    ]);
+    expect(stats.mostUsedFoods[2].isSnack).toBe(true);
   });
 
   it('does not count a day record without items as logged', async () => {

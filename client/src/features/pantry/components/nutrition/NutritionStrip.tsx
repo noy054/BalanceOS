@@ -111,7 +111,7 @@ const useStyles = () =>
       macroValue: {
         ...typography.callout,
         ...typography.number,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
       },
       macroLabel: {

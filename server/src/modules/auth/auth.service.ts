@@ -11,8 +11,8 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { UsersService } from '../users/users.service';
-import { FoodImagesService } from '../food-images/food-images.service';
 import { ProgressService } from '../progress/progress.service';
+import { FoodImagesService } from '../food-images/food-images.service';
 import { AuthRepository } from './auth.repository';
 import { MailerService } from './mailer.service';
 import { RegisterDto } from './dto/register.dto';
@@ -27,14 +27,10 @@ import { AuthResponse, TokenPair } from './types/auth.types';
 import { UserPublic } from '../users/types/user.types';
 
 const BCRYPT_ROUNDS = 10;
-const ACCESS_TOKEN_EXPIRES_SECONDS = 15 * 60; // 15 minutes
-const REFRESH_TOKEN_EXPIRES_SECONDS = 7 * 24 * 60 * 60; // 7 days
+const ACCESS_TOKEN_EXPIRES_SECONDS = 15 * 60;
+const REFRESH_TOKEN_EXPIRES_SECONDS = 7 * 24 * 60 * 60;
 const REFRESH_TOKEN_EXPIRES_DAYS = 7;
 const RESET_TOKEN_EXPIRES_MINUTES = 60;
-const TIMING_GUARD_HASH = bcrypt.hashSync(
-  crypto.randomBytes(16).toString('hex'),
-  BCRYPT_ROUNDS,
-);
 
 @Injectable()
 export class AuthService {
@@ -48,27 +44,34 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly progressService: ProgressService,
-    private readonly foodImages: FoodImagesService,
+    private readonly foodImagesService: FoodImagesService,
   ) {}
 
   private getGoogleClient(): OAuth2Client {
     const clientId = this.configService.get<string>('GOOGLE_CLIENT_ID');
+
     if (!clientId || clientId.startsWith('replace-')) {
       throw new BadRequestException(
         'Google login is not configured on this server.',
       );
     }
+
     if (!this.googleClient) {
       this.googleClient = new OAuth2Client(clientId);
     }
+
     return this.googleClient;
   }
 
   async register(dto: RegisterDto): Promise<AuthResponse> {
     const existing = await this.usersService.findByEmail(dto.email);
-    if (existing) throw new BadRequestException('Email already in use');
+
+    if (existing) {
+      throw new BadRequestException('Email already in use');
+    }
 
     const passwordHash = await bcrypt.hash(dto.password, BCRYPT_ROUNDS);
+
     const user = await this.usersService.create({
       email: dto.email,
       fullName: dto.fullName,
@@ -77,35 +80,51 @@ export class AuthService {
     });
 
     const tokens = await this.issueTokenPair(user.id);
-    return { ...tokens, user: this.usersService.toPublic(user) };
+
+    return {
+      ...tokens,
+      user: this.usersService.toPublic(user),
+    };
   }
 
   async login(dto: LoginDto): Promise<AuthResponse> {
     const user = await this.usersService.findByEmail(dto.email);
+
     if (!user || !user.passwordHash) {
-      await bcrypt.compare(dto.password, TIMING_GUARD_HASH);
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const passwordValid = await bcrypt.compare(dto.password, user.passwordHash);
-    if (!passwordValid) throw new UnauthorizedException('Invalid credentials');
+
+    if (!passwordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
     const tokens = await this.issueTokenPair(user.id);
-    return { ...tokens, user: this.usersService.toPublic(user) };
+
+    return {
+      ...tokens,
+      user: this.usersService.toPublic(user),
+    };
   }
 
   async googleLogin(dto: GoogleLoginDto): Promise<AuthResponse> {
     const client = this.getGoogleClient();
-    const clientId = this.configService.get<string>('GOOGLE_CLIENT_ID')!;
+
+    const clientId = this.configService.getOrThrow<string>('GOOGLE_CLIENT_ID');
 
     const ticket = await client
-      .verifyIdToken({ idToken: dto.idToken, audience: clientId })
+      .verifyIdToken({
+        idToken: dto.idToken,
+        audience: clientId,
+      })
       .catch(() => {
         throw new UnauthorizedException('Invalid Google token');
       });
 
     const payload = ticket.getPayload();
-    if (!payload?.sub || !payload.email) {
+
+    if (!payload?.sub || !payload.email || !payload.email_verified) {
       throw new UnauthorizedException('Invalid Google token payload');
     }
 
@@ -113,6 +132,7 @@ export class AuthService {
 
     if (!user) {
       user = await this.usersService.findByEmail(payload.email);
+
       if (user) {
         throw new ConflictException(
           'An account with this email already exists. Please log in with email and password.',
@@ -128,7 +148,11 @@ export class AuthService {
     }
 
     const tokens = await this.issueTokenPair(user.id);
-    return { ...tokens, user: this.usersService.toPublic(user) };
+
+    return {
+      ...tokens,
+      user: this.usersService.toPublic(user),
+    };
   }
 
   async refresh(dto: RefreshDto): Promise<TokenPair> {
@@ -141,10 +165,16 @@ export class AuthService {
     }
 
     const stored = await this.authRepository.findRefreshToken(dto.refreshToken);
-    const consumed =
-      stored !== null &&
-      (await this.authRepository.consumeRefreshToken(dto.refreshToken));
-    if (!stored || !consumed) {
+
+    if (!stored || stored.expiresAt <= new Date()) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+
+    const consumed = await this.authRepository.consumeRefreshToken(
+      dto.refreshToken,
+    );
+
+    if (!consumed) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
@@ -162,46 +192,67 @@ export class AuthService {
     if (!dto.fullName) {
       return this.usersService.getPublicUser(userId);
     }
-    return this.usersService.updateProfile(userId, { fullName: dto.fullName });
+
+    return this.usersService.updateProfile(userId, {
+      fullName: dto.fullName,
+    });
   }
 
   async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
     const user = await this.usersService.findById(userId);
-    if (!user) throw new UnauthorizedException();
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
     if (!user.passwordHash) {
       throw new BadRequestException(
         'Password change is not available for this account type.',
       );
     }
+
     const valid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
-    if (!valid) throw new BadRequestException('Current password is incorrect.');
+
+    if (!valid) {
+      throw new BadRequestException('Current password is incorrect.');
+    }
+
     const newHash = await bcrypt.hash(dto.newPassword, BCRYPT_ROUNDS);
+
     await this.usersService.updatePasswordHash(userId, newHash);
-    await this.authRepository.deleteAllUserRefreshTokens(
-      userId,
-      dto.refreshToken,
-    );
   }
 
   async deleteAccount(userId: string): Promise<void> {
     await this.usersService.deleteById(userId);
-    await this.progressService.removeUserFiles(userId);
-    await this.foodImages.removeUserFiles(userId);
+    const removals = await Promise.allSettled([
+      this.progressService.removeUserFiles(userId),
+      this.foodImagesService.removeUserFiles(userId),
+    ]);
+    for (const removal of removals) {
+      if (removal.status === 'rejected') {
+        this.logger.error(
+          'Failed to remove files of a deleted account',
+          removal.reason,
+        );
+      }
+    }
   }
 
   async forgotPassword(dto: ForgotPasswordDto): Promise<void> {
     const user = await this.usersService.findByEmail(dto.email);
 
-    // Always respond with success to avoid revealing whether the email exists
-    if (!user || !user.passwordHash) return;
+    if (!user || !user.passwordHash) {
+      return;
+    }
 
     const rawToken = crypto.randomBytes(32).toString('hex');
+
     const expiresAt = new Date(
       Date.now() + RESET_TOKEN_EXPIRES_MINUTES * 60 * 1000,
     );
+
     await this.authRepository.saveResetToken(user.id, rawToken, expiresAt);
 
-    // Fire-and-forget: email failures must not surface to the client
     void this.mailerService
       .sendPasswordResetEmail(user.email, rawToken)
       .catch((err: unknown) =>
@@ -211,13 +262,17 @@ export class AuthService {
 
   async resetPassword(dto: ResetPasswordDto): Promise<void> {
     const record = await this.authRepository.findResetToken(dto.token);
+
     if (!record || record.expiresAt < new Date()) {
       throw new BadRequestException('Invalid or expired reset token.');
     }
 
     const newHash = await bcrypt.hash(dto.newPassword, BCRYPT_ROUNDS);
+
     await this.usersService.updatePasswordHash(record.userId, newHash);
+
     await this.authRepository.deleteResetToken(dto.token);
+
     await this.authRepository.deleteAllUserRefreshTokens(record.userId);
   }
 
@@ -225,10 +280,16 @@ export class AuthService {
     void this.authRepository.deleteExpiredTokens();
 
     const user = await this.usersService.findById(userId);
-    if (!user) throw new UnauthorizedException();
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
 
     const accessToken = this.jwtService.sign(
-      { sub: userId, email: user.email },
+      {
+        sub: userId,
+        email: user.email,
+      },
       {
         secret: this.configService.getOrThrow<string>('JWT_ACCESS_SECRET'),
         expiresIn: ACCESS_TOKEN_EXPIRES_SECONDS,
@@ -236,14 +297,18 @@ export class AuthService {
     );
 
     const refreshToken = this.jwtService.sign(
-      { sub: userId, jti: crypto.randomUUID() },
+      {
+        sub: userId,
+      },
       {
         secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
         expiresIn: REFRESH_TOKEN_EXPIRES_SECONDS,
+        jwtid: crypto.randomUUID(),
       },
     );
 
     const refreshExpiresAt = new Date();
+
     refreshExpiresAt.setDate(
       refreshExpiresAt.getDate() + REFRESH_TOKEN_EXPIRES_DAYS,
     );
@@ -254,6 +319,9 @@ export class AuthService {
       refreshExpiresAt,
     );
 
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }

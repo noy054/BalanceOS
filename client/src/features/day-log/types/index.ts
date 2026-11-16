@@ -60,6 +60,7 @@ export type MealItemSummary = MealMacros & {
   grams?: number | null;
   servings?: number | null;
   milliliters?: number | null;
+  portions?: number | null;
   serving?: MealItemServing | null;
   components?: MealItemComponent[];
 };
@@ -74,6 +75,7 @@ export type MealItemComponent = MealMacros & {
   servings: number | null;
   milliliters: number | null;
   serving: MealItemServing | null;
+  baseMacros?: (MealMacros & { amount: number }) | null;
 };
 
 export type UpdateMealItemComponentPayload = {
@@ -89,6 +91,7 @@ export type UpdateMealItemPayload = {
   grams?: number;
   servings?: number;
   milliliters?: number;
+  portions?: number;
 };
 
 export type MealEntrySummary = MealMacros & {
@@ -118,6 +121,7 @@ export type AddMealItemPayload = {
   milliliters?: number;
   pantryRecipeId?: string;
   servings?: number;
+  portions?: number;
   savedMealId?: string;
 };
 
@@ -130,4 +134,5 @@ export type CopyTarget = {
 export type CopyToDaysPayload = {
   target: CopyTarget;
   targetDates: string[];
+  today?: string;
 };

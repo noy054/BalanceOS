@@ -1,5 +1,5 @@
 import { apiClient } from '../../../shared/api/client';
-import { NutritionSettings, UpdateSettingsPayload, UpdateProfilePayload, ChangePasswordPayload } from '../types';
+import { NutritionSettings, UpdateSettingsPayload, UpdateProfilePayload, ChangePasswordPayload, TargetSuggestion, MarketsResponse } from '../types';
 import { UserPublic } from '../../auth/types';
 import { tokenStorage } from '../../../shared/api/tokenStorage';
 
@@ -11,6 +11,14 @@ const DELETE_ACCOUNT_URL = '/auth/account';
 export const settingsApi = {
   getSettings(): Promise<NutritionSettings> {
     return apiClient.get<NutritionSettings>(NUTRITION_SETTINGS_URL).then((r) => r.data);
+  },
+
+  getMarkets(): Promise<MarketsResponse> {
+    return apiClient.get<MarketsResponse>(`${NUTRITION_SETTINGS_URL}/markets`).then((r) => r.data);
+  },
+
+  getTargetSuggestion(): Promise<TargetSuggestion> {
+    return apiClient.get<TargetSuggestion>(`${NUTRITION_SETTINGS_URL}/target-suggestion`).then((r) => r.data);
   },
 
   updateSettings(payload: UpdateSettingsPayload): Promise<NutritionSettings> {

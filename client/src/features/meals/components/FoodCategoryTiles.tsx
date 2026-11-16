@@ -33,6 +33,7 @@ export function FoodCategoryTiles({ categories, value, onChange }: Props) {
 
   return (
     <ScrollView
+      keyboardShouldPersistTaps="handled"
       ref={scrollRef}
       horizontal
       showsHorizontalScrollIndicator={false}
@@ -81,7 +82,7 @@ const useStyles = () =>
         gap: 3,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: withAlpha(colors.gloss, 0.07),
+        borderColor: withAlpha(colors.tint, 0.07),
         backgroundColor: colors.glassCard,
       },
       tileSelected: {
@@ -89,7 +90,7 @@ const useStyles = () =>
         backgroundColor: withAlpha(colors.calorieGauge, 0.08),
       },
       label: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         fontSize: 11,
         lineHeight: 14,
       },

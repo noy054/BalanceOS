@@ -3,7 +3,7 @@ import { tokenStorage } from "./tokenStorage";
 import { router } from "expo-router";
 import { useAuthStore } from "../../features/auth/hooks/useAuthStore";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://192.168.1.187:3000";
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? (__DEV__ ? "http://192.168.1.187:3000" : "");
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,

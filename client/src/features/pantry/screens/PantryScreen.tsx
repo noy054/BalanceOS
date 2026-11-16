@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { Alert, FlatList, View } from "react-native";
+import { Alert, FlatList, Platform, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { confirmAction } from "../../../shared/helpers/confirm";
 import { router } from "expo-router";
@@ -33,7 +33,6 @@ import { PANTRY_SORTS, PantrySort, sortPantryItems } from "../helpers/pantrySort
 import {
   PantryChipFocus,
   matchesCategory,
-  matchesFocus,
 } from "../helpers/pantryFilters";
 import { PantryFilterBar } from "../components/shared/PantryFilterBar";
 
@@ -59,7 +58,8 @@ export function PantryScreen() {
   const [focus, setFocus] = useState<PantryChipFocus>("all");
   const [category, setCategory] = useState<ProductCategory | null>(null);
   const [categoryOpen, setCategoryOpen] = useState(false);
-  const isFiltering = search.trim().length > 0 || focus !== "all" || category !== null;
+  const isFiltering =
+    search.trim().length > 0 || (activeTab === "products" && focus !== "all") || category !== null;
 
   const productListRef = useRef<FlatList>(null);
   const { highlightedProductId, clearHighlight } = usePantryHighlight();
@@ -96,21 +96,19 @@ export function PantryScreen() {
     const matched = recipes.filter(
       (recipe) =>
         (!search.trim() || matchesAllTerms(search, recipe.name)) &&
-        matchesFocus(recipe.totals, focus) &&
         matchesCategory(recipe.mealTypes, category),
     );
     return sortPantryItems(matched, sort, i18n.language);
-  }, [recipes, search, sort, focus, category, i18n.language]);
+  }, [recipes, search, sort, category, i18n.language]);
 
   const filteredMeals = useMemo(() => {
     const matched = savedMeals.filter(
       (meal) =>
         (!search.trim() || matchesAllTerms(search, meal.name)) &&
-        matchesFocus(meal.totals, focus) &&
         matchesCategory(meal.mealTypes, category),
     );
     return sortPantryItems(matched, sort, i18n.language);
-  }, [savedMeals, search, sort, focus, category, i18n.language]);
+  }, [savedMeals, search, sort, category, i18n.language]);
 
   useEffect(() => {
     if (!highlightedProductId || !hasMoreProducts || isLoadingMoreProducts) return;
@@ -171,9 +169,32 @@ export function PantryScreen() {
     router.push("/(app)/pantry/barcode");
   }
 
-  function handleProductPress(product: PantryProduct) {
+  const handleProductPress = useCallback((product: PantryProduct) => {
     router.push(`/(app)/pantry/${product.id}`);
-  }
+  }, []);
+  const handleProductEdit = useCallback(
+    (product: PantryProduct) =>
+      router.push({ pathname: "/(app)/pantry/add-product", params: { id: product.id, mode: "edit" } }),
+    [],
+  );
+  const handleProductMore = useCallback(
+    (product: PantryProduct) => setMenuTarget({ kind: "product", item: product }),
+    [],
+  );
+  const renderProduct = useCallback(
+    ({ item }: { item: PantryProduct }) => (
+      <ProductCard
+        product={item}
+        onPress={handleProductPress}
+        onCalculate={setCalculatorProduct}
+        onEdit={handleProductEdit}
+        onMore={handleProductMore}
+        isHighlighted={item.id === highlightedProductId}
+        showBrand={isAmbiguousName(duplicateNames, item.name)}
+      />
+    ),
+    [handleProductPress, handleProductEdit, handleProductMore, highlightedProductId, duplicateNames],
+  );
 
   async function handleDeleteProduct(product: PantryProduct) {
     const warning = await recipeWarning(product.id);
@@ -362,6 +383,11 @@ export function PantryScreen() {
         <PantryFilterBar
           focus={focus}
           onFocusChange={setFocus}
+          showMacroFilters={activeTab === "products"}
+          onClearFilters={() => {
+            setFocus("all");
+            setCategory(null);
+          }}
           category={category}
           onCategoryPress={() => setCategoryOpen(true)}
           sort={sort}
@@ -383,17 +409,12 @@ export function PantryScreen() {
                 ref={productListRef}
                 data={products}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <ProductCard
-                    product={item}
-                    onPress={handleProductPress}
-                    onCalculate={setCalculatorProduct}
-                    onEdit={(product) => openEditor({ kind: "product", item: product })}
-                    onMore={(product) => setMenuTarget({ kind: "product", item: product })}
-                    isHighlighted={item.id === highlightedProductId}
-                    showBrand={isAmbiguousName(duplicateNames, item.name)}
-                  />
-                )}
+                renderItem={renderProduct}
+                initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                updateCellsBatchingPeriod={40}
+                windowSize={9}
+                removeClippedSubviews={Platform.OS === "android"}
                 ItemSeparatorComponent={ListGap}
                 contentContainerStyle={styles.listContent}
                 keyboardShouldPersistTaps="handled"

@@ -11,12 +11,12 @@ export function BrandMark({ size = 22, style }: Props) {
   const styles = useStyles();
 
   return (
-    <View style={[styles.row, style]} accessible accessibilityLabel="BalanceOS">
-      <Text style={[styles.balance, { fontSize: size, lineHeight: Math.round(size * 1.2) }]}>
-        Balance
+    <View style={[styles.row, style]} accessible accessibilityLabel="TrackMode">
+      <Text style={[styles.track, { fontSize: size, lineHeight: Math.round(size * 1.2) }]}>
+        Track
       </Text>
-      <Text style={[styles.os, { fontSize: size, lineHeight: Math.round(size * 1.2) }]}>
-        OS
+      <Text style={[styles.mode, { fontSize: size, lineHeight: Math.round(size * 1.2) }]}>
+        Mode
       </Text>
     </View>
   );
@@ -29,13 +29,13 @@ const useStyles = () =>
         flexDirection: "row",
         alignItems: "baseline",
       },
-      balance: {
-        fontFamily: fonts.bold,
+      track: {
+        fontFamily: fonts.semibold,
         letterSpacing: -0.4,
         color: colors.textPrimary,
       },
-      os: {
-        fontFamily: fonts.bold,
+      mode: {
+        fontFamily: fonts.semibold,
         letterSpacing: -0.4,
         color: colors.accent,
       },

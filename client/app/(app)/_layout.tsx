@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppTheme } from '../../src/shared/theme';
 import { BottomTabBar } from '../../src/shared/components/BottomTabBar';
 import { NutritionDisplayProvider } from '../../src/features/settings/components/NutritionDisplayProvider';
+import { CalorieToneSync } from '../../src/features/day-log/components/CalorieToneSync';
 
 type TabId = 'home' | 'pantry' | 'statistics' | 'settings';
 
@@ -24,6 +25,7 @@ export default function AppLayout() {
 
   return (
     <NutritionDisplayProvider>
+      <CalorieToneSync />
       <View
         style={[
           styles.root,

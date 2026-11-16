@@ -27,7 +27,7 @@ export const useDraftRowStyles = () =>
 
       name: {
         ...typography.callout,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
       },
 
@@ -58,7 +58,7 @@ export const useDraftRowStyles = () =>
         paddingHorizontal: spacing.xs,
         ...typography.callout,
         ...typography.number,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
         textAlign: "center",
       },

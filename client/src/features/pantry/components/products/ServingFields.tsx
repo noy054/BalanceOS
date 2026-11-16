@@ -1,10 +1,18 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
 
 import { FormInput } from "../../../../shared/components/FormInput";
 import { useDirection } from "../../../../shared/hooks/useDirection";
-import { fonts, radius, spacing, typography, useThemedStyles } from "../../../../shared/theme";
+import {
+  fonts,
+  radius,
+  spacing,
+  typography,
+  useAppTheme,
+  useThemedStyles,
+} from "../../../../shared/theme";
 import { ServingFormState } from "../../helpers/productForm";
 import { parsePositiveNumber } from "../../helpers/savedMealDraft";
 import { useServingFormat } from "../../hooks/useServingFormat";
@@ -15,6 +23,10 @@ import {
   ServingUnitKey,
   servingUnitKey,
 } from "../../helpers/servingReferences";
+import {
+  estimateServing,
+  ServingAmountField,
+} from "../../helpers/servingEstimates";
 
 type Props = {
   serving: ServingFormState;
@@ -25,10 +37,24 @@ type Props = {
   volumeRequired?: boolean;
   quantityError?: string;
   references?: ServingReference[];
+  productName?: string;
+  basis?: ServingAmountField;
+  lockedBasis?: ServingAmountField | null;
   onChange: (key: keyof ServingFormState, value: string) => void;
   onLinkedFocus?: () => void;
   onLinkedBlur?: (key: "quantity" | "grams" | "milliliters") => void;
-  onApplyReference?: (quantity: number, grams: number) => void;
+  onApplyReference?: (
+    quantity: number,
+    amount: number,
+    field: ServingAmountField,
+  ) => void;
+  onPatch?: (patch: Partial<ServingFormState>) => void;
+};
+
+type AutoAmount = {
+  field: ServingAmountField;
+  perUnit: number;
+  source: "product" | "volume" | "food";
 };
 
 export function ServingFields({
@@ -40,47 +66,138 @@ export function ServingFields({
   volumeRequired = false,
   quantityError,
   references = [],
+  productName = "",
+  basis = "grams",
+  lockedBasis = null,
   onChange,
   onLinkedFocus,
   onLinkedBlur,
   onApplyReference,
+  onPatch,
 }: Props) {
   const { t } = useTranslation("pantry");
   const styles = useStyles();
+  const { colors } = useAppTheme();
   const dir = useDirection();
   const format = useServingFormat();
 
   const grams = parsePositiveNumber(serving.grams);
   const quantity = parsePositiveNumber(serving.quantity);
   const unit = serving.unit.trim();
-  const [autoGrams, setAutoGrams] = useState<string | null>(null);
+  const [auto, setAuto] = useState<AutoAmount | null>(null);
+  const [noEstimate, setNoEstimate] = useState(false);
   const cookedSuffix = t("serving.cookedSuffix");
   const isCooked = unit.endsWith(cookedSuffix);
   const baseUnit = isCooked ? unit.slice(0, -cookedSuffix.length).trim() : unit;
-  const weightAutoFilled = autoGrams !== null && serving.grams === autoGrams;
+  const autoAmount = auto ? parsePositiveNumber(serving[auto.field]) : null;
+  const autoFilled =
+    auto !== null &&
+    autoAmount !== null &&
+    quantity !== null &&
+    Math.abs(autoAmount - quantity * auto.perUnit) < 0.051;
+
+  function fill(
+    nextQuantity: number,
+    amount: number,
+    field: ServingAmountField,
+  ) {
+    if (onApplyReference) {
+      onApplyReference(nextQuantity, amount, field);
+    } else {
+      onChange("quantity", formatAmount(nextQuantity));
+      onChange(field, formatAmount(amount));
+    }
+  }
 
   function applyUnit(nextBase: string, cooked: boolean) {
-    const label = cooked ? `${nextBase || t("serving.units.portion")} ${cookedSuffix}` : nextBase;
-    onChange("unit", label);
+    const label = cooked
+      ? `${nextBase || t("serving.units.portion")} ${cookedSuffix}`
+      : nextBase;
     const key = cooked ? null : servingUnitKey(nextBase);
-    const reference = key ? references.find((entry) => entry.unitKey === key) : undefined;
+    const reference = key
+      ? references.find((entry) => entry.unitKey === key)
+      : undefined;
+    const estimate =
+      key && !reference ? estimateServing(key, basis, productName) : null;
+    setNoEstimate(Boolean(key) && !reference && !estimate);
+
     if (reference) {
-      const nextGrams = formatAmount(reference.grams);
-      if (onApplyReference) {
-        onApplyReference(reference.quantity, reference.grams);
-      } else {
-        onChange("quantity", formatAmount(reference.quantity));
-        onChange("grams", nextGrams);
-      }
-      setAutoGrams(nextGrams);
+      onChange("unit", label);
+      fill(reference.quantity, reference.grams, "grams");
+      setAuto({
+        field: "grams",
+        perUnit: reference.grams / reference.quantity,
+        source: "product",
+      });
       return;
     }
-    if (weightAutoFilled) {
-      onChange("grams", "");
-      onChange("quantity", "1");
+    if (estimate) {
+      const count = quantity ?? 1;
+      onChange("unit", label);
+      fill(
+        count,
+        Math.round(count * estimate.perUnit * 10) / 10,
+        estimate.field,
+      );
+      setAuto({
+        field: estimate.field,
+        perUnit: estimate.perUnit,
+        source: estimate.source,
+      });
+      return;
     }
-    setAutoGrams(null);
+    if (autoFilled && auto) {
+      const patch: Partial<ServingFormState> = {
+        unit: label,
+        quantity: "1",
+        [auto.field]: "",
+      };
+      if (onPatch) onPatch(patch);
+      else
+        Object.entries(patch).forEach(([field, value]) =>
+          onChange(field as keyof ServingFormState, value),
+        );
+    } else {
+      onChange("unit", label);
+    }
+    setAuto(null);
   }
+
+  function changeQuantity(value: string) {
+    onChange("quantity", value);
+    const next = parsePositiveNumber(value);
+    if (!perServingMode && autoFilled && auto && next) {
+      onChange(
+        auto.field,
+        formatAmount(Math.round(next * auto.perUnit * 10) / 10),
+      );
+    }
+  }
+
+  const estimateLabel =
+    autoFilled && auto
+      ? auto.source === "product"
+        ? t("serving.weightFromProduct")
+        : t(
+            auto.source === "volume"
+              ? "serving.estimateVolume"
+              : "serving.estimateFood",
+            {
+              amount: formatAmount(auto.perUnit),
+              measure:
+                auto.field === "milliliters"
+                  ? t("serving.millilitersShort")
+                  : t("serving.gramsShort"),
+              unit: baseUnit,
+            },
+          )
+      : noEstimate && unit
+        ? t(
+            basis === "milliliters"
+              ? "serving.noEstimateVolume"
+              : "serving.noEstimate",
+          )
+        : null;
 
   function chipLabel(key: ServingUnitKey) {
     return t(`serving.units.${key}`);
@@ -98,7 +215,9 @@ export function ServingFields({
   return (
     <View style={styles.root}>
       <Text style={[styles.title, dir.text]}>
-        {perServingMode ? t("serving.sectionTitle") : t("serving.sectionTitleOptional")}
+        {perServingMode
+          ? t("serving.sectionTitle")
+          : t("serving.sectionTitleOptional")}
       </Text>
 
       <View style={[styles.grid, dir.row]}>
@@ -107,7 +226,7 @@ export function ServingFields({
             key={`serving-quantity-${language}`}
             label={t("serving.quantityLabel")}
             value={serving.quantity}
-            onChangeText={(value) => onChange("quantity", value)}
+            onChangeText={changeQuantity}
             onFocus={onLinkedFocus}
             onBlur={() => onLinkedBlur?.("quantity")}
             error={quantityError}
@@ -136,9 +255,15 @@ export function ServingFields({
               onPress={() => applyUnit(active ? "" : label, isCooked)}
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
-              style={({ pressed }) => [styles.chip, active && styles.chipActive, pressed && styles.chipPressed]}
+              style={({ pressed }) => [
+                styles.chip,
+                active && styles.chipActive,
+                pressed && styles.chipPressed,
+              ]}
             >
-              <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
+              <Text style={[styles.chipText, active && styles.chipTextActive]}>
+                {label}
+              </Text>
             </Pressable>
           );
         })}
@@ -146,36 +271,74 @@ export function ServingFields({
           onPress={() => applyUnit(baseUnit, !isCooked)}
           accessibilityRole="button"
           accessibilityState={{ selected: isCooked }}
-          style={({ pressed }) => [styles.chip, styles.cookedChip, isCooked && styles.chipActive, pressed && styles.chipPressed]}
+          style={({ pressed }) => [
+            styles.chip,
+            styles.cookedChip,
+            isCooked && styles.chipActive,
+            pressed && styles.chipPressed,
+          ]}
         >
-          <Text style={[styles.chipText, isCooked && styles.chipTextActive]}>{t("serving.cooked")}</Text>
+          <Text style={[styles.chipText, isCooked && styles.chipTextActive]}>
+            {t("serving.cooked")}
+          </Text>
         </Pressable>
       </View>
 
-      <FormInput
-        key={`serving-weight-${language}`}
-        label={perServingMode ? t("serving.weightLabelServing") : t("serving.weightLabelOptional")}
-        value={serving.grams}
-        onChangeText={(value) => onChange("grams", value)}
-        onFocus={onLinkedFocus}
-        onBlur={() => onLinkedBlur?.("grams")}
-        error={weightError}
-        keyboardType="decimal-pad"
-      />
+      {lockedBasis === "milliliters" ? null : (
+        <FormInput
+          key={`serving-weight-${language}`}
+          label={
+            perServingMode
+              ? t("serving.weightLabelServing")
+              : t("serving.weightLabelOptional")
+          }
+          value={serving.grams}
+          onChangeText={(value) => onChange("grams", value)}
+          onFocus={onLinkedFocus}
+          onBlur={() => onLinkedBlur?.("grams")}
+          error={weightError}
+          keyboardType="decimal-pad"
+        />
+      )}
 
-      <FormInput
-        key={`serving-volume-${language}`}
-        label={volumeRequired ? t("serving.volumeLabelRequired") : t("serving.volumeLabelOptional")}
-        value={serving.milliliters}
-        onChangeText={(value) => onChange("milliliters", value)}
-        onFocus={onLinkedFocus}
-        onBlur={() => onLinkedBlur?.("milliliters")}
-        error={volumeError}
-        keyboardType="decimal-pad"
-      />
+      {lockedBasis === "grams" ? null : (
+        <FormInput
+          key={`serving-volume-${language}`}
+          label={
+            volumeRequired
+              ? t("serving.volumeLabelRequired")
+              : t("serving.volumeLabelOptional")
+          }
+          value={serving.milliliters}
+          onChangeText={(value) => onChange("milliliters", value)}
+          onFocus={onLinkedFocus}
+          onBlur={() => onLinkedBlur?.("milliliters")}
+          error={volumeError}
+          keyboardType="decimal-pad"
+        />
+      )}
 
-      {weightAutoFilled ? (
-        <Text style={[styles.hint, styles.hintSource, dir.text]}>{t("serving.weightFromProduct")}</Text>
+      {estimateLabel ? (
+        <View
+          style={[styles.estimate, dir.row]}
+          accessibilityLiveRegion="polite"
+        >
+          <MaterialCommunityIcons
+            name={autoFilled ? "information-outline" : "pencil-outline"}
+            size={14}
+            color={autoFilled ? colors.accent : colors.textSecondary}
+          />
+          <Text
+            style={[
+              styles.hint,
+              autoFilled ? styles.hintSource : styles.hintManual,
+              styles.estimateText,
+              dir.text,
+            ]}
+          >
+            {estimateLabel}
+          </Text>
+        </View>
       ) : null}
       {isCooked ? (
         <Text style={[styles.hint, dir.text]}>{t("serving.cookedHint")}</Text>
@@ -202,7 +365,7 @@ const useStyles = () =>
       },
       title: {
         ...typography.footnote,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textSecondary,
         marginBottom: spacing.xs,
       },
@@ -240,6 +403,16 @@ const useStyles = () =>
       hintSource: {
         color: colors.accent,
       },
+      hintManual: {
+        color: colors.textSecondary,
+      },
+      estimate: {
+        alignItems: "flex-start",
+        gap: 6,
+      },
+      estimateText: {
+        flex: 1,
+      },
       chipPressed: {
         opacity: 0.75,
       },
@@ -248,7 +421,7 @@ const useStyles = () =>
         color: colors.textSecondary,
       },
       chipTextActive: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.onAccent,
       },
       hint: {

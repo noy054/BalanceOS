@@ -141,6 +141,12 @@ export function useAddRecipeForm(
     );
   }
 
+  function setIngredientWeight(key: string, weightG: string) {
+    setIngredients((prev) =>
+      prev.map((ingredient) => (ingredient.key === key ? { ...ingredient, weightG } : ingredient)),
+    );
+  }
+
   function setAmount(key: string, amount: string, unit: AmountUnit) {
     setIngredients((prev) =>
       prev.map((ingredient) =>
@@ -224,6 +230,7 @@ export function useAddRecipeForm(
     addIngredients,
     updateAmount,
     setAmount,
+    setIngredientWeight,
     toggleUnit,
     removeIngredient,
     moveIngredient,

@@ -8,6 +8,7 @@ import { router } from "expo-router";
 
 import { StateView } from "../../../shared/components/ui/StateView";
 import { Button } from "../../../shared/components/ui/Button";
+import { AppBackdrop } from "../../../shared/components/ui/AppBackdrop";
 import { IconButton } from "../../../shared/components/ui/IconButton";
 import { useDirection } from "../../../shared/hooks/useDirection";
 import { useAppTheme } from "../../../shared/theme";
@@ -36,7 +37,7 @@ export function SuperProductDetailScreen({ id }: Props) {
   const dir = useDirection();
   const { width } = useWindowDimensions();
   const { data: item, isLoading, isError, refetch } = useCatalogItem(id);
-  const { add, remove, pendingIds } = useSuperPantry();
+  const { add, remove, pick, isPicking, pendingIds } = useSuperPantry();
   const [open, setOpen] = useState<SectionKey | null>(null);
 
   function goBack() {
@@ -82,7 +83,9 @@ export function SuperProductDetailScreen({ id }: Props) {
 
   return (
     <View style={styles.root}>
+      <AppBackdrop />
       <ScrollView
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 120 }]}
         showsVerticalScrollIndicator={false}
       >
@@ -192,7 +195,15 @@ export function SuperProductDetailScreen({ id }: Props) {
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
-        {item.pantryProductId ? (
+        {isPicking ? (
+          <Button
+            label={t("super.pickForMeal")}
+            icon="plus"
+            fullWidth
+            loading={isPending}
+            onPress={() => void pick(item)}
+          />
+        ) : item.pantryProductId ? (
           <View style={[styles.footerRow, dir.row]}>
             <View style={styles.footerAction}>
               <Button

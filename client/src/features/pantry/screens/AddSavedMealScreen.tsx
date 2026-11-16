@@ -1,8 +1,14 @@
+import { AppBackdrop } from "../../../shared/components/ui/AppBackdrop";
 import { useCallback, useRef, useState } from "react";
-import { Alert, KeyboardAvoidingView, ScrollView } from "react-native";
+import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
+import {
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 
 import { ScreenHeader } from "../../../shared/components/ScreenHeader";
 import { Button } from "../../../shared/components/ui/Button";
@@ -18,9 +24,7 @@ import {
 import { usePantryProducts } from "../hooks/usePantry";
 import { useRecipes } from "../hooks/useRecipes";
 import { useAddSavedMealForm } from "../hooks/useAddSavedMealForm";
-import {
-  RecipePickerModal,
-} from "../components/products/ProductPickerModal";
+import { RecipePickerModal } from "../components/products/ProductPickerModal";
 import { NutritionTotals } from "../components/nutrition/NutritionTotals";
 import { SavedMealBasicInfoCard } from "../components/saved-meals/SavedMealBasicInfoCard";
 import { SavedMealItemsCard } from "../components/saved-meals/SavedMealItemsCard";
@@ -34,6 +38,7 @@ import { PantryProduct } from "../types";
 import { useIngredientEdit } from "../ingredientEditStore";
 import { useStyles } from "./styles/FormScreen.styles";
 import { keyboardBehavior } from "../../../shared/components/ui/KeyboardAvoider";
+import { useReturnToSection } from "../../../shared/hooks/useReturnToSection";
 
 type RouteParams = {
   id?: string;
@@ -63,26 +68,45 @@ export function AddSavedMealScreen() {
     useSavedMeal(savedMealId);
 
   const [pickerSearch, setPickerSearch] = useState("");
-  const { data: products = [], loadMore: loadMoreProducts } = usePantryProducts(pickerSearch);
+  const { data: products = [], loadMore: loadMoreProducts } =
+    usePantryProducts(pickerSearch);
   const { data: recipes = [] } = useRecipes();
 
   const form = useAddSavedMealForm(existingMeal, isEditMode);
-  const [incomingProduct, setIncomingProduct] = useState<PantryProduct | null>(null);
+  const [incomingProduct, setIncomingProduct] = useState<PantryProduct | null>(
+    null,
+  );
   const clearIncomingProduct = useCallback(() => setIncomingProduct(null), []);
   const openProductPickerRef = useRef(form.setProductPickerVisible);
   openProductPickerRef.current = form.setProductPickerVisible;
+  const itemsSection = useReturnToSection(
+    form.productPickerVisible || form.recipePickerVisible,
+  );
   const setAmountRef = useRef(form.setAmount);
   setAmountRef.current = form.setAmount;
 
-  function openProductEditor(key: string, productId: string, amount: string, unit: AmountUnit) {
+  function openProductEditor(
+    key: string,
+    productId: string,
+    amount: string,
+    unit: AmountUnit,
+  ) {
     router.push({
       pathname: "/(app)/pantry/[id]",
-      params: { id: productId, ingredientOf: "savedMeal", ingredientKey: key, parentName: form.name.trim(), amount, unit },
+      params: {
+        id: productId,
+        ingredientOf: "savedMeal",
+        ingredientKey: key,
+        parentName: form.name.trim(),
+        amount,
+        unit,
+      },
     });
   }
 
   function handleEditItem(item: SavedMealDraftItem) {
-    if (item.kind === "product") openProductEditor(item.key, item.product.id, item.grams, item.unit);
+    if (item.kind === "product")
+      openProductEditor(item.key, item.product.id, item.grams, item.unit);
   }
 
   useFocusEffect(
@@ -98,7 +122,8 @@ export function AddSavedMealScreen() {
   );
 
   const [isPreparing, setIsPreparing] = useState(false);
-  const isSaving = isPreparing || createSavedMeal.isPending || updateSavedMeal.isPending;
+  const isSaving =
+    isPreparing || createSavedMeal.isPending || updateSavedMeal.isPending;
 
   async function handleSave() {
     if (isSaving) return;
@@ -120,7 +145,10 @@ export function AddSavedMealScreen() {
 
     setIsPreparing(true);
     try {
-      const image = await prepareFoodImage(form.imageUrl.trim(), existingMeal?.imageUrl);
+      const image = await prepareFoodImage(
+        form.imageUrl.trim(),
+        existingMeal?.imageUrl,
+      );
       const payload = {
         name: form.name.trim(),
         imageUrl: image || (isEditMode ? null : undefined),
@@ -160,90 +188,94 @@ export function AddSavedMealScreen() {
 
   return (
     <FormToneProvider tone="glass">
-    <SafeAreaView style={styles.root} edges={["top"]}>
-      <ScreenHeader title={title} />
+      <SafeAreaView style={styles.root} edges={["top"]}>
+        <AppBackdrop />
+        <ScreenHeader title={title} />
 
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={keyboardBehavior}
-      >
-        <ScrollView
-          style={styles.flex}
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="interactive"
-          scrollEnabled={!dragging}
-          showsVerticalScrollIndicator={false}
-        >
-          <FormImageHeader
-            imageUrl={form.imageUrl}
-            fallbackIcon={FOOD_ICONS.savedMeal}
-            onChangeImage={form.setImageUrl}
-            onRemoveImage={() => form.setImageUrl("")}
-          />
+        <KeyboardAvoidingView style={styles.flex} behavior={keyboardBehavior}>
+          <ScrollView
+            ref={itemsSection.scrollRef}
+            style={styles.flex}
+            contentContainerStyle={styles.content}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            scrollEnabled={!dragging}
+            showsVerticalScrollIndicator={false}
+          >
+            <FormImageHeader
+              imageUrl={form.imageUrl}
+              fallbackIcon={FOOD_ICONS.savedMeal}
+              onChangeImage={form.setImageUrl}
+              onRemoveImage={() => form.setImageUrl("")}
+            />
 
-          <SavedMealBasicInfoCard
-            name={form.name}
-            nameError={form.nameError}
-            mealTypes={form.mealTypes}
-            isRTL={isRTL}
-            onChangeName={form.handleNameChange}
-            onToggleMealType={form.toggleMealType}
-          />
+            <SavedMealBasicInfoCard
+              name={form.name}
+              nameError={form.nameError}
+              mealTypes={form.mealTypes}
+              isRTL={isRTL}
+              onChangeName={form.handleNameChange}
+              onToggleMealType={form.toggleMealType}
+            />
 
-          <SavedMealItemsCard
-            items={form.items}
-            isRTL={isRTL}
-            onOpenProduct={handleEditItem}
-            onChangeAmount={form.updateAmount}
-            onToggleUnit={form.toggleUnit}
-            onRemoveItem={form.removeItem}
-            onAddProduct={() => form.setProductPickerVisible(true)}
-            onAddRecipe={() => form.setRecipePickerVisible(true)}
-            onMoveItem={form.moveItem}
-            onDragActiveChange={handleDragActive}
-          />
+            <View onLayout={itemsSection.onSectionLayout}>
+              <SavedMealItemsCard
+                items={form.items}
+                isRTL={isRTL}
+                onOpenProduct={handleEditItem}
+                onChangeAmount={form.updateAmount}
+                onToggleUnit={form.toggleUnit}
+                onRemoveItem={form.removeItem}
+                onAddProduct={() => form.setProductPickerVisible(true)}
+                onAddRecipe={() => form.setRecipePickerVisible(true)}
+                onMoveItem={form.moveItem}
+                onDragActiveChange={handleDragActive}
+              />
+            </View>
 
-          {form.hasTotals ? (
-            <NutritionTotals totals={form.liveTotals} label={t("form.mealTotal")} />
-          ) : null}
-        </ScrollView>
+            {form.hasTotals ? (
+              <NutritionTotals
+                totals={form.liveTotals}
+                label={t("form.mealTotal")}
+              />
+            ) : null}
+          </ScrollView>
 
-        <StickyFooter>
-          <Button
-            label={
-              isSaving
-                ? t("savedMeal.saving")
-                : isEditMode
-                  ? t("savedMeal.updateButton")
-                  : t("savedMeal.saveButton")
-            }
-            onPress={handleSave}
-            loading={isSaving}
-            fullWidth
-          />
-        </StickyFooter>
-      </KeyboardAvoidingView>
+          <StickyFooter>
+            <Button
+              label={
+                isSaving
+                  ? t("savedMeal.saving")
+                  : isEditMode
+                    ? t("savedMeal.updateButton")
+                    : t("savedMeal.saveButton")
+              }
+              onPress={handleSave}
+              loading={isSaving}
+              fullWidth
+            />
+          </StickyFooter>
+        </KeyboardAvoidingView>
 
-      <RecipeIngredientPickerModal
-        visible={form.productPickerVisible}
-        products={products}
-        target="savedMeal"
-        onEndReached={loadMoreProducts}
-        onSearchChange={setPickerSearch}
-        onAdd={form.addProducts}
-        onClose={() => form.setProductPickerVisible(false)}
-        incoming={incomingProduct}
-        onIncomingHandled={clearIncomingProduct}
-      />
+        <RecipeIngredientPickerModal
+          visible={form.productPickerVisible}
+          products={products}
+          target="savedMeal"
+          onEndReached={loadMoreProducts}
+          onSearchChange={setPickerSearch}
+          onAdd={form.addProducts}
+          onClose={() => form.setProductPickerVisible(false)}
+          incoming={incomingProduct}
+          onIncomingHandled={clearIncomingProduct}
+        />
 
-      <RecipePickerModal
-        visible={form.recipePickerVisible}
-        recipes={recipes}
-        onSelect={form.addRecipe}
-        onClose={() => form.setRecipePickerVisible(false)}
-      />
-    </SafeAreaView>
+        <RecipePickerModal
+          visible={form.recipePickerVisible}
+          recipes={recipes}
+          onSelect={form.addRecipe}
+          onClose={() => form.setRecipePickerVisible(false)}
+        />
+      </SafeAreaView>
     </FormToneProvider>
   );
 }

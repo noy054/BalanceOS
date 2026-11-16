@@ -8,7 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { SkipThrottle, Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -68,6 +68,7 @@ export class AuthController {
     return this.authService.resetPassword(dto);
   }
 
+  @SkipThrottle()
   @UseGuards(JwtGuard)
   @Post('logout')
   async logout(@CurrentUser() user: UserPublic): Promise<{ message: string }> {
@@ -75,6 +76,7 @@ export class AuthController {
     return { message: 'Logged out' };
   }
 
+  @SkipThrottle()
   @UseGuards(JwtGuard)
   @Get('me')
   me(@CurrentUser() user: UserPublic): UserPublic {

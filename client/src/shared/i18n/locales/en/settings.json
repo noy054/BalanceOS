@@ -36,9 +36,11 @@
   "languageDisplay": {
     "screenTitle": "Language & Display",
     "row": "Language & Display",
-    "rowSubtitle": "Language, theme",
+    "rowSubtitle": "Language, shopping region, theme",
     "languageSection": "Language",
     "themeSection": "Theme",
+    "marketSection": "Shopping region",
+    "marketNote": "Used to look up barcodes and product names for the stores you shop in. It is separate from the app language.",
     "rtlNote": "RTL layout changes take effect after app restart"
   },
   "language": {
@@ -187,7 +189,7 @@
   },
   "about": {
     "screenTitle": "About",
-    "row": "About BalanceOS",
+    "row": "About TrackMode",
     "rowSubtitlePrefix": "Version",
     "versionValue": "1.0.0",
     "versionLabel": "App Version",
@@ -648,5 +650,36 @@
     "empty": "Nothing was logged in this period.",
     "footnote": "Averages use logged days only. Targets are the ones saved for each day.",
     "wholeMeal": "Whole meal"
+  },
+  "targetSuggestion": {
+    "title": "Update your targets?",
+    "titleCalculated": "Calculated targets",
+    "basisAverage": "Based on the average of {{count}} weigh-ins ({{weight}} kg) from {{from}} to {{to}}.",
+    "basisLatest": "Based on your latest weigh-in ({{weight}} kg).",
+    "basisProfile": "Based on your profile weight ({{weight}} kg).",
+    "nutrient": "Daily target",
+    "current": "Current",
+    "suggested": "Suggested",
+    "notSet": "—",
+    "method": "Mifflin–St Jeor: BMR {{bmr}} kcal × activity {{factor}} = {{tdee}} kcal per day, then adjusted for your goal. Protein {{protein}} g/kg, fat 25% of calories, carbs fill the rest.",
+    "apply": "Apply new targets",
+    "keep": "Keep current targets",
+    "applied": "Targets updated",
+    "applyFailed": "Couldn’t update your targets. Try again.",
+    "missingTitle": "Complete your profile to calculate targets",
+    "missingBody": "Still needed: {{fields}}.",
+    "completeProfile": "Complete profile",
+    "applyCalculated": "Apply calculated targets",
+    "upToDate": "Your targets match the calculation.",
+    "fields": {
+      "gender": "gender",
+      "birthDate": "birth date",
+      "heightCm": "height",
+      "weightKg": "weight",
+      "trainingDaysPerWeek": "training days",
+      "goalType": "goal"
+    },
+    "kcalUnit": "kcal",
+    "gramsUnit": "g"
   }
 }

@@ -73,6 +73,32 @@ export class ProductCatalogRepository {
     });
   }
 
+  findLookupSettings(userId: string) {
+    return this.prisma.userNutritionSettings.findUnique({
+      where: { userId },
+      select: { marketCode: true, preferredLanguage: true },
+    });
+  }
+
+  async findMarketReference(normalizedBarcode: string, marketCode: string) {
+    const references = await this.prisma.marketProductReference.findMany({
+      where: { normalizedBarcode },
+      select: {
+        marketCode: true,
+        name: true,
+        brand: true,
+        packageQuantity: true,
+        packageUnit: true,
+        originCountry: true,
+      },
+    });
+    return (
+      references.find((reference) => reference.marketCode === marketCode) ??
+      references[0] ??
+      null
+    );
+  }
+
   createFromExternal(
     data: NormalizedProductData,
     userId: string,
@@ -83,6 +109,8 @@ export class ProductCatalogRepository {
         normalizedBarcode: data.normalizedBarcode,
         name: data.name,
         brand: data.brand,
+        countryCode: data.countryCode ?? null,
+        languageCode: data.languageCode ?? null,
         ...classifyCatalogItem(null, data.externalRawData, data.name),
         imageUrl: data.imageUrl,
         caloriesPer100g: data.caloriesPer100g,

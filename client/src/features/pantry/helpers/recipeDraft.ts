@@ -15,6 +15,7 @@ export type RecipeIngredientDraft = {
   product: RecipeDraftProduct;
   grams: string;
   unit: AmountUnit;
+  weightG?: string;
 };
 
 export type RecipeIngredientSelectionInput = {
@@ -48,6 +49,7 @@ export function createRecipeDraftFromRecipeItem(
     product: item.product,
     grams: stored.amount,
     unit: stored.unit,
+    weightG: item.weightG != null ? String(item.weightG) : "",
   };
 }
 
@@ -100,8 +102,12 @@ export function buildRecipePayloadItems(
       quantity: parseFloat(ingredient.grams.replace(",", ".")),
     }))
     .filter(({ quantity }) => !Number.isNaN(quantity) && quantity > 0)
-    .map(({ ingredient, quantity }) => ({
-      productId: ingredient.product.id,
-      ...toAmountPayload(ingredient.product, quantity, ingredient.unit),
-    }));
+    .map(({ ingredient, quantity }) => {
+      const weight = parseFloat((ingredient.weightG ?? "").replace(",", "."));
+      return {
+        productId: ingredient.product.id,
+        ...toAmountPayload(ingredient.product, quantity, ingredient.unit),
+        weightG: Number.isFinite(weight) && weight > 0 && ingredient.unit !== "grams" ? weight : null,
+      };
+    });
 }

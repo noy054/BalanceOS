@@ -9,6 +9,7 @@ export interface NormalizedProductData {
   barcode: string;
   normalizedBarcode: string;
   name: string;
+  nameMissing?: boolean;
   brand: string | null;
   imageUrl: string | null;
   caloriesPer100g: number | null;
@@ -25,6 +26,8 @@ export interface NormalizedProductData {
   servingSizeText?: string | null;
   source: ProductSource;
   verificationStatus: ProductVerificationStatus;
+  countryCode?: string | null;
+  languageCode?: string | null;
   externalProvider: string;
   externalId: string | null;
   externalRawData: Record<string, unknown>;

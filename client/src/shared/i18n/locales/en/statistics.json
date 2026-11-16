@@ -86,9 +86,20 @@
     "mostUsed": "Most frequent foods",
     "usedTimes": "Logged ×{{count}}",
     "avgCalories": "{{value}} kcal avg",
-    "topCaloriesSub": "Total calories from each food in this range",
-    "mostUsedSub": "How often each food was logged in this range",
-    "times": "times"
+    "topCaloriesSub": "Ranked by total calories in this range · calories per unit",
+    "mostUsedSub": "How often each food was logged · snacks last",
+    "times": "times",
+    "loggedCount_one": "Logged once",
+    "loggedCount_other": "Logged {{count}} times",
+    "perBasis": {
+      "serving": "kcal per serving",
+      "100g": "kcal per 100 g",
+      "100ml": "kcal per 100 ml",
+      "meal": "kcal per meal",
+      "entry": "kcal per entry"
+    },
+    "mealTag": "Meal",
+    "snackTag": "Snack"
   },
   "empty": {
     "title": "No data yet",
@@ -124,7 +135,14 @@
     "average": "Average",
     "target": "Target",
     "difference": "Difference",
-    "proteinGapSub": "Daily average against the protein target"
+    "proteinGapSub": "Daily average against the protein target",
+    "summaryTitle": "Summary",
+    "perDay": "per day",
+    "total": "cumulative",
+    "over": "above target",
+    "under": "below target",
+    "onTarget": "on target",
+    "unitLabel": "in {{unit}}"
   },
   "insights": {
     "title": "Insights",

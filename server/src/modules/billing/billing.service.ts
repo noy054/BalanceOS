@@ -165,8 +165,8 @@ export class BillingService {
       currency: BILLING_CURRENCY,
       description:
         purpose === 'SUBSCRIBE'
-          ? `BalanceOS Pro (${(interval ?? 'MONTHLY').toLowerCase()})`
-          : 'BalanceOS payment method',
+          ? `TrackMode Pro (${(interval ?? 'MONTHLY').toLowerCase()})`
+          : 'TrackMode payment method',
       customer: {
         id: user.id,
         name: user.fullName ?? user.email,

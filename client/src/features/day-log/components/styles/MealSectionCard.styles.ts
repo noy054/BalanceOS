@@ -28,6 +28,8 @@ export const useStyles = () =>
 
       mealLabel: {
         ...typography.headline,
+        fontSize: 16,
+        lineHeight: 22,
         flexShrink: 1,
         color: colors.textPrimary,
       },
@@ -49,7 +51,7 @@ export const useStyles = () =>
       itemCard: {
         borderRadius: 18,
         borderWidth: 1,
-        borderColor: withAlpha(colors.gloss, 0.08),
+        borderColor: withAlpha(colors.tint, 0.08),
         backgroundColor: colors.glassCard,
         backgroundImage: `linear-gradient(160deg, ${withAlpha(colors.gloss, 0.07)} 0%, ${withAlpha(colors.gloss, 0.015)} 55%, ${withAlpha(
           colors.calorieGauge,
@@ -97,7 +99,7 @@ export const useStyles = () =>
       },
 
       thumbIcon: {
-        backgroundColor: withAlpha(colors.gloss, 0.05),
+        backgroundColor: withAlpha(colors.tint, 0.05),
       },
 
       itemText: {
@@ -107,14 +109,10 @@ export const useStyles = () =>
       },
 
       itemName: {
-        fontFamily: fonts.bold,
+        fontFamily: fonts.medium,
         fontSize: 15,
         lineHeight: 20,
         color: colors.textPrimary,
-      },
-
-      detailDivider: {
-        color: colors.textMuted,
       },
 
       itemDetail: {
@@ -124,23 +122,9 @@ export const useStyles = () =>
         color: colors.textSecondary,
       },
 
-      calorieBlock: {
-        alignItems: "baseline",
-        gap: 3,
-      },
-
-      itemCalories: {
-        ...typography.number,
-        fontFamily: fonts.bold,
-        fontSize: 18,
-        lineHeight: 23,
-        color: colors.textPrimary,
-      },
-
-      itemCaloriesUnit: {
-        fontFamily: fonts.regular,
-        fontSize: 13,
-        color: colors.textSecondary,
+      itemValues: {
+        alignSelf: "stretch",
+        marginTop: 1,
       },
 
       chevron: {
@@ -149,7 +133,7 @@ export const useStyles = () =>
         borderRadius: 15,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: withAlpha(colors.gloss, 0.07),
+        backgroundColor: withAlpha(colors.tint, 0.07),
       },
 
       expanded: {
@@ -168,10 +152,6 @@ export const useStyles = () =>
         ...typography.caption,
         color: colors.textMuted,
       },
-
-
-
-
       pressed: {
         opacity: states.pressedOpacity,
       },

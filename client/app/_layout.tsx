@@ -8,13 +8,10 @@ import {
   Heebo_400Regular,
   Heebo_500Medium,
   Heebo_600SemiBold,
-  Heebo_700Bold,
 } from "@expo-google-fonts/heebo";
 import {
   Rubik_500Medium,
   Rubik_600SemiBold,
-  Rubik_700Bold,
-  Rubik_800ExtraBold,
 } from "@expo-google-fonts/rubik";
 
 import "../src/shared/i18n/i18n";
@@ -79,11 +76,8 @@ export default function RootLayout() {
     Heebo_400Regular,
     Heebo_500Medium,
     Heebo_600SemiBold,
-    Heebo_700Bold,
     Rubik_500Medium,
     Rubik_600SemiBold,
-    Rubik_700Bold,
-    Rubik_800ExtraBold,
   });
   const [initialThemeMode, setInitialThemeMode] = useState<AppThemeMode>("DARK");
 

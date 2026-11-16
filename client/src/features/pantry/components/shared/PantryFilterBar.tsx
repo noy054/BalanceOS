@@ -13,6 +13,8 @@ import { PantrySort } from "../../helpers/pantrySort";
 type Props = {
   focus: PantryChipFocus;
   onFocusChange: (focus: PantryChipFocus) => void;
+  showMacroFilters: boolean;
+  onClearFilters: () => void;
   category: ProductCategory | null;
   onCategoryPress: () => void;
   sort: PantrySort;
@@ -20,7 +22,7 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-export function PantryFilterBar({ focus, onFocusChange, category, onCategoryPress, sort, onSortPress, style }: Props) {
+export function PantryFilterBar({ focus, onFocusChange, showMacroFilters, onClearFilters, category, onCategoryPress, sort, onSortPress, style }: Props) {
   const { t } = useTranslation("pantry");
   const { colors } = useAppTheme();
   const styles = useStyles();
@@ -30,6 +32,7 @@ export function PantryFilterBar({ focus, onFocusChange, category, onCategoryPres
   return (
     <View style={[styles.root, dir.row, style]}>
       <ScrollView
+        keyboardShouldPersistTaps="handled"
         ref={scrollRef}
         horizontal
         onContentSizeChange={() => {
@@ -39,14 +42,21 @@ export function PantryFilterBar({ focus, onFocusChange, category, onCategoryPres
         style={styles.scroll}
         contentContainerStyle={[styles.chips, dir.row]}
       >
-        {PANTRY_CHIP_FOCUSES.map((option) => (
-          <Chip
-            key={option}
-            label={t(`filters.${option}`)}
-            selected={focus === option}
-            onPress={() => onFocusChange(option)}
-          />
-        ))}
+        <Chip
+          label={t("filters.all")}
+          selected={(!showMacroFilters || focus === "all") && category === null}
+          onPress={onClearFilters}
+        />
+        {showMacroFilters
+          ? PANTRY_CHIP_FOCUSES.filter((option) => option !== "all").map((option) => (
+              <Chip
+                key={option}
+                label={t(`filters.${option}`)}
+                selected={focus === option}
+                onPress={() => onFocusChange(focus === option ? "all" : option)}
+              />
+            ))
+          : null}
         <Chip
           label={category ? t(`filters.categoryNames.${category}`) : t("filters.categories")}
           selected={category !== null}
@@ -131,7 +141,7 @@ const useStyles = () =>
         borderColor: colors.accentFill,
       },
       chipLabel: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         fontSize: 13.5,
         lineHeight: 18,
       },

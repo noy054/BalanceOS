@@ -70,7 +70,7 @@ const useStyles = () =>
         paddingHorizontal: 6,
         borderRadius: 21,
         borderWidth: 1,
-        borderColor: withAlpha(colors.gloss, 0.09),
+        borderColor: withAlpha(colors.tint, 0.09),
         backgroundColor: colors.glassCard,
         backgroundImage: `linear-gradient(180deg, ${withAlpha(colors.gloss, 0.06)} 0%, ${withAlpha(colors.gloss, 0)} 70%)`,
       },
@@ -85,7 +85,7 @@ const useStyles = () =>
       label: {
         flex: 1,
         textAlign: "center",
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         fontSize: 15,
         color: colors.textPrimary,
       },

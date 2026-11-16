@@ -139,7 +139,7 @@ const useStyles = () =>
       },
       kind: {
         ...typography.caption,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
       },
       title: {
         ...typography.bodyStrong,

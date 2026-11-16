@@ -386,7 +386,7 @@ async function searchRetail(engine, input) {
         try {
           const html = await engine.request(sourceUrl, {
             headers: {
-              'User-Agent': 'BalanceOSCatalog/3.0',
+              'User-Agent': 'TrackModeCatalog/3.0',
               Accept: 'text/html',
             },
           });

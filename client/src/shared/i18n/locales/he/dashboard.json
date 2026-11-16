@@ -46,18 +46,18 @@
     "settings": "הגדרות"
   },
   "meals": {
-    "calUnit": "קל'",
     "proUnit": "גר' חלב'",
     "andMore": "+{{count}} עוד",
     "addItemToMeal": "הוספת פריט לארוחה",
     "itemActionsA11y": "פעולות עבור {{name}}",
+    "copyMealA11y": "העתקת {{meal}} לימים אחרים",
     "copyToMoreDays": "העתקה לימים אחרים",
+    "moveToMeal": "העברה לארוחה אחרת",
     "sectionTitle": "ארוחות",
     "summary": "{{calories}} קק״ל · {{protein}} ג׳ חלבון",
     "emptyMeal": "עדיין לא נרשם דבר",
     "addToMeal": "הוספה ל{{meal}}",
     "itemCalories": "{{calories}} קק״ל",
-    "itemProtein": "{{protein}} ג׳ חלבון",
     "itemsCount_one": "פריט אחד",
     "itemsCount_two": "{{count}} פריטים",
     "itemsCount_many": "{{count}} פריטים",
@@ -67,20 +67,30 @@
     "expandItemHint": "הצגת הכמות לעריכה",
     "collapseItemHint": "הסתרת עריכת הכמות",
     "savedMeal": "ארוחה שמורה",
-    "recipeServings_one": "מנה אחת",
-    "recipeServings_two": "{{count}} מנות",
-    "recipeServings_many": "{{count}} מנות",
-    "recipeServings_other": "{{count}} מנות",
+    "recipeServings_one": "{{count}} × מתכון שלם",
+    "recipeServings_two": "{{count}} × מתכון שלם",
+    "recipeServings_many": "{{count}} × מתכון שלם",
+    "recipeServings_other": "{{count}} × מתכון שלם",
     "copyItemA11y": "העתקת {{name}} לימים אחרים",
     "collapseAll": "כיווץ הכול",
-    "expandAll": "הרחבת הכול"
+    "expandAll": "הרחבת הכול",
+    "recipePortions_one": "מנה אחת",
+    "recipePortions_two": "{{count}} מנות",
+    "recipePortions_many": "{{count}} מנות",
+    "recipePortions_other": "{{count}} מנות",
+    "recipeGrams": "{{value}} ג׳"
+  },
+  "moveMeal": {
+    "title": "העברה לארוחה אחרת",
+    "subtitle": "לאיזו ארוחה לשייך את {{name}} היום?",
+    "optionA11y": "העברת {{name}} ל{{meal}}",
+    "success": "{{name}} הועבר ל{{meal}}",
+    "failed": "לא הצלחנו להעביר את הפריט. נסו שוב."
   },
   "copyMeal": {
     "title": "העתקה לימים אחרים",
-    "subtitle": "בחר ימים להעתקת הארוחה",
-    "confirm_one": "העתק ליום {{count}}",
-    "confirm_other": "העתק ל-{{count}} ימים",
-    "cancel": "ביטול",
+    "confirm_one": "העתקה ליום אחד",
+    "confirm_other": "העתקה ל־{{count}} ימים",
     "today": "היום",
     "weekdays": {
       "0": "ראשון",
@@ -91,7 +101,12 @@
       "5": "שישי",
       "6": "שבת"
     },
-    "subtitleItem": "בחר ימים להעתקת {{name}}"
+    "subtitleItem": "בחר ימים להעתקת {{name}}",
+    "subtitleMeal": "בחירת הימים להעתקת {{name}}",
+    "selectDays": "בחירת ימים",
+    "success": "הועתק ל־{{days}}",
+    "failed": "ההעתקה לא הצליחה. כדאי לבדוק את החיבור ולנסות שוב.",
+    "retry": "ניסיון נוסף"
   },
   "addItem": {
     "title": "הוסף ל{{mealType}}",
@@ -135,6 +150,10 @@
     "searchSavedMeals": "חיפוש ארוחות שמורות",
     "selectionPreview": "{{grams}} גרם · {{calories}} קק״ל",
     "createProduct": "יצירת מוצר",
+    "createManually": "יצירה ידנית",
+    "createManuallyA11y": "יצירת מוצר ידנית וחזרה לארוחה הזו",
+    "browseSuper": "עיון בסופר",
+    "browseSuperA11y": "עיון בקטלוג הסופר ובחירת מוצר לארוחה הזו",
     "deselect": "ביטול הבחירה של {{name}}",
     "tapToDeselect": "הקישו שוב כדי לבטל את הבחירה",
     "decrease": "הפחתת כמות",
@@ -167,7 +186,12 @@
       "fat": "שומנים",
       "vegetables": "ירקות",
       "fruits": "פירות"
-    }
+    },
+    "unitPortions": "מנות",
+    "unitCookedGrams": "גרם",
+    "unitBatch": "מתכון שלם",
+    "leftoverPick": "מנה קטנה · {{grams}}",
+    "portionsLabel": "מנות"
   },
   "header": {
     "today": "היום"
@@ -226,7 +250,8 @@
     "invalidAmount": "יש להזין כמות גדולה מאפס",
     "saveFailed": "לא ניתן היה לשמור את השינוי. נסו שוב.",
     "fixedAmount": "ארוחה שמורה נרשמת כיחידה אחת. כדי לשנות אותה, הסירו אותה והוסיפו את הארוחה מחדש.",
-    "nutritionA11y": "{{calories}} קק״ל, חלבון {{protein}} ג׳, פחמימות {{carbs}} ג׳, שומן {{fat}} ג׳"
+    "nutritionA11y": "{{calories}} קק״ל, חלבון {{protein}} ג׳, פחמימות {{carbs}} ג׳, שומן {{fat}} ג׳",
+    "unitPortions": "מנות"
   },
   "ingredients": {
     "servingsA11y": "{{name}}: {{count}} מנות",
@@ -236,7 +261,8 @@
     "increase": "הגדלת {{name}}",
     "amountA11y": "כמות {{name}} ב{{unit}}",
     "saveFailed": "לא ניתן היה לשמור את השינוי. הכמות הקודמת שוחזרה.",
-    "dayOnly": "השינויים חלים על היום הזה בלבד"
+    "dayOnly": "השינויים חלים על היום הזה בלבד",
+    "totalAmount": "משקל כולל"
   },
   "greeting": {
     "morning": "בוקר טוב",

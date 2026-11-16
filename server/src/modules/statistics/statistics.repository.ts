@@ -53,6 +53,10 @@ export class StatisticsRepository {
             items: {
               select: {
                 macrosSnapshot: true,
+                grams: true,
+                servings: true,
+                milliliters: true,
+                savedMealId: true,
                 pantryProduct: { select: { imageUrl: true } },
                 pantryRecipe: { select: { imageUrl: true } },
                 savedMeal: { select: { imageUrl: true } },

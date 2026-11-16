@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "BalanceOS",
+    "name": "TrackMode",
     "slug": "balanceos",
     "scheme": "balanceos",
     "version": "1.0.0",
@@ -8,15 +8,23 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "userInterfaceStyle": "automatic",
-      "bundleIdentifier": "com.balanceos.mobile"
+      "bundleIdentifier": "com.peakmode.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDevelopmentRegion": "he",
+        "CFBundleAllowMixedLocalizations": true
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
-      "package": "com.balanceos.mobile",
+      "package": "com.peakmode.app",
       "userInterfaceStyle": "automatic",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0B140F",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -24,9 +32,15 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.CAMERA"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.SYSTEM_ALERT_WINDOW"
       ]
     },
     "web": {
+      "name": "TrackMode",
+      "shortName": "TrackMode",
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
@@ -43,7 +57,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow BalanceOS to use your camera to scan barcodes and take product photos.",
+          "cameraPermission": "TrackMode uses the camera to scan product barcodes and take photos of foods you add.",
           "microphonePermission": false,
           "recordAudioAndroid": false
         }
@@ -52,14 +66,27 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow BalanceOS to access your photos to add product images.",
-          "cameraPermission": "Allow BalanceOS to use your camera to scan barcodes and take product photos.",
+          "photosPermission": "TrackMode uses your photos only when you choose an image for a food or a progress entry.",
+          "cameraPermission": "TrackMode uses the camera to scan product barcodes and take photos of foods you add.",
           "microphonePermission": false
         }
       ],
       "expo-sharing",
       "expo-image",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#0B140F",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#0B140F"
+          }
+        }
+      ]
     ],
     "extra": {
       "router": {
@@ -70,6 +97,10 @@
       "eas": {
         "projectId": "4e5aa1fd-ddac-40f3-9224-9d8e7474c54e"
       }
+    },
+    "locales": {
+      "he": "./store/locales/he.json",
+      "en": "./store/locales/en.json"
     }
   }
 }

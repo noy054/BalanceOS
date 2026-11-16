@@ -60,7 +60,7 @@ const useStyles = () =>
       badgeText: {
         ...typography.footnote,
         ...typography.number,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
       },
       text: {

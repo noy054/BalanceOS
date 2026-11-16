@@ -21,13 +21,21 @@ import {
 import {
   NutritionCalculatorService,
   MacrosSnapshot,
+  BaseMacros,
+  isBaseMacros,
+  baseMacrosOf,
 } from '../nutrition-calculator/nutrition-calculator.service';
 import { AddMealItemDto } from './dto/add-meal-item.dto';
 import { CopyMealDto } from './dto/copy-meal.dto';
-import { UpdateMealItemDto } from './dto/update-meal-item.dto';
+import { MoveMealItemDto } from './dto/move-meal-item.dto';
+import {
+  UpdateMealComponentDto,
+  UpdateMealItemDto,
+} from './dto/update-meal-item.dto';
 import {
   daysBetween,
   isWithinFutureLimit,
+  resolveClientToday,
   utcDayKey,
 } from '../../common/date/day-key';
 
@@ -40,6 +48,7 @@ type CopyableMealItem = {
   grams: number | null;
   servings: number | null;
   milliliters: number | null;
+  portions?: number | null;
   macrosSnapshot: unknown;
   components?: StoredComponent[];
 };
@@ -56,7 +65,21 @@ type StoredComponent = {
   milliliters: number | null;
   serving: unknown;
   macrosSnapshot: unknown;
+  baseMacros?: unknown;
 };
+
+function componentBaseMacros(
+  component: Pick<
+    StoredComponent,
+    'grams' | 'servings' | 'milliliters' | 'macrosSnapshot' | 'baseMacros'
+  >,
+): BaseMacros | null {
+  if (isBaseMacros(component.baseMacros)) return component.baseMacros;
+  return baseMacrosOf(
+    component.macrosSnapshot as MacrosSnapshot,
+    component.grams ?? component.milliliters ?? component.servings,
+  );
+}
 
 function toComponentInput(component: StoredComponent): MealComponentInput {
   return {
@@ -70,6 +93,7 @@ function toComponentInput(component: StoredComponent): MealComponentInput {
     milliliters: component.milliliters,
     serving: (component.serving as Record<string, unknown> | null) ?? null,
     macrosSnapshot: component.macrosSnapshot as MacrosSnapshot,
+    baseMacros: componentBaseMacros(component),
   };
 }
 
@@ -92,6 +116,7 @@ function toComponentResponse(component: StoredComponent) {
     carbs: snapshot.carbs ?? 0,
     fat: snapshot.fat ?? 0,
     fiber: snapshot.fiber ?? 0,
+    baseMacros: componentBaseMacros(component),
   };
 }
 
@@ -99,8 +124,9 @@ function storedAmount(entry: {
   grams: number | null;
   servings: number | null;
   milliliters: number | null;
+  portions?: number | null;
 }) {
-  return entry.grams ?? entry.milliliters ?? entry.servings;
+  return entry.grams ?? entry.milliliters ?? entry.portions ?? entry.servings;
 }
 
 function pickNextAmount(
@@ -108,6 +134,7 @@ function pickNextAmount(
     grams: number | null;
     servings: number | null;
     milliliters: number | null;
+    portions?: number | null;
   },
   dto: UpdateMealItemDto,
 ) {
@@ -115,27 +142,33 @@ function pickNextAmount(
     ? dto.grams
     : entry.milliliters != null
       ? dto.milliliters
-      : dto.servings;
+      : entry.portions != null
+        ? dto.portions
+        : dto.servings;
 }
 
 function unitMismatchMessage(entry: {
   grams: number | null;
   milliliters: number | null;
+  portions?: number | null;
 }) {
   return entry.grams != null
     ? 'This item is measured in grams'
     : entry.milliliters != null
       ? 'This item is measured in milliliters'
-      : 'This item is measured in servings';
+      : entry.portions != null
+        ? 'This item is measured in portions'
+        : 'This item is measured in servings';
 }
 
 function assertSingleAmount(dto: UpdateMealItemDto) {
   if (
-    [dto.grams, dto.servings, dto.milliliters].filter((value) => value != null)
-      .length !== 1
+    [dto.grams, dto.servings, dto.milliliters, dto.portions].filter(
+      (value) => value != null,
+    ).length !== 1
   ) {
     throw new BadRequestException(
-      'Provide exactly one of grams, milliliters or servings',
+      'Provide exactly one of grams, milliliters, servings or portions',
     );
   }
 }
@@ -147,6 +180,15 @@ function todayDate(): string {
 function assertWritableDate(date: string): void {
   if (!isWithinFutureLimit(date))
     throw new BadRequestException('Date is too far in the future');
+}
+
+function assertCopyTargets(dto: CopyMealDto): void {
+  const today = resolveClientToday(dto.today);
+  for (const date of dto.targetDates) {
+    if (date <= today)
+      throw new BadRequestException('Meals can only be copied to future days');
+    assertWritableDate(date);
+  }
 }
 
 @Injectable()
@@ -195,10 +237,7 @@ export class DayLogsService {
       .map((row) => ({
         date: row.date,
         calories: Math.round(row.caloriesTotal),
-        itemCount: row.mealEntries.reduce(
-          (sum, entry) => sum + entry._count.items,
-          0,
-        ),
+        itemCount: row.itemCount,
       }))
       .filter((day) => day.itemCount > 0);
     return { days };
@@ -224,7 +263,15 @@ export class DayLogsService {
     let snapshot: MacrosSnapshot;
     let components: MealComponentInput[] | undefined;
 
+    let recipeAmount: {
+      servings: number;
+      portions?: number;
+      grams?: number;
+    } | null = null;
+
     if (dto.pantryProductId) {
+      if (dto.portions != null)
+        throw new BadRequestException('Portions apply only to recipes');
       if (
         [dto.grams, dto.servings, dto.milliliters].filter(Boolean).length !== 1
       )
@@ -247,24 +294,45 @@ export class DayLogsService {
         );
       snapshot = productSnapshot;
     } else if (dto.pantryRecipeId) {
-      if (!dto.servings)
-        throw new BadRequestException('servings is required for recipes');
+      if (
+        dto.milliliters != null ||
+        [dto.servings, dto.portions, dto.grams].filter((value) => value != null)
+          .length !== 1
+      )
+        throw new BadRequestException(
+          'Recipes require exactly one of servings, portions or grams',
+        );
       const recipe = await this.repo.findPantryRecipeForUser(
         dto.pantryRecipeId,
         userId,
       );
       if (!recipe) throw new NotFoundException('Recipe not found');
-      const recipeSnapshot = this.calculator.recipeSnapshot(
-        recipe,
-        dto.servings,
-      );
+      const fraction = this.calculator.recipeFraction(recipe, dto);
+      if (fraction === 'noPortions')
+        throw new BadRequestException('This recipe has no portion setup');
+      if (fraction === 'noCookedWeight')
+        throw new BadRequestException(
+          'Enter the cooked weight or every ingredient weight to log this recipe in grams',
+        );
+      if (!(fraction > 0))
+        throw new BadRequestException('The amount must be greater than zero');
+      const recipeSnapshot = this.calculator.recipeSnapshot(recipe, fraction);
       if (!recipeSnapshot)
         throw new BadRequestException(
           'This recipe contains ingredients that cannot be calculated',
         );
       snapshot = recipeSnapshot;
       components =
-        recipeComponents(this.calculator, recipe, dto.servings) ?? undefined;
+        recipeComponents(this.calculator, recipe, fraction) ?? undefined;
+      const weight = this.calculator.recipeWeight(recipe);
+      const grams =
+        dto.grams ??
+        (weight ? Math.round(weight * fraction * 10) / 10 : undefined);
+      recipeAmount = {
+        servings: fraction,
+        ...(dto.portions != null ? { portions: dto.portions } : {}),
+        ...(grams != null ? { grams } : {}),
+      };
     } else {
       const meal = await this.repo.findSavedMealForUser(
         dto.savedMealId!,
@@ -290,18 +358,21 @@ export class DayLogsService {
       dto.mealType,
     );
 
-    const item = await this.repo.createMealItem(mealEntry.id, {
-      pantryProductId: dto.pantryProductId,
-      pantryRecipeId: dto.pantryRecipeId,
-      savedMealId: dto.savedMealId,
-      grams: dto.grams,
-      servings: dto.servings,
-      milliliters: dto.milliliters,
-      macrosSnapshot: snapshot,
-      components,
-    });
-
-    await this.repo.recalculateAndSaveTotals(dayLog.id);
+    const item = await this.repo.createMealItem(
+      mealEntry.id,
+      {
+        pantryProductId: dto.pantryProductId,
+        pantryRecipeId: dto.pantryRecipeId,
+        savedMealId: dto.savedMealId,
+        grams: recipeAmount ? recipeAmount.grams : dto.grams,
+        servings: recipeAmount ? recipeAmount.servings : dto.servings,
+        milliliters: recipeAmount ? undefined : dto.milliliters,
+        portions: recipeAmount?.portions,
+        macrosSnapshot: snapshot,
+        components,
+      },
+      dayLog.id,
+    );
 
     return { id: item.id };
   }
@@ -362,9 +433,10 @@ export class DayLogsService {
                 : item.savedMealId
                   ? ('SAVED_MEAL' as const)
                   : null,
-            grams: item.grams,
+            grams: item.grams ?? this.derivedRecipeGrams(item),
             servings: item.servings,
             milliliters: item.milliliters,
+            portions: item.portions,
             serving: item.pantryProduct ? serving : null,
             calories: s.calories,
             protein: s.protein,
@@ -394,7 +466,7 @@ export class DayLogsService {
     mealEntryId: string,
     dto: CopyMealDto,
   ): Promise<void> {
-    dto.targetDates.forEach(assertWritableDate);
+    assertCopyTargets(dto);
     const entry = await this.repo.findMealEntryWithItems(mealEntryId);
     if (!entry || entry.dayLog.userId !== userId) {
       throw new NotFoundException('Meal entry not found');
@@ -416,7 +488,7 @@ export class DayLogsService {
     itemId: string,
     dto: CopyMealDto,
   ): Promise<void> {
-    dto.targetDates.forEach(assertWritableDate);
+    assertCopyTargets(dto);
     const item = await this.repo.findMealItemForCopy(itemId, userId);
     if (!item) throw new NotFoundException('Meal item not found');
 
@@ -447,20 +519,21 @@ export class DayLogsService {
         mealType,
       );
 
-      for (const item of items) {
-        await this.repo.createMealItem(mealEntry.id, {
+      await this.repo.createMealItems(
+        mealEntry.id,
+        items.map((item) => ({
           pantryProductId: item.pantryProductId ?? undefined,
           pantryRecipeId: item.pantryRecipeId ?? undefined,
           savedMealId: item.savedMealId ?? undefined,
           grams: item.grams ?? undefined,
           servings: item.servings ?? undefined,
           milliliters: item.milliliters ?? undefined,
+          portions: item.portions ?? undefined,
           macrosSnapshot: item.macrosSnapshot as MacrosSnapshot,
           components: item.components?.map(toComponentInput),
-        });
-      }
-
-      await this.repo.recalculateAndSaveTotals(dayLog.id);
+        })),
+        dayLog.id,
+      );
     }
   }
 
@@ -469,8 +542,7 @@ export class DayLogsService {
     if (!entry || entry.dayLog.userId !== userId) {
       throw new NotFoundException('Meal entry not found');
     }
-    await this.repo.deleteMealItemsByEntry(mealEntryId);
-    await this.repo.recalculateAndSaveTotals(entry.dayLog.id);
+    await this.repo.deleteMealItemsByEntry(mealEntryId, entry.dayLog.id);
   }
 
   async updateMealItem(
@@ -479,10 +551,10 @@ export class DayLogsService {
     dto: UpdateMealItemDto,
   ): Promise<{ id: string }> {
     assertSingleAmount(dto);
-    const dayLogId = await this.repo.withMealItemLock(itemId, (db) =>
-      this.scaleMealItem(userId, itemId, dto, db),
-    );
-    await this.repo.recalculateAndSaveTotals(dayLogId);
+    await this.repo.withMealItemLock(itemId, async (db) => {
+      const dayLogId = await this.scaleMealItem(userId, itemId, dto, db);
+      await this.repo.recalculateAndSaveTotals(dayLogId, db);
+    });
     return { id: itemId };
   }
 
@@ -492,8 +564,12 @@ export class DayLogsService {
     dto: UpdateMealItemDto,
     db: Db,
   ): Promise<string> {
-    const item = await this.repo.findMealItemForUpdate(itemId, userId, db);
-    if (!item) throw new NotFoundException('Meal item not found');
+    const found = await this.repo.findMealItemForUpdate(itemId, userId, db);
+    if (!found) throw new NotFoundException('Meal item not found');
+    const item =
+      found.grams == null && dto.grams != null && found.pantryRecipeId
+        ? { ...found, grams: this.derivedRecipeGrams(found) }
+        : found;
 
     const current = storedAmount(item);
     const next = pickNextAmount(item, dto);
@@ -527,14 +603,36 @@ export class DayLogsService {
       itemId,
       {
         grams: item.grams != null ? next : null,
-        servings: item.servings != null ? next : null,
+        servings:
+          item.servings == null
+            ? null
+            : item.grams == null && item.portions == null
+              ? next
+              : item.servings * ratio,
         milliliters: item.milliliters != null ? next : null,
+        portions:
+          item.portions == null
+            ? null
+            : item.grams == null
+              ? next
+              : item.portions * ratio,
         macrosSnapshot: snapshot,
         components,
       },
       db,
     );
     return item.mealEntry.dayLog.id;
+  }
+
+  private derivedRecipeGrams(item: {
+    servings: number | null;
+    pantryRecipe:
+      | Parameters<NutritionCalculatorService['recipeWeight']>[0]
+      | null;
+  }): number | null {
+    if (!item.pantryRecipe || !item.servings) return null;
+    const weight = this.calculator.recipeWeight(item.pantryRecipe);
+    return weight ? Math.round(weight * item.servings * 10) / 10 : null;
   }
 
   async getMealItemComponents(userId: string, itemId: string) {
@@ -596,13 +694,19 @@ export class DayLogsService {
     userId: string,
     itemId: string,
     componentId: string,
-    dto: UpdateMealItemDto,
+    dto: UpdateMealComponentDto,
   ): Promise<{ id: string }> {
     assertSingleAmount(dto);
-    const dayLogId = await this.repo.withMealItemLock(itemId, (db) =>
-      this.scaleComponent(userId, itemId, componentId, dto, db),
-    );
-    await this.repo.recalculateAndSaveTotals(dayLogId);
+    await this.repo.withMealItemLock(itemId, async (db) => {
+      const dayLogId = await this.scaleComponent(
+        userId,
+        itemId,
+        componentId,
+        dto,
+        db,
+      );
+      await this.repo.recalculateAndSaveTotals(dayLogId, db);
+    });
     return { id: componentId };
   }
 
@@ -610,7 +714,7 @@ export class DayLogsService {
     userId: string,
     itemId: string,
     componentId: string,
-    dto: UpdateMealItemDto,
+    dto: UpdateMealComponentDto,
     db: Db,
   ): Promise<string> {
     const component = await this.repo.findComponentForUpdate(
@@ -621,9 +725,9 @@ export class DayLogsService {
     );
     if (!component) throw new NotFoundException('Ingredient not found');
 
-    const current = storedAmount(component);
     const next = pickNextAmount(component, dto);
-    if (current == null || current <= 0) {
+    const base = componentBaseMacros(component);
+    if (!base) {
       throw new BadRequestException('This ingredient amount cannot be changed');
     }
     if (next == null) {
@@ -631,7 +735,10 @@ export class DayLogsService {
     }
 
     const before = component.macrosSnapshot as MacrosSnapshot;
-    const after = this.calculator.scaleSnapshot(before, next / current);
+    const after = this.calculator.scaleSnapshot(
+      { ...base, name: before.name },
+      next / base.amount,
+    );
     const itemSnapshot = applyDelta(
       component.mealItem.macrosSnapshot as MacrosSnapshot,
       before,
@@ -645,11 +752,34 @@ export class DayLogsService {
         servings: component.servings != null ? next : null,
         milliliters: component.milliliters != null ? next : null,
         macrosSnapshot: after,
+        baseMacros: base,
       },
       { id: component.mealItem.id, macrosSnapshot: itemSnapshot },
       db,
     );
     return component.mealItem.mealEntry.dayLog.id;
+  }
+
+  moveMealItem(
+    userId: string,
+    itemId: string,
+    dto: MoveMealItemDto,
+  ): Promise<{ id: string; mealEntryId: string }> {
+    return this.repo.withMealItemLock(itemId, async (db) => {
+      const item = await this.repo.findMealItemForMove(itemId, userId, db);
+      if (!item) throw new NotFoundException('Meal item not found');
+      if (item.mealEntry.mealType === dto.mealType) {
+        return { id: item.id, mealEntryId: item.mealEntry.id };
+      }
+      const target = await this.repo.findOrCreateMealEntryIn(
+        item.mealEntry.dayLogId,
+        dto.mealType,
+        db,
+      );
+      await this.repo.moveMealItem(item.id, target.id, db);
+      await this.repo.recalculateAndSaveTotals(item.mealEntry.dayLogId, db);
+      return { id: item.id, mealEntryId: target.id };
+    });
   }
 
   async removeMealItem(userId: string, itemId: string): Promise<void> {
@@ -658,7 +788,6 @@ export class DayLogsService {
       throw new NotFoundException('Meal item not found');
     }
     const dayLogId = item.mealEntry.dayLog.id;
-    await this.repo.deleteMealItem(itemId);
-    await this.repo.recalculateAndSaveTotals(dayLogId);
+    await this.repo.deleteMealItem(itemId, dayLogId);
   }
 }

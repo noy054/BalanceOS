@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { PantryProduct } from "../../types";
@@ -15,7 +16,7 @@ type Props = {
   showBrand?: boolean;
 };
 
-export function ProductCard({
+export const ProductCard = memo(function ProductCard({
   product,
   onPress,
   onCalculate,
@@ -59,4 +60,4 @@ export function ProductCard({
       }
     />
   );
-}
+});

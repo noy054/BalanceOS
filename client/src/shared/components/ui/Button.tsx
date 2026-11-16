@@ -145,11 +145,11 @@ const useStyles = () =>
       },
       label: {
         ...typography.bodyStrong,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
       },
       labelSm: {
         ...typography.label,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
       },
     }),
   );

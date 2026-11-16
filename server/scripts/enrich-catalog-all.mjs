@@ -768,7 +768,7 @@ async function main() {
         try {
           const html = await request(sourceUrl, {
             headers: {
-              'User-Agent': 'BalanceOSCatalog/2.0',
+              'User-Agent': 'TrackModeCatalog/2.0',
               Accept: 'text/html',
             },
           });

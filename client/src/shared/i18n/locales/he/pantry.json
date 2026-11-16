@@ -96,7 +96,8 @@
     "reviewSubtitle": "בדקו את פרטי הסריקה ותקנו לפני השמירה. השינויים נשמרים במזווה שלכם בלבד ונשלחים לבדיקה.",
     "reviewValuesHint": "השלימו ערכים חסרים. ערכים שלא סופקו על ידי המקור נשארים ריקים.",
     "scaledNotice": "הכמות והערכים התזונתיים עודכנו באופן יחסי (×{{factor}}).",
-    "per100ml": "ל־100 מ״ל"
+    "per100ml": "ל־100 מ״ל",
+    "caloriesNoBase": "אין למוצר ערך קלוריות ל־100 {{unit}}, ולכן אי אפשר לחשב את המנה לפי קלוריות. אפשר להזין את הכמות במקום."
   },
   "productDetail": {
     "title": "פרטי מוצר",
@@ -300,11 +301,14 @@
     },
     "createProduct": "יצירת מוצר",
     "notFoundCreateHint": "צרו אותו בעצמכם עם ערכי התזונה, המנה ותמונה. הוא יישמר עם הברקוד הזה.",
+    "identifiedTitle": "זיהינו את המוצר, אבל אין לנו את הערכים התזונתיים",
+    "identifiedHint": "השם והמותג כבר מולאו. הוסיפו את הערכים התזונתיים מהתווית כדי לשמור אותו עם הברקוד הזה.",
+    "completeProduct": "הוספת ערכים תזונתיים",
     "reviewAndEdit": "בדיקה ועריכה",
     "missingValuesNotice": "חלק מערכי התזונה חסרים. בדקו את המוצר והשלימו אותם לפני ההוספה.",
     "sourceOpenFoodFacts": "ערכים מ־Open Food Facts",
     "sourceUsda": "ערכים מ־USDA FoodData Central",
-    "sourceVerified": "מאומת על ידי BalanceOS",
+    "sourceVerified": "מאומת על ידי TrackMode",
     "sourceCommunity": "קטלוג משותף"
   },
   "empty": {
@@ -431,7 +435,11 @@
     "weightFromProduct": "המשקל מולא לפי נתוני המוצר הזה",
     "volumeLabelRequired": "נפח (מ״ל) *",
     "volumeLabelOptional": "נפח (מ״ל)",
-    "millilitersShort": "מ״ל"
+    "millilitersShort": "מ״ל",
+    "estimateVolume": "הערכה לפי מידה סטנדרטית: 1 {{unit}} ≈ {{amount}} {{measure}}. אפשר לערוך.",
+    "estimateFood": "הערכה לפי ערך ממוצע למזון הזה: 1 {{unit}} ≈ {{amount}} {{measure}}. אפשר לערוך.",
+    "noEstimate": "אין המרה אמינה ליחידה הזו. אפשר להזין את המשקל בגרמים.",
+    "noEstimateVolume": "אין נפח סטנדרטי ליחידה הזו. אפשר להזין את הנפח במ״ל."
   },
   "strip": {
     "gramsUnit": "ג׳",
@@ -453,6 +461,9 @@
     "saveFailed": "לא ניתן היה להוסיף את הפריט. כדאי לבדוק את החיבור ולנסות שוב."
   },
   "super": {
+    "pick": "בחירה",
+    "pickFor": "בחירת {{name}} לארוחה",
+    "pickForMeal": "שימוש בארוחה שלי",
     "title": "סופר",
     "openHint": "עיון במאגר המוצרים לפי מחלקות",
     "subtitle": "בחרו מחלקה והוסיפו מוצרים למזווה שלכם.",
@@ -652,6 +663,7 @@
     "all": "הכל",
     "protein": "חלבונים",
     "carbs": "פחמימות",
+    "fat": "שומנים",
     "categories": "קטגוריות",
     "allCategories": "כל הקטגוריות",
     "categoryTitle": "סינון לפי קטגוריה",
@@ -662,5 +674,58 @@
       "DINNER": "ערב",
       "SNACK": "נשנושים"
     }
+  },
+  "portions": {
+    "title": "משקל מבושל וחלוקה למנות",
+    "hint": "אופציונלי. שקילת האוכל המבושל מאפשרת חלוקה מדויקת.",
+    "methodPot": "שקילה עם הסיר",
+    "methodNet": "משקל נטו",
+    "emptyPot": "סיר ריק (ג׳)",
+    "potWithFood": "סיר + אוכל מבושל (ג׳)",
+    "netWeight": "משקל האוכל המבושל (ג׳)",
+    "cookedResult": "אוכל מבושל: {{grams}} ג׳",
+    "weightInvalid": "הסיר עם האוכל צריך לשקול יותר מהסיר הריק.",
+    "per100": "ל־100 ג׳ מבושל: {{calories}} קק״ל · {{protein}} ג׳ חלבון",
+    "splitTitle": "חלוקה למנות",
+    "choiceNone": "ללא חלוקה",
+    "choiceCount": "מנות שוות",
+    "choiceTarget": "לפי יעד למנה",
+    "countLabel": "מספר מנות",
+    "targetGrams": "גרם",
+    "targetCalories": "קלוריות",
+    "targetProtein": "חלבון",
+    "targetValueGrams": "גרם למנה",
+    "targetValueCalories": "קלוריות למנה",
+    "targetValueProtein": "חלבון למנה (ג׳)",
+    "portionCount_one": "מנה אחת",
+    "portionCount_two": "{{count}} מנות",
+    "portionCount_many": "{{count}} מנות",
+    "portionCount_other": "{{count}} מנות",
+    "perPortion": "כל מנה",
+    "weightUnknown": "הוסיפו משקל מבושל כדי לראות גרמים",
+    "leftoverTitle": "שארית",
+    "leftoverAsk": "מה לעשות עם השארית?",
+    "leftoverSeparate": "לשמור כמנה קטנה נפרדת",
+    "leftoverRedistribute": "לחלק שווה בין המנות",
+    "leftoverUnallocated": "להשאיר ללא שיוך",
+    "updatedPortion": "כל מנה אחרי החלוקה",
+    "smallPortion": "מנה קטנה",
+    "chooseLeftover": "לפני השמירה צריך לבחור מה לעשות עם השארית.",
+    "incompleteSave": "יש להשלים את החלוקה למנות או לבחור ללא חלוקה.",
+    "kcal": "קק״ל",
+    "grams": "{{value}} ג׳",
+    "issue": {
+      "calories": "אין קלוריות ברכיבים שאפשר לחלק לפיהן.",
+      "protein": "אין חלבון ברכיבים שאפשר לחלק לפיו.",
+      "count": "יש להזין מספר שלם של מנות.",
+      "targetValue": "יש להזין כמות למנה.",
+      "tooLarge": "היעד גדול מכל הכמות שבושלה.",
+      "weight": "כדי לחלק לפי גרם צריך להזין משקל מבושל, או את המשקל של כל רכיב."
+    },
+    "perPortionBasis": "למנה",
+    "perPortionBasisGrams": "למנה · {{grams}} ג׳",
+    "rawResult": "לפני בישול: {{grams}} ג׳ רכיבים",
+    "gramsRaw": "{{value}} ג׳ לפני בישול",
+    "ingredientWeight": "משקל {{name}} (ג׳)"
   }
 }

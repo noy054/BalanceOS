@@ -1,3 +1,4 @@
+import { RecipePortionsDto } from './recipe-portions.dto';
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -8,6 +9,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Max,
   MaxLength,
   Min,
   ValidateNested,
@@ -45,9 +47,16 @@ export class RecipeItemDto {
   @Min(0.0001)
   @Type(() => Number)
   servings?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0.1)
+  @Max(100000)
+  @Type(() => Number)
+  weightG?: number | null;
 }
 
-export class CreateRecipeDto {
+export class CreateRecipeDto extends RecipePortionsDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(200)

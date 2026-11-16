@@ -33,7 +33,7 @@ export function SuperProductList({
   onRetry,
   onEndReached,
 }: Props) {
-  const { add, remove, pendingIds } = useSuperPantry();
+  const { add, remove, pick, isPicking, pendingIds } = useSuperPantry();
   const insets = useSafeAreaInsets();
   const { colors } = useAppTheme();
   const openItem = useCallback(
@@ -48,9 +48,10 @@ export function SuperProductList({
         onPress={openItem}
         onAdd={add}
         onRemove={remove}
+        onPick={isPicking ? pick : undefined}
       />
     ),
-    [pendingIds, openItem, add, remove],
+    [pendingIds, openItem, add, remove, pick, isPicking],
   );
 
   if (isLoading) return <StateView variant="loading" />;

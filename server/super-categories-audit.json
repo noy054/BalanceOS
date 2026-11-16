@@ -1,0 +1,5197 @@
+{
+  "capturedAt": "2026-11-09T15:14:01.472Z",
+  "total": 495,
+  "counts": {
+    "BAKERY": 20,
+    "BEVERAGES": 4,
+    "BREAKFAST": 3,
+    "DAIRY_EGGS": 30,
+    "GRAINS_LEGUMES": 32,
+    "MEAT_FISH": 47,
+    "OTHER": 152,
+    "PRODUCE": 145,
+    "SAUCES_OILS": 26,
+    "SNACKS_SWEETS": 28,
+    "SPREADS_CANNED": 8
+  },
+  "other": [
+    {
+      "id": "cmvtpe52v0011ux00ixbejn4t",
+      "name": "7290004064174",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_4a898ef1ac6b20a3a1bbcce78c9dab69",
+      "name": "baby doll, לריטייר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8d4f6a655f0ea6242f6b69895d42384e",
+      "name": "BBQ CALIFORNIA - בורגר מן הצומח על האש, טבע דלי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3dc873c6eafb46fecc5be24c817a902b",
+      "name": "BBQ NEW YORK - בורגר מן הצומח על האש, טבע דלי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_650fba47705326ff420fe7fc6ef019b7",
+      "name": "be FIT - מאפה בטעם חמאה (קיטו), א.ג.ת.ד. בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_5aa0ec343920d78141b63b202cb6c23f",
+      "name": "be FIT - מאפה להמבורגר (קיטו), א.ג.ת.ד. בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_99bcb8eb8517b7631d3a7e26d1679316",
+      "name": "Biraghi - גבינה קשה 30% שומן, א.ג.ת.ד. בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_49e56187107c6164e70d2fe23abae413",
+      "name": "Biraghi - חטיפי גבינה קשה 30% שומן, א.ג.ת.ד. בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_4efccf656501a0644e6574a718553286",
+      "name": "DELI - דיילי נקניקיות גבינה כחולה, מעדני מזרע",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_22f2b1c4f1c65ff46ecb5b8262bd20a3",
+      "name": "DELI - דיילי נקניקיות עגל פורטבלו פורצ`, מעדני מזרע",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3f7bf1243e039411dbc737274323210d",
+      "name": "DELI - דיילי נקניקיות פרגית קארי ירוק, מעדני מזרע",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a366940db0e98ab1bb41cc83931be800",
+      "name": "DELI - דיילי נקניקיות פרגית ראס אל חנות, מעדני מזרע",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_42682b8c92e02d4b31d9af621fdc93ce",
+      "name": "green - באגט ללא גלוטן, שופרסל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dc4c572ece9c7d12fffd2663b9aedb17",
+      "name": "green - ניוקי תפוחי אדמה ללא גלוטן, שופרסל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c83fb743314eed92cf928be9dd68c542",
+      "name": "green - קורנפלקס ללא גלוטן - פתיתי תירס קלויים, שופרסל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dae941285844d461cb129a36e0569dd8",
+      "name": "Less&More - לחם לס פרוס, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_42d22f91c16403075ee278ccfba25b2a",
+      "name": "Less&More - לחמניות לס, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_795ab0b21d3c9fa7147f081609a72f25",
+      "name": "MAILLE - חרדל דיז`ון מקורי, א. סיימן סחר בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_41d01c956dc627a171332e45a92b7c6c",
+      "name": "Mazola - מזולה לאפייה ובישול בטעם חמאה 79% שומן, מזולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a5f475b67997ab17f59cf57af4d949bf",
+      "name": "Mazola - מזולה לאפייה ובישול ללא תוספת מלח 79% שומן, מזולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_13d9d09f2a9f2c24d032884da8d2d0c1",
+      "name": "MixiN - חמוציות צימוקים ואדממה, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_32f63c30280958100e6b35043cad2b50",
+      "name": "MixiN - פירות יבשים ואגוזים, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7c23cfcbdc6be6ed2f29cb2c0d6f7159",
+      "name": "MixiN - פירות יבשים טרופיים ואגוזים, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c8c9ba62da2d7715b3f9b9ced8861f1c",
+      "name": "mooi - גלילי וופל בטעם אגוזים עטופים בשוקולד חלב משובח, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_aed02619b8d96db8f8716ab20d59672d",
+      "name": "mooi - שכבות ביסקוויט ושוקולד במילוי קרם בטעם אגוזים-קקאו עשיר, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_824d1f5a841bfd45dfeefb75687a9631",
+      "name": "mooi - שכבות ביסקוויט ושוקולד במילוי קרם שמנת-זביונה עשיר, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmqapdwte0009uxt82paqq5qq",
+      "name": "Protein",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_52cac568e37b5309b2dc6749bef417f4",
+      "name": "SNICKERS MAX CARAMEL, סידס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_22fde24b3f5d7e188d8db78313bd3fb5",
+      "name": "soletti - מקלות מלוחים עם שומשום, ר.ב. מוצרי דגנים בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_eb462cb12d671b7f072d63241ccc3bf3",
+      "name": "TWISTER - דגנים במילוי קרם בטעם וניל, מאנדיי בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_be60f110f92a9126990f164392473547",
+      "name": "TWISTER - דגנים במילוי קרם נוגט, מאנדיי בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8a22c4a5952c653f25a50c5133ff9af0",
+      "name": "wok - רוטב צ`ילי מתוק (חריף), טומין שיווק (2001) בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c80ed21b8fea5fac95964b3fa0cb45fd",
+      "name": "אבקת משקה פורמולה 1 בטעם מלון, הרבלייף",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6a9a5c005ee3c91594e03ca39715343b",
+      "name": "אבקת משקה פורמולה 1 בטעם קרם שוקולד, הרבלייף",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8490b72406002dd0a7128722e2c8f07b",
+      "name": "אבקת סיבים תזונתיים בטעם תפוח, הרבלייף",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f7a2879938a2b44c017be49041d6d9cd",
+      "name": "באגט לבן, פילסברי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b3f4e813539c1391189cabce4c0ce6f6",
+      "name": "בוטנים מצופים בטעם גריל, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_64eb915fff046fdd5ae81cd5bc8fef60",
+      "name": "בוטנים מצופים בטעם צ`ילי, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f2b0c2ed1cc03a6106ab3b87e17a2b72",
+      "name": "בוטנים מצופים בטעם תירס, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c728468a55664c738f2ed634d7f38d08",
+      "name": "בורגר פטריות טבעוני בתיבול מעודן, מרינה פטריות הגליל בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ac36e944967d57abd65ec28f43cb13f1",
+      "name": "בייגלה - שמיניות מלוחות, בייגל בייגל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e9daefea2193454f32f25618a2a75f0e",
+      "name": "בירה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_973e2b6e87446c9ad7bc7b4168b63d51",
+      "name": "בירה שחורה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_898e3b516e9aa62f6acf784d9a8e0540",
+      "name": "במבה במילוי קרם נוגט, אסם",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_afdc232f43a6384c0b373d18514299f6",
+      "name": "בקלה אטלנטי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_166f3d412bc3e6082f7b4e42f61884db",
+      "name": "גרגירי חומוס (יבשים)",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3ba98f0df26d4dad9b76d58513d5e638",
+      "name": "גרגירי חומוס מבושלים עם מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2278a9477c919270a27bfbcbf2413eb9",
+      "name": "גרגרים להכנת משקה על בסיס סוכר בתוספת תמציות צמחים, ריקולה בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_200144f6f648a9575bfaea710896ff95",
+      "name": "גרנולה בסילאן, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8661e542ac378794cbdc944ea96acb9d",
+      "name": "גרנולה חלבה תמרים, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f1bc5e76c684d18a84262b8c847d03e1",
+      "name": "גרנולה טבעית אגוזים, זרעים ופירות, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_50c4639e33f8219a2edc8a1c7969bbeb",
+      "name": "גרנולה טבעית חלבה, תמרים ושקדים, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6682e11ef0c8a8986ddbda8d24f35ab9",
+      "name": "גרנולה טבעית ללא תוספת סוכר, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dcfcfe3a329e2c40efe9c8efbe8d2e21",
+      "name": "גרנולה טבעית פירות יער וקשיו, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0d32593b822a3a63b14e3e4d87819813",
+      "name": "גרנולה ללא תוספת סוכר, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_edc3f5ef530996147faa2342b01455d8",
+      "name": "גרנולה שוקולד, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f20676a64f0fe619108453ef159ffa95",
+      "name": "גרנולה שקדים וצימוקים, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0bcc108c3a38a2d242d932d41cc44ce9",
+      "name": "גרנולה תמרים, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_79c7ea5ad1c6d42e940956eb98715bb1",
+      "name": "דובדבן טבעי ללא תוספת סוכר, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dc7ae7f4da0caed26e9da605f3d4b2e4",
+      "name": "דנונה PRO עשיר בחלבון - יוגורט לבן 2.9% שומן, שטראוס עלית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6fafeaa6488d8e32c76b8b56bb3e527a",
+      "name": "דנונה PRO עשיר בחלבון - יוגורט עם אננס 2.4% שומן, שטראוס עלית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d240bce998a2386b7382c649db90b590",
+      "name": "דנונה PRO עשיר בחלבון - יוגורט עם אפרסק 2.4% שומן, שטראוס עלית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_16cf48a5b76cec2ff2a6eab41f6a4a2e",
+      "name": "דנונה PRO עשיר בחלבון - יוגורט עם פירות יער 2.4% שומן, שטראוס עלית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6bbf1463174adb242052cc93b3d0ccb0",
+      "name": "ופלים משובחים בטעם שוקולד, מן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e61740de058c34da04b7b586b900b67d",
+      "name": "זרעי חרדל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e340c6789a6f5eb8814064a8eb71fa42",
+      "name": "חטיף אורז מתוק אורגינלי, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d386f66f82bd581007cc8069c4bc0034",
+      "name": "חטיף אורז צ`ילי מתוק, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_4571105b7573d1a4dc64d3e877c97c8b",
+      "name": "חטיף חלבון בטעם וניל שקדים, הרבלייף",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_fe2e9ead659a4904eec867fc98d218ee",
+      "name": "חטיף חלבון בטעם לימון, הרבלייף",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8f9c0e618e0046a1435435c3b942b810",
+      "name": "חטיפי אורז אקזוטיים, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6daa70b4e679fb51c8b57efe6aa61bd8",
+      "name": "חצי חצי - קרם מובחר למריחה וממרח חלב, השחר העולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_48522bedee4562d216ad099e6aa0ae21",
+      "name": "טאקו",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_efc7e1dd9a30a1b8a27f6a46a104d331",
+      "name": "טונה צהובת סנפיר מבושלת (טונה טרייה מבושלת)",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b25ef87df2e45754e0dc7cb33f2ca508",
+      "name": "טרולי - סוכריות גומי בטעם בננה, סידס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_19a2fd0ace0abee5cd85c2eb1e15409c",
+      "name": "טרולי - סוכריות גומי חמוצות בטעם פירות, סידס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_53e6378fb60e6dbb27b5ddb617069715",
+      "name": "יוגורט כבשים בסגנון בלקני 5% שומן, מחלבות גד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9d1a26ebe42ba07805346c4baffbb7b3",
+      "name": "כמוסוכר - אבקת ממתיק דל קלוריות להמתקה, בישול ואפיה, סוכרזית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c04d22709ec78cf325ababad507943c9",
+      "name": "כרובית אלמוגים טריה (כרובית ירוקה)",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c7181e0452a3d99282444c552edd6165",
+      "name": "כריך גבינה בולגרית 5% בלחמניית חיטה מלאה, עינת תעשיות מזון",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c6dfe78095021963654982c78678e532",
+      "name": "כריך פסטרמה וחומוס בלחמניית חיטה מלאה, עינת תעשיות מזון",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_26b1b28a3d2234b16d72c1905e32ea03",
+      "name": "לברק",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8831e493a367e2fe9c79112734f3c788",
+      "name": "לחם לבן פרוס, דגנית עין בר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_87754ccb04e5e8ed976c807e615f3601",
+      "name": "לחם מחמצת 100% כוסמין מלא, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3fa71ce0102aca3606222b12c3a84c31",
+      "name": "לחם קמח מלא אורגני, עינת תעשיות מזון",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6ed3b369a2027b48d3046b507ab8bfbf",
+      "name": "לחמניות קלות 100% קמח כוסמין אורגני, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_4cefab0870c0f5abc9aa85c32b808f72",
+      "name": "לינדט אקסלנס - שוקולד מריר עם דומדמניות שחורות ושבבי שקדים, משה סידס ובנו בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e616676e8a3347ce1555715d83b7424f",
+      "name": "לינדט קריאשן מנטה - מעטפת שוקולד מריר 70% מוצקי קקאו במילוי טראפל לבן ומחית מנטה, משה סידס ובנו בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f87412f7097b357654e8c911732207f6",
+      "name": "מה - עז, משק צוריאל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c607bbbd1b5f93b5bdc3edf3ee81cd04",
+      "name": "מיני פיתות כוסמין 100% קמח כוסמין מלא, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_cb7facf8b05e6dfdf1f9dc430848a113",
+      "name": "ממרח נוגט אגוזים, השחר העולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3ba0a56465a771d651b4a79c90c79166",
+      "name": "מפאלדה - פסטה מ- 100% סמולינה חיטת דורום, ישרקו בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_644559af1d9cff47494c3970e4ec4bbe",
+      "name": "משפר אפייה, שמרית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e52c8f9f0383c4beda70e474d1fe04bd",
+      "name": "נאצ`וס עם גבינה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_21a9343e7b8989b0a8e788ee7bc280cd",
+      "name": "נשנושי שעועית בטעם פיקנטי, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c19c2a5fcef002eb93ad08a604dd1d27",
+      "name": "סוכר וניל, מיה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8587440f38434592aa1538534b4ec648",
+      "name": "סוכריות קשות ללא תוספת סוכר בטעם צמחים תפוח ומנטה, ריקולה בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_43f7c234e187c104a5329ac7681c711c",
+      "name": "סטיוויה - ממתיק צמחי על בסיס צמח הסטיוויה, סוכרזית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_aa259f0a95e66f019fa3d0374b83e311",
+      "name": "סילאן - סירופ תמרים טהור 100% טבעי, מכוורת עמק חפר בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_930b0b1c630b0c6ecbdfa1d4f78434d7",
+      "name": "סילאן - סירופ תמרים מובחרים, מכוורת עמק חפר בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c0de8ac8e8204aad355de4a8b31e216e",
+      "name": "עדשים טריות",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0f2bc12d17f7070b1f92a78028dd726d",
+      "name": "עדשים מבושלות ללא מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_13bb604014cf97396cb188845dbc143e",
+      "name": "עדשים מבושלות עם מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e1122dd86fbc9a9ca4dc724836d97885",
+      "name": "עוגיות בראוניס עם שוקולד צ`יפס, אחוה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_70395adfa8244e9ba5befaf8116af1dd",
+      "name": "עוגיות מובחרות - עוגיות בטעם שוקולד, מן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e2efcc62ebf13a9fde367f1f8a5b130a",
+      "name": "עוגיות מובחרות - עוגיות גרנולה, מן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2317fcc6523801596f50b0d54d1ab7b9",
+      "name": "עוגיות מחיטה מלאה, מן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f1d943b423bb080ef3fe3d4230488248",
+      "name": "עמילן תירס (קורנפלור)",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_300334866ab9a6452d530e8a7d5843e7",
+      "name": "פול טרי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9ad95d89f9162a788a5cc514687686dc",
+      "name": "פול מבושל עם מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e25e656b08df5ab769ec790ea323cd5d",
+      "name": "פול פריך בציפוי שום, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d329e6c88dbcfc1bfdd294c4faaa0d6f",
+      "name": "פולי סויה טריים",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_00f2e01ebb997cbcf82d9f4e97710fd9",
+      "name": "פולי סויה מורתחים ללא מלח - אדממה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b8afac90e9d7de3e9d402f0558ac7e09",
+      "name": "פולי סויה קלויים ללא תוספת מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f38d723938348d5ff0cded17f71b13b3",
+      "name": "פופ סטאר בטעם חמאה, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7c097fb3414b07b189b261312a1a4513",
+      "name": "פופ סטאר בטעם טבעי, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_01bcfaec85db43e3482d4ddfc3643a57",
+      "name": "פופקורן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_94ebd503334bfebd4f1039c8dc7b243a",
+      "name": "פורל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0d6c415894097f5d2d0e83e27577ebb8",
+      "name": "פטריות שיטאקי מיובשות, חוות תקוע",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a26566cf2ffa2b3a816502841905d8e7",
+      "name": "פיצה מרגריטה ללא גלוטן, גרין לייט",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_5b56e617a9dcb2fc2c4cacbafb1c6722",
+      "name": "פיצה עבה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8eed4428c902b602fd4a2b01d49522e5",
+      "name": "פיצה רגילה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_bdd6dc9eadd6eb89c6e2b6feee2d6ca4",
+      "name": "פיתה רגילה, דגנית עין בר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9f425974402397d660d6cc278a5bc075",
+      "name": "פיתות כוסמין 100% קמח כוסמין מלא, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6c19780c6ed344283278a3c3dfdd3b11",
+      "name": "פנה - פתיתים על בסיס אורז וקינואה ללא גלוטן אורגני, נוטרה זן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d0b343af7eadc8f79bc4373a45bb08b5",
+      "name": "פקאנים קלויים-מיובשים",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7815a3fdf25cd5261ecb3695199f9271",
+      "name": "פתיתים פלוס עדשים, אסם",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_729c4c946d4286ed1ccb518712829ac1",
+      "name": "צימוקים בהירים ג`מבו, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1fb9eb13965eae27db1a2e94094a171b",
+      "name": "צימקאו, השחר העולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1660d32ab12bc39b3476e2eb10fd059d",
+      "name": "קבב פטריות טבעוני בתיבול מעודן, מרינה פטריות הגליל בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_36b5c56e01039bb83241bfb9de6bd35b",
+      "name": "קורנפלקס מלא, תלמה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_20a5610233a3d278c4507c0a01968ef6",
+      "name": "קמח אורז לבן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c6da49e3ddbb52c4a3d9d04d82cd01a2",
+      "name": "קמח תירס לבן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b51cf603f65acb8dcae2d04edabb246e",
+      "name": "קמח תירס צהוב",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_96c8b2fcfb01773b8e0465ad447ab82f",
+      "name": "קמח תפוחי אדמה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_589a1d00f6f2721133a8eb2cf21648fd",
+      "name": "קסם הרימון - גרגירי רימון, יוגורט Bio 3% ודבש, עינת תעשיות מזון",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0cd4b05b6d00803758fa68024daf6c9e",
+      "name": "קרואסון גבינה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_102e5571d97bc496bdde985ce2854de9",
+      "name": "קרואסון חמאה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dd6000dd2d8caf606eabccbde4e6b68f",
+      "name": "קרואסון תפוחים",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7dc3eeda0d5bb605d0baad17272b1233",
+      "name": "קרוטונים",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d6599e9cb494f5eeee3c5f7802193300",
+      "name": "קרם מובחר בטעם שוקולד פרווה, השחר העולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_36a06a433ed08f0f5c92b5f5b4c3b1bd",
+      "name": "קרם מובחר בטעם שוקולד, השחר העולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7b6ff7a3244963c54837b760de48a369",
+      "name": "קרפיון",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3d4f578930cd769a666f789341c75a02",
+      "name": "רוגעלך, אחוה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ccc673a61ab3c3fc064287b3918e3797",
+      "name": "שווארמה פטריות טבעונית בתיבול מעודן, מרינה פטריות הגליל בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_334622e767d0f511c7546919ee3a59db",
+      "name": "שומשום, מיה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8ff78741874aafbb4e8e111dfb5ffc77",
+      "name": "שיפון של פעם - שיפון עגול, מאפית אחדות",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1d70ed8ad231a6d40ae8212cb0cd431b",
+      "name": "שעועית אדומה מבושלת ללא מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_aaafde1734574fda9a62fb1e94762cab",
+      "name": "שעועית ירוקה מבושלת עם מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_5d2d85574fa6fc311a27047f4c2609ff",
+      "name": "תאנים מיובשות מובחרות, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a8af8a5c34a933fb337beacb82163a7d",
+      "name": "תמר - דקל נור",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_bfb61028ce7cbbc0a163d66495c7e788",
+      "name": "תמר הינדי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_34f24b72999ab33975975b4381bd1560",
+      "name": "תנת`ה - ממתק ג`מבו תות חתוך על בסיס עמילן, טופ-גאם תעשיות ממתקים בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    }
+  ],
+  "products": [
+    {
+      "id": "cmvtpd6yk000xux00oiev7zze",
+      "name": "אבקת אפייה",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_184ab7294af5270d23d79d9069671a04",
+      "name": "אבקת סוכר",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b5816f3fcb600224c5c3c878c796fb8c",
+      "name": "הלחמניה המלאה, מאפיית אנג`ל",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3d2ca611ce549ce148fa6807aa60d867",
+      "name": "הלחמניה, מאפיית אנג`ל",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e1212bad3fa0435e7e89a5118520ff45",
+      "name": "חלה מתוקה, מאפיית אנג`ל",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_bbdbd7622172651c4600b09df6633735",
+      "name": "חלה פרוסה רגילה, דגנית עין בר",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_21cc5463f64a509dc65574a852a8ca90",
+      "name": "לחם אחיד פרוס, מאפיית אנג`ל",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_358473cea33aca6da2433ff2238b7b2c",
+      "name": "לחם אחיד קל, מאפיית אנג`ל",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_772818c03d02321bdb0d48c54e411178",
+      "name": "לחם חיטה מלא מחיטה מלאה, דגנית עין בר",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmqex5c8a0005uxa03fe6gj6v",
+      "name": "לחם כוסמין מלא",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_8ed97fafc7f1e505d713541259403fc2",
+      "name": "לחם עינן, מאפיית אנג`ל",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d3e1f401aecddd35dc8603ee32b007d7",
+      "name": "לחם קל מחיטה מלאה, דגנית עין בר",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_68fedbe89ccef1a6f80709891137ca6f",
+      "name": "לחם שחור פרוס אחיד, דגנית עין בר",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ca47dd2f577624070af22af68c7d878b",
+      "name": "מעדני תנעמי - פיתה מקמח מלא, דגנית עין בר",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_42ef6b718d60c5902a05dee4983611bb",
+      "name": "סוכר חום",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_10ef25a7e156805d03d12a4018bae513",
+      "name": "סוכר לבן",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_279e0b706321d68a4ec7d6ea5bea18d8",
+      "name": "פיתה לבנה מועשרת",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c56926d628a0b1c90796be1bd6d675ad",
+      "name": "פיתה מחיטה מלאה",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a1e082427f763088849eb8221d6c431e",
+      "name": "שבעה דגנים קל, מאפיית אנג`ל",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "store_hahishook_2904",
+      "name": "שמרים יבשים",
+      "department": "BAKERY",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "cmqapcmj20003uxt85kt44fnj",
+      "name": "Instant coffee powder",
+      "department": "BEVERAGES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "cmvqssd92000duxn86hhhdycg",
+      "name": "Müller Vanilla Drink",
+      "department": "BEVERAGES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "cmqezi1ou000fuxa0spd6cn55",
+      "name": "מים מינרלים",
+      "department": "BEVERAGES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "cmqauitjm002cux28bvxs2bef",
+      "name": "קולה דל קלוריות",
+      "department": "BEVERAGES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "cmvqrzcr5001iux1klvj17z0l",
+      "name": "גרנולה שוקולד",
+      "department": "BREAKFAST",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_7df2677a4936000c82783e0c815460cc",
+      "name": "סובין שיבולת שועל",
+      "department": "BREAKFAST",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_382cb88223885d7bb2cee6fb535b37ed",
+      "name": "שיבולת שועל",
+      "department": "BREAKFAST",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmv88txxi000ouxhw19g5j291",
+      "name": "GO by Yoplait 25",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_4548412a5918bc89aae7debd018a7c5c",
+      "name": "ביצה שלמה - טריה",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_24be917fb25b276fb99e92f10a8d95a4",
+      "name": "ביצה שלמה מבושלת-מורתחת",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_79a3e835596e8a92924e629104887e37",
+      "name": "ביצה שלמה מבושלת-מטוגנת",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ccc11ce3ab4071e93efe0169c4ca5cf3",
+      "name": "ביצי אווז",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6444094fc4530dd565535c64fc4b6eee",
+      "name": "ביצי ברווז",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_fa1ff2f0e962e69c1dc4975cfd332ca4",
+      "name": "ביצי הודו",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e0855a238fd06c9396acae0e1e41e7d6",
+      "name": "ביצי שלו",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmv88tkof000kuxhwsz26cmgl",
+      "name": "גבינה לבנה 5%",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "cmvtpb8mo000lux00ev1yshfq",
+      "name": "גבינה לבנה 9%",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_95ab6c72a447a32ec0284b36b784bd35",
+      "name": "גבינת גאודה",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_cc30c2ed89fd97c69679cff05e359027",
+      "name": "גבינת לאבנה 5% שומן, מחלבות גד",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_54a0ff5e3c2a5224b7ebaae9d61561bc",
+      "name": "גבינת מוצרלה",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_da04386f866d1d5b618967da8be501a1",
+      "name": "גבינת פטה",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8f9d5d5f24165c0da134f463fedf8532",
+      "name": "גבינת צ`דר",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0c00d343f13d09915ee7b27f31fd2e33",
+      "name": "גבינת קממבר",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmvzblfbs0001uxgguecca9m7",
+      "name": "דנונה Pro",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_c2b9c8d86078720fd350b651458f0b4c",
+      "name": "חלב אנוש",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_4d74dd3da361273b0ea28c0cc4de7714",
+      "name": "חלב כבשים",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "web_product_07290014758162",
+      "name": "חלב עיזים 4% שומן",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "MOH_WEB_ENRICHMENT"
+    },
+    {
+      "id": "fd_7e55296d65a0ed7e851cac20069e9ace",
+      "name": "חלבון ביצה",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f8e8528b82d394e6e5770bbb2c1571aa",
+      "name": "חלומי, מחלבות גד",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_aa01509e22d39369df48d335ef177f1b",
+      "name": "חלמון ביצה",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmvqrydzh001eux1k0xscewln",
+      "name": "יוגורט דנונה פרו בטעם תות",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_5f0b04252c778bda81151de3dbaff6a7",
+      "name": "יוגורט כבשים 5% בתוספת גרנולה ודבש, מחלבות גד",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "web_product_07290102395224",
+      "name": "יוגורט מולר נטורל 1.7%",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "MOH_WEB_ENRICHMENT"
+    },
+    {
+      "id": "cmqapd3om0005uxt8mj711mlb",
+      "name": "סקי 5%",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "cmv88v2qm000suxhw5cqqtncu",
+      "name": "עמק 9%",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_c888c72597f7e7b5b39aecfca45cb731",
+      "name": "פטה כבשים, מחלבות גד",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e2005ad23fbe5e10c4d968c9be1afa75",
+      "name": "צפתית 5% שומן, מחלבות גד",
+      "department": "DAIRY_EGGS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmvtpc18s000pux00wfbn3tw6",
+      "name": "White Spelt Flour",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_ccde3d77899e609c0c13a2469830587c",
+      "name": "אבקת כוסמת",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_fabe6253caa6d83ce9bc04ae7b3f5232",
+      "name": "אפונה טריה",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "web_hahishook_0835811007234",
+      "name": "אפונה יבשה",
+      "department": "GRAINS_LEGUMES",
+      "category": "קטניות",
+      "subCategory": "אפונה",
+      "externalProvider": "HAHISHOOK_WEB"
+    },
+    {
+      "id": "fd_5d5f6b6b615afebf3f519949d851c0aa",
+      "name": "אפונה מבושלת",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "store_hahishook_2678",
+      "name": "בורגול",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "cmvzbrkx3000huxgg6ibnobpy",
+      "name": "בורגול",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_d4eeee399ed6a6f3387fbc6146b61a68",
+      "name": "בורגול מבושל",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2eab266230ac6c8bc19ab7f1936696e0",
+      "name": "גרגירי חומוס מבושלים ללא מלח",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "store_hahishook_517213",
+      "name": "זרעי פשתן",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "store_hahishook_2682",
+      "name": "חומוס",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "store_hahishook_241304",
+      "name": "חומוס ענק",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "fd_f3e52c34dbc56f3dcd294eed549117da",
+      "name": "חלבון סויה",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_56fd658d0fe0a22d6190bd4d73c4553b",
+      "name": "כוסמת",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_01ffd51f8cebb04077afa0aff138eb4f",
+      "name": "כוסמת מבושלת-קלויה",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "store_hahishook_17384",
+      "name": "סולת חיטה",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "fd_feb95fb02a99f5d27fbaada2b96375af",
+      "name": "פול מבושל ללא מלח",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dab549e9543f00a3663d7d72aa292b56",
+      "name": "פלאפל",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_eda79ad53b0cc366033d5c294d682fa3",
+      "name": "קוסקוס יבש",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_90a397acee84af56effad18f1f6e2512",
+      "name": "קוסקוס מבושל",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "store_hahishook_125769",
+      "name": "קורנפלור",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "store_hahishook_2692",
+      "name": "קינואה",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "fd_f50f84059a053a602d04c46176f40264",
+      "name": "קינואה (יבשה)",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1782f5db04ecd687a35249bb4d39cbc9",
+      "name": "קינואה מבושלת",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "store_hahishook_67227",
+      "name": "קמח אורז מלא",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "store_hahishook_67230",
+      "name": "קמח חומוס",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "web_hahishook_7290003060276",
+      "name": "קמח חיטה לבן בהיר מנופה",
+      "department": "GRAINS_LEGUMES",
+      "category": "קמחים",
+      "subCategory": "קמח חיטה לבן",
+      "externalProvider": "HAHISHOOK_WEB"
+    },
+    {
+      "id": "web_hahishook_7290003060283",
+      "name": "קמח חיטה תופח מנופה",
+      "department": "GRAINS_LEGUMES",
+      "category": "קמחים",
+      "subCategory": "קמח תופח",
+      "externalProvider": "HAHISHOOK_WEB"
+    },
+    {
+      "id": "fd_9c99815fdc3cc9b81fc92d5b30a5848b",
+      "name": "קמח שיבולת שועל",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "store_hahishook_16058",
+      "name": "שעועית אדומה",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "web_hahishook_0835811007258",
+      "name": "שעועית לבנה יבשה",
+      "department": "GRAINS_LEGUMES",
+      "category": "קטניות",
+      "subCategory": "שעועית לבנה",
+      "externalProvider": "HAHISHOOK_WEB"
+    },
+    {
+      "id": "fd_ab1daeb5c92a11697aa309ab8fdf5a5f",
+      "name": "שעועית לבנה מבושלת ללא מלח",
+      "department": "GRAINS_LEGUMES",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_134ea00e85497f006f515cf5c3f375c3",
+      "name": "אמנון",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0dbcdb1c4c4740729ffcd8dfdf7077bc",
+      "name": "אמנון מבושל-מיובש בחום",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d2277002b4708b5df73de1b2b65480e5",
+      "name": "אנטרקוט בקר מבושל-צלוי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_779d112484f002db55517bce0861d652",
+      "name": "אנשובי אירופאי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8b9382dab1b77d0760fcba2fe1110805",
+      "name": "בס מבושל-מיובש בחום",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a9c1f5b32e6638862e6f355668854dc0",
+      "name": "בקלה אטלנטי מבושל-מיובש בחום",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_223365121387d4a912290525b3c7cb13",
+      "name": "בשר הודו טחון מבושל",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a4dc15890671cfd67f71bcf6f70857a2",
+      "name": "בשר טלה טחון",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_53e86daecf5c822a1f4cc702a016965a",
+      "name": "בשר טלה טחון מבושל-צלוי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_72f6c6a506f3568df8d45738e2741360",
+      "name": "בשר עוף טחון מבושל-מטוגן",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_50cbb7953a682bd1821f6a84f6f5bdde",
+      "name": "דג הרינג אטלנטי מעושן",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9759577502fa446265c0d1c705c41201",
+      "name": "דג מוסר",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_cd6dafc998c7121fa29683de890f6acb",
+      "name": "דג מוסר מבושל-מיובש בחום",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0dce56bc8d4d55c51a8aa81a8d8944cb",
+      "name": "חזה הודו",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8554161b1b09a1c656aac6e7144c1f76",
+      "name": "חזה הודו מבושל-צלוי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_5fde0a8f5b3ff9ba69c1f3593db40f28",
+      "name": "חזה עוף מבושל",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8fe761ada8fee01f8847cbca95908385",
+      "name": "חזה עוף מבושל-מטוגן",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_bd4aeea889a52010a4a51aa592b88dfc",
+      "name": "חזה עוף מבושל-צלוי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_811ac53410b0e1b5ec4312820db171c3",
+      "name": "טונה צהובת סנפיר (טונה טרייה)",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_715bece2366739526b5364403a10b404",
+      "name": "ירך עוף מבושל",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_4df07c071029ba4c274ec1196bfa4431",
+      "name": "ירך עוף מבושל-מטוגן",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_67b815595ac2133002b4cd5d053d20b7",
+      "name": "ירך עוף מבושל-צלוי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_825371d93492e5b16b2f13ebc2fc5879",
+      "name": "כבד בקר",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a3374b4446d4a8c89eceef688fe483df",
+      "name": "כבד בקר מבושל-צלוי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9892b16a15e3cfceb5e41dbd94b36d47",
+      "name": "כבד בקר מטוגן",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e505ef164f9543fc14cf6fe49547eb1d",
+      "name": "כבד עוף מבושל",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c7c84979b26b6b47e7ddf8be449bd449",
+      "name": "כבד עוף מבושל-מטוגן",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9873715a2e3bbe5f48aaf1cdf0ca3042",
+      "name": "כרע עוף מבושל",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dcdf8c2a28b812a4e893bfc024c65d35",
+      "name": "כרע עוף מבושל-מטוגן",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_4d77287b696640d1678b5bc16b523deb",
+      "name": "כרע עוף מבושל-צלוי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_59a14c44f2511379229315d443218cd6",
+      "name": "כתף טלה מבושלת-צלויה",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b87a86d37b5f095157bd30efc9ea110f",
+      "name": "לברק מבושל-מיובש בחום",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_04a196dfc9cbaae2b429b1b61b2f043a",
+      "name": "סינטה בקר מבושל-צלוי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_4c2498b3f32463caa10f96e403fa9238",
+      "name": "סלמון אטלנטי טרי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f67f37027eb292783637c04093ffe82f",
+      "name": "סלמון אטלנטי מבושל-מיובש בחום",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_992c9fae0aae562e5201b696a1342a19",
+      "name": "פורל מבושל - מיובש בחום",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b2a04403cd37a9a4fc5a615689ef5269",
+      "name": "פילה בקר מבושל-צלוי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1f7793fbe18566328394a4eee74d627c",
+      "name": "פסטרמה בקר",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2be2b98c5bf97c2fe7074446c9fbe674",
+      "name": "פסטרמה הודו",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_68d46ed4481558dc45b3f1d4b7f645a7",
+      "name": "צלעות טלה מבושלות-צלויות",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f2986a08357d0ee821d224910e80ecd0",
+      "name": "קרפיון מבושל-מיובש בחום",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_bea0ee229045975ea080a0ca8b53b08d",
+      "name": "שוק הודו",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a7fa1758c01e36c3c232450f225cc953",
+      "name": "שוק הודו מבושלת-צלויה",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2f26f549c8dd0a6c57757e27fdb15475",
+      "name": "שוק עוף מבושלת",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_66eec5a7b154380fecd4fbf2d0ebfd94",
+      "name": "שוק עוף מבושלת-מטוגנת",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1fcf8f0285cdb582fa62b45339b6c72d",
+      "name": "שוק עוף מבושלת-צלויה",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a04e81b5c737572aa4716ce7bfdb1dcd",
+      "name": "שפונדרה עגל מבושל-צלוי",
+      "department": "MEAT_FISH",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmvtpe52v0011ux00ixbejn4t",
+      "name": "7290004064174",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_4a898ef1ac6b20a3a1bbcce78c9dab69",
+      "name": "baby doll, לריטייר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8d4f6a655f0ea6242f6b69895d42384e",
+      "name": "BBQ CALIFORNIA - בורגר מן הצומח על האש, טבע דלי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3dc873c6eafb46fecc5be24c817a902b",
+      "name": "BBQ NEW YORK - בורגר מן הצומח על האש, טבע דלי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_650fba47705326ff420fe7fc6ef019b7",
+      "name": "be FIT - מאפה בטעם חמאה (קיטו), א.ג.ת.ד. בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_5aa0ec343920d78141b63b202cb6c23f",
+      "name": "be FIT - מאפה להמבורגר (קיטו), א.ג.ת.ד. בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_99bcb8eb8517b7631d3a7e26d1679316",
+      "name": "Biraghi - גבינה קשה 30% שומן, א.ג.ת.ד. בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_49e56187107c6164e70d2fe23abae413",
+      "name": "Biraghi - חטיפי גבינה קשה 30% שומן, א.ג.ת.ד. בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_4efccf656501a0644e6574a718553286",
+      "name": "DELI - דיילי נקניקיות גבינה כחולה, מעדני מזרע",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_22f2b1c4f1c65ff46ecb5b8262bd20a3",
+      "name": "DELI - דיילי נקניקיות עגל פורטבלו פורצ`, מעדני מזרע",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3f7bf1243e039411dbc737274323210d",
+      "name": "DELI - דיילי נקניקיות פרגית קארי ירוק, מעדני מזרע",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a366940db0e98ab1bb41cc83931be800",
+      "name": "DELI - דיילי נקניקיות פרגית ראס אל חנות, מעדני מזרע",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_42682b8c92e02d4b31d9af621fdc93ce",
+      "name": "green - באגט ללא גלוטן, שופרסל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dc4c572ece9c7d12fffd2663b9aedb17",
+      "name": "green - ניוקי תפוחי אדמה ללא גלוטן, שופרסל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c83fb743314eed92cf928be9dd68c542",
+      "name": "green - קורנפלקס ללא גלוטן - פתיתי תירס קלויים, שופרסל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dae941285844d461cb129a36e0569dd8",
+      "name": "Less&More - לחם לס פרוס, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_42d22f91c16403075ee278ccfba25b2a",
+      "name": "Less&More - לחמניות לס, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_795ab0b21d3c9fa7147f081609a72f25",
+      "name": "MAILLE - חרדל דיז`ון מקורי, א. סיימן סחר בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_41d01c956dc627a171332e45a92b7c6c",
+      "name": "Mazola - מזולה לאפייה ובישול בטעם חמאה 79% שומן, מזולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a5f475b67997ab17f59cf57af4d949bf",
+      "name": "Mazola - מזולה לאפייה ובישול ללא תוספת מלח 79% שומן, מזולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_13d9d09f2a9f2c24d032884da8d2d0c1",
+      "name": "MixiN - חמוציות צימוקים ואדממה, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_32f63c30280958100e6b35043cad2b50",
+      "name": "MixiN - פירות יבשים ואגוזים, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7c23cfcbdc6be6ed2f29cb2c0d6f7159",
+      "name": "MixiN - פירות יבשים טרופיים ואגוזים, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c8c9ba62da2d7715b3f9b9ced8861f1c",
+      "name": "mooi - גלילי וופל בטעם אגוזים עטופים בשוקולד חלב משובח, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_aed02619b8d96db8f8716ab20d59672d",
+      "name": "mooi - שכבות ביסקוויט ושוקולד במילוי קרם בטעם אגוזים-קקאו עשיר, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_824d1f5a841bfd45dfeefb75687a9631",
+      "name": "mooi - שכבות ביסקוויט ושוקולד במילוי קרם שמנת-זביונה עשיר, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmqapdwte0009uxt82paqq5qq",
+      "name": "Protein",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_52cac568e37b5309b2dc6749bef417f4",
+      "name": "SNICKERS MAX CARAMEL, סידס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_22fde24b3f5d7e188d8db78313bd3fb5",
+      "name": "soletti - מקלות מלוחים עם שומשום, ר.ב. מוצרי דגנים בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_eb462cb12d671b7f072d63241ccc3bf3",
+      "name": "TWISTER - דגנים במילוי קרם בטעם וניל, מאנדיי בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_be60f110f92a9126990f164392473547",
+      "name": "TWISTER - דגנים במילוי קרם נוגט, מאנדיי בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8a22c4a5952c653f25a50c5133ff9af0",
+      "name": "wok - רוטב צ`ילי מתוק (חריף), טומין שיווק (2001) בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c80ed21b8fea5fac95964b3fa0cb45fd",
+      "name": "אבקת משקה פורמולה 1 בטעם מלון, הרבלייף",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6a9a5c005ee3c91594e03ca39715343b",
+      "name": "אבקת משקה פורמולה 1 בטעם קרם שוקולד, הרבלייף",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8490b72406002dd0a7128722e2c8f07b",
+      "name": "אבקת סיבים תזונתיים בטעם תפוח, הרבלייף",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f7a2879938a2b44c017be49041d6d9cd",
+      "name": "באגט לבן, פילסברי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b3f4e813539c1391189cabce4c0ce6f6",
+      "name": "בוטנים מצופים בטעם גריל, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_64eb915fff046fdd5ae81cd5bc8fef60",
+      "name": "בוטנים מצופים בטעם צ`ילי, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f2b0c2ed1cc03a6106ab3b87e17a2b72",
+      "name": "בוטנים מצופים בטעם תירס, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c728468a55664c738f2ed634d7f38d08",
+      "name": "בורגר פטריות טבעוני בתיבול מעודן, מרינה פטריות הגליל בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ac36e944967d57abd65ec28f43cb13f1",
+      "name": "בייגלה - שמיניות מלוחות, בייגל בייגל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e9daefea2193454f32f25618a2a75f0e",
+      "name": "בירה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_973e2b6e87446c9ad7bc7b4168b63d51",
+      "name": "בירה שחורה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_898e3b516e9aa62f6acf784d9a8e0540",
+      "name": "במבה במילוי קרם נוגט, אסם",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_afdc232f43a6384c0b373d18514299f6",
+      "name": "בקלה אטלנטי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_166f3d412bc3e6082f7b4e42f61884db",
+      "name": "גרגירי חומוס (יבשים)",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3ba98f0df26d4dad9b76d58513d5e638",
+      "name": "גרגירי חומוס מבושלים עם מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2278a9477c919270a27bfbcbf2413eb9",
+      "name": "גרגרים להכנת משקה על בסיס סוכר בתוספת תמציות צמחים, ריקולה בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_200144f6f648a9575bfaea710896ff95",
+      "name": "גרנולה בסילאן, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8661e542ac378794cbdc944ea96acb9d",
+      "name": "גרנולה חלבה תמרים, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f1bc5e76c684d18a84262b8c847d03e1",
+      "name": "גרנולה טבעית אגוזים, זרעים ופירות, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_50c4639e33f8219a2edc8a1c7969bbeb",
+      "name": "גרנולה טבעית חלבה, תמרים ושקדים, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6682e11ef0c8a8986ddbda8d24f35ab9",
+      "name": "גרנולה טבעית ללא תוספת סוכר, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dcfcfe3a329e2c40efe9c8efbe8d2e21",
+      "name": "גרנולה טבעית פירות יער וקשיו, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0d32593b822a3a63b14e3e4d87819813",
+      "name": "גרנולה ללא תוספת סוכר, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_edc3f5ef530996147faa2342b01455d8",
+      "name": "גרנולה שוקולד, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f20676a64f0fe619108453ef159ffa95",
+      "name": "גרנולה שקדים וצימוקים, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0bcc108c3a38a2d242d932d41cc44ce9",
+      "name": "גרנולה תמרים, מנדל גרנולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_79c7ea5ad1c6d42e940956eb98715bb1",
+      "name": "דובדבן טבעי ללא תוספת סוכר, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dc7ae7f4da0caed26e9da605f3d4b2e4",
+      "name": "דנונה PRO עשיר בחלבון - יוגורט לבן 2.9% שומן, שטראוס עלית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6fafeaa6488d8e32c76b8b56bb3e527a",
+      "name": "דנונה PRO עשיר בחלבון - יוגורט עם אננס 2.4% שומן, שטראוס עלית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d240bce998a2386b7382c649db90b590",
+      "name": "דנונה PRO עשיר בחלבון - יוגורט עם אפרסק 2.4% שומן, שטראוס עלית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_16cf48a5b76cec2ff2a6eab41f6a4a2e",
+      "name": "דנונה PRO עשיר בחלבון - יוגורט עם פירות יער 2.4% שומן, שטראוס עלית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6bbf1463174adb242052cc93b3d0ccb0",
+      "name": "ופלים משובחים בטעם שוקולד, מן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e61740de058c34da04b7b586b900b67d",
+      "name": "זרעי חרדל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e340c6789a6f5eb8814064a8eb71fa42",
+      "name": "חטיף אורז מתוק אורגינלי, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d386f66f82bd581007cc8069c4bc0034",
+      "name": "חטיף אורז צ`ילי מתוק, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_4571105b7573d1a4dc64d3e877c97c8b",
+      "name": "חטיף חלבון בטעם וניל שקדים, הרבלייף",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_fe2e9ead659a4904eec867fc98d218ee",
+      "name": "חטיף חלבון בטעם לימון, הרבלייף",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8f9c0e618e0046a1435435c3b942b810",
+      "name": "חטיפי אורז אקזוטיים, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6daa70b4e679fb51c8b57efe6aa61bd8",
+      "name": "חצי חצי - קרם מובחר למריחה וממרח חלב, השחר העולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_48522bedee4562d216ad099e6aa0ae21",
+      "name": "טאקו",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_efc7e1dd9a30a1b8a27f6a46a104d331",
+      "name": "טונה צהובת סנפיר מבושלת (טונה טרייה מבושלת)",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b25ef87df2e45754e0dc7cb33f2ca508",
+      "name": "טרולי - סוכריות גומי בטעם בננה, סידס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_19a2fd0ace0abee5cd85c2eb1e15409c",
+      "name": "טרולי - סוכריות גומי חמוצות בטעם פירות, סידס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_53e6378fb60e6dbb27b5ddb617069715",
+      "name": "יוגורט כבשים בסגנון בלקני 5% שומן, מחלבות גד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9d1a26ebe42ba07805346c4baffbb7b3",
+      "name": "כמוסוכר - אבקת ממתיק דל קלוריות להמתקה, בישול ואפיה, סוכרזית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c04d22709ec78cf325ababad507943c9",
+      "name": "כרובית אלמוגים טריה (כרובית ירוקה)",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c7181e0452a3d99282444c552edd6165",
+      "name": "כריך גבינה בולגרית 5% בלחמניית חיטה מלאה, עינת תעשיות מזון",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c6dfe78095021963654982c78678e532",
+      "name": "כריך פסטרמה וחומוס בלחמניית חיטה מלאה, עינת תעשיות מזון",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_26b1b28a3d2234b16d72c1905e32ea03",
+      "name": "לברק",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8831e493a367e2fe9c79112734f3c788",
+      "name": "לחם לבן פרוס, דגנית עין בר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_87754ccb04e5e8ed976c807e615f3601",
+      "name": "לחם מחמצת 100% כוסמין מלא, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3fa71ce0102aca3606222b12c3a84c31",
+      "name": "לחם קמח מלא אורגני, עינת תעשיות מזון",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6ed3b369a2027b48d3046b507ab8bfbf",
+      "name": "לחמניות קלות 100% קמח כוסמין אורגני, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_4cefab0870c0f5abc9aa85c32b808f72",
+      "name": "לינדט אקסלנס - שוקולד מריר עם דומדמניות שחורות ושבבי שקדים, משה סידס ובנו בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e616676e8a3347ce1555715d83b7424f",
+      "name": "לינדט קריאשן מנטה - מעטפת שוקולד מריר 70% מוצקי קקאו במילוי טראפל לבן ומחית מנטה, משה סידס ובנו בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f87412f7097b357654e8c911732207f6",
+      "name": "מה - עז, משק צוריאל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c607bbbd1b5f93b5bdc3edf3ee81cd04",
+      "name": "מיני פיתות כוסמין 100% קמח כוסמין מלא, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_cb7facf8b05e6dfdf1f9dc430848a113",
+      "name": "ממרח נוגט אגוזים, השחר העולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3ba0a56465a771d651b4a79c90c79166",
+      "name": "מפאלדה - פסטה מ- 100% סמולינה חיטת דורום, ישרקו בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_644559af1d9cff47494c3970e4ec4bbe",
+      "name": "משפר אפייה, שמרית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e52c8f9f0383c4beda70e474d1fe04bd",
+      "name": "נאצ`וס עם גבינה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_21a9343e7b8989b0a8e788ee7bc280cd",
+      "name": "נשנושי שעועית בטעם פיקנטי, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c19c2a5fcef002eb93ad08a604dd1d27",
+      "name": "סוכר וניל, מיה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8587440f38434592aa1538534b4ec648",
+      "name": "סוכריות קשות ללא תוספת סוכר בטעם צמחים תפוח ומנטה, ריקולה בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_43f7c234e187c104a5329ac7681c711c",
+      "name": "סטיוויה - ממתיק צמחי על בסיס צמח הסטיוויה, סוכרזית",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_aa259f0a95e66f019fa3d0374b83e311",
+      "name": "סילאן - סירופ תמרים טהור 100% טבעי, מכוורת עמק חפר בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_930b0b1c630b0c6ecbdfa1d4f78434d7",
+      "name": "סילאן - סירופ תמרים מובחרים, מכוורת עמק חפר בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c0de8ac8e8204aad355de4a8b31e216e",
+      "name": "עדשים טריות",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0f2bc12d17f7070b1f92a78028dd726d",
+      "name": "עדשים מבושלות ללא מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_13bb604014cf97396cb188845dbc143e",
+      "name": "עדשים מבושלות עם מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e1122dd86fbc9a9ca4dc724836d97885",
+      "name": "עוגיות בראוניס עם שוקולד צ`יפס, אחוה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_70395adfa8244e9ba5befaf8116af1dd",
+      "name": "עוגיות מובחרות - עוגיות בטעם שוקולד, מן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e2efcc62ebf13a9fde367f1f8a5b130a",
+      "name": "עוגיות מובחרות - עוגיות גרנולה, מן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2317fcc6523801596f50b0d54d1ab7b9",
+      "name": "עוגיות מחיטה מלאה, מן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f1d943b423bb080ef3fe3d4230488248",
+      "name": "עמילן תירס (קורנפלור)",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_300334866ab9a6452d530e8a7d5843e7",
+      "name": "פול טרי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9ad95d89f9162a788a5cc514687686dc",
+      "name": "פול מבושל עם מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e25e656b08df5ab769ec790ea323cd5d",
+      "name": "פול פריך בציפוי שום, קולומבוס - מוצרים מעולם אחר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d329e6c88dbcfc1bfdd294c4faaa0d6f",
+      "name": "פולי סויה טריים",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_00f2e01ebb997cbcf82d9f4e97710fd9",
+      "name": "פולי סויה מורתחים ללא מלח - אדממה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b8afac90e9d7de3e9d402f0558ac7e09",
+      "name": "פולי סויה קלויים ללא תוספת מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f38d723938348d5ff0cded17f71b13b3",
+      "name": "פופ סטאר בטעם חמאה, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7c097fb3414b07b189b261312a1a4513",
+      "name": "פופ סטאר בטעם טבעי, דנשר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_01bcfaec85db43e3482d4ddfc3643a57",
+      "name": "פופקורן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_94ebd503334bfebd4f1039c8dc7b243a",
+      "name": "פורל",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0d6c415894097f5d2d0e83e27577ebb8",
+      "name": "פטריות שיטאקי מיובשות, חוות תקוע",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a26566cf2ffa2b3a816502841905d8e7",
+      "name": "פיצה מרגריטה ללא גלוטן, גרין לייט",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_5b56e617a9dcb2fc2c4cacbafb1c6722",
+      "name": "פיצה עבה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8eed4428c902b602fd4a2b01d49522e5",
+      "name": "פיצה רגילה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_bdd6dc9eadd6eb89c6e2b6feee2d6ca4",
+      "name": "פיתה רגילה, דגנית עין בר",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9f425974402397d660d6cc278a5bc075",
+      "name": "פיתות כוסמין 100% קמח כוסמין מלא, טאוברד",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6c19780c6ed344283278a3c3dfdd3b11",
+      "name": "פנה - פתיתים על בסיס אורז וקינואה ללא גלוטן אורגני, נוטרה זן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d0b343af7eadc8f79bc4373a45bb08b5",
+      "name": "פקאנים קלויים-מיובשים",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7815a3fdf25cd5261ecb3695199f9271",
+      "name": "פתיתים פלוס עדשים, אסם",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_729c4c946d4286ed1ccb518712829ac1",
+      "name": "צימוקים בהירים ג`מבו, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1fb9eb13965eae27db1a2e94094a171b",
+      "name": "צימקאו, השחר העולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1660d32ab12bc39b3476e2eb10fd059d",
+      "name": "קבב פטריות טבעוני בתיבול מעודן, מרינה פטריות הגליל בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_36b5c56e01039bb83241bfb9de6bd35b",
+      "name": "קורנפלקס מלא, תלמה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_20a5610233a3d278c4507c0a01968ef6",
+      "name": "קמח אורז לבן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c6da49e3ddbb52c4a3d9d04d82cd01a2",
+      "name": "קמח תירס לבן",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b51cf603f65acb8dcae2d04edabb246e",
+      "name": "קמח תירס צהוב",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_96c8b2fcfb01773b8e0465ad447ab82f",
+      "name": "קמח תפוחי אדמה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_589a1d00f6f2721133a8eb2cf21648fd",
+      "name": "קסם הרימון - גרגירי רימון, יוגורט Bio 3% ודבש, עינת תעשיות מזון",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0cd4b05b6d00803758fa68024daf6c9e",
+      "name": "קרואסון גבינה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_102e5571d97bc496bdde985ce2854de9",
+      "name": "קרואסון חמאה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dd6000dd2d8caf606eabccbde4e6b68f",
+      "name": "קרואסון תפוחים",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7dc3eeda0d5bb605d0baad17272b1233",
+      "name": "קרוטונים",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d6599e9cb494f5eeee3c5f7802193300",
+      "name": "קרם מובחר בטעם שוקולד פרווה, השחר העולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_36a06a433ed08f0f5c92b5f5b4c3b1bd",
+      "name": "קרם מובחר בטעם שוקולד, השחר העולה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7b6ff7a3244963c54837b760de48a369",
+      "name": "קרפיון",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3d4f578930cd769a666f789341c75a02",
+      "name": "רוגעלך, אחוה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ccc673a61ab3c3fc064287b3918e3797",
+      "name": "שווארמה פטריות טבעונית בתיבול מעודן, מרינה פטריות הגליל בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_334622e767d0f511c7546919ee3a59db",
+      "name": "שומשום, מיה",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8ff78741874aafbb4e8e111dfb5ffc77",
+      "name": "שיפון של פעם - שיפון עגול, מאפית אחדות",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1d70ed8ad231a6d40ae8212cb0cd431b",
+      "name": "שעועית אדומה מבושלת ללא מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_aaafde1734574fda9a62fb1e94762cab",
+      "name": "שעועית ירוקה מבושלת עם מלח",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_5d2d85574fa6fc311a27047f4c2609ff",
+      "name": "תאנים מיובשות מובחרות, רפאל`ס",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a8af8a5c34a933fb337beacb82163a7d",
+      "name": "תמר - דקל נור",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_bfb61028ce7cbbc0a163d66495c7e788",
+      "name": "תמר הינדי",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_34f24b72999ab33975975b4381bd1560",
+      "name": "תנת`ה - ממתק ג`מבו תות חתוך על בסיס עמילן, טופ-גאם תעשיות ממתקים בע\"מ",
+      "department": "OTHER",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0bbec6abd28c683d515ae5c20deef758",
+      "name": "אבוקדו",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_fe6ce224c34bb9c54d4c6cc16ca0ea74",
+      "name": "אבטיח",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_75ccf1f669a96f1a6a88ffed82e53073",
+      "name": "אגס",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_53a8a89deaff6dd14a68f1f15d8be94b",
+      "name": "אוכמניות",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_396273bc4e5588cffc6239aed5461d02",
+      "name": "אננס",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1ef8e761466ae8e0f7b05a3094b9c7cd",
+      "name": "אספרגוס טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8bc24616cd827986f7c863006f571ecb",
+      "name": "אספרגוס מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7039ea7a28ae6e8ac675400d4523c7b8",
+      "name": "אפרסמון",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0554fc36d5b71030ef8f17069edf845b",
+      "name": "אפרסק",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9d443e9d66f585928900a226a52447f3",
+      "name": "ארטישוק - קנרס מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0e7ba9d3f8963c3b72e68b76bc6c1359",
+      "name": "אשכולית",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_114be914e589f62c2f0d318ac7d31a41",
+      "name": "אשכולית אדומה/ורודה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c83c391218799755567ea9d3b8ed66e4",
+      "name": "בזיליקום",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3081ea9dc711f32eb0fc64e799a34a22",
+      "name": "בזיליקום קצוץ, דורות",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e946fb62f811c2161fd2b076b6b5f45d",
+      "name": "בטטה אפויה עם קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f9f11ed413f8ead1dcd0648f51bb8615",
+      "name": "בטטה טריה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_809fd2a5cb1340bb5044e938a5775339",
+      "name": "בטטה מבושלת ללא קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3ed4e302aec3975207589afec7f52c83",
+      "name": "בטטה סגולה טריה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e69dff17bdc4d9a76f0722a677d98a46",
+      "name": "במיה טריה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3e27fa0c1557174a89f2c0d6d51fd43c",
+      "name": "במיה מבושלת",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d378fcf6cac1c8e42dee267ba09e4e7a",
+      "name": "בננה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_bb9feff1df134968ed3b4915bf89486c",
+      "name": "בננה מיובשת",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7402a2fbca4b09e25e9a576db8bd7b35",
+      "name": "בצל טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f0d8370ea533bcd1dc8484d782007fd8",
+      "name": "בצל ירוק",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7b5c4678eef2dc413d71a747328bef3f",
+      "name": "בצל מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6de4f100bf633a5996972719030eef47",
+      "name": "בצל סגול",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0db3c24c5a9609772960adcbc2bbb1e2",
+      "name": "ברוקולי טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b64e9e891cac7d01cfd5bcee3a8fc374",
+      "name": "ברוקולי מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b1ad9a86887f4fc2a3258dc61d5ba81a",
+      "name": "ברוקוליני טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_01de54a4da535a005d6ba721f9be61a6",
+      "name": "ג`ינג`ר כתוש, דורות",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f60b46ad0c7b17ba807d96139ab9e011",
+      "name": "גויאבה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_13f04c55b10bf4ee57335cfc56851c5e",
+      "name": "גזר טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dacdd1d202812fbd4172617846432edd",
+      "name": "גזר לבן (פארסניפ) טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_713765bb89bbd0d0a08aa1564f314f69",
+      "name": "גזר מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_61dc8e2ae3aece6843d91753edafb926",
+      "name": "דובדבנים חמוצים",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_af7481a638c0ee564d350c49d3ba71bc",
+      "name": "דובדבנים מתוקים",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9121a5269ed4acac9598ab9033040657",
+      "name": "דלורית אפויה ללא מלח",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_821d90b779f6ee513d636b6f79c9099d",
+      "name": "דלורית טריה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2d9ff6edcb2213176316518dce7a9553",
+      "name": "דלעת אפויה עם מלח",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f8e521bc5bfade1433dd6b32262e318e",
+      "name": "דלעת טריה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2ff455abac1dad70818a8083b1372813",
+      "name": "דלעת מבושלת",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0dafea3f74f9d336e4060f428d160703",
+      "name": "חזרת",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f707adc6e0ebf318a043866b7e931266",
+      "name": "חסה אדומה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_36e2ef4e02fb0792c72e555b6a8da585",
+      "name": "חסה אמריקאית",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_15e90457a69553ab866aaf1663bdda6c",
+      "name": "חסה ערבית",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a78e08cd6b8424bf4e83cb08b3908a43",
+      "name": "חציל טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d4fd72402c8827d001726540ef781117",
+      "name": "חציל מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_85b96d67f8a25bf6f9564f125b860ce9",
+      "name": "כוסברה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_320e0e019ed6f9d0d70543ad8967498f",
+      "name": "כרוב אדום טרי (כרוב סגול)",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6228cb77d3f2e57ce1d65284146ad5f0",
+      "name": "כרוב אדום מבושל (כרוב סגול)",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_fa096c45fbf844c745c6ba94e9ba1feb",
+      "name": "כרוב לבן טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_66fa65117779e29e9208e0ec4fe55f1a",
+      "name": "כרוב לבן מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b58582c139e80959faf07a00671c28b5",
+      "name": "כרוב ניצנים",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ca496b245334aa6709a0bab7a373d3bd",
+      "name": "כרוב ניצנים מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e6ffbd787ba8efb6a5f76486047b55e9",
+      "name": "כרובית טריה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1c86f9f84fb9abdeb337d21e537f8303",
+      "name": "כרובית מבושלת",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c82b596c92672171f5b673c5666bf4c1",
+      "name": "כרובית סגולה טריה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0535ce22ab01f945b42690f153949f5b",
+      "name": "כרישה טריה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ef01875cd13791158ab4da33b37b2c9c",
+      "name": "כרישה מבושלת",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3a2859d0a2bed0d37d9c97ce636fbb16",
+      "name": "ליים",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1769e4b74a2930a651c266d665f65230",
+      "name": "לימון ללא קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d31aabf8a896f82520235003cce78d2c",
+      "name": "לימון עם קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1d4dd66d8eee2b206e1163f2693bbbbb",
+      "name": "ליצ`י",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3c06236d4565238501b28bfacbeb264d",
+      "name": "לפת טריה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_419a16c98cc7189b694c5d46cd0481f2",
+      "name": "מלון",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_06c21ce613d9cd682841d64f0a48b1ac",
+      "name": "מלפפון ללא קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0649f6bee60b61dc9cf80f40f06d2d9f",
+      "name": "מלפפון עם קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_efc180db916dacf376342e37ac0db77e",
+      "name": "מנגו",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_93e9c1f813ba7fcb12c1f83c3654736f",
+      "name": "מנדרינה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f185f07f274899a9f065719b538eefc4",
+      "name": "משמש",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3f8c475b350eb584f25f4974ca576e56",
+      "name": "משמש מיובש",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b2e502bdf7ee41c4d42c888759653d0e",
+      "name": "נבטי צנונית",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_79d150b2dc0dc7df00a426a8fe4ff9db",
+      "name": "סברס - צבר",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_bedeac11fa4cde586da2f97a67a538ab",
+      "name": "סלק טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_05b057a6e86a551eb100688c628e4c92",
+      "name": "סלק מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_5fc2c5212a0bfb56e6b2b9aa2244520d",
+      "name": "סלרי - כרפס טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_826db6dfa147199852bcc739d492fb44",
+      "name": "סלרי - כרפס מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_42d4c60eb0d6d2765da994ca8127cc5e",
+      "name": "עגבניות שרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_29623710e5d085fbba6370847945324d",
+      "name": "עגבנייה טרייה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_926daf93b2f9a3afa515534388753b2d",
+      "name": "עגבנייה מבושלת",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_48f5d4db6a1dbf4bbee4e97b916ace68",
+      "name": "עגבנייה מיובשת",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d3617d5f146f09abbc8f11c85576db67",
+      "name": "ענבים ירוקים או אדומים",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6833ce645a0dd750886238b1fea3b79b",
+      "name": "פומלה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f768bce6fe2fca193628cbca453b4e7f",
+      "name": "פטרוזיליה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d374ef2ef48d9b51bea4f92416c0f768",
+      "name": "פטרוזיליה קצוצה, דורות",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3df5b243e09319f7994815b52f7034dc",
+      "name": "פטריות טריות",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ace373e408b418debd9887072acddb27",
+      "name": "פטריות מבושלות",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0d182632eb0a04da69e2685ebb48c5fc",
+      "name": "פטריות פורטבלו טריות",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_71f2f9a3e457c325658d03ab90be2782",
+      "name": "פטריות פורטבלו צלויות",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d01c05fc825213ef27f3c65348bf16e6",
+      "name": "פלפל אדום חריף",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8980d84e0ae0a69199ca0d4ae81ec720",
+      "name": "פלפל אדום טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_53fd353ce88a34465b2e4d14d0fa6c7b",
+      "name": "פלפל אדום מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1f1be8768d06e53341f895575bb76047",
+      "name": "פלפל ירוק חריף",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1ae8585e7d119ecbdae97f7fd2739130",
+      "name": "פלפל ירוק טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0ff50a4e5ff9f18bc35d4888388efcb9",
+      "name": "פלפל ירוק מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1af59a496de30f349e96dacee371e1e8",
+      "name": "פלפל צהוב טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3c8f7e2b445f9b1c4036c671a987a72f",
+      "name": "פפאיה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_043f361d0419d300ccaadb36b4777039",
+      "name": "פפאיה מיובשת",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_94e814c0c5d4537f07b4c5a4d93f3562",
+      "name": "צימוקים",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b6968ad533c8ed392bc28d6ca0493ce5",
+      "name": "צנון טרי - צנונית טריה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f60892dc18d6300d2013be3fc7d42be9",
+      "name": "קולורבי טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_25326a6ae02edca694c71553e87a4c28",
+      "name": "קולורבי מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ddbde8bc841d7b4aa17f59071662d7a4",
+      "name": "קוקוס",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b123b32df403b534463f71afac0cbdf0",
+      "name": "קוקוס מיובש מתוק",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_18dab107709de17769e4ed98091fb94f",
+      "name": "קיווי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_53e1e044c42e5e4b4d501f25c4415e8b",
+      "name": "קישוא (חורף) מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_313f5e74dd6821de89d0566f4471d320",
+      "name": "קישוא (קיץ) מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d7497928eb86274e98273942d15a49ea",
+      "name": "קישוא בייבי זוקיני טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_20c0f99c25627279a9029d66ead365e7",
+      "name": "קליפת לימון",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_fb8330a35131bad5ac8abe555f7229e7",
+      "name": "קליפת תפוז",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c242f63bd698adaafd9d6f9497838e7a",
+      "name": "קלמנטינה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c6306c99ed2098436410f62a37e9b9fc",
+      "name": "קרמבולה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b8f70cf2ea53d449c0e4d8ef0bfd5b84",
+      "name": "רימון",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_264f2ccea6992efdf63abfcbc6c03179",
+      "name": "שבת - שמיר",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f44b07a38de8113db8a0d94d0ac3b024",
+      "name": "שום טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_62cec6239f6dedab436c9860ba8b8bc2",
+      "name": "שום כתוש, דורות",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_962ad56ab50df2a5de8ef591c74ee61b",
+      "name": "שום שחור",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_03a84856ad314ef21095e33a1d26d1b9",
+      "name": "שומר טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e4356a394dbf4552949a7d29046503fd",
+      "name": "שזיף",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_424371056074d2285bd8464d0323ed19",
+      "name": "שזיף מיובש",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_98931375676daaf4095a44bac0b22340",
+      "name": "שסק",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_862407bce1d4137874dfdec130c08e73",
+      "name": "שעועית ירוקה טריה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2b90a0938c81dac56e8ce314dbdbba01",
+      "name": "שעועית ירוקה מבושלת ללא מלח",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_53de136b867eab126a7ab45f3ed4b86c",
+      "name": "שעועית צהובה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_da09d8638cd6b5153c37d2362dc6a424",
+      "name": "שעועית צהובה מבושלת ללא מלח",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_3e26812896b83671140387fd9b598227",
+      "name": "תאנים טריות",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_54c61c56ece4a2c5ba9c8faa7aa53d07",
+      "name": "תאנים מיובשות",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_73c865b1b470383be6e674d9acbb7c15",
+      "name": "תות עץ",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9a6cc0ad180010ca61f704bd28098b11",
+      "name": "תות שדה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_7c40d9f6e8b220840b8a4491535ba0e3",
+      "name": "תירס לבן",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_fdcc4fb463e888ef2fab8667f14ece81",
+      "name": "תירס מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_4810b38d3bd49a171addc9e0e04e847a",
+      "name": "תירס צהוב טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_121e6af3671e3a87962689a4929599ad",
+      "name": "תמר - מג`הול",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "store_hahishook_3939",
+      "name": "תמר מג'הול",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "fd_87dc8f405e361a48540b3b8bf18745a5",
+      "name": "תפוז",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8c579bf9c2848261bce23cf4d6904052",
+      "name": "תפוח אדמה אפוי ללא קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_eab32790d7fafcc91bab5bed6832825c",
+      "name": "תפוח אדמה אפוי עם קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_24b77c7dd4e82044bc0e683ec3a65b5f",
+      "name": "תפוח אדמה מבושל ללא קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f0fa40a51dcc3f06c63f49787dd5725b",
+      "name": "תפוח אדמה מבושל עם קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_b007845f516d5d908c595fbf390d9469",
+      "name": "תפוח עץ ללא קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_8fd3c94827e21231d9c095252c16ad87",
+      "name": "תפוח עץ מבושל ללא קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9388eae2de98f5c94f966e7ced20c518",
+      "name": "תפוח עץ מיובש",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_641eeaa8276cf89ad13d4c6f9ca0e89a",
+      "name": "תפוח עץ עם קליפה",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e41f9b9801d4a997d3b3bf3aca4cf9ed",
+      "name": "תרד טרי",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6bccd9d66105ce3dddceea274a7c84d0",
+      "name": "תרד מבושל",
+      "department": "PRODUCE",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0a6c825e929b80589c3258f58182c182",
+      "name": "אבקת שום",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2f20ff60e62eeac6ff7795115e393dbc",
+      "name": "בזיליקום מיובש",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d1cc64c62ea3ed2caa162f15a7ddd582",
+      "name": "זרעי כוסברה",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_de10b4a9f19fb0740a4b2569d1aaad08",
+      "name": "זרעי סלרי",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_429ca96adcf014f35308b60a5d84cfc8",
+      "name": "זרעי שבת - שמיר",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_2c92bb6a40f381f62ac7e0d86e3342bb",
+      "name": "זרעי שומר",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_df62763239f86003887ad3be4c184c68",
+      "name": "חומץ - סיידר",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_5bcc65fe59c18bb8d9629084ef11e6b0",
+      "name": "חומץ בלסמי",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0abea6ce50a986eee233b9a020381955",
+      "name": "חרדל",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_a8b6bb8d0762bae36b94bfed0c061069",
+      "name": "טחינה גלילית משובחת - טחינה אורגנית, הנסיך",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_05866edd82701f061b803286edc68f73",
+      "name": "טחינה גלילית משובחת - שומשום טהור, הנסיך",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_fb318af6dd4242bcd3685d0041167324",
+      "name": "טחינה גלילית משובחת - שומשום מלא, הנסיך",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_dbebecc6f8f97b0f254261961b92b366",
+      "name": "טחינה גלילית משובחת - תיבול ים תיכוני, הנסיך",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_fbf7ffc3b19dc00cfe00c9753ccf7fa7",
+      "name": "כוסברה מיובשת",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "store_hahishook_126513",
+      "name": "עמבה",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "fd_9a3fb311e2ef9030959ec95ea8416daf",
+      "name": "פטרוזיליה מיובשת",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "store_hahishook_4071",
+      "name": "רוטב טריאקי",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "store_hahishook_4080",
+      "name": "רוטב סויה",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "cmvtpcjvj000tux00jd4hyqwq",
+      "name": "רוטב עגבניות לפיצה",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_f312f44399a5a61265fefa8fabe1220c",
+      "name": "שבת - שמיר מיובש",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0e412721314c7d7c4f97030f52f3e6f0",
+      "name": "שמן אגוזי לוז",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmvzblzhv0005uxggmjz2i0n6",
+      "name": "שמן זית",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "store_hahishook_659915",
+      "name": "שמן קוקוס",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "store_hahishook_610304",
+      "name": "שמן שומשום",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "fd_9d95a9abdc9e9e29f06e006e3d57ab1b",
+      "name": "שמן שיבולת שועל",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_aadfe93121657524d52021327308f2a0",
+      "name": "שמן שקדים",
+      "department": "SAUCES_OILS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmqcoza7e0005uxq45569o3ma",
+      "name": "Protein Halva",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_8e613df203edfec2da503858d8df0ea7",
+      "name": "אגוזי לוז",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0890e42fabcfef02db7d288943667aea",
+      "name": "אגוזי לוז מיובשים - קלויים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_db682777606a689d2afb691fa8775b29",
+      "name": "אגוזי מלך",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_befda187f8ff1b50b96a315de91edd09",
+      "name": "אגוזי קשיו",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d7f20e8394b4393710d4c965829a4de8",
+      "name": "אגוזי קשיו קלויים מיובשים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ee3cc4ff454db676fad7017d8156e994",
+      "name": "בוטנים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_bce4880c57b0b9b8f0598d166f34f8f0",
+      "name": "בוטנים קלויים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e6ba662c0c90e400030a9e2bd1fc6e0b",
+      "name": "בוטנים קלויים עם מלח",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmvzabc5p0009uxikmrjwqrgr",
+      "name": "במבה",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_1531a784710e20ca28a4116430e87e69",
+      "name": "גרעיני אבטיח מיובשים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_14ff4a0fe8c3f8917f4b1ceaba1eb34b",
+      "name": "גרעיני דלעת קלויים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_1e222235a3a0a9c681135fa1d561cb02",
+      "name": "גרעיני חמנייה קלויים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_870ac4505a12358c815f7c8b0fb63cf3",
+      "name": "גרעיני חמנייה קלויים עם מלח",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_d4a7502ddb8c53d30238743ad5aa0ed3",
+      "name": "חלוה",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_179cfe88799b90ec94d73c350d7c4596",
+      "name": "מוס שוקולד",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "store_hahishook_425938",
+      "name": "מרשמלו",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    },
+    {
+      "id": "fd_436b9278ebb7a29fe71cbf019b6981cb",
+      "name": "סוכריות גומי",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_47f18c191c34420dd657b4d36bba6cda",
+      "name": "סוכריות טופי",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_0e9d172c0526d9bac7092c35dcf26788",
+      "name": "ערמונים אירופאים מבושלים-מורתחים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_c3e7ef859084cc43ca5e8f1606b14fb9",
+      "name": "ערמונים אירופאים מיובשים-מקולפים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_f30275eb0e26a77282aa663aab996217",
+      "name": "ערמונים אירופאים מקולפים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_fdacc1042d357ea8f3556d94317eef6b",
+      "name": "ערמונים אירופאים קלויים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9e4e47865d75cd97569b23a9323f926a",
+      "name": "פיסטוק חלבי",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ecb79ae7ff4863fe003ccbb73b455a20",
+      "name": "פיסטוק חלבי קלוי-מיובש",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_e2e303b20f7fdfe3e47fec691803f95d",
+      "name": "פקאנים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_9235c3feefb88ba802b78c76bf397355",
+      "name": "שקדים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_09cf0bb5b46ecaf9052bbc9026c1ef98",
+      "name": "שקדים קלויים מיובשים",
+      "department": "SNACKS_SWEETS",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_82b5f2f8178111f5f987c177ace81927",
+      "name": "אנשובי אירופאי משומר בשמן",
+      "department": "SPREADS_CANNED",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_6a4a07a3954f0baf04322411067b14c0",
+      "name": "דבש",
+      "department": "SPREADS_CANNED",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_40a3dda9b2dc3c534e52ebff310c0f7e",
+      "name": "חמאת בוטנים",
+      "department": "SPREADS_CANNED",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmvqs3mhf001mux1kgz84k7gz",
+      "name": "חמאת בוטנים טבעית",
+      "department": "SPREADS_CANNED",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "fd_df5905a9446eacf65a82eec538a6e825",
+      "name": "חציל כבוש",
+      "department": "SPREADS_CANNED",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "fd_ce9a7d190db9cebc422e01745f562254",
+      "name": "מלפפון כבוש - חמוץ",
+      "department": "SPREADS_CANNED",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "FOODSDICTIONARY"
+    },
+    {
+      "id": "cmw0tkg840001uxagby4r5wjr",
+      "name": "סילאן טבעי",
+      "department": "SPREADS_CANNED",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "open_food_facts"
+    },
+    {
+      "id": "store_hahishook_679643",
+      "name": "ריבת חלב",
+      "department": "SPREADS_CANNED",
+      "category": null,
+      "subCategory": null,
+      "externalProvider": "HAHISHOOK_STORE"
+    }
+  ]
+}

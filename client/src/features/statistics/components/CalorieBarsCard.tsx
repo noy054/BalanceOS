@@ -222,7 +222,7 @@ const useStyles = () =>
         color: colors.textSecondary,
       },
       valueSelected: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
       },
       bar: {
@@ -259,7 +259,7 @@ const useStyles = () =>
       },
       axisSelected: {
         color: colors.textPrimary,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
       },
       legend: {
         flexWrap: "wrap",

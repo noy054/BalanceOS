@@ -57,6 +57,6 @@ const useStyles = () =>
         padding: spacing.md,
       },
       text: { ...typography.footnote, color: colors.textSecondary },
-      strong: { ...typography.footnote, ...typography.number, fontFamily: fonts.semibold, color: colors.textPrimary },
+      strong: { ...typography.footnote, ...typography.number, fontFamily: fonts.medium, color: colors.textPrimary },
     }),
   );

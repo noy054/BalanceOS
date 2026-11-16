@@ -1,7 +1,14 @@
-import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {
+  Max,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
-const MEAL_TYPES = [
+export const MEAL_TYPES = [
   'BREAKFAST',
   'LUNCH',
   'DINNER',
@@ -42,4 +49,11 @@ export class AddMealItemDto {
   @Min(0.0001)
   @Type(() => Number)
   servings?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0.01)
+  @Max(1000)
+  @Type(() => Number)
+  portions?: number;
 }

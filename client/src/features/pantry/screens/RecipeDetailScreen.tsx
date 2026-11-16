@@ -1,3 +1,4 @@
+import { AppBackdrop } from "../../../shared/components/ui/AppBackdrop";
 import { Alert, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -7,6 +8,7 @@ import { router } from "expo-router";
 import { useRecipe, useDeleteRecipe } from "../hooks/useRecipes";
 import { useFoodCardModels, FOOD_ICONS } from "../hooks/useFoodCardModels";
 import { NutritionTotals } from "../components/nutrition/NutritionTotals";
+import { RecipePortionSummary } from "../components/recipes/RecipePortionsCard";
 import { DetailHero } from "../components/food/DetailHero";
 import { FoodLineItem } from "../components/food/FoodLineItem";
 import { isAmbiguousName, useDuplicateNames } from "../helpers/duplicateNames";
@@ -87,6 +89,7 @@ export function RecipeDetailScreen({ id }: Props) {
 
   return (
     <SafeAreaView style={styles.root} edges={["top"]}>
+      <AppBackdrop />
       <ScreenHeader
         title={t("recipeDetail.title")}
         rightElement={
@@ -101,6 +104,7 @@ export function RecipeDetailScreen({ id }: Props) {
       />
 
       <ScrollView
+        keyboardShouldPersistTaps="handled"
         style={styles.scroll}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -126,6 +130,13 @@ export function RecipeDetailScreen({ id }: Props) {
           <SectionHeader title={t("recipeDetail.totalsSection")} />
           <NutritionTotals totals={recipe.totals} label={t("foodCard.recipeTotal")} />
         </View>
+
+        {recipe.portionPlan && (recipe.portionPlan.status === "ok" || recipe.cookedWeightG) ? (
+          <View>
+            <SectionHeader title={t("portions.title")} />
+            <RecipePortionSummary plan={recipe.portionPlan} cookedWeightG={recipe.cookedWeightG ?? null} />
+          </View>
+        ) : null}
 
         <View>
           <SectionHeader title={t("recipeDetail.ingredientsSection")} />

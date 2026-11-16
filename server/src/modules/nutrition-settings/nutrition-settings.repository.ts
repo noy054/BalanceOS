@@ -17,6 +17,28 @@ export class NutritionSettingsRepository {
     });
   }
 
+  async findRecentWeighIns(
+    userId: string,
+    limit = 30,
+  ): Promise<{ date: string; weightKg: number }[]> {
+    const entries = await this.prisma.bodyEntry.findMany({
+      where: { userId, weightKg: { not: null } },
+      orderBy: [{ date: 'desc' }, { createdAt: 'desc' }],
+      take: limit,
+      select: { date: true, weightKg: true },
+    });
+    const byDate = new Map<string, number>();
+    for (const entry of entries) {
+      if (entry.weightKg !== null && !byDate.has(entry.date)) {
+        byDate.set(entry.date, entry.weightKg);
+      }
+    }
+    return [...byDate.entries()].map(([date, weightKg]) => ({
+      date,
+      weightKg,
+    }));
+  }
+
   async upsert(
     userId: string,
     dto: UpsertNutritionSettingsDto,
@@ -29,6 +51,7 @@ export class NutritionSettingsRepository {
       targetMode: dto.targetMode,
       onboardingCompleted: dto.onboardingCompleted,
       preferredLanguage: dto.preferredLanguage,
+      marketCode: dto.marketCode,
       dailyCaloriesTarget: dto.dailyCaloriesTarget,
       proteinTarget: dto.proteinTarget,
       carbsTarget: dto.carbsTarget,
@@ -72,6 +95,7 @@ export class NutritionSettingsRepository {
       targetMode: dto.targetMode,
       onboardingCompleted: dto.onboardingCompleted,
       preferredLanguage: dto.preferredLanguage,
+      marketCode: dto.marketCode,
       dailyCaloriesTarget: dto.dailyCaloriesTarget,
       proteinTarget: dto.proteinTarget,
       carbsTarget: dto.carbsTarget,

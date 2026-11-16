@@ -82,7 +82,7 @@ export const useStyles = () =>
       },
 
       dayChipTextActive: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.onAccent,
       },
 

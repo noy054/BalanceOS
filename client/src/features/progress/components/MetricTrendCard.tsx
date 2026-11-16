@@ -48,15 +48,21 @@ export function MetricTrendCard({ metric, summary, formatDate }: Props) {
           <Text style={styles.heroValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
             {number(summary.end.value)}
           </Text>
-          <Text style={styles.heroUnit}>{unit}</Text>
+          <Text style={styles.heroUnit} numberOfLines={1}>
+            {unit}
+          </Text>
         </View>
-        <Text style={styles.caption}>{t("overview.lastRecorded", { date: formatDate(summary.end.date) })}</Text>
+        <Text style={styles.caption} numberOfLines={1}>
+          {t("overview.lastRecorded", { date: formatDate(summary.end.date) })}
+        </Text>
         {summary.change !== null ? (
           <View style={[styles.changePill, dir.row]}>
-            <Text style={styles.changeValue}>
-              {formatChange(summary.change, i18n.language)} {unit}
+            <Text style={styles.changeValue} numberOfLines={1}>
+              {`${formatChange(summary.change, i18n.language)} ${unit}`}
             </Text>
-            <Text style={styles.changeSince}>{t("overview.changeSince", { date: formatDate(summary.start.date) })}</Text>
+            <Text style={styles.changeSince} numberOfLines={1}>
+              {t("overview.changeSince", { date: formatDate(summary.start.date) })}
+            </Text>
           </View>
         ) : null}
       </View>
@@ -101,36 +107,52 @@ const useStyles = () =>
       container: { gap: spacing.md },
       hero: {
         alignItems: "center",
-        gap: spacing.xxs,
-        paddingVertical: spacing.md,
+        paddingTop: spacing.sm,
+        paddingBottom: spacing.md,
       },
       heroLabel: { ...typography.label, color: colors.textSecondary, textAlign: "center" },
-      heroValueRow: { alignItems: "baseline", justifyContent: "center", gap: spacing.xs, maxWidth: "100%" },
+      heroValueRow: {
+        alignItems: "baseline",
+        justifyContent: "center",
+        gap: spacing.sm,
+        maxWidth: "100%",
+        marginTop: spacing.xxs,
+      },
       heroValue: {
-        ...typography.display,
         ...typography.number,
-        fontFamily: fonts.bold,
-        fontSize: 56,
-        lineHeight: 64,
-        letterSpacing: -1,
+        fontFamily: fonts.medium,
+        fontSize: 52,
+        lineHeight: 60,
+        letterSpacing: -0.5,
         color: colors.textPrimary,
         flexShrink: 1,
       },
-      heroUnit: { ...typography.headline, color: colors.textSecondary },
-      caption: { ...typography.caption, color: colors.textMuted, textAlign: "center" },
+      heroUnit: {
+        fontFamily: fonts.regular,
+        fontSize: 20,
+        lineHeight: 24,
+        color: colors.textSecondary,
+      },
+      caption: {
+        ...typography.footnote,
+        marginTop: spacing.xs,
+        color: colors.textMuted,
+        textAlign: "center",
+      },
       changePill: {
-        alignItems: "baseline",
-        gap: spacing.xs,
-        marginTop: spacing.sm,
-        paddingHorizontal: spacing.ms,
-        paddingVertical: spacing.xs,
+        alignItems: "center",
+        gap: spacing.sm,
+        maxWidth: "100%",
+        marginTop: spacing.ms,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.sm - 2,
         borderRadius: radius.round,
         borderWidth: StyleSheet.hairlineWidth,
         borderColor: colors.glassBorder,
         backgroundColor: colors.glassCard,
       },
       changeValue: { ...typography.bodyStrong, ...typography.number, color: colors.textPrimary },
-      changeSince: { ...typography.caption, color: colors.textSecondary },
+      changeSince: { ...typography.footnote, flexShrink: 1, color: colors.textSecondary },
       chartCard: {
         gap: spacing.md,
         padding: spacing.md,
@@ -147,7 +169,7 @@ const useStyles = () =>
       },
       stat: { flex: 1, minWidth: 0, alignItems: "center", gap: 2 },
       statLabel: { ...typography.caption, color: colors.textMuted },
-      statValue: { ...typography.footnote, ...typography.number, fontFamily: fonts.semibold, color: colors.textPrimary },
+      statValue: { ...typography.footnote, ...typography.number, fontFamily: fonts.medium, color: colors.textPrimary },
       empty: { ...typography.callout, color: colors.textSecondary, textAlign: "center" },
     }),
   );

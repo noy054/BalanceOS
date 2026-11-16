@@ -30,6 +30,7 @@ export type AmountChange = ReturnType<EditableAmount["toPayload"]>;
 type Props = {
   name: string;
   source: AmountSource;
+  allowZero?: boolean;
   onPreview: (change: AmountChange) => void;
   onCommit: (change: AmountChange) => void;
 };
@@ -43,12 +44,15 @@ export function useAmountUnitLabel() {
         ? t("itemSheet.unitMilliliters")
         : amount?.kind === "units"
           ? (amount.unit ?? t("itemSheet.unitServings"))
-          : t("itemSheet.unitServings");
+          : amount?.kind === "portions"
+            ? t("itemSheet.unitPortions")
+            : t("itemSheet.unitServings");
 }
 
 export function InlineQuantityEditor({
   name,
   source,
+  allowZero = false,
   onPreview,
   onCommit,
 }: Props) {
@@ -56,7 +60,8 @@ export function InlineQuantityEditor({
   const styles = useStyles();
   const dir = useDirection();
   const unitLabelOf = useAmountUnitLabel();
-  const amount = editableAmount(source);
+  const amount = editableAmount(source, { allowZero });
+  const parse = (value: string) => parseAmountInput(value, allowZero);
   const initial = amount?.initial ?? null;
   const [text, setText] = useState(
     initial != null ? formatAmountInput(initial) : "",
@@ -81,7 +86,7 @@ export function InlineQuantityEditor({
 
   if (!amount) return null;
   const unitLabel = unitLabelOf(amount);
-  const current = parseAmountInput(text);
+  const current = parse(text);
 
   function commit(value: string) {
     if (timer.current) {
@@ -90,7 +95,7 @@ export function InlineQuantityEditor({
     }
     editing.current = false;
     if (!amount) return;
-    const parsed = parseAmountInput(value);
+    const parsed = parse(value);
     if (parsed == null) {
       const fallback = synced.current ?? amount.initial;
       setText(formatAmountInput(fallback));
@@ -106,7 +111,7 @@ export function InlineQuantityEditor({
   function change(value: string) {
     setText(value);
     if (!amount) return;
-    const parsed = parseAmountInput(value);
+    const parsed = parse(value);
     editing.current = true;
     if (parsed != null) onPreview(amount.toPayload(parsed));
     if (timer.current) clearTimeout(timer.current);
@@ -118,7 +123,7 @@ export function InlineQuantityEditor({
 
   function step(direction: 1 | -1) {
     if (!amount) return;
-    const base = parseAmountInput(text) ?? amount.initial;
+    const base = parse(text) ?? amount.initial;
     const stepped = Math.round((base + direction * amount.step) * 100) / 100;
     const next = Math.max(
       amount.min,
@@ -266,7 +271,7 @@ const useStyles = () =>
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 8,
-        backgroundColor: withAlpha(colors.gloss, 0.05),
+        backgroundColor: withAlpha(colors.tint, 0.05),
       },
       multiplierSelected: {
         backgroundColor: withAlpha(colors.calorieGauge, 0.2),
@@ -274,7 +279,7 @@ const useStyles = () =>
       multiplierText: {
         ...typography.caption,
         ...typography.number,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textSecondary,
       },
       multiplierTextSelected: {
@@ -286,7 +291,7 @@ const useStyles = () =>
         padding: 3,
         borderRadius: CONTROL_HEIGHT / 2,
         borderWidth: StyleSheet.hairlineWidth,
-        borderColor: withAlpha(colors.gloss, 0.08),
+        borderColor: withAlpha(colors.tint, 0.08),
         backgroundColor: withAlpha(colors.canvas, 0.55),
       },
       stepperRow: {
@@ -301,10 +306,10 @@ const useStyles = () =>
         alignItems: "center",
         justifyContent: "center",
         borderRadius: (CONTROL_HEIGHT - 6) / 2,
-        backgroundColor: withAlpha(colors.gloss, 0.1),
+        backgroundColor: withAlpha(colors.tint, 0.1),
       },
       buttonPressed: {
-        backgroundColor: withAlpha(colors.gloss, 0.18),
+        backgroundColor: withAlpha(colors.tint, 0.18),
       },
       buttonAccent: {
         backgroundColor: withAlpha(colors.calorieGauge, 0.28),
@@ -325,7 +330,7 @@ const useStyles = () =>
         minWidth: 0,
         ...typography.callout,
         ...typography.number,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
         paddingVertical: 0,
         paddingHorizontal: 0,

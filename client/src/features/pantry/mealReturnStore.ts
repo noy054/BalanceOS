@@ -3,10 +3,18 @@ import { PantryProduct } from "./types";
 
 export type ProductReturnTarget = "meal" | "savedMeal";
 
+export type SuperPick = {
+  target: ProductReturnTarget;
+  returnHref: { pathname: string; params: Record<string, string> };
+};
+
 type MealReturnStore = {
   pending: { target: ProductReturnTarget; product: PantryProduct } | null;
+  superPick: SuperPick | null;
   setPending: (target: ProductReturnTarget, product: PantryProduct) => void;
   take: (target: ProductReturnTarget) => PantryProduct | null;
+  startSuperPick: (pick: SuperPick) => void;
+  endSuperPick: () => void;
 };
 
 export function isProductReturnTarget(value: string | undefined): value is ProductReturnTarget {
@@ -15,7 +23,10 @@ export function isProductReturnTarget(value: string | undefined): value is Produ
 
 export const useMealReturn = create<MealReturnStore>((set, get) => ({
   pending: null,
+  superPick: null,
   setPending: (target, product) => set({ pending: { target, product } }),
+  startSuperPick: (pick) => set({ superPick: pick }),
+  endSuperPick: () => set({ superPick: null }),
   take: (target) => {
     const pending = get().pending;
     if (!pending || pending.target !== target) return null;

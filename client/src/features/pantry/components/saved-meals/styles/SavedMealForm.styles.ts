@@ -29,7 +29,7 @@ export const useStyles = () =>
 
       fieldLabel: {
         fontSize: 13,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         color: colors.textSecondary,
       },
 
@@ -41,7 +41,7 @@ export const useStyles = () =>
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm2,
         fontSize: 15,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         color: colors.textPrimary,
         minHeight: 50,
       },
@@ -52,7 +52,7 @@ export const useStyles = () =>
 
       errorText: {
         fontSize: 12,
-        fontFamily: fonts.bold,
+        fontFamily: fonts.semibold,
         color: colors.danger,
         marginTop: spacing.xs,
       },

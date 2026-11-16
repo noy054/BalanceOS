@@ -8,18 +8,21 @@ import { NutritionStrip } from '../../pantry/components/nutrition/NutritionStrip
 import { AmountUnit, getServing, hasServing, toAmountPayload } from '../../pantry/helpers/serving';
 import { useServingFormat } from '../../pantry/hooks/useServingFormat';
 import { CalculatedNutrition } from '../../pantry/types';
-import { SelectedItem } from '../hooks/useMealSelection';
+import { leftoverPortionQuantity, SelectedItem, SelectionUnit } from '../hooks/useMealSelection';
+import { formatGrams } from '../../../shared/helpers/formatNumber';
 
 type Props = {
   selected: SelectedItem;
   quantity: string;
-  unit: AmountUnit;
-  unitOptions: AmountUnit[];
+  unit: SelectionUnit;
+  unitOptions: SelectionUnit[];
   nutrition: CalculatedNutrition | null;
   onChangeQuantity: (value: string) => void;
-  onChangeUnit: (unit: AmountUnit) => void;
+  onChangeUnit: (unit: SelectionUnit) => void;
+  onPickLeftover?: () => void;
   onStep: (direction: 1 | -1) => void;
   onDeselect: () => void;
+  onQuantityFocusChange?: (focused: boolean) => void;
 };
 
 export function SelectionPanel({
@@ -32,6 +35,8 @@ export function SelectionPanel({
   onChangeUnit,
   onStep,
   onDeselect,
+  onQuantityFocusChange,
+  onPickLeftover,
 }: Props) {
   const { t } = useTranslation('dashboard');
   const { t: tp } = useTranslation('pantry');
@@ -41,12 +46,28 @@ export function SelectionPanel({
 
   const product = selected.kind === 'product' ? selected.item : null;
   const servingLabel = (product && getServing(product)?.unit) || t('addItem.servingsLabel');
-  const unitLabelOf = (option: AmountUnit) =>
+  const unitLabelOf = (option: SelectionUnit) =>
     option === 'grams'
       ? t('addItem.gramsLabel')
       : option === 'milliliters'
         ? tp('product.millilitersUnit')
-        : selected.kind === 'recipe' ? t('addItem.servingsLabel') : servingLabel;
+        : option === 'portions'
+          ? t('addItem.unitPortions')
+          : selected.kind === 'recipe' ? t('addItem.unitBatch') : servingLabel;
+  const recipe = selected.kind === 'recipe' ? selected.item : null;
+  const leftoverQuantity = recipe ? leftoverPortionQuantity(recipe) : null;
+  const portionGrams =
+    recipe?.portionPlan?.status === 'ok' ? recipe.portionPlan.portion.grams : null;
+  const recipeSummary = (value: number) =>
+    unit === 'portions'
+      ? `${t('meals.recipePortions', { count: value })}${portionGrams != null ? ` · ${t('meals.recipeGrams', { value: formatGrams(portionGrams * value) })}` : ''}`
+      : unit === 'grams'
+        ? t('meals.recipeGrams', { value: formatGrams(value) })
+        : t('meals.recipeServings', { count: value });
+  const leftoverGrams =
+    recipe?.portionPlan?.status === 'ok' && recipe.portionPlan.leftover?.grams != null
+      ? recipe.portionPlan.leftover.grams
+      : null;
 
   const parsed = parseFloat(quantity.replace(',', '.'));
   const hasAmount = !Number.isNaN(parsed) && parsed > 0;
@@ -57,9 +78,11 @@ export function SelectionPanel({
     selected.kind === 'savedMeal'
       ? t('addItem.wholeMeal')
       : hasAmount
-        ? product
+        ? product && unit !== 'portions'
           ? servingFormat.amount(product, toAmountPayload(product, parsed, unit))
-          : `${quantity} ${unitLabelOf(unit)}`
+          : recipe
+            ? recipeSummary(parsed)
+            : `${quantity} ${unitLabelOf(unit)}`
         : t('addItem.enterQuantity');
 
   const hasQuantity = selected.kind !== 'savedMeal';
@@ -87,7 +110,7 @@ export function SelectionPanel({
       <NutritionStrip nutrition={nutrition} />
 
       {hasQuantity ? (
-        <View style={[styles.controls, dir.row]}>
+        <View style={[styles.controls, unitOptions.length > 2 ? styles.controlsStacked : dir.row]}>
           <View style={[styles.stepper, styles.stepperLtr]}>
             <IconButton
               icon="minus"
@@ -104,8 +127,9 @@ export function SelectionPanel({
               onChangeText={onChangeQuantity}
               placeholder={t('addItem.quantityPlaceholder')}
               placeholderTextColor={colors.textMuted}
-              selectTextOnFocus
               autoFocus={needsQuantity}
+              onFocus={() => onQuantityFocusChange?.(true)}
+              onBlur={() => onQuantityFocusChange?.(false)}
               textAlign="center"
               accessibilityLabel={`${selected.item.name}, ${unitLabelOf(unit)}`}
             />
@@ -147,6 +171,20 @@ export function SelectionPanel({
           )}
         </View>
       ) : null}
+
+      {leftoverQuantity != null && onPickLeftover ? (
+        <Pressable
+          onPress={onPickLeftover}
+          accessibilityRole="button"
+          style={({ pressed }) => [styles.leftoverChip, dir.row, pressed && styles.leftoverPressed]}
+        >
+          <Text style={styles.leftoverText} numberOfLines={1}>
+            {t('addItem.leftoverPick', {
+              grams: leftoverGrams != null ? `${formatGrams(leftoverGrams)} ${t('addItem.gramsLabel')}` : `${formatGrams(leftoverQuantity)} ${t('addItem.portionsLabel')}`,
+            })}
+          </Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -154,6 +192,24 @@ export function SelectionPanel({
 const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
+      leftoverChip: {
+        alignSelf: 'flex-start',
+        alignItems: 'center',
+        minHeight: 34,
+        paddingHorizontal: spacing.ms,
+        borderRadius: radius.round,
+        borderWidth: 1,
+        borderColor: colors.glassBorder,
+        backgroundColor: colors.glassCard,
+      },
+      leftoverPressed: {
+        opacity: 0.75,
+      },
+      leftoverText: {
+        ...typography.footnote,
+        fontFamily: fonts.medium,
+        color: colors.textPrimary,
+      },
       panel: {
         gap: spacing.ms,
       },
@@ -181,6 +237,10 @@ const useStyles = () =>
       controls: {
         alignItems: 'center',
         gap: spacing.sm,
+      },
+      controlsStacked: {
+        flexDirection: 'column',
+        alignItems: 'stretch',
       },
       stepperLtr: {
         flexDirection: "row",
@@ -233,7 +293,7 @@ const useStyles = () =>
         color: colors.textSecondary,
       },
       unitTextActive: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.onAccent,
       },
       unitStatic: {

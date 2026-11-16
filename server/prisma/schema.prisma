@@ -54,6 +54,7 @@ model UserNutritionSettings {
   targetMode          String  @default("AUTO")
   onboardingCompleted Boolean @default(false)
   preferredLanguage   String  @default("he")
+  marketCode          String  @default("IL")
 
   dailyCaloriesTarget Int?
   proteinTarget       Int?
@@ -70,7 +71,7 @@ model UserNutritionSettings {
   goalType            String?
 
   // Display
-  themeMode String @default("LIGHT")
+  themeMode String @default("DARK")
 
   // Home display preferences
   showFiberOnHome         Boolean @default(true)
@@ -219,6 +220,22 @@ model ProductCatalogItem {
   @@index([archivedByUserId])
 }
 
+model MarketProductReference {
+  marketCode        String
+  normalizedBarcode String
+  name              String
+  brand             String?
+  packageQuantity   Float?
+  packageUnit       String?
+  originCountry     String?
+  source            String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now()) @updatedAt
+
+  @@id([marketCode, normalizedBarcode])
+  @@index([normalizedBarcode])
+}
+
 model BarcodeLookupMiss {
   normalizedBarcode String   @id
   attempts          Int      @default(1)
@@ -316,8 +333,6 @@ model PantryProduct {
   @@unique([userId, catalogItemId])
   @@index([userId, name, id])
   @@index([catalogItemId])
-  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "PantryProduct_name_trgm_idx")
-  @@index([brand(ops: raw("gin_trgm_ops"))], type: Gin, map: "PantryProduct_brand_trgm_idx")
 }
 
 model PantryRecipe {
@@ -329,6 +344,15 @@ model PantryRecipe {
   mealTypes   String[] @default([])
   imageUrl    String?
   steps       String[] @default([])
+
+  emptyPotWeightG    Float?
+  potWithFoodWeightG Float?
+  cookedWeightG      Float?
+  portionMode        RecipePortionMode?
+  portionCount       Int?
+  portionTarget      RecipePortionTarget?
+  portionTargetValue Float?
+  leftoverMode       RecipeLeftoverMode?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -349,6 +373,7 @@ model PantryRecipeItem {
   grams       Float?
   servings    Float?
   milliliters Float?
+  weightG     Float?
   position    Int    @default(0)
 
   createdAt DateTime @default(now())
@@ -442,6 +467,7 @@ model MealItem {
   grams           Float?
   servings        Float?
   milliliters     Float?
+  portions        Float?
   macrosSnapshot  Json
 
   createdAt DateTime @default(now())
@@ -469,6 +495,7 @@ model MealItemComponent {
   milliliters     Float?
   serving         Json?
   macrosSnapshot  Json
+  baseMacros      Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -772,4 +799,21 @@ model BillingEvent {
   type      String
   payload   Json
   createdAt DateTime @default(now())
+}
+
+enum RecipePortionMode {
+  COUNT
+  TARGET
+}
+
+enum RecipePortionTarget {
+  GRAMS
+  CALORIES
+  PROTEIN
+}
+
+enum RecipeLeftoverMode {
+  SEPARATE
+  REDISTRIBUTE
+  UNALLOCATED
 }

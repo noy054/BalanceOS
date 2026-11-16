@@ -167,7 +167,7 @@ const useStyles = () =>
         color: colors.textSecondary,
       },
       labelCurrent: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.accent,
       },
       marker: {

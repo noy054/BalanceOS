@@ -356,7 +356,7 @@ const useStyles = () =>
         borderRadius: radius.round,
         backgroundColor: colors.surfaceMuted,
       },
-      badgeText: { ...typography.caption, fontFamily: fonts.semibold, color: colors.textPrimary },
+      badgeText: { ...typography.caption, fontFamily: fonts.medium, color: colors.textPrimary },
       waiting: {
         alignItems: "center",
         gap: spacing.sm,
@@ -383,7 +383,7 @@ const useStyles = () =>
       planSelected: { borderColor: colors.accent },
       planText: { flex: 1, minWidth: 0, gap: 2 },
       planTitle: { ...typography.bodyStrong, color: colors.textPrimary },
-      planNote: { ...typography.caption, fontFamily: fonts.semibold, color: colors.success },
+      planNote: { ...typography.caption, fontFamily: fonts.medium, color: colors.success },
       planPrice: { ...typography.bodyStrong, ...typography.number, color: colors.textPrimary },
       planPeriod: { ...typography.caption, color: colors.textSecondary },
       muted: { ...typography.footnote, color: colors.textSecondary },
@@ -397,7 +397,7 @@ const useStyles = () =>
       paymentStatus: { ...typography.caption, color: colors.textSecondary },
       paymentFailed: { color: colors.danger },
       cancel: { minHeight: 48, alignItems: "center", justifyContent: "center" },
-      cancelText: { ...typography.callout, fontFamily: fonts.semibold, color: colors.danger },
+      cancelText: { ...typography.callout, fontFamily: fonts.medium, color: colors.danger },
       pressed: { opacity: 0.7 },
     }),
   );

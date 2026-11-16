@@ -99,7 +99,6 @@ export function ProductPickerModal({
             value={search}
             onChangeText={handleSearchChange}
             placeholder={t("search.placeholder")}
-            autoFocus
             trailing={
               onScanBarcode || onCreateProduct ? (
                 <>
@@ -222,7 +221,6 @@ export function RecipePickerModal({
             value={search}
             onChangeText={setSearch}
             placeholder={t("search.placeholderRecipes")}
-            autoFocus
           />
         </View>
 

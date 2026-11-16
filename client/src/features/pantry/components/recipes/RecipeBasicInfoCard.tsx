@@ -11,7 +11,6 @@ type Props = {
   mealTypes: MealType[];
   nameError: string;
   isRTL: boolean;
-  autoFocus?: boolean;
   onChangeName: (value: string) => void;
   onChangeDescription: (value: string) => void;
   onToggleMealType: (value: MealType) => void;
@@ -23,7 +22,6 @@ export function RecipeBasicInfoCard({
   mealTypes,
   nameError,
   isRTL,
-  autoFocus = false,
   onChangeName,
   onChangeDescription,
   onToggleMealType,
@@ -37,7 +35,6 @@ export function RecipeBasicInfoCard({
         value={name}
         onChangeText={onChangeName}
         error={nameError || undefined}
-        autoFocus={autoFocus}
       />
 
       <FormInput

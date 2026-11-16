@@ -18,6 +18,7 @@ type Props = {
   color?: string;
   disabled?: boolean;
   selected?: boolean;
+  extraHitSlop?: number;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -46,12 +47,13 @@ export function IconButton({
   color,
   disabled = false,
   selected,
+  extraHitSlop = 0,
   style,
 }: Props) {
   const { colors } = useAppTheme();
   const styles = useStyles();
   const palette = getPalette(colors, variant);
-  const hitSlop = Math.max(0, (44 - size) / 2);
+  const hitSlop = Math.max(0, (44 - size) / 2) + extraHitSlop;
 
   return (
     <Pressable

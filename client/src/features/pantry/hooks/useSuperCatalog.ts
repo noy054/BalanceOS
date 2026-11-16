@@ -22,6 +22,7 @@ import { getProductSaveErrorKey } from "../helpers/barcode";
 import { showToast } from "../../../shared/helpers/toast";
 import { confirmAction } from "../../../shared/helpers/confirm";
 import { thumbnailImageUrl } from "../helpers/foodImage";
+import { useMealReturn } from "../mealReturnStore";
 
 type BrowsePages = InfiniteData<Page<CatalogBrowseItem>, string | undefined>;
 
@@ -174,6 +175,28 @@ export function useSuperPantry() {
     }
   }
 
+  async function pick(item: CatalogBrowseItem) {
+    const superPick = useMealReturn.getState().superPick;
+    if (!superPick || pendingIds.has(item.id)) return;
+    setPending(item.id, true);
+    try {
+      const product = item.pantryProductId
+        ? await pantryApi.getById(item.pantryProductId)
+        : await addFromCatalog.mutateAsync({ catalogItemId: item.id, payload: {} });
+      if (!item.pantryProductId) {
+        setPantryLink(queryClient, item.id, product.id);
+        track("super_product_added");
+      }
+      useMealReturn.getState().setPending(superPick.target, product);
+      useMealReturn.getState().endSuperPick();
+      router.dismissTo(superPick.returnHref as Parameters<typeof router.dismissTo>[0]);
+    } catch (err) {
+      Alert.alert("", t(getProductSaveErrorKey(err)));
+    } finally {
+      setPending(item.id, false);
+    }
+  }
+
   async function remove(item: CatalogBrowseItem) {
     const pantryProductId = item.pantryProductId;
     if (!pantryProductId || pendingIds.has(item.id)) return;
@@ -204,10 +227,12 @@ export function useSuperPantry() {
     }
   }
 
-  const actions = useRef({ add, remove });
-  actions.current = { add, remove };
+  const actions = useRef({ add, remove, pick });
+  actions.current = { add, remove, pick };
   const stableAdd = useCallback((item: CatalogBrowseItem) => actions.current.add(item), []);
   const stableRemove = useCallback((item: CatalogBrowseItem) => actions.current.remove(item), []);
+  const stablePick = useCallback((item: CatalogBrowseItem) => actions.current.pick(item), []);
+  const isPicking = useMealReturn((state) => state.superPick !== null);
 
-  return { add: stableAdd, remove: stableRemove, pendingIds };
+  return { add: stableAdd, remove: stableRemove, pick: stablePick, isPicking, pendingIds };
 }

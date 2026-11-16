@@ -28,8 +28,13 @@ function setup(item: object | null) {
   return { service, repo };
 }
 
-const owned = (amount: { grams: number | null; servings: number | null }) => ({
+const owned = (amount: {
+  grams: number | null;
+  servings: number | null;
+  portions?: number | null;
+}) => ({
   id: 'i1',
+  portions: null,
   ...amount,
   milliliters: null,
   macrosSnapshot: snapshot,
@@ -48,6 +53,7 @@ describe('DayLogsService.updateMealItem', () => {
         grams: 90,
         servings: null,
         milliliters: null,
+        portions: null,
         macrosSnapshot: {
           name: 'Rolled oats',
           calories: 341,
@@ -60,7 +66,61 @@ describe('DayLogsService.updateMealItem', () => {
       },
       'tx',
     );
-    expect(repo.recalculateAndSaveTotals).toHaveBeenCalledWith('log1');
+    expect(repo.recalculateAndSaveTotals).toHaveBeenCalledWith('log1', 'tx');
+  });
+
+  it('scales a portion-logged recipe and its batch fraction together', async () => {
+    const { service, repo } = setup(
+      owned({ grams: null, servings: 0.2, portions: 1 }),
+    );
+    await service.updateMealItem('u1', 'i1', { portions: 2 });
+    expect(repo.updateMealItemAmount).toHaveBeenCalledWith(
+      'i1',
+      expect.objectContaining({ grams: null, portions: 2, servings: 0.4 }),
+      'tx',
+    );
+    await expect(
+      service.updateMealItem('u1', 'i1', { servings: 1 }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('edits the total grams of a recipe entry and scales its portions', async () => {
+    const { service, repo } = setup({
+      ...owned({ grams: null, servings: 0.25, portions: 1 }),
+      pantryRecipeId: 'r1',
+      pantryRecipe: {
+        cookedWeightG: 2000,
+        items: [],
+      },
+    });
+    await service.updateMealItem('u1', 'i1', { grams: 1000 });
+    expect(repo.updateMealItemAmount).toHaveBeenCalledWith(
+      'i1',
+      expect.objectContaining({ grams: 1000, servings: 0.5, portions: 2 }),
+      'tx',
+    );
+  });
+
+  it('refuses grams for a recipe entry without a known weight', async () => {
+    const { service } = setup({
+      ...owned({ grams: null, servings: 0.25, portions: 1 }),
+      pantryRecipeId: 'r1',
+      pantryRecipe: {
+        cookedWeightG: null,
+        items: [
+          {
+            grams: null,
+            servings: 1,
+            milliliters: null,
+            weightG: null,
+            product: { servingSizeG: null, servingSizeMl: null },
+          },
+        ],
+      },
+    });
+    await expect(
+      service.updateMealItem('u1', 'i1', { grams: 500 }),
+    ).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('keeps serving-based items in servings', async () => {

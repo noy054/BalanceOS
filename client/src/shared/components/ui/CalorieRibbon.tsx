@@ -3,30 +3,29 @@ import { StyleSheet, View } from "react-native";
 import { Image } from "expo-image";
 
 const RIBBON = require("../../../../assets/home/calorie-ribbon.webp");
+const RIBBON_OVER = require("../../../../assets/home/calorie-ribbon-over.webp");
 
 export const RIBBON_ASPECT = 804 / 1268;
 
-const SLOTS = {
+export const RIBBON_SLOTS = {
   icon: { x: 0.5, y: 0.2836, width: 0.2, height: 0.12 },
-  label: { x: 0.5, y: 0.4055, width: 0.56, height: 0.1 },
-  value: { x: 0.5, y: 0.5261, width: 0.62, height: 0.24 },
-  caption: { x: 0.5, y: 0.7226, width: 0.56, height: 0.1 },
-  badgeValue: { x: 0.7397, y: 0.2164, width: 0.17, height: 0.1 },
-  badgeLabel: { x: 0.7397, y: 0.3035, width: 0.17, height: 0.08 },
+  center: { x: 0.5, y: 0.57, width: 0.6, height: 0.44 },
+  badge: { x: 0.747, y: 0.2537, width: 0.118, height: 0.19 },
 } as const;
 
-type SlotName = keyof typeof SLOTS;
 
-type Props = { width: number } & Record<SlotName, ReactNode>;
+type SlotName = keyof typeof RIBBON_SLOTS;
 
-export function CalorieRibbon({ width, ...content }: Props) {
+type Props = { width: number; over?: boolean } & Record<SlotName, ReactNode>;
+
+export function CalorieRibbon({ width, over = false, ...content }: Props) {
   const height = Math.round(width * RIBBON_ASPECT);
 
   return (
     <View style={{ width, height }}>
-      <Image source={RIBBON} style={StyleSheet.absoluteFill} contentFit="contain" cachePolicy="memory" transition={0} />
-      {(Object.keys(SLOTS) as SlotName[]).map((name) => {
-        const slot = SLOTS[name];
+      <Image source={over ? RIBBON_OVER : RIBBON} style={StyleSheet.absoluteFill} contentFit="contain" cachePolicy="memory" transition={0} />
+      {(Object.keys(RIBBON_SLOTS) as SlotName[]).map((name) => {
+        const slot = RIBBON_SLOTS[name];
         const slotWidth = slot.width * width;
         const slotHeight = slot.height * height;
         return (

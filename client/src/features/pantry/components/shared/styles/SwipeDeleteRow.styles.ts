@@ -48,7 +48,7 @@ export const useStyles = () =>
 
       deleteText: {
         ...typography.caption,
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.surface,
         textAlign: "center",
       },

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useServingFormat } from "./useServingFormat";
 import { PantryProduct, PantryRecipe, ProductCatalogProduct, SavedMeal } from "../types";
 import { MacroValues } from "../components/food/NutritionLine";
-import { hasServing } from "../helpers/serving";
+import { formatAmount, hasServing } from "../helpers/serving";
 import { nutritionPer100g, nutritionPerServing } from "../helpers/nutrition";
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
@@ -120,16 +120,21 @@ export function useFoodCardModels() {
   }
 
   function recipe(item: PantryRecipe): FoodCardModel {
+    const portion = item.portionPlan?.status === "ok" ? item.portionPlan.portion : null;
     return {
       title: item.name,
       meta: "",
-      basis: t("foodCard.recipeTotal"),
+      basis: portion
+        ? portion.grams != null
+          ? t("portions.perPortionBasisGrams", { grams: formatAmount(portion.grams) })
+          : t("portions.perPortionBasis")
+        : t("foodCard.recipeTotal"),
       summary: t("recipeDetail.itemsCount", { count: item.items.length }),
       tags: mealTypeLabels(recipeMealTypes(item)),
       imageUrl: getRecipeImageUrl(item),
       fallbackIcon: FOOD_ICONS.recipe,
-      calories: item.totals.calories,
-      macros: item.totals,
+      calories: portion ? portion.calories : item.totals.calories,
+      macros: portion ?? item.totals,
     };
   }
 

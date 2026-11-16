@@ -68,13 +68,6 @@ export function DayHeader({
 
   const accent = dark ? colors.calorieGauge : colors.accent;
 
-  const greetingSize = compact ? 22 : 24;
-  const stacked = !fitsBeside(
-    greeting,
-    greetingSize,
-    screenWidth - HORIZONTAL_PADDING * 2 - ACTIONS_WIDTH,
-  );
-
   const dateNode = (
     <Pressable
       onPress={onOpenCalendar}
@@ -89,125 +82,87 @@ export function DayHeader({
     </Pressable>
   );
 
-  const greetingNode = (
-    <>
-      <Text
-        accessibilityRole="header"
-        style={[styles.greeting, compact && styles.greetingCompact, dir.text]}
-        numberOfLines={3}
-      >
-        {greeting}
+  const todayNode = isToday ? null : (
+    <Pressable
+      onPress={onToday}
+      hitSlop={TODAY_HIT_SLOP}
+      accessibilityRole="button"
+      accessibilityLabel={t("date.backToTodayA11y")}
+      style={({ pressed }) => [
+        styles.todayButton,
+        dir.row,
+        { borderColor: accent },
+        pressed && styles.pressed,
+      ]}
+    >
+      <View style={[styles.todayDot, { backgroundColor: accent }]} />
+      <Text style={[styles.todayLabel, { color: accent }]} numberOfLines={1}>
+        {t("date.backToToday")}
       </Text>
-      <View style={styles.underline}>
-        <GreetingUnderline color={accent} dark={dark} flip={!dir.isRTL} />
-      </View>
-    </>
+    </Pressable>
   );
-
-  const actionsNode = (
-    <View style={[styles.actions, stacked && styles.actionsStacked, dir.row]}>
-      {isToday ? (
-        <View
-          style={[styles.todayButton, dir.row]}
-          accessible
-          accessibilityLabel={t("date.today")}
-        >
-          <View
-            style={[
-              styles.todayDot,
-              { backgroundColor: accent, boxShadow: `0 0 6px ${accent}` },
-            ]}
-          />
-          <Text
-            style={[styles.todayLabel, { color: accent }]}
-            numberOfLines={1}
-          >
-            {t("date.today")}
-          </Text>
-        </View>
-      ) : (
-        <Pressable
-          onPress={onToday}
-          hitSlop={TODAY_HIT_SLOP}
-          accessibilityRole="button"
-          accessibilityLabel={t("date.backToTodayA11y")}
-          style={({ pressed }) => [
-            styles.todayButton,
-            dir.row,
-            pressed && styles.pressed,
-          ]}
-        >
-          <View
-            style={[
-              styles.todayDot,
-              styles.todayDotHollow,
-              { borderColor: accent },
-            ]}
-          />
-          <Text
-            style={[styles.todayLabel, { color: accent }]}
-            numberOfLines={1}
-          >
-            {t("date.backToToday")}
-          </Text>
-        </Pressable>
-      )}
-
-      <View style={[styles.controls, dir.row]}>
-        <IconButton
-          icon={dir.backIcon}
-          variant="glass"
-          size={CONTROL_HEIGHT}
-          iconSize={20}
-          color={colors.textPrimary}
-          style={styles.control}
-          accessibilityLabel={t("date.previousDay")}
-          onPress={onPrevious}
-        />
-        <IconButton
-          icon="calendar-month-outline"
-          variant="glass"
-          size={CONTROL_HEIGHT}
-          iconSize={17}
-          color={colors.textPrimary}
-          style={styles.control}
-          accessibilityLabel={t("date.openCalendar")}
-          onPress={onOpenCalendar}
-        />
-        <IconButton
-          icon={dir.forwardIcon}
-          variant="glass"
-          size={CONTROL_HEIGHT}
-          iconSize={20}
-          color={colors.textPrimary}
-          style={styles.control}
-          accessibilityLabel={t("date.nextDay")}
-          onPress={onNext}
-          disabled={!canGoNext}
-        />
-      </View>
-    </View>
-  );
-
-  if (stacked) {
-    return (
-      <View style={styles.rootStacked}>
-        <View style={[styles.stackedTop, dir.row]}>
-          <View style={[styles.titleBlock, dir.alignStart]}>{dateNode}</View>
-          {actionsNode}
-        </View>
-        <View style={dir.alignStart}>{greetingNode}</View>
-      </View>
-    );
-  }
 
   return (
-    <View style={[styles.root, dir.row]}>
-      <View style={[styles.titleBlock, dir.alignStart]}>
-        {dateNode}
-        {greetingNode}
+    <View style={styles.root}>
+      <View style={[styles.topRow, dir.row]}>
+        <View style={[styles.titleBlock, dir.alignStart]}>{dateNode}</View>
+        <View style={[styles.controls, dir.row]}>
+          <IconButton
+            icon={dir.backIcon}
+            variant="glass"
+            size={CONTROL_HEIGHT}
+            iconSize={25}
+            extraHitSlop={4}
+            color={colors.textPrimary}
+            style={styles.control}
+            accessibilityLabel={t("date.previousDay")}
+            onPress={onPrevious}
+          />
+          <IconButton
+            icon="calendar-month-outline"
+            variant="glass"
+            size={CONTROL_HEIGHT}
+            iconSize={24}
+            extraHitSlop={4}
+            color={colors.textPrimary}
+            style={styles.control}
+            accessibilityLabel={t("date.openCalendar")}
+            onPress={onOpenCalendar}
+          />
+          <IconButton
+            icon={dir.forwardIcon}
+            variant="glass"
+            size={CONTROL_HEIGHT}
+            iconSize={25}
+            extraHitSlop={4}
+            color={colors.textPrimary}
+            style={styles.control}
+            accessibilityLabel={t("date.nextDay")}
+            onPress={onNext}
+            disabled={!canGoNext}
+          />
+        </View>
       </View>
-      {actionsNode}
+
+      <View style={[styles.greetingRow, dir.row]}>
+        <View style={[styles.titleBlock, dir.alignStart]}>
+          <Text
+            accessibilityRole="header"
+            style={[
+              styles.greeting,
+              compact && styles.greetingCompact,
+              dir.text,
+            ]}
+            numberOfLines={2}
+          >
+            {greeting}
+          </Text>
+          <View style={styles.underline}>
+            <GreetingUnderline color={accent} dark={dark} flip={!dir.isRTL} />
+          </View>
+        </View>
+        {todayNode}
+      </View>
     </View>
   );
 }
@@ -262,30 +217,13 @@ function GreetingUnderline({
   );
 }
 
-const CONTROL_HEIGHT = 27;
+const CONTROL_HEIGHT = 44;
+const CONTROL_GAP = 8;
 const HORIZONTAL_PADDING = 19;
-const ACTIONS_WIDTH = 208;
 
-function fitsBeside(text: string, fontSize: number, room: number) {
-  const charWidth = fontSize * 0.62;
-  let lines = 1;
-  let used = 0;
-  for (const word of text.split(/\s+/)) {
-    const width = word.length * charWidth;
-    if (width > room) return false;
-    const next = used === 0 ? width : used + charWidth * 0.5 + width;
-    if (next > room) {
-      lines += 1;
-      used = width;
-    } else {
-      used = next;
-    }
-  }
-  return lines <= 2;
-}
 const UNDERLINE_WIDTH = 55;
 const DATE_HIT_SLOP = { top: 8, bottom: 8 };
-const TODAY_HIT_SLOP = { top: 8, bottom: 8, left: 4, right: 4 };
+const TODAY_HIT_SLOP = { top: 4, bottom: 4, left: 4, right: 4 };
 
 const staticStyles = StyleSheet.create({
   flipped: {
@@ -297,45 +235,41 @@ const useStyles = () =>
   useThemedStyles((colors) =>
     StyleSheet.create({
       root: {
-        alignItems: "flex-start",
         paddingTop: 8,
         paddingBottom: 4,
         paddingHorizontal: HORIZONTAL_PADDING,
-        gap: spacing.sm,
+        gap: 6,
       },
-      rootStacked: {
-        paddingTop: 8,
-        paddingBottom: 4,
-        paddingHorizontal: HORIZONTAL_PADDING,
-        gap: 4,
-      },
-      stackedTop: {
+      topRow: {
         alignItems: "center",
         gap: spacing.sm,
+        minHeight: CONTROL_HEIGHT,
       },
-      actionsStacked: {
-        marginTop: 0,
-        gap: 14,
+      greetingRow: {
+        alignItems: "center",
+        gap: spacing.sm,
       },
       titleBlock: {
         flex: 1,
         minWidth: 0,
       },
       dateButton: {
-        minHeight: 20,
+        minHeight: 24,
+        maxWidth: "100%",
         justifyContent: "center",
       },
       pressed: {
         opacity: states.pressedOpacity,
       },
       dateLine: {
-        ...typography.callout,
-        lineHeight: 20,
+        ...typography.body,
+        fontSize: 15,
+        lineHeight: 21,
         color: colors.textSecondary,
       },
       greeting: {
         marginTop: -3,
-        fontFamily: fonts.headingBold,
+        fontFamily: fonts.headingMedium,
         fontSize: 24,
         lineHeight: 27,
         color: colors.textPrimary,
@@ -348,40 +282,34 @@ const useStyles = () =>
         marginTop: -5,
         marginHorizontal: 5,
       },
-      actions: {
-        alignItems: "center",
-        marginTop: 9.5,
-        height: CONTROL_HEIGHT,
-        gap: 27,
-      },
       todayButton: {
-        minHeight: 20,
+        height: 36,
         alignItems: "center",
         gap: 6,
+        paddingHorizontal: 12,
+        borderRadius: 18,
+        borderWidth: 1,
+        backgroundColor: colors.glassCard,
       },
       todayDot: {
         width: 7,
         height: 7,
         borderRadius: 4,
       },
-      todayDotHollow: {
-        backgroundColor: "transparent",
-        borderWidth: 1.5,
-      },
       todayLabel: {
-        fontFamily: fonts.bold,
-        fontSize: 12,
-        lineHeight: 16,
+        fontFamily: fonts.medium,
+        fontSize: 14,
+        lineHeight: 18,
         color: colors.accent,
       },
       controls: {
         alignItems: "center",
-        gap: 7.5,
+        gap: CONTROL_GAP,
       },
       control: {
-        width: 31,
+        width: CONTROL_HEIGHT,
         height: CONTROL_HEIGHT,
-        borderRadius: 8,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: colors.glassBorder,
       },

@@ -335,7 +335,7 @@ const useStyles = () =>
         color: colors.textSecondary,
       },
       optionTextActive: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.onAccent,
       },
       pressed: {
@@ -495,7 +495,7 @@ const useStyles = () =>
         color: colors.textMuted,
       },
       xActive: {
-        fontFamily: fonts.semibold,
+        fontFamily: fonts.medium,
         color: colors.textPrimary,
       },
     }),

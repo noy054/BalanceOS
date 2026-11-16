@@ -23,14 +23,22 @@ export class BarcodeService {
       return { status: 'IN_PANTRY', barcode: barcode.canonical, pantryProduct };
     }
 
+    const context = await this.catalogService.lookupContextFor(userId);
     const catalogItem = await this.catalogService.lookupByBarcode(
       userId,
       barcode,
+      context,
     );
     if (catalogItem) {
       return { status: 'IN_CATALOG', barcode: barcode.canonical, catalogItem };
     }
 
-    return { status: 'NOT_FOUND', barcode: barcode.canonical };
+    const reference = await this.catalogService.findMarketReference(
+      barcode,
+      context,
+    );
+    return reference
+      ? { status: 'NOT_FOUND', barcode: barcode.canonical, reference }
+      : { status: 'NOT_FOUND', barcode: barcode.canonical };
   }
 }
